@@ -1,0 +1,77 @@
+package spring.grepp.honlife.app.model.pointLog.service;
+
+import java.util.List;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import spring.grepp.honlife.app.model.member.domain.Member;
+import spring.grepp.honlife.app.model.member.repos.MemberRepository;
+import spring.grepp.honlife.app.model.pointLog.domain.PointLog;
+import spring.grepp.honlife.app.model.pointLog.dto.PointLogDTO;
+import spring.grepp.honlife.app.model.pointLog.repos.PointLogRepository;
+import spring.grepp.honlife.infra.util.NotFoundException;
+
+
+@Service
+public class PointLogService {
+
+    private final PointLogRepository pointLogRepository;
+    private final MemberRepository memberRepository;
+
+    public PointLogService(final PointLogRepository pointLogRepository,
+            final MemberRepository memberRepository) {
+        this.pointLogRepository = pointLogRepository;
+        this.memberRepository = memberRepository;
+    }
+
+    public List<PointLogDTO> findAll() {
+        final List<PointLog> pointLogs = pointLogRepository.findAll(Sort.by("id"));
+        return pointLogs.stream()
+                .map(pointLog -> mapToDTO(pointLog, new PointLogDTO()))
+                .toList();
+    }
+
+    public PointLogDTO get(final Integer id) {
+        return pointLogRepository.findById(id)
+                .map(pointLog -> mapToDTO(pointLog, new PointLogDTO()))
+                .orElseThrow(NotFoundException::new);
+    }
+
+    public Integer create(final PointLogDTO pointLogDTO) {
+        final PointLog pointLog = new PointLog();
+        mapToEntity(pointLogDTO, pointLog);
+        return pointLogRepository.save(pointLog).getId();
+    }
+
+    public void update(final Integer id, final PointLogDTO pointLogDTO) {
+        final PointLog pointLog = pointLogRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        mapToEntity(pointLogDTO, pointLog);
+        pointLogRepository.save(pointLog);
+    }
+
+    public void delete(final Integer id) {
+        pointLogRepository.deleteById(id);
+    }
+
+    private PointLogDTO mapToDTO(final PointLog pointLog, final PointLogDTO pointLogDTO) {
+        pointLogDTO.setId(pointLog.getId());
+        pointLogDTO.setType(pointLog.getType());
+        pointLogDTO.setPoint(pointLog.getPoint());
+        pointLogDTO.setReason(pointLog.getReason());
+        pointLogDTO.setTime(pointLog.getTime());
+        pointLogDTO.setMember(pointLog.getMember() == null ? null : pointLog.getMember().getId());
+        return pointLogDTO;
+    }
+
+    private PointLog mapToEntity(final PointLogDTO pointLogDTO, final PointLog pointLog) {
+        pointLog.setType(pointLogDTO.getType());
+        pointLog.setPoint(pointLogDTO.getPoint());
+        pointLog.setReason(pointLogDTO.getReason());
+        pointLog.setTime(pointLogDTO.getTime());
+        final Member member = pointLogDTO.getMember() == null ? null : memberRepository.findById(pointLogDTO.getMember())
+                .orElseThrow(() -> new NotFoundException("member not found"));
+        pointLog.setMember(member);
+        return pointLog;
+    }
+
+}
