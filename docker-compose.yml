@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: postgres:17.5
+    environment:
+    - POSTGRES_DB=honlife
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=P4ssword!
+    ports:
+    - 5433:5432

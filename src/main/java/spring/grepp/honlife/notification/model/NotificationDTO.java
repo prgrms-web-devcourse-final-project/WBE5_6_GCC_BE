@@ -1,0 +1,16 @@
+package spring.grepp.honlife.notification.model;
+
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
+public class NotificationDTO {
+
+    private Integer id;
+    private Boolean email;
+    private Boolean routine;
+    private Boolean challenge;
+
+}
