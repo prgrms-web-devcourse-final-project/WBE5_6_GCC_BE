@@ -27,7 +27,7 @@ public class Notification {
             strategy = GenerationType.SEQUENCE,
             generator = "primary_sequence"
     )
-    private Integer id;
+    private Long id;
 
     @Column
     private Boolean email;

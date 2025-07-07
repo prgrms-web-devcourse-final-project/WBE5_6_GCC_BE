@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import spring.grepp.honlife.app.model.item.domain.Item;
 import spring.grepp.honlife.app.model.item.dto.ItemDTO;
 import spring.grepp.honlife.app.model.item.repos.ItemRepository;
-import spring.grepp.honlife.app.model.memberItem.domain.MemberItem;
-import spring.grepp.honlife.app.model.memberItem.repos.MemberItemRepository;
+import spring.grepp.honlife.app.model.member.domain.MemberItem;
+import spring.grepp.honlife.app.model.member.repos.MemberItemRepository;
 import spring.grepp.honlife.infra.util.NotFoundException;
 import spring.grepp.honlife.infra.util.ReferencedWarning;
 
@@ -19,7 +19,7 @@ public class ItemService {
     private final MemberItemRepository memberItemRepository;
 
     public ItemService(final ItemRepository itemRepository,
-            final MemberItemRepository memberItemRepository) {
+        final MemberItemRepository memberItemRepository) {
         this.itemRepository = itemRepository;
         this.memberItemRepository = memberItemRepository;
     }
@@ -27,30 +27,30 @@ public class ItemService {
     public List<ItemDTO> findAll() {
         final List<Item> items = itemRepository.findAll(Sort.by("id"));
         return items.stream()
-                .map(item -> mapToDTO(item, new ItemDTO()))
-                .toList();
+            .map(item -> mapToDTO(item, new ItemDTO()))
+            .toList();
     }
 
-    public ItemDTO get(final Integer id) {
+    public ItemDTO get(final Long id) {
         return itemRepository.findById(id)
-                .map(item -> mapToDTO(item, new ItemDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(item -> mapToDTO(item, new ItemDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
-    public Integer create(final ItemDTO itemDTO) {
+    public Long create(final ItemDTO itemDTO) {
         final Item item = new Item();
         mapToEntity(itemDTO, item);
         return itemRepository.save(item).getId();
     }
 
-    public void update(final Integer id, final ItemDTO itemDTO) {
+    public void update(final Long id, final ItemDTO itemDTO) {
         final Item item = itemRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(itemDTO, item);
         itemRepository.save(item);
     }
 
-    public void delete(final Integer id) {
+    public void delete(final Long id) {
         itemRepository.deleteById(id);
     }
 
@@ -77,10 +77,14 @@ public class ItemService {
         return item;
     }
 
-    public ReferencedWarning getReferencedWarning(final Integer id) {
+    public boolean itemKeyExists(final String itemKey) {
+        return itemRepository.existsByItemKeyIgnoreCase(itemKey);
+    }
+
+    public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Item item = itemRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         final MemberItem itemMemberItem = memberItemRepository.findFirstByItem(item);
         if (itemMemberItem != null) {
             referencedWarning.setKey("item.memberItem.item.referenced");

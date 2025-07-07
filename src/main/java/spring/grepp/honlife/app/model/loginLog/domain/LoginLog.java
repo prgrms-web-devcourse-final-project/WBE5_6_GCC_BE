@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,19 +24,19 @@ public class LoginLog {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
-            allocationSize = 1,
-            initialValue = 10000
+        name = "primary_sequence",
+        sequenceName = "primary_sequence",
+        allocationSize = 1,
+        initialValue = 10000
     )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+        strategy = GenerationType.SEQUENCE,
+        generator = "primary_sequence"
     )
-    private Integer id;
+    private Long id;
 
     @Column
-    private OffsetDateTime time;
+    private LocalDateTime time;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

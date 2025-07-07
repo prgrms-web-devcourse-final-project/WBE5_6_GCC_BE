@@ -5,7 +5,7 @@ import spring.grepp.honlife.app.model.loginLog.domain.LoginLog;
 import spring.grepp.honlife.app.model.member.domain.Member;
 
 
-public interface LoginLogRepository extends JpaRepository<LoginLog, Integer> {
+public interface LoginLogRepository extends JpaRepository<LoginLog, Long> {
 
     LoginLog findFirstByMember(Member member);
 

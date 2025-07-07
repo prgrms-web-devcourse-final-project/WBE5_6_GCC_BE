@@ -36,27 +36,27 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemDTO> getItem(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<ItemDTO> getItem(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(itemService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Integer> createItem(@RequestBody @Valid final ItemDTO itemDTO) {
-        final Integer createdId = itemService.create(itemDTO);
+    public ResponseEntity<Long> createItem(@RequestBody @Valid final ItemDTO itemDTO) {
+        final Long createdId = itemService.create(itemDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Integer> updateItem(@PathVariable(name = "id") final Integer id,
-            @RequestBody @Valid final ItemDTO itemDTO) {
+    public ResponseEntity<Long> updateItem(@PathVariable(name = "id") final Long id,
+        @RequestBody @Valid final ItemDTO itemDTO) {
         itemService.update(id, itemDTO);
         return ResponseEntity.ok(id);
     }
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteItem(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<Void> deleteItem(@PathVariable(name = "id") final Long id) {
         final ReferencedWarning referencedWarning = itemService.getReferencedWarning(id);
         if (referencedWarning != null) {
             throw new ReferencedException(referencedWarning);
