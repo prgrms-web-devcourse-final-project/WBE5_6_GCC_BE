@@ -12,7 +12,7 @@ import spring.grepp.honlife.app.model.badge.code.BadgeTier;
 @Setter
 public class BadgeDTO {
 
-    private Integer id;
+    private Long id;
 
     private LocalDateTime createdAt;
 
@@ -37,6 +37,6 @@ public class BadgeDTO {
     @Size(max = 100)
     private String info;
 
-    private Integer category;
+    private Long category;
 
 }

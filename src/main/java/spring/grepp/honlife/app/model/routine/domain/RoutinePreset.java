@@ -32,7 +32,7 @@ public class RoutinePreset extends BaseEntity {
             strategy = GenerationType.SEQUENCE,
             generator = "primary_sequence"
     )
-    private Integer id;
+    private Long id;
 
     @Column(length = 50)
     private String content;

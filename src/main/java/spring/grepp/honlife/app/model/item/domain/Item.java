@@ -22,18 +22,18 @@ public class Item extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
-            allocationSize = 1,
-            initialValue = 10000
+        name = "primary_sequence",
+        sequenceName = "primary_sequence",
+        allocationSize = 1,
+        initialValue = 10000
     )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+        strategy = GenerationType.SEQUENCE,
+        generator = "primary_sequence"
     )
-    private Integer id;
+    private Long id;
 
-    @Column(length = 50)
+    @Column(unique = true, length = 50)
     private String itemKey;
 
     @Column(length = 50)

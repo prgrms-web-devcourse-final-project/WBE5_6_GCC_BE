@@ -1,6 +1,7 @@
 package spring.grepp.honlife.app.model.loginLog.dto;
 
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,11 +11,11 @@ import lombok.Setter;
 @Setter
 public class LoginLogDTO {
 
-    private Integer id;
+    private Long id;
 
-    private OffsetDateTime time;
+    private LocalDateTime time;
 
     @NotNull
-    private Integer member;
+    private Long member;
 
 }

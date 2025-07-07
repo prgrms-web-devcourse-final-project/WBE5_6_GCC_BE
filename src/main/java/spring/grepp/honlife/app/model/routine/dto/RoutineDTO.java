@@ -3,7 +3,6 @@ package spring.grepp.honlife.app.model.routine.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class RoutineDTO {
 
-    private Integer id;
+    private Long id;
 
     private LocalDateTime createdAt;
 
@@ -28,9 +27,6 @@ public class RoutineDTO {
     @Size(max = 255)
     private String triggerTime;
 
-    @JsonProperty("isDone")
-    private Boolean isDone;
-
     @JsonProperty("isImportant")
     private Boolean isImportant;
 
@@ -41,9 +37,9 @@ public class RoutineDTO {
     private String repeateValue;
 
     @NotNull
-    private Integer member;
+    private Long member;
 
     @NotNull
-    private Integer category;
+    private Long category;
 
 }

@@ -16,7 +16,6 @@ import lombok.Setter;
 import spring.grepp.honlife.app.model.common.BaseEntity;
 import spring.grepp.honlife.app.model.member.code.ResidenceExperience;
 import spring.grepp.honlife.app.model.member.code.Role;
-import spring.grepp.honlife.app.model.memberImage.domain.MemberImage;
 import spring.grepp.honlife.app.model.notification.domain.Notification;
 
 
@@ -37,7 +36,7 @@ public class Member extends BaseEntity {
         strategy = GenerationType.SEQUENCE,
         generator = "primary_sequence"
     )
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -54,9 +53,6 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 50)
     private String nickname;
-
-    @Column(nullable = false, length = 10)
-    private String gender;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -79,4 +75,11 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "notification_id", nullable = false, unique = true)
     private Notification notification;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false, unique = true)
+    private MemberPoint member;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_point_id", nullable = false, unique = true)
+    private MemberPoint memberPoint;
 }

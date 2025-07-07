@@ -5,7 +5,7 @@ import spring.grepp.honlife.app.model.routine.domain.Routine;
 import spring.grepp.honlife.app.model.routine.domain.RoutineSchedule;
 
 
-public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule, Integer> {
+public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule, Long> {
 
     RoutineSchedule findFirstByRoutine(Routine routine);
 

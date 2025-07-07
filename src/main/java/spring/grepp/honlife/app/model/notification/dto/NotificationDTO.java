@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class NotificationDTO {
 
-    private Integer id;
+    private Long id;
     private Boolean email;
     private Boolean routine;
     private Boolean challenge;

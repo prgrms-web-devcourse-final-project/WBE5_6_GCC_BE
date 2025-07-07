@@ -5,7 +5,7 @@ import spring.grepp.honlife.app.model.badge.domain.Badge;
 import spring.grepp.honlife.app.model.category.domain.Category;
 
 
-public interface BadgeRepository extends JpaRepository<Badge, Integer> {
+public interface BadgeRepository extends JpaRepository<Badge, Long> {
 
     Badge findFirstByCategory(Category category);
 
