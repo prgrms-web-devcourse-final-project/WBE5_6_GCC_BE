@@ -34,28 +34,27 @@ public class LoginLogController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LoginLogDTO> getLoginLog(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<LoginLogDTO> getLoginLog(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(loginLogService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Integer> createLoginLog(
-            @RequestBody @Valid final LoginLogDTO loginLogDTO) {
-        final Integer createdId = loginLogService.create(loginLogDTO);
+    public ResponseEntity<Long> createLoginLog(@RequestBody @Valid final LoginLogDTO loginLogDTO) {
+        final Long createdId = loginLogService.create(loginLogDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Integer> updateLoginLog(@PathVariable(name = "id") final Integer id,
-            @RequestBody @Valid final LoginLogDTO loginLogDTO) {
+    public ResponseEntity<Long> updateLoginLog(@PathVariable(name = "id") final Long id,
+        @RequestBody @Valid final LoginLogDTO loginLogDTO) {
         loginLogService.update(id, loginLogDTO);
         return ResponseEntity.ok(id);
     }
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteLoginLog(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<Void> deleteLoginLog(@PathVariable(name = "id") final Long id) {
         loginLogService.delete(id);
         return ResponseEntity.noContent().build();
     }

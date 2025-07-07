@@ -8,8 +8,8 @@ import spring.grepp.honlife.app.model.badge.dto.BadgeDTO;
 import spring.grepp.honlife.app.model.badge.repos.BadgeRepository;
 import spring.grepp.honlife.app.model.category.domain.Category;
 import spring.grepp.honlife.app.model.category.repos.CategoryRepository;
-import spring.grepp.honlife.app.model.memberBadge.domain.MemberBadge;
-import spring.grepp.honlife.app.model.memberBadge.repos.MemberBadgeRepository;
+import spring.grepp.honlife.app.model.member.domain.MemberBadge;
+import spring.grepp.honlife.app.model.member.repos.MemberBadgeRepository;
 import spring.grepp.honlife.infra.util.NotFoundException;
 import spring.grepp.honlife.infra.util.ReferencedWarning;
 
@@ -22,8 +22,8 @@ public class BadgeService {
     private final MemberBadgeRepository memberBadgeRepository;
 
     public BadgeService(final BadgeRepository badgeRepository,
-            final CategoryRepository categoryRepository,
-            final MemberBadgeRepository memberBadgeRepository) {
+        final CategoryRepository categoryRepository,
+        final MemberBadgeRepository memberBadgeRepository) {
         this.badgeRepository = badgeRepository;
         this.categoryRepository = categoryRepository;
         this.memberBadgeRepository = memberBadgeRepository;
@@ -32,30 +32,30 @@ public class BadgeService {
     public List<BadgeDTO> findAll() {
         final List<Badge> badges = badgeRepository.findAll(Sort.by("id"));
         return badges.stream()
-                .map(badge -> mapToDTO(badge, new BadgeDTO()))
-                .toList();
+            .map(badge -> mapToDTO(badge, new BadgeDTO()))
+            .toList();
     }
 
-    public BadgeDTO get(final Integer id) {
+    public BadgeDTO get(final Long id) {
         return badgeRepository.findById(id)
-                .map(badge -> mapToDTO(badge, new BadgeDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(badge -> mapToDTO(badge, new BadgeDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
-    public Integer create(final BadgeDTO badgeDTO) {
+    public Long create(final BadgeDTO badgeDTO) {
         final Badge badge = new Badge();
         mapToEntity(badgeDTO, badge);
         return badgeRepository.save(badge).getId();
     }
 
-    public void update(final Integer id, final BadgeDTO badgeDTO) {
+    public void update(final Long id, final BadgeDTO badgeDTO) {
         final Badge badge = badgeRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(badgeDTO, badge);
         badgeRepository.save(badge);
     }
 
-    public void delete(final Integer id) {
+    public void delete(final Long id) {
         badgeRepository.deleteById(id);
     }
 
@@ -85,15 +85,15 @@ public class BadgeService {
         badge.setRequirement(badgeDTO.getRequirement());
         badge.setInfo(badgeDTO.getInfo());
         final Category category = badgeDTO.getCategory() == null ? null : categoryRepository.findById(badgeDTO.getCategory())
-                .orElseThrow(() -> new NotFoundException("category not found"));
+            .orElseThrow(() -> new NotFoundException("category not found"));
         badge.setCategory(category);
         return badge;
     }
 
-    public ReferencedWarning getReferencedWarning(final Integer id) {
+    public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Badge badge = badgeRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         final MemberBadge badgeMemberBadge = memberBadgeRepository.findFirstByBadge(badge);
         if (badgeMemberBadge != null) {
             referencedWarning.setKey("badge.memberBadge.badge.referenced");

@@ -6,7 +6,7 @@ import spring.grepp.honlife.app.model.member.domain.Member;
 import spring.grepp.honlife.app.model.routine.domain.Routine;
 
 
-public interface RoutineRepository extends JpaRepository<Routine, Integer> {
+public interface RoutineRepository extends JpaRepository<Routine, Long> {
 
     Routine findFirstByMember(Member member);
 

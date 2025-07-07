@@ -36,19 +36,19 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberDTO> getMember(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<MemberDTO> getMember(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(memberService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Integer> createMember(@RequestBody @Valid final MemberDTO memberDTO) {
-        final Integer createdId = memberService.create(memberDTO);
+    public ResponseEntity<Long> createMember(@RequestBody @Valid final MemberDTO memberDTO) {
+        final Long createdId = memberService.create(memberDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Integer> updateMember(@PathVariable(name = "id") final Integer id,
+    public ResponseEntity<Long> updateMember(@PathVariable(name = "id") final Long id,
         @RequestBody @Valid final MemberDTO memberDTO) {
         memberService.update(id, memberDTO);
         return ResponseEntity.ok(id);
@@ -56,7 +56,7 @@ public class MemberController {
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {
         final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
         if (referencedWarning != null) {
             throw new ReferencedException(referencedWarning);

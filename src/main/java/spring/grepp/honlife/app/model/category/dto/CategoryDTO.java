@@ -13,7 +13,7 @@ import spring.grepp.honlife.app.model.category.code.CategoryType;
 @Setter
 public class CategoryDTO {
 
-    private Integer id;
+    private Long id;
 
     private LocalDateTime createdAt;
 
@@ -28,6 +28,6 @@ public class CategoryDTO {
     private CategoryType type;
 
     @NotNull
-    private Integer member;
+    private Long member;
 
 }

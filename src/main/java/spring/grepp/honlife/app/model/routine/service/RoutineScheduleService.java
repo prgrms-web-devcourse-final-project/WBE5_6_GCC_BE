@@ -30,26 +30,26 @@ public class RoutineScheduleService {
                 .toList();
     }
 
-    public RoutineScheduleDTO get(final Integer id) {
+    public RoutineScheduleDTO get(final Long id) {
         return routineScheduleRepository.findById(id)
                 .map(routineSchedule -> mapToDTO(routineSchedule, new RoutineScheduleDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Integer create(final RoutineScheduleDTO routineScheduleDTO) {
+    public Long create(final RoutineScheduleDTO routineScheduleDTO) {
         final RoutineSchedule routineSchedule = new RoutineSchedule();
         mapToEntity(routineScheduleDTO, routineSchedule);
         return routineScheduleRepository.save(routineSchedule).getId();
     }
 
-    public void update(final Integer id, final RoutineScheduleDTO routineScheduleDTO) {
+    public void update(final Long id, final RoutineScheduleDTO routineScheduleDTO) {
         final RoutineSchedule routineSchedule = routineScheduleRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(routineScheduleDTO, routineSchedule);
         routineScheduleRepository.save(routineSchedule);
     }
 
-    public void delete(final Integer id) {
+    public void delete(final Long id) {
         routineScheduleRepository.deleteById(id);
     }
 

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class RoutineScheduleDTO {
 
-    private Integer id;
+    private Long id;
 
     private LocalDate date;
 
@@ -22,6 +22,6 @@ public class RoutineScheduleDTO {
     private LocalDateTime createdAt;
 
     @NotNull
-    private Integer routine;
+    private Long routine;
 
 }

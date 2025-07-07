@@ -25,8 +25,8 @@ public class RoutineService {
     private final RoutineScheduleRepository routineScheduleRepository;
 
     public RoutineService(final RoutineRepository routineRepository,
-        final MemberRepository memberRepository, final CategoryRepository categoryRepository,
-        final RoutineScheduleRepository routineScheduleRepository) {
+            final MemberRepository memberRepository, final CategoryRepository categoryRepository,
+            final RoutineScheduleRepository routineScheduleRepository) {
         this.routineRepository = routineRepository;
         this.memberRepository = memberRepository;
         this.categoryRepository = categoryRepository;
@@ -36,30 +36,30 @@ public class RoutineService {
     public List<RoutineDTO> findAll() {
         final List<Routine> routines = routineRepository.findAll(Sort.by("id"));
         return routines.stream()
-            .map(routine -> mapToDTO(routine, new RoutineDTO()))
-            .toList();
+                .map(routine -> mapToDTO(routine, new RoutineDTO()))
+                .toList();
     }
 
-    public RoutineDTO get(final Integer id) {
+    public RoutineDTO get(final Long id) {
         return routineRepository.findById(id)
-            .map(routine -> mapToDTO(routine, new RoutineDTO()))
-            .orElseThrow(NotFoundException::new);
+                .map(routine -> mapToDTO(routine, new RoutineDTO()))
+                .orElseThrow(NotFoundException::new);
     }
 
-    public Integer create(final RoutineDTO routineDTO) {
+    public Long create(final RoutineDTO routineDTO) {
         final Routine routine = new Routine();
         mapToEntity(routineDTO, routine);
         return routineRepository.save(routine).getId();
     }
 
-    public void update(final Integer id, final RoutineDTO routineDTO) {
+    public void update(final Long id, final RoutineDTO routineDTO) {
         final Routine routine = routineRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+                .orElseThrow(NotFoundException::new);
         mapToEntity(routineDTO, routine);
         routineRepository.save(routine);
     }
 
-    public void delete(final Integer id) {
+    public void delete(final Long id) {
         routineRepository.deleteById(id);
     }
 
@@ -70,7 +70,6 @@ public class RoutineService {
         routineDTO.setId(routine.getId());
         routineDTO.setContent(routine.getContent());
         routineDTO.setTriggerTime(routine.getTriggerTime());
-        routineDTO.setIsDone(routine.getIsDone());
         routineDTO.setIsImportant(routine.getIsImportant());
         routineDTO.setRepeateType(routine.getRepeateType());
         routineDTO.setRepeateValue(routine.getRepeateValue());
@@ -85,23 +84,22 @@ public class RoutineService {
         routine.setIsActive(routineDTO.getIsActive());
         routine.setContent(routineDTO.getContent());
         routine.setTriggerTime(routineDTO.getTriggerTime());
-        routine.setIsDone(routineDTO.getIsDone());
         routine.setIsImportant(routineDTO.getIsImportant());
         routine.setRepeateType(routineDTO.getRepeateType());
         routine.setRepeateValue(routineDTO.getRepeateValue());
         final Member member = routineDTO.getMember() == null ? null : memberRepository.findById(routineDTO.getMember())
-            .orElseThrow(() -> new NotFoundException("member not found"));
+                .orElseThrow(() -> new NotFoundException("member not found"));
         routine.setMember(member);
         final Category category = routineDTO.getCategory() == null ? null : categoryRepository.findById(routineDTO.getCategory())
-            .orElseThrow(() -> new NotFoundException("category not found"));
+                .orElseThrow(() -> new NotFoundException("category not found"));
         routine.setCategory(category);
         return routine;
     }
 
-    public ReferencedWarning getReferencedWarning(final Integer id) {
+    public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Routine routine = routineRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+                .orElseThrow(NotFoundException::new);
         final RoutineSchedule routineRoutineSchedule = routineScheduleRepository.findFirstByRoutine(routine);
         if (routineRoutineSchedule != null) {
             referencedWarning.setKey("routine.routineSchedule.routine.referenced");

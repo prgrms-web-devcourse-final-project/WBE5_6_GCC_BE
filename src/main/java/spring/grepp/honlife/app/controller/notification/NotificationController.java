@@ -37,28 +37,28 @@ public class NotificationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<NotificationDTO> getNotification(
-            @PathVariable(name = "id") final Integer id) {
+        @PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(notificationService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Integer> createNotification(
-            @RequestBody @Valid final NotificationDTO notificationDTO) {
-        final Integer createdId = notificationService.create(notificationDTO);
+    public ResponseEntity<Long> createNotification(
+        @RequestBody @Valid final NotificationDTO notificationDTO) {
+        final Long createdId = notificationService.create(notificationDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Integer> updateNotification(@PathVariable(name = "id") final Integer id,
-            @RequestBody @Valid final NotificationDTO notificationDTO) {
+    public ResponseEntity<Long> updateNotification(@PathVariable(name = "id") final Long id,
+        @RequestBody @Valid final NotificationDTO notificationDTO) {
         notificationService.update(id, notificationDTO);
         return ResponseEntity.ok(id);
     }
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteNotification(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<Void> deleteNotification(@PathVariable(name = "id") final Long id) {
         final ReferencedWarning referencedWarning = notificationService.getReferencedWarning(id);
         if (referencedWarning != null) {
             throw new ReferencedException(referencedWarning);

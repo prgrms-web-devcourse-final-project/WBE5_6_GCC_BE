@@ -1,0 +1,15 @@
+package spring.grepp.honlife.app.model.category.repos;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import spring.grepp.honlife.app.model.category.domain.Category;
+import spring.grepp.honlife.app.model.category.domain.InterestCategory;
+import spring.grepp.honlife.app.model.member.domain.Member;
+
+
+public interface InterestCategoryRepository extends JpaRepository<InterestCategory, Long> {
+
+    InterestCategory findFirstByCategory(Category category);
+
+    InterestCategory findFirstByMember(Member member);
+
+}
