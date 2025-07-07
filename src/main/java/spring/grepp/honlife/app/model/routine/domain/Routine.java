@@ -25,14 +25,14 @@ public class Routine extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
-            allocationSize = 1,
-            initialValue = 10000
+        name = "primary_sequence",
+        sequenceName = "primary_sequence",
+        allocationSize = 1,
+        initialValue = 10000
     )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+        strategy = GenerationType.SEQUENCE,
+        generator = "primary_sequence"
     )
     private Integer id;
 
@@ -40,13 +40,19 @@ public class Routine extends BaseEntity {
     private String content;
 
     @Column
-    private LocalDate date;
-
-    @Column
     private String triggerTime;
 
     @Column
     private Boolean isDone;
+
+    @Column
+    private Boolean isImportant;
+
+    @Column(length = 20)
+    private String repeateType;
+
+    @Column(length = 100)
+    private String repeateValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

@@ -14,6 +14,7 @@ import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import spring.grepp.honlife.app.model.common.BaseEntity;
+import spring.grepp.honlife.app.model.member.code.ResidenceExperience;
 import spring.grepp.honlife.app.model.member.code.Role;
 import spring.grepp.honlife.app.model.memberImage.domain.MemberImage;
 import spring.grepp.honlife.app.model.notification.domain.Notification;
@@ -27,14 +28,14 @@ public class Member extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
-            allocationSize = 1,
-            initialValue = 10000
+        name = "primary_sequence",
+        sequenceName = "primary_sequence",
+        allocationSize = 1,
+        initialValue = 10000
     )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+        strategy = GenerationType.SEQUENCE,
+        generator = "primary_sequence"
     )
     private Integer id;
 
@@ -56,6 +57,10 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false, length = 10)
     private String gender;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ResidenceExperience residenceExperience;
 
     @Column
     private String regionDept1;

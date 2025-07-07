@@ -1,0 +1,27 @@
+package spring.grepp.honlife.app.model.routine.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
+public class RoutineScheduleDTO {
+
+    private Integer id;
+
+    private LocalDate date;
+
+    @JsonProperty("isDone")
+    private Boolean isDone;
+
+    private LocalDateTime createdAt;
+
+    @NotNull
+    private Integer routine;
+
+}
