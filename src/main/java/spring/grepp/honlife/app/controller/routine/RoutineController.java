@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import spring.grepp.honlife.app.model.routine.model.RoutineDTO;
+import spring.grepp.honlife.app.model.routine.dto.RoutineDTO;
 import spring.grepp.honlife.app.model.routine.service.RoutineService;
 
 
@@ -47,7 +47,7 @@ public class RoutineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Integer> updateRoutine(@PathVariable(name = "id") final Integer id,
-            @RequestBody @Valid final RoutineDTO routineDTO) {
+        @RequestBody @Valid final RoutineDTO routineDTO) {
         routineService.update(id, routineDTO);
         return ResponseEntity.ok(id);
     }

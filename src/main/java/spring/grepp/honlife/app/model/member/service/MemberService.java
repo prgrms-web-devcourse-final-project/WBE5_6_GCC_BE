@@ -43,14 +43,14 @@ public class MemberService {
     private final LoginLogRepository loginLogRepository;
 
     public MemberService(final MemberRepository memberRepository,
-            final MemberImageRepository memberImageRepository,
-            final NotificationRepository notificationRepository,
-            final RoutineRepository routineRepository, final CategoryRepository categoryRepository,
-            final MemberItemRepository memberItemRepository,
-            final MemberQuestRepository memberQuestRepository,
-            final PointLogRepository pointLogRepository,
-            final MemberBadgeRepository memberBadgeRepository,
-            final LoginLogRepository loginLogRepository) {
+        final MemberImageRepository memberImageRepository,
+        final NotificationRepository notificationRepository,
+        final RoutineRepository routineRepository, final CategoryRepository categoryRepository,
+        final MemberItemRepository memberItemRepository,
+        final MemberQuestRepository memberQuestRepository,
+        final PointLogRepository pointLogRepository,
+        final MemberBadgeRepository memberBadgeRepository,
+        final LoginLogRepository loginLogRepository) {
         this.memberRepository = memberRepository;
         this.memberImageRepository = memberImageRepository;
         this.notificationRepository = notificationRepository;
@@ -66,14 +66,14 @@ public class MemberService {
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
         return members.stream()
-                .map(member -> mapToDTO(member, new MemberDTO()))
-                .toList();
+            .map(member -> mapToDTO(member, new MemberDTO()))
+            .toList();
     }
 
     public MemberDTO get(final Integer id) {
         return memberRepository.findById(id)
-                .map(member -> mapToDTO(member, new MemberDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(member -> mapToDTO(member, new MemberDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
     public Integer create(final MemberDTO memberDTO) {
@@ -84,7 +84,7 @@ public class MemberService {
 
     public void update(final Integer id, final MemberDTO memberDTO) {
         final Member member = memberRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(memberDTO, member);
         memberRepository.save(member);
     }
@@ -104,6 +104,7 @@ public class MemberService {
         memberDTO.setName(member.getName());
         memberDTO.setNickname(member.getNickname());
         memberDTO.setGender(member.getGender());
+        memberDTO.setResidenceExperience(member.getResidenceExperience());
         memberDTO.setRegionDept1(member.getRegionDept1());
         memberDTO.setRegionDept2(member.getRegionDept2());
         memberDTO.setRegionDept3(member.getRegionDept3());
@@ -122,14 +123,15 @@ public class MemberService {
         member.setName(memberDTO.getName());
         member.setNickname(memberDTO.getNickname());
         member.setGender(memberDTO.getGender());
+        member.setResidenceExperience(memberDTO.getResidenceExperience());
         member.setRegionDept1(memberDTO.getRegionDept1());
         member.setRegionDept2(memberDTO.getRegionDept2());
         member.setRegionDept3(memberDTO.getRegionDept3());
         final MemberImage memberImage = memberDTO.getMemberImage() == null ? null : memberImageRepository.findById(memberDTO.getMemberImage())
-                .orElseThrow(() -> new NotFoundException("memberImage not found"));
+            .orElseThrow(() -> new NotFoundException("memberImage not found"));
         member.setMemberImage(memberImage);
         final Notification notification = memberDTO.getNotification() == null ? null : notificationRepository.findById(memberDTO.getNotification())
-                .orElseThrow(() -> new NotFoundException("notification not found"));
+            .orElseThrow(() -> new NotFoundException("notification not found"));
         member.setNotification(notification);
         return member;
     }
@@ -153,7 +155,7 @@ public class MemberService {
     public ReferencedWarning getReferencedWarning(final Integer id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Member member = memberRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         final Routine memberRoutine = routineRepository.findFirstByMember(member);
         if (memberRoutine != null) {
             referencedWarning.setKey("member.routine.member.referenced");

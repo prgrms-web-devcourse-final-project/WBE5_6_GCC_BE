@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import spring.grepp.honlife.app.model.member.code.ResidenceExperience;
 import spring.grepp.honlife.app.model.member.code.Role;
 
 
@@ -46,6 +47,8 @@ public class MemberDTO {
     @NotNull
     @Size(max = 10)
     private String gender;
+
+    private ResidenceExperience residenceExperience;
 
     @Size(max = 255)
     private String regionDept1;

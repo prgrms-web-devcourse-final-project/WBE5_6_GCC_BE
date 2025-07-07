@@ -1,4 +1,4 @@
-package spring.grepp.honlife.app.model.routine.model;
+package spring.grepp.honlife.app.model.routine.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
@@ -25,13 +25,20 @@ public class RoutineDTO {
     @Size(max = 255)
     private String content;
 
-    private LocalDate date;
-
     @Size(max = 255)
     private String triggerTime;
 
     @JsonProperty("isDone")
     private Boolean isDone;
+
+    @JsonProperty("isImportant")
+    private Boolean isImportant;
+
+    @Size(max = 20)
+    private String repeateType;
+
+    @Size(max = 100)
+    private String repeateValue;
 
     @NotNull
     private Integer member;

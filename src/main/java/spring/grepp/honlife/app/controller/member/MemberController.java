@@ -49,7 +49,7 @@ public class MemberController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Integer> updateMember(@PathVariable(name = "id") final Integer id,
-            @RequestBody @Valid final MemberDTO memberDTO) {
+        @RequestBody @Valid final MemberDTO memberDTO) {
         memberService.update(id, memberDTO);
         return ResponseEntity.ok(id);
     }
