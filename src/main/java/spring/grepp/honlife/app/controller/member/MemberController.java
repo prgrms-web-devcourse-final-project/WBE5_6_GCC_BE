@@ -1,6 +1,10 @@
 package spring.grepp.honlife.app.controller.member;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,8 +24,9 @@ import spring.grepp.honlife.infra.util.ReferencedException;
 import spring.grepp.honlife.infra.util.ReferencedWarning;
 
 
+@Tag(name = "회원", description = "회원관련 API 입니다.")
 @RestController
-@RequestMapping(value = "/api/members", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
 
     private final MemberService memberService;
@@ -35,8 +40,19 @@ public class MemberController {
         return ResponseEntity.ok(memberService.findAll());
     }
 
+    /**
+     * 특정 회원 정보 조회 API
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<MemberDTO> getMember(@PathVariable(name = "id") final Long id) {
+    @Operation(summary = "특정 회원 정보 조회", description = "특정 회원에 대한 정보를 조회합니다.")
+    @ApiResponse(responseCode = "2000", description = "OK",
+        content = @Content(schema = @Schema(implementation = MemberDTO.class)))
+    public ResponseEntity<MemberDTO> getMember(
+        @PathVariable(name = "id")
+        @Schema(description = "Path Value", example = "1") final Long id
+    ) {
         return ResponseEntity.ok(memberService.get(id));
     }
 
