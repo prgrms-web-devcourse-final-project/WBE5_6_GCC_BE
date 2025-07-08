@@ -1,9 +1,10 @@
-package spring.grepp.honlife.app.controller.badge.payload;
+package com.honlife.core.app.controller.badge.payload;
 
+import com.honlife.core.app.model.badge.code.BadgeTier;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import spring.grepp.honlife.app.model.badge.code.BadgeTier;
+
 
 /**
  * 모든 업적을 조회할 때 반환 되는 응답 클래스.
@@ -14,11 +15,11 @@ import spring.grepp.honlife.app.model.badge.code.BadgeTier;
 @Builder
 public class BadgePayload {
 
-    private Long id;
+    private Long badgeId;
 
-    private String key;
+    private String badgeKey;
 
-    private String name;
+    private String badgeName;
 
     private BadgeTier tier;
 
@@ -28,7 +29,7 @@ public class BadgePayload {
 
     private String info;
 
-    private Long category;
+    private String category;
 
     private Boolean isReceived;
 
