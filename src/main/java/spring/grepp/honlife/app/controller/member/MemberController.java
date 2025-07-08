@@ -1,6 +1,9 @@
 package spring.grepp.honlife.app.controller.member;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -14,14 +17,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import spring.grepp.honlife.app.controller.member.payload.MemberPayload;
+import spring.grepp.honlife.app.model.member.code.ResidenceExperience;
 import spring.grepp.honlife.app.model.member.model.MemberDTO;
 import spring.grepp.honlife.app.model.member.service.MemberService;
+import spring.grepp.honlife.infra.response.CommonApiResponse;
+import spring.grepp.honlife.infra.response.ResponseCode;
 import spring.grepp.honlife.infra.util.ReferencedException;
 import spring.grepp.honlife.infra.util.ReferencedWarning;
 
 
+@Tag(name = "회원", description = "회원관련 API 입니다.")
 @RestController
-@RequestMapping(value = "/api/members", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
 
     private final MemberService memberService;
@@ -35,9 +43,32 @@ public class MemberController {
         return ResponseEntity.ok(memberService.findAll());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MemberDTO> getMember(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(memberService.get(id));
+    /**
+     * 특정 회원 정보 조회 API
+     * @param email
+     * @return
+     */
+    @GetMapping("/{email}")
+    @Operation(summary = "특정 회원 정보 조회", description = "특정 회원에 대한 정보를 조회합니다.")
+    public ResponseEntity<CommonApiResponse<MemberPayload>> getMember(
+        @PathVariable(name="email")
+        @Schema(description = "사용자 이메일", example = "test@test.com") final String email
+    ) {
+        if(email.equals("test@test.com")){
+            MemberPayload response = new MemberPayload();
+            response.setUserId(1L);
+            response.setEmail("test@test.com");
+            response.setName("홍길동");
+            response.setNickname("닉네임");
+            response.setResidenceExperience(ResidenceExperience.OVER_10Y);
+            response.setRegionDept1("서울시");
+            response.setRegionDept2("강북구");
+            response.setRegionDept3("미아동");
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        } else {
+            return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+        }
     }
 
     @PostMapping
