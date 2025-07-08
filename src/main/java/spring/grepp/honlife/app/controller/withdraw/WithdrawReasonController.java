@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.withdraw.service.WithdrawReasonService;
 
 
 @RestController
-@RequestMapping(value = "/api/withdrawReasons", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/withdrawReasons", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WithdrawReasonController {
 
     private final WithdrawReasonService withdrawReasonService;

@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.routine.service.RoutinePresetService;
 
 
 @RestController
-@RequestMapping(value = "/api/routinePresets", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/routinePresets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoutinePresetResource {
 
     private final RoutinePresetService routinePresetService;

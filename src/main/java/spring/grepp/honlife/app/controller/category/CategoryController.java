@@ -21,7 +21,7 @@ import spring.grepp.honlife.infra.util.ReferencedWarning;
 
 
 @RestController
-@RequestMapping(value = "/api/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
 
     private final CategoryService categoryService;

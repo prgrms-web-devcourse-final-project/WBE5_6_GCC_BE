@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.member.service.MemberQuestService;
 
 
 @RestController
-@RequestMapping(value = "/api/memberQuests", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/memberQuests", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberQuestResource {
 
     private final MemberQuestService memberQuestService;

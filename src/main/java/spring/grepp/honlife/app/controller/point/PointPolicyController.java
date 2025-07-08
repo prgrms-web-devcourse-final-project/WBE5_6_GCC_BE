@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.point.service.PointPolicyService;
 
 
 @RestController
-@RequestMapping(value = "/api/pointPolicies", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/pointPolicies", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PointPolicyController {
 
     private final PointPolicyService pointPolicyService;

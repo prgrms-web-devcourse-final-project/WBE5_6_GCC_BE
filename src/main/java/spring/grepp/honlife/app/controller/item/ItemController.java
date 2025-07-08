@@ -1,6 +1,8 @@
 package spring.grepp.honlife.app.controller.item;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -19,9 +21,9 @@ import spring.grepp.honlife.app.model.item.service.ItemService;
 import spring.grepp.honlife.infra.util.ReferencedException;
 import spring.grepp.honlife.infra.util.ReferencedWarning;
 
-
+@Tag(name = "아이템",description = "아이템 관련 api 입니다.")
 @RestController
-@RequestMapping(value = "/api/items", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemController {
 
     private final ItemService itemService;
@@ -30,39 +32,41 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+    @Operation(summary = "아이템 정보 전체 조회", description = "상점에 있는 아이템 정보 전체를 조회합니다.")
     @GetMapping
     public ResponseEntity<List<ItemDTO>> getAllItems() {
         return ResponseEntity.ok(itemService.findAll());
     }
 
+    @Operation(summary = "아이템 구매", description = "포인트 차감 후 아이템을 구매합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<ItemDTO> getItem(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(itemService.get(id));
     }
 
-    @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createItem(@RequestBody @Valid final ItemDTO itemDTO) {
-        final Long createdId = itemService.create(itemDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    @ApiResponse(responseCode = "201")
+//    public ResponseEntity<Long> createItem(@RequestBody @Valid final ItemDTO itemDTO) {
+//        final Long createdId = itemService.create(itemDTO);
+//        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
+//    }
+//
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Long> updateItem(@PathVariable(name = "id") final Long id,
+//        @RequestBody @Valid final ItemDTO itemDTO) {
+//        itemService.update(id, itemDTO);
+//        return ResponseEntity.ok(id);
+//    }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Long> updateItem(@PathVariable(name = "id") final Long id,
-        @RequestBody @Valid final ItemDTO itemDTO) {
-        itemService.update(id, itemDTO);
-        return ResponseEntity.ok(id);
-    }
-
-    @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteItem(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = itemService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
-        itemService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{id}")
+//    @ApiResponse(responseCode = "204")
+//    public ResponseEntity<Void> deleteItem(@PathVariable(name = "id") final Long id) {
+//        final ReferencedWarning referencedWarning = itemService.getReferencedWarning(id);
+//        if (referencedWarning != null) {
+//            throw new ReferencedException(referencedWarning);
+//        }
+//        itemService.delete(id);
+//        return ResponseEntity.noContent().build();
+//    }
 
 }

@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.quest.service.EventQuestService;
 
 
 @RestController
-@RequestMapping(value = "/api/eventQuests", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/eventQuests", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EventQuestController {
 
     private final EventQuestService eventQuestService;

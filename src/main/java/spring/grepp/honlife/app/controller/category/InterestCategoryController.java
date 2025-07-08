@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.category.service.InterestCategoryService;
 
 
 @RestController
-@RequestMapping(value = "/api/interestCategories", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/interestCategories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class InterestCategoryController {
 
     private final InterestCategoryService interestCategoryService;

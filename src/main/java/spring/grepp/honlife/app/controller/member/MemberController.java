@@ -21,7 +21,7 @@ import spring.grepp.honlife.infra.util.ReferencedWarning;
 
 
 @RestController
-@RequestMapping(value = "/api/members", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
 
     private final MemberService memberService;

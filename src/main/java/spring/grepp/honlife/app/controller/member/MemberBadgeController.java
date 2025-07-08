@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.member.service.MemberBadgeService;
 
 
 @RestController
-@RequestMapping(value = "/api/memberBadges", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/memberBadges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberBadgeController {
 
     private final MemberBadgeService memberBadgeService;

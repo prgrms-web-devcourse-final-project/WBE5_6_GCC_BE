@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.member.service.MemberItemService;
 
 
 @RestController
-@RequestMapping(value = "/api/memberItems", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/memberItems", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberItemController {
 
     private final MemberItemService memberItemService;

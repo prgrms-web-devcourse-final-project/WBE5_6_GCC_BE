@@ -21,7 +21,7 @@ import spring.grepp.honlife.infra.util.ReferencedWarning;
 
 
 @RestController
-@RequestMapping(value = "/api/routines", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoutineController {
 
     private final RoutineService routineService;

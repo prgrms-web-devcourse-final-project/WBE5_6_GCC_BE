@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.routine.service.RoutineScheduleService;
 
 
 @RestController
-@RequestMapping(value = "/api/routineSchedules", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/routineSchedules", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoutineScheduleController {
 
     private final RoutineScheduleService routineScheduleService;

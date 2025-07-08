@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.quest.service.WeeklyQuestService;
 
 
 @RestController
-@RequestMapping(value = "/api/weeklyQuests", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/weeklyQuests", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WeeklyQuestController {
 
     private final WeeklyQuestService weeklyQuestService;

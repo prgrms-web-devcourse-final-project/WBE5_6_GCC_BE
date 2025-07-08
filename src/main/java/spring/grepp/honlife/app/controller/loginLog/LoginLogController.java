@@ -19,7 +19,7 @@ import spring.grepp.honlife.app.model.loginLog.service.LoginLogService;
 
 
 @RestController
-@RequestMapping(value = "/api/loginLogs", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/loginLogs", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LoginLogController {
 
     private final LoginLogService loginLogService;
