@@ -36,28 +36,27 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategory(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<CategoryDTO> getCategory(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(categoryService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Integer> createCategory(
-            @RequestBody @Valid final CategoryDTO categoryDTO) {
-        final Integer createdId = categoryService.create(categoryDTO);
+    public ResponseEntity<Long> createCategory(@RequestBody @Valid final CategoryDTO categoryDTO) {
+        final Long createdId = categoryService.create(categoryDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Integer> updateCategory(@PathVariable(name = "id") final Integer id,
-            @RequestBody @Valid final CategoryDTO categoryDTO) {
+    public ResponseEntity<Long> updateCategory(@PathVariable(name = "id") final Long id,
+        @RequestBody @Valid final CategoryDTO categoryDTO) {
         categoryService.update(id, categoryDTO);
         return ResponseEntity.ok(id);
     }
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteCategory(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable(name = "id") final Long id) {
         final ReferencedWarning referencedWarning = categoryService.getReferencedWarning(id);
         if (referencedWarning != null) {
             throw new ReferencedException(referencedWarning);

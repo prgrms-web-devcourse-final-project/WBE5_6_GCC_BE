@@ -6,6 +6,12 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import spring.grepp.honlife.app.model.member.annotation.MemberEmailUnique;
+import spring.grepp.honlife.app.model.member.annotation.MemberMemberImageUnique;
+import spring.grepp.honlife.app.model.member.annotation.MemberMemberPointUnique;
+import spring.grepp.honlife.app.model.member.annotation.MemberNicknameUnique;
+import spring.grepp.honlife.app.model.member.annotation.MemberNotificationUnique;
+import spring.grepp.honlife.app.model.member.code.ResidenceExperience;
 import spring.grepp.honlife.app.model.member.code.Role;
 
 
@@ -13,7 +19,7 @@ import spring.grepp.honlife.app.model.member.code.Role;
 @Setter
 public class MemberDTO {
 
-    private Integer id;
+    private Long id;
 
     private LocalDateTime createdAt;
 
@@ -43,9 +49,7 @@ public class MemberDTO {
     @MemberNicknameUnique
     private String nickname;
 
-    @NotNull
-    @Size(max = 10)
-    private String gender;
+    private ResidenceExperience residenceExperience;
 
     @Size(max = 255)
     private String regionDept1;
@@ -58,10 +62,14 @@ public class MemberDTO {
 
     @NotNull
     @MemberMemberImageUnique
-    private Integer memberImage;
+    private Long memberImage;
 
     @NotNull
     @MemberNotificationUnique
-    private Integer notification;
+    private Long notification;
+
+    @NotNull
+    @MemberMemberPointUnique
+    private Long memberPoint;
 
 }

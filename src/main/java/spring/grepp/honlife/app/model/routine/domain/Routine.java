@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import spring.grepp.honlife.app.model.category.domain.Category;
@@ -34,19 +33,22 @@ public class Routine extends BaseEntity {
             strategy = GenerationType.SEQUENCE,
             generator = "primary_sequence"
     )
-    private Integer id;
+    private Long id;
 
     @Column
     private String content;
 
     @Column
-    private LocalDate date;
-
-    @Column
     private String triggerTime;
 
     @Column
-    private Boolean isDone;
+    private Boolean isImportant;
+
+    @Column(length = 20)
+    private String repeateType;
+
+    @Column(length = 100)
+    private String repeateValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

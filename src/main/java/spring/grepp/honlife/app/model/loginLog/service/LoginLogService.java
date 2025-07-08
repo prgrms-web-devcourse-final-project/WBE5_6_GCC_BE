@@ -18,7 +18,7 @@ public class LoginLogService {
     private final MemberRepository memberRepository;
 
     public LoginLogService(final LoginLogRepository loginLogRepository,
-            final MemberRepository memberRepository) {
+        final MemberRepository memberRepository) {
         this.loginLogRepository = loginLogRepository;
         this.memberRepository = memberRepository;
     }
@@ -26,30 +26,30 @@ public class LoginLogService {
     public List<LoginLogDTO> findAll() {
         final List<LoginLog> loginLogs = loginLogRepository.findAll(Sort.by("id"));
         return loginLogs.stream()
-                .map(loginLog -> mapToDTO(loginLog, new LoginLogDTO()))
-                .toList();
+            .map(loginLog -> mapToDTO(loginLog, new LoginLogDTO()))
+            .toList();
     }
 
-    public LoginLogDTO get(final Integer id) {
+    public LoginLogDTO get(final Long id) {
         return loginLogRepository.findById(id)
-                .map(loginLog -> mapToDTO(loginLog, new LoginLogDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(loginLog -> mapToDTO(loginLog, new LoginLogDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
-    public Integer create(final LoginLogDTO loginLogDTO) {
+    public Long create(final LoginLogDTO loginLogDTO) {
         final LoginLog loginLog = new LoginLog();
         mapToEntity(loginLogDTO, loginLog);
         return loginLogRepository.save(loginLog).getId();
     }
 
-    public void update(final Integer id, final LoginLogDTO loginLogDTO) {
+    public void update(final Long id, final LoginLogDTO loginLogDTO) {
         final LoginLog loginLog = loginLogRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(loginLogDTO, loginLog);
         loginLogRepository.save(loginLog);
     }
 
-    public void delete(final Integer id) {
+    public void delete(final Long id) {
         loginLogRepository.deleteById(id);
     }
 
@@ -63,7 +63,7 @@ public class LoginLogService {
     private LoginLog mapToEntity(final LoginLogDTO loginLogDTO, final LoginLog loginLog) {
         loginLog.setTime(loginLogDTO.getTime());
         final Member member = loginLogDTO.getMember() == null ? null : memberRepository.findById(loginLogDTO.getMember())
-                .orElseThrow(() -> new NotFoundException("member not found"));
+            .orElseThrow(() -> new NotFoundException("member not found"));
         loginLog.setMember(member);
         return loginLog;
     }

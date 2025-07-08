@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import spring.grepp.honlife.app.model.routine.model.RoutineDTO;
+import spring.grepp.honlife.app.model.routine.dto.RoutineDTO;
 import spring.grepp.honlife.app.model.routine.service.RoutineService;
+import spring.grepp.honlife.infra.util.ReferencedException;
+import spring.grepp.honlife.infra.util.ReferencedWarning;
 
 
 @RestController
@@ -34,27 +36,31 @@ public class RoutineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoutineDTO> getRoutine(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<RoutineDTO> getRoutine(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(routineService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Integer> createRoutine(@RequestBody @Valid final RoutineDTO routineDTO) {
-        final Integer createdId = routineService.create(routineDTO);
+    public ResponseEntity<Long> createRoutine(@RequestBody @Valid final RoutineDTO routineDTO) {
+        final Long createdId = routineService.create(routineDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Integer> updateRoutine(@PathVariable(name = "id") final Integer id,
-            @RequestBody @Valid final RoutineDTO routineDTO) {
+    public ResponseEntity<Long> updateRoutine(@PathVariable(name = "id") final Long id,
+        @RequestBody @Valid final RoutineDTO routineDTO) {
         routineService.update(id, routineDTO);
         return ResponseEntity.ok(id);
     }
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteRoutine(@PathVariable(name = "id") final Integer id) {
+    public ResponseEntity<Void> deleteRoutine(@PathVariable(name = "id") final Long id) {
+        final ReferencedWarning referencedWarning = routineService.getReferencedWarning(id);
+        if (referencedWarning != null) {
+            throw new ReferencedException(referencedWarning);
+        }
         routineService.delete(id);
         return ResponseEntity.noContent().build();
     }

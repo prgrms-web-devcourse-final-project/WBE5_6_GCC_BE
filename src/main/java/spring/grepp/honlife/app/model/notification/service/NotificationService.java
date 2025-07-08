@@ -8,8 +8,8 @@ import spring.grepp.honlife.app.model.member.repos.MemberRepository;
 import spring.grepp.honlife.app.model.notification.domain.Notification;
 import spring.grepp.honlife.app.model.notification.dto.NotificationDTO;
 import spring.grepp.honlife.app.model.notification.repos.NotificationRepository;
-import spring.grepp.honlife.infra.util.NotFoundException;
 import spring.grepp.honlife.infra.util.ReferencedWarning;
+import spring.grepp.honlife.infra.util.NotFoundException;
 
 
 @Service
@@ -31,26 +31,26 @@ public class NotificationService {
                 .toList();
     }
 
-    public NotificationDTO get(final Integer id) {
+    public NotificationDTO get(final Long id) {
         return notificationRepository.findById(id)
                 .map(notification -> mapToDTO(notification, new NotificationDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Integer create(final NotificationDTO notificationDTO) {
+    public Long create(final NotificationDTO notificationDTO) {
         final Notification notification = new Notification();
         mapToEntity(notificationDTO, notification);
         return notificationRepository.save(notification).getId();
     }
 
-    public void update(final Integer id, final NotificationDTO notificationDTO) {
+    public void update(final Long id, final NotificationDTO notificationDTO) {
         final Notification notification = notificationRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(notificationDTO, notification);
         notificationRepository.save(notification);
     }
 
-    public void delete(final Integer id) {
+    public void delete(final Long id) {
         notificationRepository.deleteById(id);
     }
 
@@ -71,7 +71,7 @@ public class NotificationService {
         return notification;
     }
 
-    public ReferencedWarning getReferencedWarning(final Integer id) {
+    public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Notification notification = notificationRepository.findById(id)
                 .orElseThrow(NotFoundException::new);

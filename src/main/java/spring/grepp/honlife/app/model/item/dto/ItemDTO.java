@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import spring.grepp.honlife.app.model.item.annotation.ItemItemKeyUnique;
 import spring.grepp.honlife.app.model.item.code.ItemType;
 
 
@@ -12,7 +13,7 @@ import spring.grepp.honlife.app.model.item.code.ItemType;
 @Setter
 public class ItemDTO {
 
-    private Integer id;
+    private Long id;
 
     private LocalDateTime createdAt;
 
@@ -22,6 +23,7 @@ public class ItemDTO {
     private Boolean isActive;
 
     @Size(max = 50)
+    @ItemItemKeyUnique
     private String itemKey;
 
     @Size(max = 50)
