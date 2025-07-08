@@ -1,5 +1,7 @@
 package spring.grepp.honlife.infra.config;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
@@ -15,6 +17,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
+@OpenAPIDefinition(
+    info = @Info(
+        title = "혼라이프 API 명세서",
+        description = "백엔드 API 서버(완성된 API가 아닙니다.)",
+        version = "v1"
+    )
+)
 @Configuration
 public class SwaggerConfig {
 
