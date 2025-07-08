@@ -1,6 +1,7 @@
 package spring.grepp.honlife.app.controller.item;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -56,12 +57,12 @@ public class ItemController {
             )
 
     )
-    public ResponseEntity<List<ItemDTO>> getAllItems(
-            @RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<List<ItemDTO>> getAllItems() {
         return ResponseEntity.ok(itemService.findAll());
     }
 
-    @Operation(summary = "아이템 구매", description = "포인트 차감 후 아이템을 구매합니다.")
+    @Operation(summary = "아이템 구매", description = "포인트 차감 후 아이템을 구매합니다.",
+            parameters = {@Parameter(name = "Authorization", description = "accessToken")})
     @GetMapping("/{id}")
     public ResponseEntity<ItemDTO> getItem(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(itemService.get(id));
