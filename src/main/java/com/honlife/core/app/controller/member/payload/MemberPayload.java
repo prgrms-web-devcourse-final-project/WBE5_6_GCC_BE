@@ -25,9 +25,9 @@ public class MemberPayload {
         memberPayload.email = memberDTO.getEmail();
         memberPayload.nickname = memberDTO.getNickname();
         memberPayload.residenceExperience = memberDTO.getResidenceExperience();
-        memberPayload.regionDept1 = memberDTO.getRegionDept1();
-        memberPayload.regionDept2 = memberDTO.getRegionDept2();
-        memberPayload.regionDept3 = memberDTO.getRegionDept3();
+        memberPayload.regionDept1 = memberDTO.getRegion1Dept();
+        memberPayload.regionDept2 = memberDTO.getRegion2Dept();
+        memberPayload.regionDept3 = memberDTO.getRegion3Dept();
         return memberPayload;
     }
 }
