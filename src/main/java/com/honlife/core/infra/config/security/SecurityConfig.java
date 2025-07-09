@@ -42,7 +42,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                 (requests) -> requests
                                   .requestMatchers("/favicon.ico", "/img/**", "/js/**","/css/**").permitAll()
-                                  .requestMatchers("/", "/error", "/auth/login", "/auth/signup").permitAll()
+                                  .requestMatchers("/", "/error", "/api/v1/auth/signin", "/auth/signup").permitAll()
                                   .requestMatchers("/api/**").authenticated()
                                   .anyRequest().permitAll()
             )

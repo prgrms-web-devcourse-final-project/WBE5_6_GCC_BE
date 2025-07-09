@@ -22,6 +22,8 @@ public class CategoryDTO {
     @JsonProperty("isActive")
     private Boolean isActive;
 
+    private Long parentId;
+
     @Size(max = 25)
     private String name;
 

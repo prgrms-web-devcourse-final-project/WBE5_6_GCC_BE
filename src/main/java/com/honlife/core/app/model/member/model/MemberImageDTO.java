@@ -1,6 +1,7 @@
 package com.honlife.core.app.model.member.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.honlife.core.app.model.member.annotation.MemberImageMemberUnique;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -36,5 +37,9 @@ public class MemberImageDTO {
     @NotNull
     @Size(max = 255)
     private String renamedName;
+
+    @NotNull
+    @MemberImageMemberUnique
+    private Long member;
 
 }

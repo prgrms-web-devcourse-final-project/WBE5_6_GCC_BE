@@ -71,8 +71,8 @@ public class RoutineService {
         routineDTO.setContent(routine.getContent());
         routineDTO.setTriggerTime(routine.getTriggerTime());
         routineDTO.setIsImportant(routine.getIsImportant());
-        routineDTO.setRepeateType(routine.getRepeateType());
-        routineDTO.setRepeateValue(routine.getRepeateValue());
+        routineDTO.setRepeatType(routine.getRepeatType());
+        routineDTO.setRepeatValue(routine.getRepeatValue());
         routineDTO.setMember(routine.getMember() == null ? null : routine.getMember().getId());
         routineDTO.setCategory(routine.getCategory() == null ? null : routine.getCategory().getId());
         return routineDTO;
@@ -85,8 +85,8 @@ public class RoutineService {
         routine.setContent(routineDTO.getContent());
         routine.setTriggerTime(routineDTO.getTriggerTime());
         routine.setIsImportant(routineDTO.getIsImportant());
-        routine.setRepeateType(routineDTO.getRepeateType());
-        routine.setRepeateValue(routineDTO.getRepeateValue());
+        routine.setRepeatType(routineDTO.getRepeatType());
+        routine.setRepeatValue(routineDTO.getRepeatValue());
         final Member member = routineDTO.getMember() == null ? null : memberRepository.findById(routineDTO.getMember())
                 .orElseThrow(() -> new NotFoundException("member not found"));
         routine.setMember(member);

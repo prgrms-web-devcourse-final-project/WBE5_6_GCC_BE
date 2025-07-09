@@ -11,6 +11,8 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,19 +33,30 @@ public class SwaggerConfig {
     public OpenAPI openApiSpec() {
         // 순서가 보장된 스키마 생성
         ObjectSchema errorSchema = new ObjectSchema();
-        errorSchema.addProperty("status", new StringSchema().description("에러 상태 코드").example("status_code"));
-        errorSchema.addProperty("message", new StringSchema().description("에러 메시지").example("string"));
-        errorSchema.addProperty("data", new ObjectSchema().nullable(true).description("에러 데이터").example(null));
+        errorSchema.addProperty("status",
+            new StringSchema().description("에러 상태 코드").example("status_code"));
+        errorSchema.addProperty("message",
+            new StringSchema().description("에러 메시지").example("string"));
+        errorSchema.addProperty("data",
+            new ObjectSchema().nullable(true).description("에러 데이터").example(null));
 
-        return new OpenAPI().components(new Components()
-            // 에러 응답 스키마 - status, message, data 순서
-            .addSchemas("ApiErrorResponse", errorSchema)
+        return new OpenAPI()
+//            .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+            .components(new Components()
+                .addSecuritySchemes("bearerAuth",
+                    new SecurityScheme()
+                        .name("Authorization")
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT"))
 
-            // 예시 추가 - LinkedHashMap으로 순서 보장
-            .addExamples("ErrorExample", new Example()
-                .summary("에러 응답 예시")
-                .description("일반적인 에러 응답 형태")
-                .value(createErrorExampleMap())));
+                // 에러 응답 스키마 - status, message, data 순서
+                .addSchemas("ApiErrorResponse", errorSchema)
+                // 예시 추가 - LinkedHashMap으로 순서 보장
+                .addExamples("ErrorExample", new Example()
+                    .summary("에러 응답 예시")
+                    .description("일반적인 에러 응답 형태")
+                    .value(createErrorExampleMap())));
     }
 
     @Bean

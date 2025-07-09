@@ -58,10 +58,6 @@ public class MemberPointController {
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
     public ResponseEntity<Void> deleteMemberPoint(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = memberPointService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
         memberPointService.delete(id);
         return ResponseEntity.noContent().build();
     }

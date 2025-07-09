@@ -19,7 +19,7 @@ public class NotificationService {
     private final MemberRepository memberRepository;
 
     public NotificationService(final NotificationRepository notificationRepository,
-            final MemberRepository memberRepository) {
+        final MemberRepository memberRepository) {
         this.notificationRepository = notificationRepository;
         this.memberRepository = memberRepository;
     }
@@ -27,14 +27,14 @@ public class NotificationService {
     public List<NotificationDTO> findAll() {
         final List<Notification> notifications = notificationRepository.findAll(Sort.by("id"));
         return notifications.stream()
-                .map(notification -> mapToDTO(notification, new NotificationDTO()))
-                .toList();
+            .map(notification -> mapToDTO(notification, new NotificationDTO()))
+            .toList();
     }
 
     public NotificationDTO get(final Long id) {
         return notificationRepository.findById(id)
-                .map(notification -> mapToDTO(notification, new NotificationDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(notification -> mapToDTO(notification, new NotificationDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
     public Long create(final NotificationDTO notificationDTO) {
@@ -45,7 +45,7 @@ public class NotificationService {
 
     public void update(final Long id, final NotificationDTO notificationDTO) {
         final Notification notification = notificationRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(notificationDTO, notification);
         notificationRepository.save(notification);
     }
@@ -55,33 +55,28 @@ public class NotificationService {
     }
 
     private NotificationDTO mapToDTO(final Notification notification,
-            final NotificationDTO notificationDTO) {
+        final NotificationDTO notificationDTO) {
         notificationDTO.setId(notification.getId());
         notificationDTO.setEmail(notification.getEmail());
         notificationDTO.setRoutine(notification.getRoutine());
         notificationDTO.setChallenge(notification.getChallenge());
+        notificationDTO.setMember(notification.getMember() == null ? null : notification.getMember().getId());
         return notificationDTO;
     }
 
     private Notification mapToEntity(final NotificationDTO notificationDTO,
-            final Notification notification) {
+        final Notification notification) {
         notification.setEmail(notificationDTO.getEmail());
         notification.setRoutine(notificationDTO.getRoutine());
         notification.setChallenge(notificationDTO.getChallenge());
+        final Member member = notificationDTO.getMember() == null ? null : memberRepository.findById(notificationDTO.getMember())
+            .orElseThrow(() -> new NotFoundException("member not found"));
+        notification.setMember(member);
         return notification;
     }
 
-    public ReferencedWarning getReferencedWarning(final Long id) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final Notification notification = notificationRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
-        final Member notificationMember = memberRepository.findFirstByNotification(notification);
-        if (notificationMember != null) {
-            referencedWarning.setKey("notification.member.notification.referenced");
-            referencedWarning.addParam(notificationMember.getId());
-            return referencedWarning;
-        }
-        return null;
+    public boolean memberExists(final Long id) {
+        return notificationRepository.existsByMemberId(id);
     }
 
 }
