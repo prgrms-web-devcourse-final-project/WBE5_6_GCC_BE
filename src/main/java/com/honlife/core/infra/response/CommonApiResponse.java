@@ -2,7 +2,7 @@ package com.honlife.core.infra.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "공통 응답 DTO", name = "ApiResponse")
+@Schema(description = "공통 응답 DTO")
 public record CommonApiResponse<T>(
     @Schema(description = "서비스 정의 코드", example = "2000")
     String code,
