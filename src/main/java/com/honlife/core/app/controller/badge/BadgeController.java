@@ -109,7 +109,7 @@ public class BadgeController {
             .isReceived(true)
             .build());
 
-        return null;
+        return ResponseEntity.ok(CommonApiResponse.success(achievements));
     }
 
     /**
