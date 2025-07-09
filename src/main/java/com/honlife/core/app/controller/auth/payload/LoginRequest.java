@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class LoginRequest {
 
-    @Schema(description = "사용자 이메일", example = "test1@test.com")
+    @Schema(description = "사용자 이메일", example = "user01@test.com")
     private String email;
 
-    @Schema(description = "비밀번호", example = "123qwe!@#")
+    @Schema(description = "비밀번호", example = "1111")
     private String password;
 }
