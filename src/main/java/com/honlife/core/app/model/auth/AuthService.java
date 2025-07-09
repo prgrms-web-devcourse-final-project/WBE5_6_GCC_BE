@@ -30,7 +30,7 @@ public class AuthService {
     
     public TokenDto signin(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
                 loginRequest.getPassword());
         
         // loadUserByUsername + password 검증 후 인증 객체 반환
