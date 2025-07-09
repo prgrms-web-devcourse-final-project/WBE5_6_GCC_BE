@@ -87,15 +87,31 @@ public class MemberController {
         return ResponseEntity.ok(id);
     }
 
+    /**
+     * 회원 삭제 (아직 미구현 상태입니다.)
+     * @param id
+     * @return
+     */
     @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
+    @Operation(summary = "특정 회원 삭제", description = "특정 회원에 대한 정보를 삭제합니다.")
+    public ResponseEntity<CommonApiResponse<Void>> deleteMember(
+        @PathVariable(name = "id")
+        @Schema(description = "사용자 식별 id", example = "10000") final Long id
+    ) {
+//        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
+//        if (referencedWarning != null) {
+//            throw new ReferencedException(referencedWarning);
+//        }
+//        memberService.delete(id);
+
+        // 예시 응답
+        if(id == 10000) {
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        } else {
+            return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
         }
-        memberService.delete(id);
-        return ResponseEntity.noContent().build();
+
     }
 
 }
