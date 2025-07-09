@@ -1,10 +1,10 @@
 package spring.grepp.honlife.infra.Response;
 
-public class ApiResponse {
+public class ApiEntityResponse {
   private int status;
   private String message;
 
-  public ApiResponse(int status, String message) {
+  public ApiEntityResponse(int status, String message) {
     this.status = status;
     this.message = message;
   }
