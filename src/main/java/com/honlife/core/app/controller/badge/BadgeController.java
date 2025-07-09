@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import com.honlife.core.app.controller.badge.payload.BadgeRewardPayload;
 @RequiredArgsConstructor
 @Tag(name="업적", description = "업적 관련 API 입니다.")
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping(value = "/api/v1/badges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BadgeController {
 
@@ -80,7 +82,7 @@ public class BadgeController {
         )
     )
     @Operation(summary = "모든 업적 조회", description = "현재 로그인한 사용자에 대한 모든 업적의 정보를 조회합니다.")
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<CommonApiResponse<List<BadgePayload>>> getAllBadges() {
 
         List<BadgePayload> achievements = new ArrayList<>();
@@ -107,15 +109,40 @@ public class BadgeController {
             .isReceived(true)
             .build());
 
-        return ResponseEntity.ok(CommonApiResponse.success(achievements));
+        return null;
     }
-
 
     /**
      * 업적 보상 수령 API
      * @param key 업적 key 값
      * @return BadgeRewardPayload 완료한 업적에 대한 정보 및 포인트 획득 내역
      */
+    @ApiResponse(
+        responseCode = "2000",
+        description = "OK",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON_VALUE,
+            examples = @ExampleObject(
+                name="업적 정보 예시",
+                value = """
+                    {
+                        "status" : 2000,
+                        "message" : "OK",
+                        "data" : {
+                            "id" : 1,
+                            "key" : "clean_bronze",
+                            "name" : "초보 청소부",
+                            "tier" : "BRONZE",
+                            "how" : "청소루틴 5번 이상 성공",
+                            "point_added" : 50,
+                            "total_point" : 150,
+                            "receivedAt" : "2025-07-09T15:57:34.4688877"
+                        }
+                    }
+                    """
+            )
+        )
+    )
     @Operation(summary = "업적 보상 수령", description = "key 값을 통해 특정 업적의 보상을 획득합니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<BadgeRewardPayload>> claimBadgeReward(
