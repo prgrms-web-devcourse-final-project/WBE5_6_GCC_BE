@@ -1,29 +1,23 @@
 package com.honlife.core.app.controller.item;
 
+import com.honlife.core.app.controller.item.playload.BuyItemPayload;
+import com.honlife.core.app.controller.item.playload.ItemPayload;
+import com.honlife.core.app.model.item.dto.ItemDTO;
+import com.honlife.core.app.model.item.service.ItemService;
+import com.honlife.core.infra.response.CommonApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.model.item.dto.ItemDTO;
-import com.honlife.core.app.model.item.service.ItemService;
-import com.honlife.core.infra.util.ReferencedException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "아이템", description = "아이템 관련 api 입니다.")
@@ -37,72 +31,83 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+
+    /*
+     * 모든 아이템 조회 API
+     * @return List<ItemPayload> 모든 아이템에 대한 정보
+     * */
     @GetMapping
     @Operation(summary = "아이템 정보 전체 조회", description = "상점에 있는 아이템 정보 전체를 조회합니다.")
-    @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    examples = @ExampleObject(
-                            name = "아이템 정보 예시",
-                            value = """
-                                    {
-                                    "status" : 2000,
-                                    "message" : "OK",
-                                    "data" : [
-                                      {
-                                        "item_id": 9007199254740991,
-                                        "createdAt": "2025-07-08T03:33:58.344Z",
-                                        "updatedAt": "2025-07-08T03:33:58.344Z",
-                                        "itemKey": "string",
-                                        "name": "string",
-                                        "price": 1073741824,
-                                        "type": "HEAD",
-                                        "isActive": true
-                                      }
-                                    ]
-                                    }
-                                    """
+    public ResponseEntity<CommonApiResponse<List<ItemPayload>>> getAllItems() {
+        List<ItemPayload> items = new ArrayList<>();
+        items.add(ItemPayload.builder()
+                .itemId(1L)
+                .type("모자")
+                .itemKey("head_item_01")
+                .itemName("청소 모자")
+                .itemPoint(100)
+                .build());
+        items.add(ItemPayload.builder()
+                .itemId(2L)
+                .type("신발")
+                .itemKey("shoes_item_01")
+                .itemName("러닝 신발")
+                .itemPoint(100)
+                .build());
+        return ResponseEntity.ok(CommonApiResponse.success(items));
+    }
+
+    /**
+     * 아이템 구매 API
+     *
+     * @param itemId 아이템 고유 아이다
+     * @return BuyItemPayload 사용자가 구매한 아이템 정보 반환
+     */
+    @Operation(summary = "아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "아이템 구매 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(value = """
+                {
+                  "status": 200,
+                  "message": "아이템 구매 후 100포인트 차감되었습니다.",
+                  "data": {
+                    "memberId": 123,
+                    "itemId": 1,
+                    "createdAt": "2025-07-09T10:30:00"
+                  }
+                }
+            """)
                     )
-
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "포인트 부족",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(value = """
+                {
+                  "status": 400,
+                  "message": "포인트가 부족합니다.",
+                  "data": null
+                }
+            """)
+                    )
             )
+    })
+    @PostMapping("/{id}")
+    public ResponseEntity<CommonApiResponse<BuyItemPayload>> buyItem(
+            @Parameter(name = "id", description = "구매할 아이템의 ID", example = "1")
+            @PathVariable("id") Long itemId) {
+        BuyItemPayload buyItem= BuyItemPayload.builder()
+                .memberId(123L)
+                .itemId(itemId)
+                .createdAt(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(CommonApiResponse.success(buyItem));
 
-    )
-    public ResponseEntity<List<ItemDTO>> getAllItems() {
-        return ResponseEntity.ok(itemService.findAll());
     }
-
-    @Operation(summary = "아이템 구매", description = "포인트 차감 후 아이템을 구매합니다.",
-            parameters = {@Parameter(name = "Authorization", description = "accessToken")})
-    @GetMapping("/{id}")
-    public ResponseEntity<ItemDTO> getItem(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(itemService.get(id));
-    }
-
-//    @PostMapping
-//    @ApiResponse(responseCode = "201")
-//    public ResponseEntity<Long> createItem(@RequestBody @Valid final ItemDTO itemDTO) {
-//        final Long createdId = itemService.create(itemDTO);
-//        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Long> updateItem(@PathVariable(name = "id") final Long id,
-//        @RequestBody @Valid final ItemDTO itemDTO) {
-//        itemService.update(id, itemDTO);
-//        return ResponseEntity.ok(id);
-//    }
-
-//    @DeleteMapping("/{id}")
-//    @ApiResponse(responseCode = "204")
-//    public ResponseEntity<Void> deleteItem(@PathVariable(name = "id") final Long id) {
-//        final ReferencedWarning referencedWarning = itemService.getReferencedWarning(id);
-//        if (referencedWarning != null) {
-//            throw new ReferencedException(referencedWarning);
-//        }
-//        itemService.delete(id);
-//        return ResponseEntity.noContent().build();
-//    }
-
 }
