@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,6 +39,13 @@ public class ItemController {
      * */
     @GetMapping
     @Operation(summary = "아이템 정보 전체 조회", description = "상점에 있는 아이템 정보 전체를 조회합니다.")
+    @ApiResponse(
+            responseCode="200",
+            content=@Content(
+                    mediaType="application/json",
+                    schema=@Schema(implementation=ItemPayload.class)
+            )
+    )
     public ResponseEntity<CommonApiResponse<List<ItemPayload>>> getAllItems() {
         List<ItemPayload> items = new ArrayList<>();
         items.add(ItemPayload.builder()
@@ -72,7 +80,7 @@ public class ItemController {
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(value = """
                 {
-                  "status": 200,
+                  "status": 2000,
                   "message": "아이템 구매 후 100포인트 차감되었습니다.",
                   "data": {
                     "memberId": 123,
@@ -90,7 +98,7 @@ public class ItemController {
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(value = """
                 {
-                  "status": 400,
+                  "status": 4000,
                   "message": "포인트가 부족합니다.",
                   "data": null
                 }
