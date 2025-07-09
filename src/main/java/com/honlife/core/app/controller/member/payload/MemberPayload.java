@@ -9,7 +9,6 @@ import com.honlife.core.app.model.member.model.MemberDTO;
 @Setter
 public class MemberPayload {
 
-    private Long userId;
     private String email;
     private String name;
     private String nickname;
@@ -21,7 +20,6 @@ public class MemberPayload {
     //TODO: 개발시 활용
     public static MemberPayload fromDTO(MemberDTO memberDTO) {
         MemberPayload memberPayload = new MemberPayload();
-        memberPayload.userId = memberDTO.getId();
         memberPayload.email = memberDTO.getEmail();
         memberPayload.nickname = memberDTO.getNickname();
         memberPayload.residenceExperience = memberDTO.getResidenceExperience();
