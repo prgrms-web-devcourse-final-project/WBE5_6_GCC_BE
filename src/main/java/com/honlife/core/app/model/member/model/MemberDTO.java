@@ -52,13 +52,13 @@ public class MemberDTO {
     private ResidenceExperience residenceExperience;
 
     @Size(max = 255)
-    private String regionDept1;
+    private String region1Dept;
 
     @Size(max = 255)
-    private String regionDept2;
+    private String region2Dept;
 
     @Size(max = 255)
-    private String regionDept3;
+    private String region3Dept;
 
     @NotNull
     @MemberMemberImageUnique

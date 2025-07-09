@@ -45,10 +45,10 @@ public class Routine extends BaseEntity {
     private Boolean isImportant;
 
     @Column(length = 20)
-    private String repeateType;
+    private String repeatType;
 
     @Column(length = 100)
-    private String repeateValue;
+    private String repeatValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

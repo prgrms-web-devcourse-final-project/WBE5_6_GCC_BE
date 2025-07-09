@@ -60,13 +60,13 @@ public class Member extends BaseEntity {
     private ResidenceExperience residenceExperience;
 
     @Column
-    private String regionDept1;
+    private String region1Dept;
 
     @Column
-    private String regionDept2;
+    private String region2Dept;
 
     @Column
-    private String regionDept3;
+    private String region3Dept;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_image_id", nullable = false, unique = true)
