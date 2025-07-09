@@ -114,9 +114,9 @@ public class MemberService {
         memberDTO.setName(member.getName());
         memberDTO.setNickname(member.getNickname());
         memberDTO.setResidenceExperience(member.getResidenceExperience());
-        memberDTO.setRegionDept1(member.getRegionDept1());
-        memberDTO.setRegionDept2(member.getRegionDept2());
-        memberDTO.setRegionDept3(member.getRegionDept3());
+        memberDTO.setRegion1Dept(member.getRegion1Dept());
+        memberDTO.setRegion2Dept(member.getRegion2Dept());
+        memberDTO.setRegion3Dept(member.getRegion3Dept());
         memberDTO.setMemberImage(member.getMemberImage() == null ? null : member.getMemberImage().getId());
         memberDTO.setNotification(member.getNotification() == null ? null : member.getNotification().getId());
         memberDTO.setMemberPoint(member.getMemberPoint() == null ? null : member.getMemberPoint().getId());
@@ -133,9 +133,9 @@ public class MemberService {
         member.setName(memberDTO.getName());
         member.setNickname(memberDTO.getNickname());
         member.setResidenceExperience(memberDTO.getResidenceExperience());
-        member.setRegionDept1(memberDTO.getRegionDept1());
-        member.setRegionDept2(memberDTO.getRegionDept2());
-        member.setRegionDept3(memberDTO.getRegionDept3());
+        member.setRegion1Dept(memberDTO.getRegion1Dept());
+        member.setRegion2Dept(memberDTO.getRegion2Dept());
+        member.setRegion3Dept(memberDTO.getRegion3Dept());
         final MemberImage memberImage = memberDTO.getMemberImage() == null ? null : memberImageRepository.findById(memberDTO.getMemberImage())
             .orElseThrow(() -> new NotFoundException("memberImage not found"));
         member.setMemberImage(memberImage);
