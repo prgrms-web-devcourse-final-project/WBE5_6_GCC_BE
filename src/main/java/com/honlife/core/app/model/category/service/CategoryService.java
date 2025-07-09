@@ -78,6 +78,7 @@ public class CategoryService {
         categoryDTO.setUpdatedAt(category.getUpdatedAt());
         categoryDTO.setIsActive(category.getIsActive());
         categoryDTO.setId(category.getId());
+        categoryDTO.setParentId(category.getParentId());
         categoryDTO.setName(category.getName());
         categoryDTO.setType(category.getType());
         categoryDTO.setMember(category.getMember() == null ? null : category.getMember().getId());
@@ -88,6 +89,7 @@ public class CategoryService {
         category.setCreatedAt(categoryDTO.getCreatedAt());
         category.setUpdatedAt(categoryDTO.getUpdatedAt());
         category.setIsActive(categoryDTO.getIsActive());
+        category.setParentId(categoryDTO.getParentId());
         category.setName(categoryDTO.getName());
         category.setType(categoryDTO.getType());
         final Member member = categoryDTO.getMember() == null ? null : memberRepository.findById(categoryDTO.getMember())

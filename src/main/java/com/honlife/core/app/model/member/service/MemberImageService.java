@@ -18,7 +18,7 @@ public class MemberImageService {
     private final MemberRepository memberRepository;
 
     public MemberImageService(final MemberImageRepository memberImageRepository,
-            final MemberRepository memberRepository) {
+        final MemberRepository memberRepository) {
         this.memberImageRepository = memberImageRepository;
         this.memberRepository = memberRepository;
     }
@@ -26,14 +26,14 @@ public class MemberImageService {
     public List<MemberImageDTO> findAll() {
         final List<MemberImage> memberImages = memberImageRepository.findAll(Sort.by("id"));
         return memberImages.stream()
-                .map(memberImage -> mapToDTO(memberImage, new MemberImageDTO()))
-                .toList();
+            .map(memberImage -> mapToDTO(memberImage, new MemberImageDTO()))
+            .toList();
     }
 
     public MemberImageDTO get(final Long id) {
         return memberImageRepository.findById(id)
-                .map(memberImage -> mapToDTO(memberImage, new MemberImageDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(memberImage -> mapToDTO(memberImage, new MemberImageDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
     public Long create(final MemberImageDTO memberImageDTO) {
@@ -44,7 +44,7 @@ public class MemberImageService {
 
     public void update(final Long id, final MemberImageDTO memberImageDTO) {
         final MemberImage memberImage = memberImageRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(memberImageDTO, memberImage);
         memberImageRepository.save(memberImage);
     }
@@ -54,7 +54,7 @@ public class MemberImageService {
     }
 
     private MemberImageDTO mapToDTO(final MemberImage memberImage,
-            final MemberImageDTO memberImageDTO) {
+        final MemberImageDTO memberImageDTO) {
         memberImageDTO.setCreatedAt(memberImage.getCreatedAt());
         memberImageDTO.setUpdatedAt(memberImage.getUpdatedAt());
         memberImageDTO.setIsActive(memberImage.getIsActive());
@@ -63,11 +63,12 @@ public class MemberImageService {
         memberImageDTO.setType(memberImage.getType());
         memberImageDTO.setOriginName(memberImage.getOriginName());
         memberImageDTO.setRenamedName(memberImage.getRenamedName());
+        memberImageDTO.setMember(memberImage.getMember() == null ? null : memberImage.getMember().getId());
         return memberImageDTO;
     }
 
     private MemberImage mapToEntity(final MemberImageDTO memberImageDTO,
-            final MemberImage memberImage) {
+        final MemberImage memberImage) {
         memberImage.setCreatedAt(memberImageDTO.getCreatedAt());
         memberImage.setUpdatedAt(memberImageDTO.getUpdatedAt());
         memberImage.setIsActive(memberImageDTO.getIsActive());
@@ -75,20 +76,14 @@ public class MemberImageService {
         memberImage.setType(memberImageDTO.getType());
         memberImage.setOriginName(memberImageDTO.getOriginName());
         memberImage.setRenamedName(memberImageDTO.getRenamedName());
+        final Member member = memberImageDTO.getMember() == null ? null : memberRepository.findById(memberImageDTO.getMember())
+            .orElseThrow(() -> new NotFoundException("member not found"));
+        memberImage.setMember(member);
         return memberImage;
     }
 
-    public ReferencedWarning getReferencedWarning(final Long id) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final MemberImage memberImage = memberImageRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
-        final Member memberImageMember = memberRepository.findFirstByMemberImage(memberImage);
-        if (memberImageMember != null) {
-            referencedWarning.setKey("memberImage.member.memberImage.referenced");
-            referencedWarning.addParam(memberImageMember.getId());
-            return referencedWarning;
-        }
-        return null;
+    public boolean memberExists(final Long id) {
+        return memberImageRepository.existsByMemberId(id);
     }
 
 }

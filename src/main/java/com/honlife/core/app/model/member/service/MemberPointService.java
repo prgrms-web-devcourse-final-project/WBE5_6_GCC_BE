@@ -19,7 +19,7 @@ public class MemberPointService {
     private final MemberRepository memberRepository;
 
     public MemberPointService(final MemberPointRepository memberPointRepository,
-            final MemberRepository memberRepository) {
+        final MemberRepository memberRepository) {
         this.memberPointRepository = memberPointRepository;
         this.memberRepository = memberRepository;
     }
@@ -27,14 +27,14 @@ public class MemberPointService {
     public List<MemberPointDTO> findAll() {
         final List<MemberPoint> memberPoints = memberPointRepository.findAll(Sort.by("id"));
         return memberPoints.stream()
-                .map(memberPoint -> mapToDTO(memberPoint, new MemberPointDTO()))
-                .toList();
+            .map(memberPoint -> mapToDTO(memberPoint, new MemberPointDTO()))
+            .toList();
     }
 
     public MemberPointDTO get(final Long id) {
         return memberPointRepository.findById(id)
-                .map(memberPoint -> mapToDTO(memberPoint, new MemberPointDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(memberPoint -> mapToDTO(memberPoint, new MemberPointDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
     public Long create(final MemberPointDTO memberPointDTO) {
@@ -45,7 +45,7 @@ public class MemberPointService {
 
     public void update(final Long id, final MemberPointDTO memberPointDTO) {
         final MemberPoint memberPoint = memberPointRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(memberPointDTO, memberPoint);
         memberPointRepository.save(memberPoint);
     }
@@ -55,35 +55,30 @@ public class MemberPointService {
     }
 
     private MemberPointDTO mapToDTO(final MemberPoint memberPoint,
-            final MemberPointDTO memberPointDTO) {
+        final MemberPointDTO memberPointDTO) {
         memberPointDTO.setCreatedAt(memberPoint.getCreatedAt());
         memberPointDTO.setUpdatedAt(memberPoint.getUpdatedAt());
         memberPointDTO.setIsActive(memberPoint.getIsActive());
         memberPointDTO.setId(memberPoint.getId());
         memberPointDTO.setPoint(memberPoint.getPoint());
+        memberPointDTO.setMember(memberPoint.getMember() == null ? null : memberPoint.getMember().getId());
         return memberPointDTO;
     }
 
     private MemberPoint mapToEntity(final MemberPointDTO memberPointDTO,
-            final MemberPoint memberPoint) {
+        final MemberPoint memberPoint) {
         memberPoint.setCreatedAt(memberPointDTO.getCreatedAt());
         memberPoint.setUpdatedAt(memberPointDTO.getUpdatedAt());
         memberPoint.setIsActive(memberPointDTO.getIsActive());
         memberPoint.setPoint(memberPointDTO.getPoint());
+        final Member member = memberPointDTO.getMember() == null ? null : memberRepository.findById(memberPointDTO.getMember())
+            .orElseThrow(() -> new NotFoundException("member not found"));
+        memberPoint.setMember(member);
         return memberPoint;
     }
 
-    public ReferencedWarning getReferencedWarning(final Long id) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final MemberPoint memberPoint = memberPointRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
-        final Member memberPointMember = memberRepository.findFirstByMemberPoint(memberPoint);
-        if (memberPointMember != null) {
-            referencedWarning.setKey("memberPoint.member.memberPoint.referenced");
-            referencedWarning.addParam(memberPointMember.getId());
-            return referencedWarning;
-        }
-        return null;
+    public boolean memberExists(final Long id) {
+        return memberPointRepository.existsByMemberId(id);
     }
 
 }

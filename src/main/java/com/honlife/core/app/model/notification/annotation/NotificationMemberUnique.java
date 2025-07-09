@@ -1,9 +1,10 @@
-package com.honlife.core.app.model.member.annotation;
+package com.honlife.core.app.model.notification.annotation;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 
+import com.honlife.core.app.model.notification.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
@@ -15,8 +16,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Map;
 import org.springframework.web.servlet.HandlerMapping;
-import com.honlife.core.app.model.member.service.MemberService;
-
 
 /**
  * Validate that the id value isn't taken yet.
@@ -25,24 +24,25 @@ import com.honlife.core.app.model.member.service.MemberService;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(
-    validatedBy = MemberMemberPointUnique.MemberMemberPointUniqueValidator.class
+    validatedBy = NotificationMemberUnique.NotificationMemberUniqueValidator.class
 )
-public @interface MemberMemberPointUnique {
+public @interface NotificationMemberUnique {
 
-    String message() default "{Exists.member.memberPoint}";
+    String message() default "{Exists.notification.member}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    class MemberMemberPointUniqueValidator implements ConstraintValidator<MemberMemberPointUnique, Long> {
+    class NotificationMemberUniqueValidator implements
+        ConstraintValidator<NotificationMemberUnique, Long> {
 
-        private final MemberService memberService;
+        private final NotificationService notificationService;
         private final HttpServletRequest request;
 
-        public MemberMemberPointUniqueValidator(final MemberService memberService,
+        public NotificationMemberUniqueValidator(final NotificationService notificationService,
             final HttpServletRequest request) {
-            this.memberService = memberService;
+            this.notificationService = notificationService;
             this.request = request;
         }
 
@@ -55,11 +55,11 @@ public @interface MemberMemberPointUnique {
             @SuppressWarnings("unchecked") final Map<String, String> pathVariables =
                 ((Map<String, String>)request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
             final String currentId = pathVariables.get("id");
-            if (currentId != null && value.equals(memberService.get(Long.parseLong(currentId)).getMemberPoint())) {
+            if (currentId != null && value.equals(notificationService.get(Long.parseLong(currentId)).getMember())) {
                 // value hasn't changed
                 return true;
             }
-            return !memberService.memberPointExists(value);
+            return !notificationService.memberExists(value);
         }
 
     }
