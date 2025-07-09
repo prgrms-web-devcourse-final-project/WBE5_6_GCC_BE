@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.badge.payload;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@Schema(
+    name    = "BadgeRewardPayload",
+    example = """
+    {
+      "badgeId": 1,
+      "badgeKey": "clean_bronze",
+      "badgeName": "초보 청소부",
+      "pointAdded": 50,
+      "totalPoint": 150,
+      "receivedAt" : "2025-07-09T15:57:34.4688877"
+    }
+  """
+)
 public class BadgeRewardPayload {
 
     private Long badgeId;

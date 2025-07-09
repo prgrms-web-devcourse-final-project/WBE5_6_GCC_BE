@@ -40,45 +40,10 @@ public class BadgeController {
      * @return List<BadgePayload> 모든 업적에 대한 정보 + 사용자가 가지고 있는지에 대한 정보 DTO
      */
     @ApiResponse(
-        responseCode = "2000",
-        description = "OK",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON_VALUE,
-            examples = @ExampleObject(
-                name="업적 정보 예시",
-                value = """
-                    {
-                    "status": 2000,
-                    "message" : "OK",
-                    "data":{
-                        "achievements": [
-                            {
-                                "id": 1,
-                                "key": "clean_bronze",
-                                "name": "초보 청소부",
-                                "tier": "BRONZE",
-                                "how": "청소 루틴 5번 이상 성공",
-                                "requirement": 5,
-                                "info": "이제 청소 좀 한다고 말할 수 있겠네요!",
-                                "category": "청소",
-                                "isReceived": false
-                            },
-                            {
-                              "id": 2,
-                              "key": "cook_bronze",
-                              "name": "초보 요리사",
-                              "tier": "BRONZE",
-                              "how": "요리 루틴 5번 이상 성공",
-                              "requirement": 5,
-                              "info": "나름 계란 프라이는 할 수 있다구요!",
-                              "category": "요리",
-                              "isReceived": true
-                            }
-                        ]
-                    }
-                    }
-                    """
-            )
+        responseCode="200",
+        content=@Content(
+            mediaType="application/json",
+            schema=@Schema(implementation=BadgePayload.class)
         )
     )
     @Operation(summary = "모든 업적 조회", description = "현재 로그인한 사용자에 대한 모든 업적의 정보를 조회합니다.")
@@ -118,29 +83,10 @@ public class BadgeController {
      * @return BadgeRewardPayload 완료한 업적에 대한 정보 및 포인트 획득 내역
      */
     @ApiResponse(
-        responseCode = "2000",
-        description = "OK",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON_VALUE,
-            examples = @ExampleObject(
-                name="업적 정보 예시",
-                value = """
-                    {
-                        "status" : 2000,
-                        "message" : "OK",
-                        "data" : {
-                            "id" : 1,
-                            "key" : "clean_bronze",
-                            "name" : "초보 청소부",
-                            "tier" : "BRONZE",
-                            "how" : "청소루틴 5번 이상 성공",
-                            "point_added" : 50,
-                            "total_point" : 150,
-                            "receivedAt" : "2025-07-09T15:57:34.4688877"
-                        }
-                    }
-                    """
-            )
+        responseCode="200",
+        content=@Content(
+            mediaType="application/json",
+            schema=@Schema(implementation=BadgeRewardPayload.class)
         )
     )
     @Operation(summary = "업적 보상 수령", description = "key 값을 통해 특정 업적의 보상을 획득합니다.")
@@ -158,7 +104,7 @@ public class BadgeController {
                     .pointAdded(50L)
                     .totalPoint(150L)
                     .receivedAt(LocalDateTime.now())
-                .build();
+                    .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
         // 달성한 적 있는 업적
