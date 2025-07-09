@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.notification.dto.NotificationDTO;
 import com.honlife.core.app.model.notification.service.NotificationService;
-import com.honlife.core.infra.util.ReferencedException;
-import com.honlife.core.infra.util.ReferencedWarning;
 
 
 @RestController
@@ -59,10 +57,6 @@ public class NotificationController {
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
     public ResponseEntity<Void> deleteNotification(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = notificationService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
         notificationService.delete(id);
         return ResponseEntity.noContent().build();
     }
