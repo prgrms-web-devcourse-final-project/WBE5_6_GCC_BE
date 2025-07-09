@@ -43,14 +43,14 @@ public class MemberImageController {
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createMemberImage(
-            @RequestBody @Valid final MemberImageDTO memberImageDTO) {
+        @RequestBody @Valid final MemberImageDTO memberImageDTO) {
         final Long createdId = memberImageService.create(memberImageDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateMemberImage(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final MemberImageDTO memberImageDTO) {
+        @RequestBody @Valid final MemberImageDTO memberImageDTO) {
         memberImageService.update(id, memberImageDTO);
         return ResponseEntity.ok(id);
     }
@@ -58,10 +58,6 @@ public class MemberImageController {
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
     public ResponseEntity<Void> deleteMemberImage(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = memberImageService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
         memberImageService.delete(id);
         return ResponseEntity.noContent().build();
     }

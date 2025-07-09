@@ -31,10 +31,10 @@ public class RoutineDTO {
     private Boolean isImportant;
 
     @Size(max = 20)
-    private String repeateType;
+    private String repeatType;
 
     @Size(max = 100)
-    private String repeateValue;
+    private String repeatValue;
 
     @NotNull
     private Long member;

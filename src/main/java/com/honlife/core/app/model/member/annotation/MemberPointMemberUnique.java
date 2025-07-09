@@ -4,6 +4,7 @@ import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 
+import com.honlife.core.app.model.member.service.MemberPointService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
@@ -15,8 +16,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Map;
 import org.springframework.web.servlet.HandlerMapping;
-import com.honlife.core.app.model.member.service.MemberService;
-
 
 /**
  * Validate that the id value isn't taken yet.
@@ -25,24 +24,25 @@ import com.honlife.core.app.model.member.service.MemberService;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(
-    validatedBy = MemberMemberImageUnique.MemberMemberImageUniqueValidator.class
+    validatedBy = MemberPointMemberUnique.MemberPointMemberUniqueValidator.class
 )
-public @interface MemberMemberImageUnique {
+public @interface MemberPointMemberUnique {
 
-    String message() default "{Exists.member.memberImage}";
+    String message() default "{Exists.memberPoint.member}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    class MemberMemberImageUniqueValidator implements ConstraintValidator<MemberMemberImageUnique, Long> {
+    class MemberPointMemberUniqueValidator implements
+        ConstraintValidator<MemberPointMemberUnique, Long> {
 
-        private final MemberService memberService;
+        private final MemberPointService memberPointService;
         private final HttpServletRequest request;
 
-        public MemberMemberImageUniqueValidator(final MemberService memberService,
+        public MemberPointMemberUniqueValidator(final MemberPointService memberPointService,
             final HttpServletRequest request) {
-            this.memberService = memberService;
+            this.memberPointService = memberPointService;
             this.request = request;
         }
 
@@ -55,11 +55,11 @@ public @interface MemberMemberImageUnique {
             @SuppressWarnings("unchecked") final Map<String, String> pathVariables =
                 ((Map<String, String>)request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
             final String currentId = pathVariables.get("id");
-            if (currentId != null && value.equals(memberService.get(Long.parseLong(currentId)).getMemberImage())) {
+            if (currentId != null && value.equals(memberPointService.get(Long.parseLong(currentId)).getMember())) {
                 // value hasn't changed
                 return true;
             }
-            return !memberService.memberImageExists(value);
+            return !memberPointService.memberExists(value);
         }
 
     }

@@ -1,8 +1,11 @@
 package com.honlife.core.app.controller.auth;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,15 +20,24 @@ import com.honlife.core.app.model.auth.dto.TokenDto;
 import com.honlife.core.infra.auth.jwt.TokenCookieFactory;
 import com.honlife.core.infra.response.CommonApiResponse;
 
+@Tag(name="인증", description = "로그인 및 인증 관련 API입니다.")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(value = "/api/v1/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
     
     private final AuthService authService;
-    
-    @PostMapping("/login")
+
+
+    /**
+     * 로그인 처리 매서드
+     * @param loginRequest
+     * @param response
+     * @return
+     */
+    @PostMapping("/signin")
+    @Operation(summary = "로그인", description = "로그인 요청을 처리합니다.")
     public ResponseEntity<CommonApiResponse<TokenResponse>> login(
         @RequestBody LoginRequest loginRequest,
         HttpServletResponse response
