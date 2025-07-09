@@ -37,40 +37,40 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final MemberImageRepository memberImageRepository;
-    private final NotificationRepository notificationRepository;
-    private final MemberPointRepository memberPointRepository;
     private final RoutineRepository routineRepository;
     private final CategoryRepository categoryRepository;
     private final MemberItemRepository memberItemRepository;
     private final MemberQuestRepository memberQuestRepository;
     private final PointLogRepository pointLogRepository;
+    private final NotificationRepository notificationRepository;
     private final MemberBadgeRepository memberBadgeRepository;
     private final LoginLogRepository loginLogRepository;
     private final InterestCategoryRepository interestCategoryRepository;
+    private final MemberPointRepository memberPointRepository;
 
     public MemberService(final MemberRepository memberRepository,
         final MemberImageRepository memberImageRepository,
-        final NotificationRepository notificationRepository,
-        final MemberPointRepository memberPointRepository,
         final RoutineRepository routineRepository, final CategoryRepository categoryRepository,
         final MemberItemRepository memberItemRepository,
         final MemberQuestRepository memberQuestRepository,
         final PointLogRepository pointLogRepository,
+        final NotificationRepository notificationRepository,
         final MemberBadgeRepository memberBadgeRepository,
         final LoginLogRepository loginLogRepository,
-        final InterestCategoryRepository interestCategoryRepository) {
+        final InterestCategoryRepository interestCategoryRepository,
+        final MemberPointRepository memberPointRepository) {
         this.memberRepository = memberRepository;
         this.memberImageRepository = memberImageRepository;
-        this.notificationRepository = notificationRepository;
-        this.memberPointRepository = memberPointRepository;
         this.routineRepository = routineRepository;
         this.categoryRepository = categoryRepository;
         this.memberItemRepository = memberItemRepository;
         this.memberQuestRepository = memberQuestRepository;
         this.pointLogRepository = pointLogRepository;
+        this.notificationRepository = notificationRepository;
         this.memberBadgeRepository = memberBadgeRepository;
         this.loginLogRepository = loginLogRepository;
         this.interestCategoryRepository = interestCategoryRepository;
+        this.memberPointRepository = memberPointRepository;
     }
 
     public List<MemberDTO> findAll() {
@@ -117,9 +117,6 @@ public class MemberService {
         memberDTO.setRegion1Dept(member.getRegion1Dept());
         memberDTO.setRegion2Dept(member.getRegion2Dept());
         memberDTO.setRegion3Dept(member.getRegion3Dept());
-        memberDTO.setMemberImage(member.getMemberImage() == null ? null : member.getMemberImage().getId());
-        memberDTO.setNotification(member.getNotification() == null ? null : member.getNotification().getId());
-        memberDTO.setMemberPoint(member.getMemberPoint() == null ? null : member.getMemberPoint().getId());
         return memberDTO;
     }
 
@@ -136,15 +133,6 @@ public class MemberService {
         member.setRegion1Dept(memberDTO.getRegion1Dept());
         member.setRegion2Dept(memberDTO.getRegion2Dept());
         member.setRegion3Dept(memberDTO.getRegion3Dept());
-        final MemberImage memberImage = memberDTO.getMemberImage() == null ? null : memberImageRepository.findById(memberDTO.getMemberImage())
-            .orElseThrow(() -> new NotFoundException("memberImage not found"));
-        member.setMemberImage(memberImage);
-        final Notification notification = memberDTO.getNotification() == null ? null : notificationRepository.findById(memberDTO.getNotification())
-            .orElseThrow(() -> new NotFoundException("notification not found"));
-        member.setNotification(notification);
-        final MemberPoint memberPoint = memberDTO.getMemberPoint() == null ? null : memberPointRepository.findById(memberDTO.getMemberPoint())
-            .orElseThrow(() -> new NotFoundException("memberPoint not found"));
-        member.setMemberPoint(memberPoint);
         return member;
     }
 
@@ -156,22 +144,16 @@ public class MemberService {
         return memberRepository.existsByNicknameIgnoreCase(nickname);
     }
 
-    public boolean memberImageExists(final Long id) {
-        return memberRepository.existsByMemberImageId(id);
-    }
-
-    public boolean notificationExists(final Long id) {
-        return memberRepository.existsByNotificationId(id);
-    }
-
-    public boolean memberPointExists(final Long id) {
-        return memberRepository.existsByMemberPointId(id);
-    }
-
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Member member = memberRepository.findById(id)
             .orElseThrow(NotFoundException::new);
+        final MemberImage memberMemberImage = memberImageRepository.findFirstByMember(member);
+        if (memberMemberImage != null) {
+            referencedWarning.setKey("member.memberImage.member.referenced");
+            referencedWarning.addParam(memberMemberImage.getId());
+            return referencedWarning;
+        }
         final Routine memberRoutine = routineRepository.findFirstByMember(member);
         if (memberRoutine != null) {
             referencedWarning.setKey("member.routine.member.referenced");
@@ -202,6 +184,12 @@ public class MemberService {
             referencedWarning.addParam(memberPointLog.getId());
             return referencedWarning;
         }
+        final Notification memberNotification = notificationRepository.findFirstByMember(member);
+        if (memberNotification != null) {
+            referencedWarning.setKey("member.notification.member.referenced");
+            referencedWarning.addParam(memberNotification.getId());
+            return referencedWarning;
+        }
         final MemberBadge memberMemberBadge = memberBadgeRepository.findFirstByMember(member);
         if (memberMemberBadge != null) {
             referencedWarning.setKey("member.memberBadge.member.referenced");
@@ -218,6 +206,12 @@ public class MemberService {
         if (memberInterestCategory != null) {
             referencedWarning.setKey("member.interestCategory.member.referenced");
             referencedWarning.addParam(memberInterestCategory.getId());
+            return referencedWarning;
+        }
+        final MemberPoint memberMemberPoint = memberPointRepository.findFirstByMember(member);
+        if (memberMemberPoint != null) {
+            referencedWarning.setKey("member.memberPoint.member.referenced");
+            referencedWarning.addParam(memberMemberPoint.getId());
             return referencedWarning;
         }
         return null;

@@ -8,10 +8,7 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import com.honlife.core.app.model.member.annotation.MemberEmailUnique;
-import com.honlife.core.app.model.member.annotation.MemberMemberImageUnique;
-import com.honlife.core.app.model.member.annotation.MemberMemberPointUnique;
 import com.honlife.core.app.model.member.annotation.MemberNicknameUnique;
-import com.honlife.core.app.model.member.annotation.MemberNotificationUnique;
 import com.honlife.core.app.model.member.code.ResidenceExperience;
 
 
@@ -59,17 +56,5 @@ public class MemberDTO {
 
     @Size(max = 255)
     private String region3Dept;
-
-    @NotNull
-    @MemberMemberImageUnique
-    private Long memberImage;
-
-    @NotNull
-    @MemberNotificationUnique
-    private Long notification;
-
-    @NotNull
-    @MemberMemberPointUnique
-    private Long memberPoint;
 
 }

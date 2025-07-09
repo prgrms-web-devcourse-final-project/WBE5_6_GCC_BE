@@ -68,19 +68,4 @@ public class Member extends BaseEntity {
     @Column
     private String region3Dept;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_image_id", nullable = false, unique = true)
-    private MemberImage memberImage;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notification_id", nullable = false, unique = true)
-    private Notification notification;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false, unique = true)
-    private MemberPoint member;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_point_id", nullable = false, unique = true)
-    private MemberPoint memberPoint;
 }
