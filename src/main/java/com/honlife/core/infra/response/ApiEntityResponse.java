@@ -1,4 +1,4 @@
-package spring.grepp.honlife.infra.Response;
+package com.honlife.core.infra.response;
 
 public class ApiEntityResponse {
   private int status;
