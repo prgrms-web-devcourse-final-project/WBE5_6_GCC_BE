@@ -58,14 +58,14 @@ public class CategoryController {
                 .member(null)
                 .name("청소")
                 .type(CategoryType.MAJOR)
-                .parentId(null)
+                .parentName(null)
                 .build());
             response.add(CategoryPayload.builder()
                 .id(2L)
                 .member(null)
                 .name("요리")
                 .type(CategoryType.MAJOR)
-                .parentId(null)
+                .parentName(null)
                 .build());
             // 사용자 정의 카테고리
             response.add(CategoryPayload.builder()
@@ -73,7 +73,7 @@ public class CategoryController {
                 .member(1L)
                 .name("화장실 청소")
                 .type(CategoryType.SUB)
-                .parentId(1L)
+                .parentName("청소")
                 .build());
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
@@ -87,7 +87,7 @@ public class CategoryController {
                     .member(null)
                     .name("청소")
                     .type(CategoryType.MAJOR)
-                    .parentId(null)
+                    .parentName(null)
                     .build());
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
@@ -98,7 +98,7 @@ public class CategoryController {
                     .member(null)
                     .name("요리")
                     .type(CategoryType.MAJOR)
-                    .parentId(null)
+                    .parentName(null)
                     .build());
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
@@ -109,7 +109,7 @@ public class CategoryController {
                     .member(null)
                     .name("화장실 청소")
                     .type(CategoryType.SUB)
-                    .parentId(1L)
+                    .parentName("청소")
                     .build());
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
@@ -126,7 +126,7 @@ public class CategoryController {
      * @param categorySavePayload 생성할 카테고리의 정보
      * @return
      */
-    @Operation(summary = "카테고리 생성", description = "카테고리를 생성합니다. <br>이름과 type은 무조건 작성하여야 합니다. 만약 type이 SUB일 시, 상위 카테고리에 대한 정보도 필수로 작성하여야 합니다. <br>*실제 DB에 반영되지 않음*")
+    @Operation(summary = "카테고리 생성", description = "카테고리를 생성합니다. <br>이름과 type은 무조건 작성하여야 합니다. 만약 type이 SUB일 시, 대분류 카테고리에 대한 정보도 필수로 작성하여야 합니다. <br>*실제 DB에 반영되지 않음*")
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createCategory(@RequestBody @Valid final CategorySavePayload categorySavePayload,
         BindingResult bindingResult) {
@@ -135,7 +135,7 @@ public class CategoryController {
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
-        if(categorySavePayload.getType().equals(CategoryType.SUB) && categorySavePayload.getParentId() == null){
+        if(categorySavePayload.getType().equals(CategoryType.SUB) && categorySavePayload.getParentName() == null){
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));

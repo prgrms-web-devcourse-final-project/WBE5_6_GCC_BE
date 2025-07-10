@@ -17,11 +17,11 @@ public class CategorySavePayload {
     @NotBlank
     private String name;
 
-    @Schema(description = "상위 카테고리인지 하위 카테고리인지 표현하는 type", example = "SUB")
+    @Schema(description = "대분류 카테고리인지 소분류 카테고리인지 표현하는 type", example = "SUB")
     @NotNull
     private CategoryType type;
 
-    @Schema(description = "상위 카테고리 정보, 만약 type이 MAJOR이라면 null", example = "1")
-    private Long parentId;
+    @Schema(description = "대분류 카테고리 정보, 만약 type이 MAJOR이라면 null", example = "청소")
+    private String parentName;
 
 }
