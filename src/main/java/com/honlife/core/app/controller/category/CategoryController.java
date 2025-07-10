@@ -113,6 +113,59 @@ public class CategoryController {
         }
     }
 
+
+    /**
+     * 카테고리 특정 조회 API
+     * @param id 카테고리 아이디.
+     * @return CategoryPayload
+     */
+    @Operation(summary = "특정 카테고리 조회", description = "카테고리 id를 통해 카테고리에 대한 정보를 조회합니다.")
+    @GetMapping("{id}")
+    public ResponseEntity<CommonApiResponse<CategoryPayload>> getCategory(
+        @Schema(name="id", description="카테고리 아이디를 적어주세요", example = "1")
+        @PathVariable Long id
+    ) {
+        if(id==1L){
+            CategoryPayload response = CategoryPayload.builder()
+                .id(1L)
+                .member(null)
+                .name("청소")
+                .type(CategoryType.MAJOR)
+                .parentId(null)
+                .parentName(null)
+                .build();
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }
+        if(id==2L){
+            CategoryPayload response = CategoryPayload.builder()
+                .id(2L)
+                .member(null)
+                .name("요리")
+                .type(CategoryType.MAJOR)
+                .parentId(null)
+                .parentName(null)
+                .build();
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }
+        if(id==3L){
+            CategoryPayload response = CategoryPayload.builder()
+                .id(3L)
+                .member(1L)
+                .name("화장실 청소")
+                .type(CategoryType.SUB)
+                .parentId(1L)
+                .parentName("청소")
+                .build();
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }
+        // 해당하는 카테고리가 없을 경우
+        else{
+            return ResponseEntity.status(ResponseCode.NOT_EXIST_CATEGORY.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_CATEGORY));
+        }
+
+    }
+
     /**
      * 카테고리 생성 API
      * @param categorySavePayload 생성할 카테고리의 정보
