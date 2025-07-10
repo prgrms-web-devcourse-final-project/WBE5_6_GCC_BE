@@ -12,6 +12,7 @@ public enum ResponseCode {
     NOT_EXIST_PRE_AUTH_CREDENTIAL("4013", HttpStatus.OK, "사전 인증 정보가 요청에서 발견되지 않았습니다."),
     NOT_EXIST_MEMBER("4040", HttpStatus.NOT_FOUND, "Member not exist."),
     NOT_EXIST_BADGE("4041", HttpStatus.NOT_FOUND, "badge not exist."),
+    NOT_EXIST_ROUTINE("4042", HttpStatus.NOT_FOUND, "routine not exist."),
     ALREADY_CLAIMED_BADGE("4090", HttpStatus.CONFLICT, "You have already claimed this badge."),
     INTERNAL_SERVER_ERROR("5000", HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
     SECURITY_INCIDENT("6000", HttpStatus.OK, "비정상적인 로그인 시도가 감지되었습니다.");
