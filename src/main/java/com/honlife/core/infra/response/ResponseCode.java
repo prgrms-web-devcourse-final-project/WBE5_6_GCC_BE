@@ -3,12 +3,12 @@ package com.honlife.core.infra.response;
 import org.springframework.http.HttpStatus;
 
 public enum ResponseCode {
-    OK("0000", HttpStatus.OK, "정상적으로 완료되었습니다."),
+    OK("0000", HttpStatus.OK, "OK"),
     BAD_REQUEST("4000", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     INVALID_FILENAME("4001", HttpStatus.BAD_REQUEST, "사용 할 수 없는 파일 이름입니다."),
-    UNAUTHORIZED("4010", HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
+    UNAUTHORIZED("4010", HttpStatus.UNAUTHORIZED, "Authentication required"),
     BAD_CREDENTIAL("4011", HttpStatus.UNAUTHORIZED, "아이디나 비밀번호가 틀렸습니다."),
-    NOT_EXIST_MEMBER("4040", HttpStatus.NOT_FOUND, "member not exist."),
+    NOT_EXIST_MEMBER("4040", HttpStatus.NOT_FOUND, "Member not exist."),
     NOT_EXIST_BADGE("4041", HttpStatus.NOT_FOUND, "badge not exist."),
     NOT_EXIST_PRE_AUTH_CREDENTIAL("4012", HttpStatus.OK, "사전 인증 정보가 요청에서 발견되지 않았습니다."),
     ALREADY_CLAIMED_BADGE("4090", HttpStatus.CONFLICT, "You have already claimed this badge."),
