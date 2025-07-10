@@ -78,6 +78,14 @@ public class AuthController {
     }
 
     /**
+     * 로그아웃에 대한 Swagger 문서 작성을 위해 추가하였습니다. 개발단계에서 삭제하세요.
+     */
+    @Operation(summary = "로그아웃", description = "쿠키 기반 JWT 로그아웃을 수행합니다. 실제 처리는 필터에서 이루어집니다.")
+    @ApiResponse(responseCode = "302", description = "로그아웃 후 리디렉션됩니다.")
+    @PostMapping("/logout")
+    public void logout() {}
+
+    /**
      * 이메일 인증 처리 API
      * @param verifyCode 이메일로 전송된 인증 코드입니다.
      * @return
