@@ -3,9 +3,12 @@ package com.honlife.core.app.controller.item;
 import com.honlife.core.app.controller.item.payload.BuyItemPayload;
 import com.honlife.core.app.controller.item.payload.ItemPayload;
 import com.honlife.core.app.model.item.domain.Item;
+import com.honlife.core.app.model.item.dto.ItemDTO;
 import com.honlife.core.app.model.item.service.ItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
+import com.honlife.core.infra.util.ReferencedException;
+import com.honlife.core.infra.util.ReferencedWarning;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +18,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -72,21 +77,41 @@ public class ItemController {
      */
     @Operation(summary = "아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
     @PostMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<BuyItemPayload>> buyItem(
+    public ResponseEntity<CommonApiResponse<BuyItemPayload>> getItem(
             @Parameter(name = "id", description = "구매할 아이템의 ID", example = "1")
             @PathVariable("id") Long itemId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String memberId = userDetails.getUsername();
         if(memberId.equals("user01@test.com")) {
-            BuyItemPayload buyItem= BuyItemPayload.builder()
-                    .memberId(memberId)
-                    .itemId(itemId)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            return ResponseEntity.ok(CommonApiResponse.success(buyItem));
+            return ResponseEntity.ok(CommonApiResponse.noContent());
         }
         return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+    }
+
+    @PostMapping
+    @ApiResponse(responseCode = "201")
+    public ResponseEntity<Long> createItem(@RequestBody @Valid final ItemDTO itemDTO) {
+        final Long createdId = itemService.create(itemDTO);
+        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Long> updateItem(@PathVariable(name = "id") final Long id,
+                                           @RequestBody @Valid final ItemDTO itemDTO) {
+        itemService.update(id, itemDTO);
+        return ResponseEntity.ok(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @ApiResponse(responseCode = "204")
+    public ResponseEntity<Void> deleteItem(@PathVariable(name = "id") final Long id) {
+        final ReferencedWarning referencedWarning = itemService.getReferencedWarning(id);
+        if (referencedWarning != null) {
+            throw new ReferencedException(referencedWarning);
+        }
+        itemService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
