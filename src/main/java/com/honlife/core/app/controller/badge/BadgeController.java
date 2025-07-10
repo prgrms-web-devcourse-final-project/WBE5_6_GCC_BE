@@ -5,10 +5,7 @@ import com.honlife.core.app.model.badge.service.BadgeService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
@@ -39,13 +36,6 @@ public class BadgeController {
      * 모든 업적 조회 API
      * @return List<BadgePayload> 모든 업적에 대한 정보 + 사용자가 가지고 있는지에 대한 정보 DTO
      */
-    @ApiResponse(
-        responseCode="200",
-        content=@Content(
-            mediaType="application/json",
-            schema=@Schema(implementation=BadgePayload.class)
-        )
-    )
     @Operation(summary = "모든 업적 조회", description = "현재 로그인한 사용자에 대한 모든 업적의 정보를 조회합니다.")
     @GetMapping()
     public ResponseEntity<CommonApiResponse<List<BadgePayload>>> getAllBadges() {
@@ -82,13 +72,6 @@ public class BadgeController {
      * @param key 업적 key 값
      * @return BadgeRewardPayload 완료한 업적에 대한 정보 및 포인트 획득 내역
      */
-    @ApiResponse(
-        responseCode="200",
-        content=@Content(
-            mediaType="application/json",
-            schema=@Schema(implementation=BadgeRewardPayload.class)
-        )
-    )
     @Operation(summary = "업적 보상 수령", description = "key 값을 통해 특정 업적의 보상을 획득합니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<BadgeRewardPayload>> claimBadgeReward(
