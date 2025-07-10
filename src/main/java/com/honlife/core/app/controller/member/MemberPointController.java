@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,8 @@ public class MemberPointController {
      */
     @GetMapping
     @Operation(summary = "로그인된 회원의 보유 포인트 조회", description = "로그인된 사용자의 보유 포인트를 조회합니다.")
-    public ResponseEntity<CommonApiResponse<MemberPointResponse>> getMemberPoint() {
+    public ResponseEntity<CommonApiResponse<MemberPointResponse>> getMemberPoint(
+        @AuthenticationPrincipal UserDetails userDetails) {
         // 유저 데이터를 가져와 nickname과 포인트 조회
         MemberPointResponse memberPointPayload
             = MemberPointResponse.builder()
