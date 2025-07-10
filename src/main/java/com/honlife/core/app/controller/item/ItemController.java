@@ -83,11 +83,19 @@ public class ItemController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String memberId = userDetails.getUsername();
-        if(memberId.equals("user01@test.com")) {
-            return ResponseEntity.ok(CommonApiResponse.noContent());
+        if(!memberId.equals("user01@test.com")) {
+            return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
         }
-        return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+        if(itemId != 1L && itemId != 2L) {
+            return ResponseEntity.status(ResponseCode.NOT_EXIST_ITEM.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_ITEM));
+        }
+        if(memberId.equals("user01@test.com") && itemId == 2L ){
+            return ResponseEntity.status(ResponseCode.ALREADY_PURCHASED_ITEM.status())
+                    .body(CommonApiResponse.error(ResponseCode.ALREADY_PURCHASED_ITEM));
+        }
+            return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
     @PostMapping
