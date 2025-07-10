@@ -14,22 +14,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Schema(
-    name    = "BadgePayload",
-    example = """
-    {
-      "badgeId": 1,
-      "badgeKey": "clean_bronze",
-      "badgeName": "초보 청소부",
-      "tier": "BRONZE",
-      "how": "청소 루틴 5번 이상 성공",
-      "requirement": 5,
-      "info": "이제 청소 좀 한다고 말할 수 있겠네요!",
-      "category": "청소",
-      "isReceived": false
-    }
-  """
-)
 public class BadgePayload {
 
     private Long badgeId;
