@@ -40,16 +40,16 @@ public class CategoryController {
 
     /**
      * 카테고리 조회 API
-     * @param name 카테고리 이름이 넘어오지 않으면 소분류 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
+     * @param majorName 카테고리 이름이 넘어오지 않으면 소분류 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
      * @return List<CategoryPayload>
      */
-    @Operation(summary = "카테고리 조회", description = "name 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, name 값이 있다면 해당 카테고리의 소분류 정보를 조회합니다.")
+    @Operation(summary = "카테고리 조회", description = "major_name 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, major_name 값이 있다면 해당 카테고리의 소분류 정보를 조회합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<CategoryPayload>>> getCategories(
-        @Schema(name="name", description="대분류 카테고리 이름을 적어주세요", example = "청소")
-        @RequestParam(required = false) String name
+        @Schema(name="major_name", description="대분류 카테고리 이름을 적어주세요", example = "청소")
+        @RequestParam(required = false) String majorName
     ) {
-        if(name==null){
+        if(majorName ==null){
             // name이 넘어오지 않는다면 Authentication에서 유저 아이디 가져와서 해당하는 카테고리 찾아 리턴
             List<CategoryPayload> response = new ArrayList<>();
             // 기본 제공 카테고리
@@ -82,7 +82,7 @@ public class CategoryController {
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
         // name으로 넘어온 게 있다면 유저의 카테고리 중에서 해당하는 이름 리턴
-        switch (name) {
+        switch (majorName) {
             // 소분류 카테고리가 있는 경우
             case "청소" -> {
                 List<CategoryPayload> response = new ArrayList<>();
