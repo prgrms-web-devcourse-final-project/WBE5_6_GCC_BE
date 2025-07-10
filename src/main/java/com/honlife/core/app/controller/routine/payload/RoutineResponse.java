@@ -5,16 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import com.honlife.core.app.model.routine.code.RepeatType;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Builder
 @Schema(description = "특정 루틴 조회 응답")
-public class RoutinePayload {
+public class RoutineResponse {
 
     @Schema(description = "루틴 ID", example = "1")
-    private Long id;
+    private Long routineId;
 
     @Schema(description = "카테고리 ID", example = "1")
     private Long categoryId;
@@ -39,10 +38,4 @@ public class RoutinePayload {
 
     @Schema(description = "반복 값", example = "1,3,5")
     private String repeatValue;
-
-    @Schema(description = "생성일시", example = "2025-01-15T09:00:00")
-    private LocalDateTime createdAt;
-
-    @Schema(description = "활성화 여부", example = "true")
-    private Boolean isActive;
 }

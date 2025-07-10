@@ -1,8 +1,8 @@
 package com.honlife.core.app.controller.routine;
 
-import com.honlife.core.app.controller.routine.payload.RoutinePayload;
-import com.honlife.core.app.controller.routine.payload.RoutineSavePayload;
-import com.honlife.core.app.controller.routine.payload.UserRoutinesPayload;
+import com.honlife.core.app.controller.routine.payload.RoutineResponse;
+import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
+import com.honlife.core.app.controller.routine.payload.UserRoutinesResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -53,7 +52,7 @@ public class RoutineController {
      */
     @Operation(summary = "사용자 루틴 조회", description = "특정 날짜의 사용자 루틴 목록을 조회합니다. <br>date를 넣지 않으면 오늘 날짜 기준으로 조회됩니다.")
     @GetMapping
-    public ResponseEntity<CommonApiResponse<UserRoutinesPayload>> getUserRoutines(
+    public ResponseEntity<CommonApiResponse<UserRoutinesResponse>> getUserRoutines(
         @Schema(name = "date", description = "조회할 날짜를 적어주세요", example = "2025-01-15")
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @AuthenticationPrincipal UserDetails userDetails
@@ -64,13 +63,13 @@ public class RoutineController {
         }
 
         if (userId.equals("user01@test.com")) {
-            UserRoutinesPayload response = new UserRoutinesPayload();
+            UserRoutinesResponse response = new UserRoutinesResponse();
             response.setDate(date);
 
-            List<UserRoutinesPayload.RoutineItem> routines = new ArrayList<>();
-            routines.add(UserRoutinesPayload.RoutineItem.builder()
+            List<UserRoutinesResponse.RoutineItem> routines = new ArrayList<>();
+            routines.add(UserRoutinesResponse.RoutineItem.builder()
                 .scheduleId(1L)
-                .id(1L)
+                .routineId(1L)
                 .majorCategory("청소")
                 .subCategory("화장실 청소")
                 .name("변기 청소하기")
@@ -78,9 +77,9 @@ public class RoutineController {
                 .isDone(true)
                 .isImportant(false)
                 .build());
-            routines.add(UserRoutinesPayload.RoutineItem.builder()
+            routines.add(UserRoutinesResponse.RoutineItem.builder()
                 .scheduleId(2L)
-                .id(2L)
+                .routineId(2L)
                 .majorCategory("건강")
                 .subCategory(null)
                 .name("아침 운동하기")
@@ -105,15 +104,15 @@ public class RoutineController {
      */
     @Operation(summary = "특정 루틴 조회", description = "특정 루틴의 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<RoutinePayload>> getRoutine(
+    public ResponseEntity<CommonApiResponse<RoutineResponse>> getRoutine(
         @PathVariable(name = "id")
         @Schema(description = "루틴 ID", example = "1") final Long id,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
         if (userId.equals("user01@test.com") && id == 1L) {
-            RoutinePayload response = RoutinePayload.builder()
-                .id(1L)
+            RoutineResponse response = RoutineResponse.builder()
+                .routineId(1L)
                 .categoryId(1L)
                 .majorCategory("청소")
                 .subCategory("화장실 청소")
@@ -122,8 +121,6 @@ public class RoutineController {
                 .isImportant(false)
                 .repeatType(RepeatType.WEEKLY)
                 .repeatValue("1,3,5")
-                .createdAt(LocalDateTime.now())
-                .isActive(true)
                 .build();
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
@@ -136,7 +133,7 @@ public class RoutineController {
 
     /**
      * 루틴 등록 API
-     * @param routineSavePayload 등록할 루틴의 정보
+     * @param routineSaveRequest 등록할 루틴의 정보
      * @param userDetails 로그인된 사용자 정보
      * @param bindingResult validation
      * @return
@@ -148,9 +145,10 @@ public class RoutineController {
         "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
         "• CUSTOM: 사용자 정의 반복 패턴<br>" +
         "• NONE: 반복 없음, 일회성 루틴<br>" +
-        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")    @PostMapping
+        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
+    @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createRoutine(
-        @RequestBody @Valid final RoutineSavePayload routineSavePayload,
+        @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
         @AuthenticationPrincipal UserDetails userDetails,
         BindingResult bindingResult
     ) {
@@ -174,7 +172,7 @@ public class RoutineController {
     /**
      * 루틴 수정 API
      * @param id 수정할 루틴 ID
-     * @param routineSavePayload 수정할 루틴의 정보
+     * @param routineSaveRequest 수정할 루틴의 정보
      * @param userDetails 로그인된 사용자 정보
      * @param bindingResult validation
      * @return
@@ -186,11 +184,12 @@ public class RoutineController {
         "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
         "• CUSTOM: 사용자 정의 반복 패턴<br>" +
         "• NONE: 반복 없음, 일회성 루틴<br>" +
-        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")    @PatchMapping("/{id}")
+        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateRoutine(
         @PathVariable(name = "id")
         @Schema(description = "루틴 ID", example = "1") final Long id,
-        @RequestBody @Valid final RoutineSavePayload routineSavePayload,
+        @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
         @AuthenticationPrincipal UserDetails userDetails,
         BindingResult bindingResult
     ) {

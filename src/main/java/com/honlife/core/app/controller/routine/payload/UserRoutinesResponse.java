@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Schema(description = "사용자 루틴 조회 응답")
-public class UserRoutinesPayload {
+public class UserRoutinesResponse {
 
     @Schema(description = "조회 날짜", example = "2025-01-15")
     private LocalDate date;
@@ -28,7 +28,7 @@ public class UserRoutinesPayload {
         private Long scheduleId;
 
         @Schema(description = "루틴 ID", example = "1")
-        private Long id;
+        private Long routineId;
 
         @Schema(description = "대분류 카테고리", example = "청소")
         private String majorCategory;
