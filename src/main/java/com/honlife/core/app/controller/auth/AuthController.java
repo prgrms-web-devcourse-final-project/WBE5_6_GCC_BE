@@ -70,6 +70,7 @@ public class AuthController {
     public ResponseEntity<CommonApiResponse<Void>> signup(
         @RequestBody SignupRequest signupRequest
     ) {
+        //TODO: API 요청시 이메일로 인증번호 보내는 로직 추가 필요
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
