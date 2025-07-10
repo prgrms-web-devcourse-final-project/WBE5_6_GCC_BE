@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.member;
 
+import com.honlife.core.app.controller.badge.payload.BadgePayload;
 import com.honlife.core.app.model.item.dto.ItemCreateRequestDTO;
 import com.honlife.core.app.model.item.dto.ItemUpdateRequestDTO;
 import com.honlife.core.app.model.loginLog.dto.LoginLogResponseDTO;
@@ -47,42 +48,21 @@ public class AdminController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = WeeklyQuestRequestDTO.class),
-              examples = @ExampleObject(
-                  name = "주간 퀘스트 등록 요청 예시",
-                  value = """
-                    {
-                      "key": "clean_weekly_3",
-                      "name": "청소 루틴 3번 완료하기",
-                      "info": "정해진 청소 루틴을 일주일에 3회 완료하세요."
-                    }
-                """
-              )
+              schema = @Schema(implementation = WeeklyQuestRequestDTO.class)
           )
-      ),
-      responses = {
-          @ApiResponse(
-              responseCode = "2000",
-              description = "주간 퀘스트 등록 성공",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "주간 퀘스트 등록 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "주간 퀘스트 등록 성공"
-                        }
-                    """
-                  )
-              )
-          )
-      }
+      )
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @PostMapping("/quest/weekly")
   public ResponseEntity<?> weeklyRegister(@RequestBody WeeklyQuestRequestDTO request, Authentication authentication) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "주간 퀘스트 등록 성공"));
+    return ResponseEntity.ok(CommonApiResponse.success("주간 퀘스트 등록 성공"));
   }
 
 
@@ -94,44 +74,21 @@ public class AdminController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = EventQuestRequestDTO.class),
-              examples = @ExampleObject(
-                  name = "이벤트 퀘스트 등록 요청 예시",
-                  value = """
-                    {
-                      "key": "event_001",
-                      "name": "이벤트 푸만! 자기 전 점심 3분",
-                      "info": "잠들기 전 점심을 1일씩 3분 이상 진행",
-                      "startDate": "2025-07-01T00:00:00+09:00",
-                      "endDate": "2025-07-12T23:59:59+09:00"
-                    }
-                """
-              )
+              schema = @Schema(implementation = EventQuestRequestDTO.class)
           )
-      ),
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "이벤트 퀘스트 등록 성공",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "이벤트 퀘스트 등록 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "이벤트 퀘스트 등록 성공"
-                        }
-                    """
-                  )
-              )
-          )
-      }
+      )
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @PostMapping("/quest/event")
   public ResponseEntity<?> eventRegister(@RequestBody EventQuestRequestDTO request, Authentication authentication) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "이벤트 퀘스트 등록 성공"));
+    return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 등록 성공"));
   }
 
 
@@ -144,37 +101,16 @@ public class AdminController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = WeeklyQuestUpdateDTO.class),
-              examples = @ExampleObject(
-                  name = "주간 퀘스트 수정 요청 예시",
-                  value = """
-                    {
-                      "id": 1,
-                      "name": "청소 루틴 3번 완료하기 (수정)",
-                      "info": "수정된 퀘스트 설명입니다."
-                    }
-                """
-              )
+              schema = @Schema(implementation = WeeklyQuestUpdateDTO.class)
           )
-      ),
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "주간 퀘스트 수정 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "주간 퀘스트 수정 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "주간 퀘스트 수정 완료"
-                        }
-                    """
-                  )
-              )
-          )
-      }
+      )
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @PatchMapping("/quest/weekly/{id}")
   public ResponseEntity<?> weeklyModify(
@@ -183,7 +119,7 @@ public class AdminController {
       Authentication authentication
   ) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "주간 퀘스트 수정 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success("주간 퀘스트 수정 완료"));
   }
 
   //이벤트 퀘스트 수정
@@ -194,39 +130,16 @@ public class AdminController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = EventQuestUpdateDto.class),
-              examples = @ExampleObject(
-                  name = "이벤트 퀘스트 수정 요청 예시",
-                  value = """
-                    {
-                      "id": 1,
-                      "name": "이벤트 푸만! 자기 전 점심 3분 (수정)",
-                      "info": "잠들기 전 점심을 3일 이상 3분 이상 진행 (수정)",
-                      "startDate": "2025-07-01T00:00:00+09:00",
-                      "endDate": "2025-07-12T23:59:59+09:00"
-                    }
-                """
-              )
+              schema = @Schema(implementation = EventQuestUpdateDto.class)
           )
-      ),
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "이벤트 퀘스트 수정 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "이벤트 퀘스트 수정 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "이벤트 퀘스트 수정 완료"
-                        }
-                    """
-                  )
-              )
-          )
-      }
+      )
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @PatchMapping("/quest/event/{id}")
   public ResponseEntity<?> eventModify(
@@ -235,7 +148,7 @@ public class AdminController {
       Authentication authentication
   ) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "이벤트 퀘스트 수정 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 수정 완료"));
   }
 
 
@@ -250,31 +163,20 @@ public class AdminController {
               required = true,
               example = "1"
           )
-      },
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "주간 퀘스트 삭제 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "주간 퀘스트 삭제 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "주간 퀘스트 삭제 완료"
-                        }
-                    """
-                  )
-              )
-          )
       }
   )
-  @DeleteMapping("/quest/weekly")
-  public ResponseEntity<?> weeklyDelete(@RequestParam Long id, Authentication authentication) {
-
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "주간 퀘스트 삭제 완료"));
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
+  )
+  @DeleteMapping("/quest/weekly/{id}")
+  public ResponseEntity<?> weeklyDelete(@PathVariable Long id, Authentication authentication) {
+    return ResponseEntity.ok(CommonApiResponse.success("주간 퀘스트 삭제 완료"));
   }
+
 
 
   //이벤트 퀘스트 삭제
@@ -288,54 +190,33 @@ public class AdminController {
               required = true,
               example = "1"
           )
-      },
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "이벤트 퀘스트 삭제 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "이벤트 퀘스트 삭제 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "이벤트 퀘스트 삭제 완료"
-                        }
-                    """
-                  )
-              )
-          )
       }
   )
-  @DeleteMapping("/quest/event")
-  public ResponseEntity<?> eventDelete(@RequestParam Long id, Authentication authentication) {
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
+  )
+  @DeleteMapping("/quest/event/{id}")
+  public ResponseEntity<?> eventDelete(@PathVariable Long id, Authentication authentication) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "이벤트 퀘스트 삭제 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 삭제 완료"));
   }
 
 
-  @Operation(summary = "유저 접속 기록 조회", description = "유저의 로그인 기록을 반환합니다.")
-  @ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-          examples = @ExampleObject(name = "로그인 기록 응답 예시", value = """
-        {
-          "status": 2000,
-          "message": "OK",
-          "data": [
-            {
-              "id": 1,
-              "email": "aakjdf@naver.com",
-              "time": "2025-07-06T09:00:00"
-            },
-            {
-              "id": 2,
-              "email": "aakjdf@naver.com",
-              "time": "2025-07-07T08:45:00"
-            }
-          ]
-        }
-        """)))
+  @Operation(
+      summary = "유저 접속 기록 조회",
+      description = "유저의 로그인 기록을 반환합니다."
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= LoginLogResponseDTO.class)
+      )
+  )
   @GetMapping("/log/login")
   public ResponseEntity<?> getLoginLogsByMember(Authentication authentication) {
     List<LoginLogResponseDTO> logs = List.of(
@@ -347,29 +228,20 @@ public class AdminController {
   }
 
 
+
   @Operation(summary = "포인트 기록 조회", description = "포인트 지급 및 소비 기록을 반환합니다.")
-  @ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-          examples = @ExampleObject(name = "포인트 기록 예시", value = """
-            {
-              "status": 2000,
-              "message": "OK",
-              "data": [
-                {
-                  "id": 10,
-                  "email": "aakjdf@naver.com",
-                  "type": "GET",
-                  "point": 1000,
-                  "reason": "퀘스트 완료",
-                  "time": "2025-07-05T14:00:00"
-                }
-              ]
-            }
-        """)))
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= PointLogResponseDTO.class)
+      )
+  )
   @GetMapping("/log/point")
   public ResponseEntity<?> getPointLogs(Authentication authentication) {
     List<PointLogResponseDTO> logs = List.of(
-        new PointLogResponseDTO(10L, "aakjdf@naver.com", "GET", 1000, "퀘스트 완료", LocalDateTime.parse("2025-07-05T14:00:00"))
+        new PointLogResponseDTO(10L, "aakjdf@naver.com", "GET", 1000, "퀘스트 완료", LocalDateTime.parse("2025-07-05T14:00:00")),
+            new PointLogResponseDTO(10L, "aakjdf@naver.com", "GET", 1000, "퀘스트 완료", LocalDateTime.parse("2025-07-05T14:00:00"))
     );
 
     return ResponseEntity.ok(CommonApiResponse.success(logs));
@@ -387,30 +259,19 @@ public class AdminController {
               required = true,
               example = "42"
           )
-      },
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "포인트 로그 삭제 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "포인트 로그 삭제 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "포인트 로그 삭제 완료"
-                        }
-                    """
-                  )
-              )
-          )
       }
   )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
+  )
   @DeleteMapping("/log/point")
-  public ResponseEntity<?> pointLogsDelete(@RequestParam Long id, Authentication authentication) {
+  public ResponseEntity<?> pointLogsDelete(@PathVariable Long id, Authentication authentication) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "포인트 로그 삭제 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success("포인트 로그 삭제 완료"));
   }
 
 
@@ -422,41 +283,21 @@ public class AdminController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = RoutinePresetRequestDTO.class),
-              examples = @ExampleObject(
-                  name = "추천 루틴 추가 요청 예시",
-                  value = """
-                    {
-                      "category": 1,
-                      "content": "이불 개기, 책상 닦기"
-                    }
-                """
-              )
+              schema = @Schema(implementation = RoutinePresetRequestDTO.class)
           )
-      ),
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "추천 루틴 추가 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "추천 루틴 추가 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "추천 루틴 추가 완료"
-                        }
-                    """
-                  )
-              )
-          )
-      }
+      )
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @PostMapping("/preset")
   public ResponseEntity<?> addRoutinePreset(@RequestBody RoutinePresetRequestDTO request, Authentication authentication) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "추천 루틴 추가 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success("추천 루틴 추가 완료"));
   }
 
 
@@ -468,37 +309,16 @@ public class AdminController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = RoutinePresetUpdateDTO.class),
-              examples = @ExampleObject(
-                  name = "추천 루틴 수정 요청 예시",
-                  value = """
-                    {
-                      "id": 1,
-                      "content": "침대 정리, 창문 열기",
-                      "category": 2
-                    }
-                """
-              )
+              schema = @Schema(implementation = RoutinePresetUpdateDTO.class)
           )
-      ),
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "추천 루틴 수정 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "추천 루틴 수정 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "추천 루틴 수정 완료"
-                        }
-                    """
-                  )
-              )
-          )
-      }
+      )
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @PatchMapping("/preset/{presetId}")
   public ResponseEntity<?> modifyRoutinePreset(
@@ -507,7 +327,7 @@ public class AdminController {
       Authentication authentication
   ) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "추천 루틴 수정 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success("추천 루틴 수정 완료"));
   }
 
 
@@ -522,30 +342,19 @@ public class AdminController {
               required = true,
               example = "1"
           )
-      },
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "추천 루틴 삭제 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "추천 루틴 삭제 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "추천 루틴 삭제 완료"
-                        }
-                    """
-                  )
-              )
-          )
       }
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @DeleteMapping("/preset/{presetId}")
   public ResponseEntity<?> deleteRoutinePreset(@PathVariable Long presetId, Authentication authentication) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "추천 루틴 삭제 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success( "추천 루틴 삭제 완료"));
   }
 
 
@@ -557,43 +366,22 @@ public class AdminController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = ItemCreateRequestDTO.class),
-              examples = @ExampleObject(
-                  name = "상점 아이템 추가 요청 예시",
-                  value = """
-                    {
-                      "itemKey": "item_clean_001",
-                      "name": "깔끔 청소 도우미",
-                      "price": 300,
-                      "type": "CONSUMABLE"
-                    }
-                """
-              )
+              schema = @Schema(implementation = ItemCreateRequestDTO.class)
+
           )
-      ),
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "상점 아이템 추가 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "상점 아이템 추가 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "상점 아이템 추가 완료"
-                        }
-                    """
-                  )
-              )
-          )
-      }
+      )
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @PostMapping("/items")
   public ResponseEntity<?> addStoreItem(@RequestBody ItemCreateRequestDTO request, Authentication authentication) {
-    // 등록 로직 생략
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "상점 아이템 추가 완료"));
+
+    return ResponseEntity.ok(CommonApiResponse.success("상점 아이템 추가 완료"));
   }
 
 
@@ -605,39 +393,16 @@ public class AdminController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = ItemUpdateRequestDTO.class),
-              examples = @ExampleObject(
-                  name = "상점 아이템 수정 요청 예시",
-                  value = """
-                    {
-                      "id": 1,
-                      "itemKey": "item_clean_001",
-                      "name": "청소 마법 지팡이",
-                      "price": 500,
-                      "type": "DECOR"
-                    }
-                """
-              )
+              schema = @Schema(implementation = ItemUpdateRequestDTO.class)
           )
-      ),
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "상점 아이템 수정 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "상점 아이템 수정 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "상점 아이템 수정 완료"
-                        }
-                    """
-                  )
-              )
-          )
-      }
+      )
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @PatchMapping("/items/{itemid}")
   public ResponseEntity<?> modifyStoreItem(
@@ -646,7 +411,7 @@ public class AdminController {
       Authentication authentication
   ) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "상점 아이템 수정 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success("상점 아이템 수정 완료"));
   }
 
 
@@ -660,30 +425,19 @@ public class AdminController {
               required = true,
               example = "1"
           )
-      },
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "상점 아이템 삭제 완료",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "상점 아이템 삭제 성공 응답",
-                      value = """
-                        {
-                          "status": 2000,
-                          "message": "상점 아이템 삭제 완료"
-                        }
-                    """
-                  )
-              )
-          )
       }
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @DeleteMapping("/items/{itemid}")
   public ResponseEntity<?> deleteStoreItem(@PathVariable Long itemid, Authentication authentication) {
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "상점 아이템 삭제 완료"));
+    return ResponseEntity.ok(CommonApiResponse.success( "상점 아이템 삭제 완료"));
   }
 
 }
