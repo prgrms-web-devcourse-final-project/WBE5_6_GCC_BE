@@ -52,6 +52,7 @@ public class CategoryController {
         if(name==null){
             // name이 넘어오지 않는다면 Authentication에서 유저 아이디 가져와서 해당하는 카테고리 찾아 리턴
             List<CategoryPayload> response = new ArrayList<>();
+            // 기본 제공 카테고리
             response.add(CategoryPayload.builder()
                 .id(1L)
                 .member(null)
@@ -66,6 +67,7 @@ public class CategoryController {
                 .type(CategoryType.MAJOR)
                 .parentId(null)
                 .build());
+            // 사용자 정의 카테고리
             response.add(CategoryPayload.builder()
                 .id(3L)
                 .member(1L)
@@ -77,43 +79,45 @@ public class CategoryController {
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
         // name으로 넘어온 게 있다면 유저의 카테고리 중에서 해당하는 이름 리턴
-        if(name.equals("청소")){
-            List<CategoryPayload> response = new ArrayList<>();
-            response.add(CategoryPayload.builder()
-                .id(1L)
-                .member(null)
-                .name("청소")
-                .type(CategoryType.MAJOR)
-                .parentId(null)
-                .build());
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        if(name.equals("요리")){
-            List<CategoryPayload> response = new ArrayList<>();
-            response.add(CategoryPayload.builder()
-                .id(2L)
-                .member(null)
-                .name("요리")
-                .type(CategoryType.MAJOR)
-                .parentId(null)
-                .build());
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        if(name.equals("화장실 청소")){
-            List<CategoryPayload> response = new ArrayList<>();
-            response.add(CategoryPayload.builder()
-                .id(3L)
-                .member(null)
-                .name("화장실 청소")
-                .type(CategoryType.SUB)
-                .parentId(1L)
-                .build());
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        // 해당하는 카테고리가 없을 경우
-        else{
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_CATEGORY));
+        switch (name) {
+            case "청소" -> {
+                List<CategoryPayload> response = new ArrayList<>();
+                response.add(CategoryPayload.builder()
+                    .id(1L)
+                    .member(null)
+                    .name("청소")
+                    .type(CategoryType.MAJOR)
+                    .parentId(null)
+                    .build());
+                return ResponseEntity.ok(CommonApiResponse.success(response));
+            }
+            case "요리" -> {
+                List<CategoryPayload> response = new ArrayList<>();
+                response.add(CategoryPayload.builder()
+                    .id(2L)
+                    .member(null)
+                    .name("요리")
+                    .type(CategoryType.MAJOR)
+                    .parentId(null)
+                    .build());
+                return ResponseEntity.ok(CommonApiResponse.success(response));
+            }
+            case "화장실 청소" -> {
+                List<CategoryPayload> response = new ArrayList<>();
+                response.add(CategoryPayload.builder()
+                    .id(3L)
+                    .member(null)
+                    .name("화장실 청소")
+                    .type(CategoryType.SUB)
+                    .parentId(1L)
+                    .build());
+                return ResponseEntity.ok(CommonApiResponse.success(response));
+            }
+            // 해당하는 카테고리가 없을 경우
+            default -> {
+                return ResponseEntity.status(ResponseCode.NOT_EXIST_CATEGORY.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_CATEGORY));
+            }
         }
     }
 
