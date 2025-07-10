@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.controller.badge.payload.BadgePayload;
-import com.honlife.core.app.controller.badge.payload.BadgeRewardPayload;
+import com.honlife.core.app.controller.badge.payload.BadgeResponse;
+import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 
 
 @RequiredArgsConstructor
@@ -34,14 +34,14 @@ public class BadgeController {
 
     /**
      * 모든 업적 조회 API
-     * @return List<BadgePayload> 모든 업적에 대한 정보 + 사용자가 가지고 있는지에 대한 정보 DTO
+     * @return List<BadgePayload> 모든 업적에 대한 정보
      */
-    @Operation(summary = "모든 업적 조회", description = "현재 로그인한 사용자에 대한 모든 업적의 정보를 조회합니다.")
+    @Operation(summary = "모든 업적 조회", description = "모든 업적의 정보를 조회합니다.")
     @GetMapping()
-    public ResponseEntity<CommonApiResponse<List<BadgePayload>>> getAllBadges() {
+    public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges() {
 
-        List<BadgePayload> achievements = new ArrayList<>();
-        achievements.add(BadgePayload.builder()
+        List<BadgeResponse> achievements = new ArrayList<>();
+        achievements.add(BadgeResponse.builder()
             .badgeId(1L)
             .badgeKey("clean_bronze")
             .badgeName("초보 청소부")
@@ -52,7 +52,7 @@ public class BadgeController {
             .category("청소")
             .isReceived(false)
             .build());
-        achievements.add(BadgePayload.builder()
+        achievements.add(BadgeResponse.builder()
             .badgeId(2L)
             .badgeKey("cook_bronze")
             .badgeName("초보 요리사")
@@ -74,13 +74,13 @@ public class BadgeController {
      */
     @Operation(summary = "업적 보상 수령", description = "key 값을 통해 특정 업적의 보상을 획득합니다.")
     @PostMapping
-    public ResponseEntity<CommonApiResponse<BadgeRewardPayload>> claimBadgeReward(
+    public ResponseEntity<CommonApiResponse<BadgeRewardResponse>> claimBadgeReward(
         @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
         @RequestParam String key){
         // 달성한 적 없는 업적
         if(key.equals("clean_bronze")){
-            BadgeRewardPayload response =
-                BadgeRewardPayload.builder()
+            BadgeRewardResponse response =
+                BadgeRewardResponse.builder()
                     .badgeId(1L)
                     .badgeKey(key)
                     .badgeName("초보 청소부")
