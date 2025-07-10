@@ -12,6 +12,8 @@ public class CategoryPayload {
 
     private Long id;
 
+    private Long parentId;
+
     private String parentName;
 
     private String name;

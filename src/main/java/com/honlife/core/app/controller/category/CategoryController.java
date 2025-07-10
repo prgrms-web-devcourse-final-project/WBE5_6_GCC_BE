@@ -40,13 +40,13 @@ public class CategoryController {
 
     /**
      * 카테고리 조회 API
-     * @param name 카테고리 이름이 넘어오지 않으면 전체 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
+     * @param name 카테고리 이름이 넘어오지 않으면 소분류 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
      * @return List<CategoryPayload>
      */
-    @Operation(summary = "카테고리 조회", description = "name 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, name 값이 있다면 해당하는 카테고리를 조회합니다.")
+    @Operation(summary = "카테고리 조회", description = "name 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, name 값이 있다면 해당 카테고리의 소분류 정보를 조회합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<CategoryPayload>>> getCategories(
-        @Schema(name="name", description="카테고리 이름을 적어주세요", example = "청소")
+        @Schema(name="name", description="대분류 카테고리 이름을 적어주세요", example = "청소")
         @RequestParam(required = false) String name
     ) {
         if(name==null){
@@ -58,6 +58,7 @@ public class CategoryController {
                 .member(null)
                 .name("청소")
                 .type(CategoryType.MAJOR)
+                .parentId(null)
                 .parentName(null)
                 .build());
             response.add(CategoryPayload.builder()
@@ -65,6 +66,7 @@ public class CategoryController {
                 .member(null)
                 .name("요리")
                 .type(CategoryType.MAJOR)
+                .parentId(null)
                 .parentName(null)
                 .build());
             // 사용자 정의 카테고리
@@ -73,6 +75,7 @@ public class CategoryController {
                 .member(1L)
                 .name("화장실 청소")
                 .type(CategoryType.SUB)
+                .parentId(1L)
                 .parentName("청소")
                 .build());
 
@@ -80,37 +83,26 @@ public class CategoryController {
         }
         // name으로 넘어온 게 있다면 유저의 카테고리 중에서 해당하는 이름 리턴
         switch (name) {
+            // 소분류 카테고리가 있는 경우
             case "청소" -> {
                 List<CategoryPayload> response = new ArrayList<>();
                 response.add(CategoryPayload.builder()
-                    .id(1L)
-                    .member(null)
-                    .name("청소")
-                    .type(CategoryType.MAJOR)
-                    .parentName(null)
+                    .id(3L)
+                    .member(1L)
+                    .name("화장실 청소")
+                    .type(CategoryType.SUB)
+                    .parentId(1L)
+                    .parentName("청소")
                     .build());
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
+            // 소분류 카테고리가 없는 경우
             case "요리" -> {
                 List<CategoryPayload> response = new ArrayList<>();
-                response.add(CategoryPayload.builder()
-                    .id(2L)
-                    .member(null)
-                    .name("요리")
-                    .type(CategoryType.MAJOR)
-                    .parentName(null)
-                    .build());
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
             case "화장실 청소" -> {
                 List<CategoryPayload> response = new ArrayList<>();
-                response.add(CategoryPayload.builder()
-                    .id(3L)
-                    .member(null)
-                    .name("화장실 청소")
-                    .type(CategoryType.SUB)
-                    .parentName("청소")
-                    .build());
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
             // 해당하는 카테고리가 없을 경우
@@ -184,6 +176,11 @@ public class CategoryController {
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
         @PathVariable(name = "id")
         @Schema(description = "카테고리 id", example = "1") final Long id){
+//        final ReferencedWarning referencedWarning = categoryService.getReferencedWarning(id);
+//        if (referencedWarning != null) {
+//            throw new ReferencedException(referencedWarning);
+//        }
+        categoryService.delete(id);
         // 존재하지 않는 카테고리 아이디로 접근
         if(id != 1L && id != 2L && id != 3L){
             return ResponseEntity
