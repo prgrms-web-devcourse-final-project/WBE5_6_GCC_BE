@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.auth;
 
+import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +38,7 @@ public class AuthController {
      * @return
      */
     @PostMapping("/signin")
-    @Operation(summary = "로그인", description = "로그인 요청을 처리합니다.")
+    @Operation(summary = "로그인", description = "로그인 요청을 처리합니다. JSON Request 필요.")
     public ResponseEntity<CommonApiResponse<TokenResponse>> login(
         @RequestBody LoginRequest loginRequest,
         HttpServletResponse response
@@ -57,5 +58,18 @@ public class AuthController {
                                                          .grantType(tokenDto.getGrantType())
                                                          .expiresIn(tokenDto.getExpiresIn())
                                                          .build()));
+    }
+
+    /**
+     * 회원가입 처리 API
+     * @param signupRequest
+     * @return
+     */
+    @PostMapping("/signup")
+    @Operation(summary = "회원가입", description = "회원가입 요청을 처리합니다. JSON Request 필요.")
+    public ResponseEntity<CommonApiResponse<Void>> signup(
+        @RequestBody SignupRequest signupRequest
+    ) {
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
