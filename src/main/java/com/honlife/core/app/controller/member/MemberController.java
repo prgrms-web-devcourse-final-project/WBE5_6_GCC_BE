@@ -7,9 +7,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +31,7 @@ import com.honlife.core.infra.util.ReferencedException;
 import com.honlife.core.infra.util.ReferencedWarning;
 
 
+@Slf4j
 @Tag(name = "회원", description = "회원관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,20 +50,45 @@ public class MemberController {
     }
 
     /**
-     * 특정 회원 정보 조회 API
+     * 로그인된 회원의 정보 조회
+     * @param userDetails
+     * @return
+     */
+    @Operation(summary = "로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping("/me")
+    public ResponseEntity<CommonApiResponse<MemberPayload>> getCurrentMember(
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        String userId = userDetails.getUsername();
+        if(userId.equals("user01@test.com")){
+            MemberPayload response = new MemberPayload();
+            response.setEmail("user01@test.com");
+            response.setName("홍길동");
+            response.setNickname("닉네임");
+            response.setResidenceExperience(ResidenceExperience.OVER_10Y);
+            response.setRegionDept1("서울시");
+            response.setRegionDept2("강북구");
+            response.setRegionDept3("미아동");
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }
+        return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
+            .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+    }
+
+    /**
+     * 특정 회원의 정보 조회
      * @param email
      * @return
      */
     @GetMapping("/{email}")
-    @Operation(summary = "특정 회원 정보 조회", description = "특정 회원에 대한 정보를 조회합니다.")
+    @Operation(summary = "특정 회원의 정보 조회", description = "특정 회원에 대한 정보를 조회합니다.")
     public ResponseEntity<CommonApiResponse<MemberPayload>> getMember(
         @PathVariable(name="email")
-        @Schema(description = "사용자 이메일", example = "test@test.com") final String email
+        @Schema(description = "사용자 이메일", example = "user01@test.com") final String email
     ) {
-        if(email.equals("test@test.com")){
+        if(email.equals("user01@test.com")){
             MemberPayload response = new MemberPayload();
-            response.setUserId(1L);
-            response.setEmail("test@test.com");
+            response.setEmail("user01@test.com");
             response.setName("홍길동");
             response.setNickname("닉네임");
             response.setResidenceExperience(ResidenceExperience.OVER_10Y);
@@ -87,15 +116,31 @@ public class MemberController {
         return ResponseEntity.ok(id);
     }
 
+    /**
+     * 회원 삭제 (아직 미구현 상태입니다.)
+     * @param id
+     * @return
+     */
     @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
+    @Operation(summary = "특정 회원 삭제", description = "특정 회원에 대한 정보를 삭제합니다.")
+    public ResponseEntity<CommonApiResponse<Void>> deleteMember(
+        @PathVariable(name = "id")
+        @Schema(description = "사용자 식별 id", example = "10000") final Long id
+    ) {
+//        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
+//        if (referencedWarning != null) {
+//            throw new ReferencedException(referencedWarning);
+//        }
+//        memberService.delete(id);
+
+        // 예시 응답
+        if(id == 10000) {
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        } else {
+            return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
         }
-        memberService.delete(id);
-        return ResponseEntity.noContent().build();
+
     }
 
 }
