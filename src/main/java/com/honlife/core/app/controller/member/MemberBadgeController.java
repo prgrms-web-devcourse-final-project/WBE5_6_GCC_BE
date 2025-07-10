@@ -1,6 +1,8 @@
 package com.honlife.core.app.controller.member;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.member.model.MemberBadgeDTO;
 import com.honlife.core.app.model.member.service.MemberBadgeService;
 
-
+@Tag(name="회원 보유 업적", description = "현재 로그인한 회원이 보유하고 있는 업적 관련 API 입니다.")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping(value = "/api/memberBadges", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members/badges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberBadgeController {
 
     private final MemberBadgeService memberBadgeService;
