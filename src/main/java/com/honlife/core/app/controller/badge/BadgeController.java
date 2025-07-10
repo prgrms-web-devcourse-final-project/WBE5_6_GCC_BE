@@ -1,68 +1,122 @@
 package com.honlife.core.app.controller.badge;
 
+import com.honlife.core.app.model.badge.code.BadgeTier;
+import com.honlife.core.app.model.badge.service.BadgeService;
+import com.honlife.core.infra.response.CommonApiResponse;
+import com.honlife.core.infra.response.ResponseCode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.model.badge.dto.BadgeDTO;
-import com.honlife.core.app.model.badge.service.BadgeService;
-import com.honlife.core.infra.util.ReferencedException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.app.controller.badge.payload.BadgePayload;
+import com.honlife.core.app.controller.badge.payload.BadgeRewardPayload;
 
 
+@RequiredArgsConstructor
+@Tag(name="업적", description = "업적 관련 API 입니다.")
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping(value = "/api/v1/badges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BadgeController {
 
     private final BadgeService badgeService;
 
-    public BadgeController(final BadgeService badgeService) {
-        this.badgeService = badgeService;
+    /**
+     * 모든 업적 조회 API
+     * @return List<BadgePayload> 모든 업적에 대한 정보 + 사용자가 가지고 있는지에 대한 정보 DTO
+     */
+    @ApiResponse(
+        responseCode="200",
+        content=@Content(
+            mediaType="application/json",
+            schema=@Schema(implementation=BadgePayload.class)
+        )
+    )
+    @Operation(summary = "모든 업적 조회", description = "현재 로그인한 사용자에 대한 모든 업적의 정보를 조회합니다.")
+    @GetMapping()
+    public ResponseEntity<CommonApiResponse<List<BadgePayload>>> getAllBadges() {
+
+        List<BadgePayload> achievements = new ArrayList<>();
+        achievements.add(BadgePayload.builder()
+            .badgeId(1L)
+            .badgeKey("clean_bronze")
+            .badgeName("초보 청소부")
+            .tier(BadgeTier.BRONZE)
+            .how("청소 루틴 5번 이상 성공")
+            .requirement(5)
+            .info("이제 청소 좀 한다고 말할 수 있겠네요!")
+            .category("청소")
+            .isReceived(false)
+            .build());
+        achievements.add(BadgePayload.builder()
+            .badgeId(2L)
+            .badgeKey("cook_bronze")
+            .badgeName("초보 요리사")
+            .tier(BadgeTier.BRONZE)
+            .how("요리 루틴 5번 이상 성공")
+            .requirement(5)
+            .info("나름 계란 프라이는 할 수 있다구요!")
+            .category("요리")
+            .isReceived(true)
+            .build());
+
+        return ResponseEntity.ok(CommonApiResponse.success(achievements));
     }
 
-    @GetMapping
-    public ResponseEntity<List<BadgeDTO>> getAllBadges() {
-        return ResponseEntity.ok(badgeService.findAll());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<BadgeDTO> getBadge(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(badgeService.get(id));
-    }
-
+    /**
+     * 업적 보상 수령 API
+     * @param key 업적 key 값
+     * @return BadgeRewardPayload 완료한 업적에 대한 정보 및 포인트 획득 내역
+     */
+    @ApiResponse(
+        responseCode="200",
+        content=@Content(
+            mediaType="application/json",
+            schema=@Schema(implementation=BadgeRewardPayload.class)
+        )
+    )
+    @Operation(summary = "업적 보상 수령", description = "key 값을 통해 특정 업적의 보상을 획득합니다.")
     @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createBadge(@RequestBody @Valid final BadgeDTO badgeDTO) {
-        final Long createdId = badgeService.create(badgeDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Long> updateBadge(@PathVariable(name = "id") final Long id,
-        @RequestBody @Valid final BadgeDTO badgeDTO) {
-        badgeService.update(id, badgeDTO);
-        return ResponseEntity.ok(id);
-    }
-
-    @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteBadge(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = badgeService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
+    public ResponseEntity<CommonApiResponse<BadgeRewardPayload>> claimBadgeReward(
+        @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
+        @RequestParam String key){
+        // 달성한 적 없는 업적
+        if(key.equals("clean_bronze")){
+            BadgeRewardPayload response =
+                BadgeRewardPayload.builder()
+                    .badgeId(1L)
+                    .badgeKey(key)
+                    .badgeName("초보 청소부")
+                    .pointAdded(50L)
+                    .totalPoint(150L)
+                    .receivedAt(LocalDateTime.now())
+                    .build();
+            return ResponseEntity.ok(CommonApiResponse.success(response));
         }
-        badgeService.delete(id);
-        return ResponseEntity.noContent().build();
+        // 달성한 적 있는 업적
+        if(key.equals("cook_bronze")){
+            return ResponseEntity.status(ResponseCode.ALREADY_CLAIMED_BADGE.status())
+                .body(CommonApiResponse.error(ResponseCode.ALREADY_CLAIMED_BADGE));
+        }
+        // 해당 하는 키가 DB에 없을 경우
+        else{
+            return ResponseEntity.status(ResponseCode.NOT_EXIST_BADGE.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_BADGE));
+        }
     }
 
 }
