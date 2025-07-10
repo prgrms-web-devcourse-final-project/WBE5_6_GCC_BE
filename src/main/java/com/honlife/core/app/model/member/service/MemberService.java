@@ -144,6 +144,11 @@ public class MemberService {
         return memberRepository.existsByNicknameIgnoreCase(nickname);
     }
 
+    /**
+     * 참조 무결성을 점검하고, 경고 메시지를 제공하는 사전 검증용 로직
+     * @param id
+     * @return
+     */
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Member member = memberRepository.findById(id)
