@@ -1,6 +1,6 @@
 ### env ###
 /src/main/resources/properties/env.properties
-
+/src/main/resources/application.properties
 HELP.md
 .gradle
 build/
