@@ -69,20 +69,20 @@ public class BadgeController {
 
     /**
      * 업적 보상 수령 API
-     * @param key 업적 key 값
+     * @param BadgeKey 업적 key 값
      * @return BadgeRewardPayload 완료한 업적에 대한 정보 및 포인트 획득 내역
      */
-    @Operation(summary = "업적 보상 수령", description = "key 값을 통해 특정 업적의 보상을 획득합니다.")
+    @Operation(summary = "업적 보상 수령", description = "badge_key 값을 통해 특정 업적의 보상을 획득합니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<BadgeRewardResponse>> claimBadgeReward(
-        @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
-        @RequestParam String key){
+        @Schema(name="badgeKey", description="업적의 고유 키 값", example = "clean_bronze")
+        @RequestParam String BadgeKey){
         // 달성한 적 없는 업적
-        if(key.equals("clean_bronze")){
+        if(BadgeKey.equals("clean_bronze")){
             BadgeRewardResponse response =
                 BadgeRewardResponse.builder()
                     .badgeId(1L)
-                    .badgeKey(key)
+                    .badgeKey(BadgeKey)
                     .badgeName("초보 청소부")
                     .pointAdded(50L)
                     .totalPoint(150L)
@@ -91,7 +91,7 @@ public class BadgeController {
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
         // 달성한 적 있는 업적
-        if(key.equals("cook_bronze")){
+        if(BadgeKey.equals("cook_bronze")){
             return ResponseEntity.status(ResponseCode.ALREADY_CLAIMED_BADGE.status())
                 .body(CommonApiResponse.error(ResponseCode.ALREADY_CLAIMED_BADGE));
         }
