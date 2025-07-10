@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.category.service.CategoryService;
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name="카테고리", description = "카테고리 관련 API 입니다.\n 요청 바디 중 type에는 MAJOR, SUB가 들어갈 수 있습니다.")
+@Tag(name="카테고리", description = "카테고리 관련 API 입니다. <br>요청 바디 중 type에는 MAJOR, SUB가 들어갈 수 있습니다.")
 @RestController
 @RequestMapping(value = "/api/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
@@ -126,7 +126,7 @@ public class CategoryController {
      * @param categorySavePayload 생성할 카테고리의 정보
      * @return
      */
-    @Operation(summary = "카테고리 생성", description = "카테고리를 생성합니다. 이름과 type은 무조건 작성하여야 합니다. 만약 type이 SUB일 시, 상위 카테고리에 대한 정보도 필수로 작성하여야 합니다. *실제 DB에 반영되지 않음*")
+    @Operation(summary = "카테고리 생성", description = "카테고리를 생성합니다. <br>이름과 type은 무조건 작성하여야 합니다. 만약 type이 SUB일 시, 상위 카테고리에 대한 정보도 필수로 작성하여야 합니다. <br>*실제 DB에 반영되지 않음*")
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createCategory(@RequestBody @Valid final CategorySavePayload categorySavePayload,
         BindingResult bindingResult) {
@@ -150,7 +150,7 @@ public class CategoryController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "카테고리 수정", description = "특정 카테고리를 수정합니다. \nid가 1,2,3 인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. *실제 DB에 반영되지 않음*")
+    @Operation(summary = "카테고리 수정", description = "특정 카테고리를 수정합니다. <br>id가 1,2,3 인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     @PutMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
@@ -180,7 +180,7 @@ public class CategoryController {
      * @return
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "카테고리 삭제", description = "특정 카테고리를 삭제합니다. \nid가 1,2,3 인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. *실제 DB에 반영되지 않음*\"")
+    @Operation(summary = "카테고리 삭제", description = "특정 카테고리를 삭제합니다. <br>id가 1,2,3 인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
         @PathVariable(name = "id")
         @Schema(description = "카테고리 id", example = "1") final Long id){
