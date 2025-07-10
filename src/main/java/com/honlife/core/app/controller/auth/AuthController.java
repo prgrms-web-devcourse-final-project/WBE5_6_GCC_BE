@@ -23,7 +23,7 @@ import com.honlife.core.infra.response.CommonApiResponse;
 
 @Tag(name="인증", description = "로그인 및 인증 관련 API입니다.")
 @RestController
-@RequestMapping(value = "/api/v1/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
