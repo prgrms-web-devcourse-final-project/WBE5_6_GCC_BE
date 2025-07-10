@@ -232,6 +232,4 @@ public class RoutineController {
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
-
-    // PR 됐으면 좋겠다
 }
