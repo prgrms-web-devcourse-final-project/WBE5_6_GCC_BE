@@ -1,7 +1,13 @@
 package com.honlife.core.app.controller.notification;
 
+import com.honlife.core.app.controller.notification.payload.NotificationPayload;
+import com.honlife.core.infra.response.CommonApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,9 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.notification.dto.NotificationDTO;
 import com.honlife.core.app.model.notification.service.NotificationService;
 
-
+@Tag(name = "알림",description = "알림 관련 API 입니다.")
 @RestController
-@RequestMapping(value = "/api/notifications", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/notifications", produces = MediaType.APPLICATION_JSON_VALUE)
+@SecurityRequirement(name = "bearerAuth")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -28,9 +35,17 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
+
+    /*
+     * 모든 알림 조회 API
+     * @return List<NotificationPayload> 모든 알림에 대한 정보
+     * */
     @GetMapping
-    public ResponseEntity<List<NotificationDTO>> getAllNotifications() {
-        return ResponseEntity.ok(notificationService.findAll());
+    public ResponseEntity<CommonApiResponse<List<NotificationPayload>>> getAllNotifications() {
+        List<NotificationPayload> payload = new ArrayList<>();
+
+
+        return ResponseEntity.ok(CommonApiResponse.success(payload));
     }
 
     @GetMapping("/{id}")
@@ -40,7 +55,6 @@ public class NotificationController {
     }
 
     @PostMapping
-    @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createNotification(
         @RequestBody @Valid final NotificationDTO notificationDTO) {
         final Long createdId = notificationService.create(notificationDTO);
@@ -55,7 +69,6 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
     public ResponseEntity<Void> deleteNotification(@PathVariable(name = "id") final Long id) {
         notificationService.delete(id);
         return ResponseEntity.noContent().build();
