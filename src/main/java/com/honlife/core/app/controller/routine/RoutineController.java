@@ -1,6 +1,8 @@
 package com.honlife.core.app.controller.routine;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -19,9 +21,10 @@ import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.util.ReferencedException;
 import com.honlife.core.infra.util.ReferencedWarning;
 
-// 테스트 주석입니다.
+@Tag(name = "루틴", description = "루틴 관련 api 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
+@SecurityRequirement(name = "bearerAuth")
 public class RoutineController {
 
     private final RoutineService routineService;
