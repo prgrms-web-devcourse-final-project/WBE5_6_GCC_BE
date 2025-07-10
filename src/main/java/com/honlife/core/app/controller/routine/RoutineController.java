@@ -19,7 +19,7 @@ import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.util.ReferencedException;
 import com.honlife.core.infra.util.ReferencedWarning;
 
-
+// 테스트 주석입니다.
 @RestController
 @RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoutineController {
