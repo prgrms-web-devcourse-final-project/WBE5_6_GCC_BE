@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.HashMap;
 import java.util.List;
@@ -31,45 +32,14 @@ public class QuestController {
       parameters = {
           @Parameter(name = "type", description = "퀘스트 타입 (WEEKLY 또는 EVENT)", required = true, example = "WEEKLY"),
           @Parameter(name = "key", description = "퀘스트 고유 키값 (선택)", required = false, example = "weekly_clean_3times")
-      },
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "퀘스트 상세 조회 성공",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "퀘스트 상세 조회 응답 예시",
-                      value = """
-                    {
-                      "status": 2000,
-                      "message": "OK",
-                      "quests": [
-                        {
-                          "id": 1,
-                          "key": "weekly_clean_3times",
-                          "type": "WEEKLY",
-                          "name": "청소 루틴 3번 완료하기",
-                          "info": "정해진 청소 루틴을 일주일에 3회 완료하세요.",
-                          "reward": 100,
-                          "end_date": "2025-07-15"
-                        },
-                        {
-                          "id": 2,
-                          "key": "weekly_clean_3times",
-                          "type": "WEEKLY",
-                          "name": "청소 루틴 3번 완료하기",
-                          "info": "정해진 청소 루틴을 일주일에 3회 완료하세요.",
-                          "reward": 100,
-                          "end_date": "2025-07-15"
-                        }
-                      ]
-                    }
-                    """
-                  )
-              )
-          )
       }
+  )
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
   )
   @GetMapping("/quest/{type}")
   public ResponseEntity<?> getQuestsByTypeAndKey(
@@ -90,28 +60,15 @@ public class QuestController {
       parameters = {
           @Parameter(name = "type", description = "퀘스트 타입 (WEEKLY 또는 EVENT)", required = true, example = "WEEKLY"),
           @Parameter(name = "key", description = "퀘스트 고유 키값", required = true, example = "weekly_do_clean_3T")
-      },
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "퀘스트 완료 처리 성공",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  examples = @ExampleObject(
-                      name = "퀘스트 완료 성공 응답",
-                      value = """
-                    {
-                      "status": 2000,
-                      "message": "OK",
-                      "reward": 200
-                    }
-                    """
-                  )
-              )
-          )
       }
   )
-
+  @ApiResponse(
+      responseCode="200",
+      content=@Content(
+          mediaType="application/json",
+          schema=@Schema(implementation= CommonApiResponse.class)
+      )
+  )
   @PostMapping("/quest/{type}")
   public ResponseEntity<?> completeQuest(
       @PathVariable String type,
