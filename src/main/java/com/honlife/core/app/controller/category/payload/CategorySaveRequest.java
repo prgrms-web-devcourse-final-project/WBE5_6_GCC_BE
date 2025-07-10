@@ -15,11 +15,11 @@ public class CategorySaveRequest {
 
     @Schema(description = "카테고리의 이름", example = "주방 청소")
     @NotBlank
-    private String name;
+    private String categoryName;
 
     @Schema(description = "대분류 카테고리인지 소분류 카테고리인지 표현하는 type", example = "SUB")
     @NotNull
-    private CategoryType type;
+    private CategoryType categoryType;
 
     @Schema(description = "대분류 카테고리 정보, 만약 type이 MAJOR이라면 null", example = "청소")
     private String parentName;

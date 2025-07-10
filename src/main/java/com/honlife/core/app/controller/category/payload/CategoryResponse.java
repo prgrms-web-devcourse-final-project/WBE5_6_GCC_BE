@@ -10,16 +10,16 @@ import lombok.Setter;
 @Builder
 public class CategoryResponse {
 
-    private Long id;
+    private Long categoryId;
 
     private Long parentId;
 
     private String parentName;
 
-    private String name;
+    private String categoryName;
 
-    private CategoryType type;
+    private CategoryType categoryType;
 
-    private Long member;
+    private Long memberId;
 
 }
