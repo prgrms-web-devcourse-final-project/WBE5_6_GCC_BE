@@ -1,7 +1,9 @@
 package com.honlife.core.app.controller.auth;
 
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
+import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,5 +75,24 @@ public class AuthController {
     ) {
         //TODO: API 요청시 이메일로 인증번호 보내는 로직 추가 필요
         return ResponseEntity.ok(CommonApiResponse.noContent());
+    }
+
+    /**
+     * 이메일 인증 처리 API
+     * @param verifyCode 이메일로 전송된 인증 코드입니다.
+     * @return
+     */
+    //TODO: Session 처리 필요한지 고민해보기, 인증로직 이메일 + 코드로 할건지 다른 방법으로 인증하고 코드만으로 비교할건지 고민해보기
+    @PostMapping("/email/verify/{code}")
+    @Operation(summary = "이메일 인증", description = "이메일 인증 요청을 처리합니다. 이메일로 전송된 코드가 올바른지 검사합니다.<br>*로직이 정해지지 않았습니다. 추후 변동 가능이 있습니다.*")
+    public ResponseEntity<CommonApiResponse<Void>> verifyEmail(
+        @PathVariable(name = "code")
+        @Schema(description = "인증 코드", example = "12345") final String verifyCode
+    ) {
+        if(verifyCode.equals("12345")) {
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        }
+        return ResponseEntity.status(ResponseCode.INVALID_CODE.status())
+            .body(CommonApiResponse.error(ResponseCode.INVALID_CODE));
     }
 }
