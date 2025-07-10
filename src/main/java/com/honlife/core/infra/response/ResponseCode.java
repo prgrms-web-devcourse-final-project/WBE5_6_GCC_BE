@@ -12,7 +12,7 @@ public enum ResponseCode {
     NOT_EXIST_PRE_AUTH_CREDENTIAL("4013", HttpStatus.OK, "사전 인증 정보가 요청에서 발견되지 않았습니다."),
     NOT_EXIST_MEMBER("4040", HttpStatus.NOT_FOUND, "Member not exist."),
     NOT_EXIST_BADGE("4041", HttpStatus.NOT_FOUND, "badge not exist."),
-    NOT_EXIST_ITEM("4043", HttpStatus.NOT_FOUND, "item not exist."),
+    NOT_EXIST_ITEM("4044", HttpStatus.NOT_FOUND, "Item Not Exist."),
     ALREADY_CLAIMED_BADGE("4090", HttpStatus.CONFLICT, "You have already claimed this badge."),
     INTERNAL_SERVER_ERROR("5000", HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
     ALREADY_PURCHASED_ITEM("4091", HttpStatus.CONFLICT, "You have already purchase this item."),
