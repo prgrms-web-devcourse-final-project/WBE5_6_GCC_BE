@@ -29,7 +29,7 @@ import com.honlife.core.app.model.category.service.CategoryService;
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name="카테고리", description = "카테고리 관련 API 입니다. <br>요청 바디 중 type에는 MAJOR, SUB가 들어갈 수 있습니다.")
 @RestController
-@RequestMapping(value = "/api/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
 
     private final CategoryService categoryService;
