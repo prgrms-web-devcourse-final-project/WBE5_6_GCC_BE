@@ -14,19 +14,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Schema(
-    name    = "BadgeRewardPayload",
-    example = """
-    {
-      "badgeId": 1,
-      "badgeKey": "clean_bronze",
-      "badgeName": "초보 청소부",
-      "pointAdded": 50,
-      "totalPoint": 150,
-      "receivedAt" : "2025-07-09T15:57:34.4688877"
-    }
-  """
-)
 public class BadgeRewardPayload {
 
     private Long badgeId;
