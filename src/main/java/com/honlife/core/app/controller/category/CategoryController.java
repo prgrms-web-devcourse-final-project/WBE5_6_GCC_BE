@@ -1,7 +1,7 @@
 package com.honlife.core.app.controller.category;
 
-import com.honlife.core.app.controller.category.payload.CategoryPayload;
-import com.honlife.core.app.controller.category.payload.CategorySavePayload;
+import com.honlife.core.app.controller.category.payload.CategoryResponse;
+import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -45,15 +45,15 @@ public class CategoryController {
      */
     @Operation(summary = "카테고리 조회", description = "major_name 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, major_name 값이 있다면 해당 카테고리의 소분류 정보를 조회합니다.")
     @GetMapping
-    public ResponseEntity<CommonApiResponse<List<CategoryPayload>>> getCategories(
+    public ResponseEntity<CommonApiResponse<List<CategoryResponse>>> getCategories(
         @Schema(name="major_name", description="대분류 카테고리 이름을 적어주세요", example = "청소")
         @RequestParam(required = false) String majorName
     ) {
         if(majorName ==null){
             // name이 넘어오지 않는다면 Authentication에서 유저 아이디 가져와서 해당하는 카테고리 찾아 리턴
-            List<CategoryPayload> response = new ArrayList<>();
+            List<CategoryResponse> response = new ArrayList<>();
             // 기본 제공 카테고리
-            response.add(CategoryPayload.builder()
+            response.add(CategoryResponse.builder()
                 .id(1L)
                 .member(null)
                 .name("청소")
@@ -61,7 +61,7 @@ public class CategoryController {
                 .parentId(null)
                 .parentName(null)
                 .build());
-            response.add(CategoryPayload.builder()
+            response.add(CategoryResponse.builder()
                 .id(2L)
                 .member(null)
                 .name("요리")
@@ -70,7 +70,7 @@ public class CategoryController {
                 .parentName(null)
                 .build());
             // 사용자 정의 카테고리
-            response.add(CategoryPayload.builder()
+            response.add(CategoryResponse.builder()
                 .id(3L)
                 .member(1L)
                 .name("화장실 청소")
@@ -85,8 +85,8 @@ public class CategoryController {
         switch (majorName) {
             // 소분류 카테고리가 있는 경우
             case "청소" -> {
-                List<CategoryPayload> response = new ArrayList<>();
-                response.add(CategoryPayload.builder()
+                List<CategoryResponse> response = new ArrayList<>();
+                response.add(CategoryResponse.builder()
                     .id(3L)
                     .member(1L)
                     .name("화장실 청소")
@@ -98,11 +98,11 @@ public class CategoryController {
             }
             // 소분류 카테고리가 없는 경우
             case "요리" -> {
-                List<CategoryPayload> response = new ArrayList<>();
+                List<CategoryResponse> response = new ArrayList<>();
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
             case "화장실 청소" -> {
-                List<CategoryPayload> response = new ArrayList<>();
+                List<CategoryResponse> response = new ArrayList<>();
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
             // 해당하는 카테고리가 없을 경우
@@ -121,12 +121,12 @@ public class CategoryController {
      */
     @Operation(summary = "특정 카테고리 조회", description = "카테고리 id를 통해 카테고리에 대한 정보를 조회합니다.")
     @GetMapping("{id}")
-    public ResponseEntity<CommonApiResponse<CategoryPayload>> getCategory(
+    public ResponseEntity<CommonApiResponse<CategoryResponse>> getCategory(
         @Schema(name="id", description="카테고리 아이디를 적어주세요", example = "1")
         @PathVariable Long id
     ) {
         if(id==1L){
-            CategoryPayload response = CategoryPayload.builder()
+            CategoryResponse response = CategoryResponse.builder()
                 .id(1L)
                 .member(null)
                 .name("청소")
@@ -137,7 +137,7 @@ public class CategoryController {
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
         if(id==2L){
-            CategoryPayload response = CategoryPayload.builder()
+            CategoryResponse response = CategoryResponse.builder()
                 .id(2L)
                 .member(null)
                 .name("요리")
@@ -148,7 +148,7 @@ public class CategoryController {
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
         if(id==3L){
-            CategoryPayload response = CategoryPayload.builder()
+            CategoryResponse response = CategoryResponse.builder()
                 .id(3L)
                 .member(1L)
                 .name("화장실 청소")
@@ -173,7 +173,7 @@ public class CategoryController {
      */
     @Operation(summary = "카테고리 생성", description = "카테고리를 생성합니다. <br>이름과 type은 무조건 작성하여야 합니다. 만약 type이 SUB일 시, 대분류 카테고리에 대한 정보도 필수로 작성하여야 합니다. <br>*실제 DB에 반영되지 않음*")
     @PostMapping
-    public ResponseEntity<CommonApiResponse<Void>> createCategory(@RequestBody @Valid final CategorySavePayload categorySavePayload,
+    public ResponseEntity<CommonApiResponse<Void>> createCategory(@RequestBody @Valid final CategorySaveRequest categorySavePayload,
         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity
@@ -201,7 +201,7 @@ public class CategoryController {
         @PathVariable(name = "id")
         @Schema(description = "카테고리 id", example = "3")
         final Long id,
-        @RequestBody @Valid final CategorySavePayload categorySavePayload,
+        @RequestBody @Valid final CategorySaveRequest categorySavePayload,
         BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class CategorySavePayload {
+public class CategorySaveRequest {
 
     @Schema(description = "카테고리의 이름", example = "주방 청소")
     @NotBlank
