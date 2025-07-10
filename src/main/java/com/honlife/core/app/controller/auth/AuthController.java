@@ -66,7 +66,7 @@ public class AuthController {
      * @return
      */
     @PostMapping("/signup")
-    @Operation(summary = "회원가입", description = "회원가입 요청을 처리합니다. JSON Request 필요.")
+    @Operation(summary = "회원가입", description = "회원가입 요청을 처리합니다. 요청시 이메일로 인증번호를 전송합니다.<br>JSON Request 필요.")
     public ResponseEntity<CommonApiResponse<Void>> signup(
         @RequestBody SignupRequest signupRequest
     ) {
