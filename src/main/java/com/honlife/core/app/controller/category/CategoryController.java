@@ -43,7 +43,7 @@ public class CategoryController {
      * @param name 카테고리 이름이 넘어오지 않으면 전체 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
      * @return List<CategoryPayload>
      */
-    @Operation(summary = "카테고리 조회", description = "name 값을 넣지 않으면 전체 조회를, name 값이 있다면 해당하는 카테고리를 조회합니다.")
+    @Operation(summary = "카테고리 조회", description = "name 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, name 값이 있다면 해당하는 카테고리를 조회합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<CategoryPayload>>> getCategories(
         @Schema(name="name", description="카테고리 이름을 적어주세요", example = "청소")
