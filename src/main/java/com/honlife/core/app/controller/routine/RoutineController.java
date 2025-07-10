@@ -141,8 +141,14 @@ public class RoutineController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "루틴 등록", description = "새로운 루틴을 등록합니다. <br>카테고리 ID와 루틴 내용은 필수입니다. <br>*실제 DB에 반영되지 않음*")
-    @PostMapping
+    @Operation(summary = "루틴 등록", description = "새로운 루틴을 등록합니다. <br>카테고리 ID와 루틴 내용은 필수입니다. <br><br>" +
+        "<strong>RepeatType 설명:</strong><br>" +
+        "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
+        "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
+        "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
+        "• CUSTOM: 사용자 정의 반복 패턴<br>" +
+        "• NONE: 반복 없음, 일회성 루틴<br>" +
+        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")    @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createRoutine(
         @RequestBody @Valid final RoutineSavePayload routineSavePayload,
         @AuthenticationPrincipal UserDetails userDetails,
@@ -173,8 +179,14 @@ public class RoutineController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "루틴 수정", description = "특정 루틴을 수정합니다. <br>id가 1, 2인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
-    @PatchMapping("/{id}")
+    @Operation(summary = "루틴 수정", description = "특정 루틴을 수정합니다. <br>id가 1, 2인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br><br>" +
+        "<strong>RepeatType 설명:</strong><br>" +
+        "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
+        "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
+        "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
+        "• CUSTOM: 사용자 정의 반복 패턴<br>" +
+        "• NONE: 반복 없음, 일회성 루틴<br>" +
+        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateRoutine(
         @PathVariable(name = "id")
         @Schema(description = "루틴 ID", example = "1") final Long id,
