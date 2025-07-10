@@ -1,7 +1,6 @@
 package com.honlife.core.app.controller.badge.payload;
 
 import com.honlife.core.app.model.badge.code.BadgeTier;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class BadgePayload {
+public class BadgeResponse {
 
     private Long badgeId;
 
