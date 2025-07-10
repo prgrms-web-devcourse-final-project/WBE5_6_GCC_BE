@@ -13,10 +13,32 @@ java {
     }
 }
 
+jar {
+    enabled = false
+}
+
+def activeProfile = project.hasProperty("profile") ? project.getProperty("profile") : "local"
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // 중복 허용 처리
+
+    from(sourceSets.main.resources.srcDirs) {
+        if (activeProfile == "local") {
+            exclude 'application-prod.properties'
+        } else if (activeProfile == "prod") {
+            exclude 'application-local.properties'
+        }
+    }
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+}
+
+bootJar {
+    archiveFileName = '2025-honlife-mocking.jar'
 }
 
 bootRun {
@@ -33,6 +55,10 @@ dependencies {
 
     runtimeOnly('org.postgresql:postgresql')
     implementation('io.github.wimdeblauwe:error-handling-spring-boot-starter:4.6.0')
+
+    // gcp
+    implementation platform('com.google.cloud:spring-cloud-gcp-dependencies:6.2.2')
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager'
 
     // Swagger
     implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6')
