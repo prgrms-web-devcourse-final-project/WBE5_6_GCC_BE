@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class MemberPointPayload {
+public class MemberPointResponse {
 
-    private String email;
+    private String nickname;
 
     private Long currentPoint;
 }
