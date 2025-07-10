@@ -10,6 +10,7 @@ public enum ResponseCode {
     BAD_CREDENTIAL("4011", HttpStatus.UNAUTHORIZED, "아이디나 비밀번호가 틀렸습니다."),
     NOT_EXIST_MEMBER("4040", HttpStatus.NOT_FOUND, "Member not exist."),
     NOT_EXIST_BADGE("4041", HttpStatus.NOT_FOUND, "badge not exist."),
+    NOT_EXIST_CATEGORY("4042", HttpStatus.NOT_FOUND, "Category not exist."),
     NOT_EXIST_PRE_AUTH_CREDENTIAL("4012", HttpStatus.OK, "사전 인증 정보가 요청에서 발견되지 않았습니다."),
     ALREADY_CLAIMED_BADGE("4090", HttpStatus.CONFLICT, "You have already claimed this badge."),
     INTERNAL_SERVER_ERROR("5000", HttpStatus.INTERNAL_SERVER_ERROR, "서버에러 입니다."),
