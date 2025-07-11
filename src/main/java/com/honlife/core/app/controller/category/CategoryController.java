@@ -41,7 +41,7 @@ public class CategoryController {
     /**
      * 카테고리 조회 API
      * @param majorName 카테고리 이름이 넘어오지 않으면 소분류 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
-     * @return List<CategoryPayload>
+     * @return List<CategoryResponse>
      */
     @Operation(summary = "카테고리 조회", description = "major_name 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, major_name 값이 있다면 해당 카테고리의 소분류 정보를 조회합니다.")
     @GetMapping
@@ -122,7 +122,7 @@ public class CategoryController {
     @Operation(summary = "특정 카테고리 조회", description = "카테고리 id를 통해 카테고리에 대한 정보를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<CategoryResponse>> getCategory(
-        @PathVariable("id")
+        @PathVariable(name="id")
         @Schema(description="카테고리 id", example = "1")
         final Long categoryId
     ) {
@@ -199,10 +199,10 @@ public class CategoryController {
     @Operation(summary = "카테고리 수정", description = "특정 카테고리를 수정합니다. <br>id가 1,2,3 인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     @PutMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
-        @PathVariable("id")
+        @PathVariable(name = "id")
         @Schema(description = "카테고리 id", example = "3")
         final Long categoryId,
-        @RequestBody @Valid final CategorySaveRequest categorySavePayload,
+        @RequestBody @Valid final CategorySaveRequest categorySaveRequest,
         BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
