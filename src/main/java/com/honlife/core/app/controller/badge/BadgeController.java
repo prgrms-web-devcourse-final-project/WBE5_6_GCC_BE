@@ -92,13 +92,13 @@ public class BadgeController {
         }
         // 달성한 적 있는 업적
         if(key.equals("cook_bronze")){
-            return ResponseEntity.status(ResponseCode.ALREADY_CLAIMED_BADGE.status())
-                .body(CommonApiResponse.error(ResponseCode.ALREADY_CLAIMED_BADGE));
+            return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_BADGE.status())
+                .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_BADGE));
         }
         // 해당 하는 키가 DB에 없을 경우
         else{
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_BADGE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_BADGE));
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
         }
     }
 

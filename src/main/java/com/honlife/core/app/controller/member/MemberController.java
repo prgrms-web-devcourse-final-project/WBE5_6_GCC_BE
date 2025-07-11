@@ -27,8 +27,6 @@ import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
-import com.honlife.core.infra.util.ReferencedException;
-import com.honlife.core.infra.util.ReferencedWarning;
 
 
 @Slf4j
@@ -71,8 +69,8 @@ public class MemberController {
             response.setRegionDept3("미아동");
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
-        return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+        return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
     }
 
     /**
@@ -97,8 +95,8 @@ public class MemberController {
             response.setRegionDept3("미아동");
             return ResponseEntity.ok(CommonApiResponse.success(response));
         } else {
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
     }
 
@@ -137,8 +135,8 @@ public class MemberController {
         if(id == 10000) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
         } else {
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
 
     }
