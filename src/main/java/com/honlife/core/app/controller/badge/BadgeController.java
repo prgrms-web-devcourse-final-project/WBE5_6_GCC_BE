@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +57,9 @@ public class BadgeController {
                 .how("청소 루틴 5번 이상 성공")
                 .requirement(5)
                 .info("이제 청소 좀 한다고 말할 수 있겠네요!")
-                .category("청소")
+                .categoryName("청소")
                 .isReceived(false)
+                .receivedDate(LocalDateTime.now())
                 .build());
             achievements.add(BadgeResponse.builder()
                 .badgeId(2L)
@@ -67,8 +69,9 @@ public class BadgeController {
                 .how("요리 루틴 5번 이상 성공")
                 .requirement(5)
                 .info("나름 계란 프라이는 할 수 있다구요!")
-                .category("요리")
+                .categoryName("요리")
                 .isReceived(true)
+                .receivedDate(LocalDateTime.now())
                 .build());
             return ResponseEntity.ok(CommonApiResponse.success(achievements));
         }
@@ -81,8 +84,9 @@ public class BadgeController {
                 .how("청소 루틴 5번 이상 성공")
                 .requirement(5)
                 .info("이제 청소 좀 한다고 말할 수 있겠네요!")
-                .category("청소")
+                .categoryName("청소")
                 .isReceived(false)
+                .receivedDate(LocalDateTime.now())
                 .build());
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
@@ -95,8 +99,9 @@ public class BadgeController {
                 .how("요리 루틴 5번 이상 성공")
                 .requirement(5)
                 .info("나름 계란 프라이는 할 수 있다구요!")
-                .category("요리")
+                .categoryName("요리")
                 .isReceived(true)
+                .receivedDate(LocalDateTime.now())
                 .build());
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }else{

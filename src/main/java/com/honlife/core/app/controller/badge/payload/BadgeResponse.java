@@ -1,6 +1,7 @@
 package com.honlife.core.app.controller.badge.payload;
 
 import com.honlife.core.app.model.badge.code.BadgeTier;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,9 +30,10 @@ public class BadgeResponse {
 
     private String info;
 
-    private String category;
+    private String categoryName;
 
     private Boolean isReceived;
 
+    private LocalDateTime receivedDate;
 
 }
