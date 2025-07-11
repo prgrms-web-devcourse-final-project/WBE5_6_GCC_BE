@@ -16,12 +16,4 @@ public class MemberBadgeResponse {
 
     private BadgeTier badgeTier;
 
-    private String how;
-
-    private Integer requirement;
-
-    private String info;
-
-    private String categoryName;
-
 }

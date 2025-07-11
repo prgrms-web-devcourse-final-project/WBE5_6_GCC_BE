@@ -42,10 +42,6 @@ public class MemberBadgeController {
                 .badgeKey("cook_bronze")
                 .badgeName("초보 요리사")
                 .badgeTier(BadgeTier.BRONZE)
-                .how("요리 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("나름 계란 프라이는 할 수 있다구요!")
-                .categoryName("요리")
             .build());
 
         return ResponseEntity.ok(CommonApiResponse.success(responses));
