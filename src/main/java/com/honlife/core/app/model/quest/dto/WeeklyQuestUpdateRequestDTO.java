@@ -9,11 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(name = "WeeklyQuestUpdateDTO", description = "주간 퀘스트 수정 요청 DTO")
-public class WeeklyQuestUpdateDTO {
+public class WeeklyQuestUpdateRequestDTO {
 
   @NotNull
   @Schema(description = "퀘스트 ID", example = "1")
-  private Long id;
+  private Long questId;
 
   @Size(max = 255)
   @Schema(description = "퀘스트 이름", example = "청소 루틴 3번 완료하기 (수정)")

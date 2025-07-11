@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class WeeklyQuestRequestDTO {
 
     @Schema(description = "퀘스트 ID (수정 시 사용)", example = "1")
-    private Long id;
+    private Long weeklyQuestId;
 
     @Schema(description = "생성 시간", example = "2025-07-01T00:00:00")
     private LocalDateTime createdAt;

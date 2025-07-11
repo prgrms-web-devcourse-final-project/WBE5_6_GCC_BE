@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class LoginLogResponseDTO {
 
   @Schema(description = "로그 기록 ID", example = "1")
-  private Long id;
+  private Long loginLogId;
 
   @Schema(description = "유저 이메일", example = "aakjdf@naver.com")
   private String email;

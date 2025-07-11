@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class RoutineDTO {
 
-    private Long id;
+    private Long routineId;
 
     private LocalDateTime createdAt;
 

@@ -4,15 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 @AllArgsConstructor
 @Schema(description = "퀘스트 상세 DTO")
-public class QuestDetailResponse {
+public class QuestDetailResponseDTO {
 
   @Schema(description = "퀘스트 ID", example = "1")
-  private Long id;
+  private Long questId;
 
   @Schema(description = "퀘스트 키", example = "weekly_clean_3times")
   private String key;

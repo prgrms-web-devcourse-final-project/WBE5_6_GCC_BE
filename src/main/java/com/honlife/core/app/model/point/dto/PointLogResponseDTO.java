@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class PointLogResponseDTO {
 
   @Schema(description = "기록 ID", example = "10")
-  private Long id;
+  private Long pointLogId;
 
   @Schema(description = "이메일", example = "aakjdf@naver.com")
   private String email;

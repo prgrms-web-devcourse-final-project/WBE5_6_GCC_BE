@@ -13,7 +13,7 @@ public class RoutinePresetRequestDTO {
 
   @NotNull
   @Schema(description = "카테고리 ID", example = "1")
-  private Integer category;
+  private Integer categoryId;
 
   @NotNull
   @Size(max = 255)
