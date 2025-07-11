@@ -95,10 +95,10 @@ public class ItemController {
      * @return ItemResponse itemKey 값과 일치하는 아이템 정보 반환
      */
     @Operation(summary = "아이템 단건 조회", description = "아이템 key 값을 통해 특정 아이템을 조회합니다.")
-    @GetMapping("/{itemKey}")
+    @GetMapping("/{key}")
     public ResponseEntity<CommonApiResponse<ItemResponse>> getItemByKey(
-            @Schema(name = "itemKey",description = "아이템 Key 값을 적어주세요" ,example = "top_item_01")
-            @RequestParam("itemKey") String itemKey) {
+            @Parameter(description = "아이템 Key 값", example = "top_item_01")
+            @PathVariable("key") String itemKey) {
 
         ItemResponse item = ItemResponse.builder()
                 .itemId(1L)
