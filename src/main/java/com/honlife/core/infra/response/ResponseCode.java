@@ -14,8 +14,16 @@ public enum ResponseCode {
     NOT_EXIST_BADGE("4041", HttpStatus.NOT_FOUND, "badge not exist."),
     ALREADY_CLAIMED_BADGE("4090", HttpStatus.CONFLICT, "You have already claimed this badge."),
     INTERNAL_SERVER_ERROR("5000", HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
-    SECURITY_INCIDENT("6000", HttpStatus.OK, "비정상적인 로그인 시도가 감지되었습니다.");
-    
+    SECURITY_INCIDENT("6000", HttpStatus.OK, "비정상적인 로그인 시도가 감지되었습니다."),
+    NOT_EXIST_EVENT_QUEST("4704", HttpStatus.NOT_FOUND,"해당 이벤트 퀘스트가 존재하지 않습니다."),
+    NOT_EXIST_ITEM("4804", HttpStatus.NOT_FOUND,"해당 상점 아이템이 존재하지 않습니다."),
+    NOT_EXIST_PRESET("4604",HttpStatus.NOT_FOUND, "존재하지 않는 추천 루틴입니다."),
+    NOT_EXIST_QUEST("4605", HttpStatus.NOT_FOUND, "존재하지 않는 퀘스트입니다."),
+    NOT_EXIST_LOG("4606",HttpStatus.NOT_FOUND ,"존재하지 않는 로그입니다.");
+
+
+
+
     private final String code;
     private final HttpStatus status;
     private final String message;
