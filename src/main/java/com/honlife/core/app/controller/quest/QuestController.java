@@ -1,12 +1,11 @@
 package com.honlife.core.app.controller.quest;
 
-import com.honlife.core.app.model.quest.dto.QuestDetailResponse;
+import com.honlife.core.app.model.quest.dto.QuestDetailResponseDTO;
 import com.honlife.core.infra.response.ApiEntityResponse;
 import com.honlife.core.infra.response.CommonApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.HashMap;
@@ -47,9 +46,9 @@ public class QuestController {
       @RequestParam(required = false) String key,
       Authentication authentication
   ) {
-    List<QuestDetailResponse> logs = List.of(
-        new QuestDetailResponse(1L, "weekly_clean_3times", "WEEKLY", "청소 루틴 3번 완료하기", "정해진 청소 루틴을 일주일에 3회 완료하세요.", 100, 1, "2025-07-15"),
-        new QuestDetailResponse(2L, "weekly_clean_3times", "WEEKLY", "청소 루틴 3번 완료하기", "정해진 청소 루틴을 일주일에 3회 완료하세요.", 100, 1, "2025-07-15")
+    List<QuestDetailResponseDTO> logs = List.of(
+        new QuestDetailResponseDTO(1L, "weekly_clean_3times", "WEEKLY", "청소 루틴 3번 완료하기", "정해진 청소 루틴을 일주일에 3회 완료하세요.", 100, 1, "2025-07-15"),
+        new QuestDetailResponseDTO(2L, "weekly_clean_3times", "WEEKLY", "청소 루틴 3번 완료하기", "정해진 청소 루틴을 일주일에 3회 완료하세요.", 100, 1, "2025-07-15")
     );
     return ResponseEntity.ok(CommonApiResponse.success(logs));
   }
