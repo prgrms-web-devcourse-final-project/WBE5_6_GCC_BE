@@ -78,6 +78,15 @@ public class MemberController {
             .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
     }
 
+    /**
+     * 비밀번호 변경 요청 처리 API
+     * @param userDetails 유저 인증 정보
+     * @param updatePasswordRequest 현재 비밀번호와 변경할 비밀번호를 담은 객체
+     * @return 변경 처리 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
+     */
+    @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
+        + "현재 비밀번호와 변경할 비밀번호를 받으며, 내부적으로 비밀번호 비교 후 비밀번호가 일치할 때 변경합니다.<br>"
+        + "비밀번호가 일치하지 않는 경우, 401응답이 반환됩니다.")
     @PostMapping("/update/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
         @AuthenticationPrincipal UserDetails userDetails,
