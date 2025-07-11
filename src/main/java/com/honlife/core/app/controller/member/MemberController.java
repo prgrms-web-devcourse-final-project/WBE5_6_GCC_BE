@@ -1,8 +1,8 @@
 package com.honlife.core.app.controller.member;
 
+import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,9 +38,13 @@ import com.honlife.core.infra.response.ResponseCode;
 public class MemberController {
 
     private final MemberService memberService;
+    //TODO: Dev로 넘어가면 Service로 넘기기
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberController(final MemberService memberService) {
+    public MemberController(final MemberService memberService, PasswordEncoder passwordEncoder) {
         this.memberService = memberService;
+        //TODO: Dev로 넘어가면 Service로 넘기기
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
@@ -73,38 +78,18 @@ public class MemberController {
             .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
     }
 
-    /**
-     * 특정 회원의 정보 조회
-     * @param email
-     * @return
-     */
-    @GetMapping("/{email}")
-    @Operation(summary = "특정 회원의 정보 조회", description = "특정 회원에 대한 정보를 조회합니다.")
-    public ResponseEntity<CommonApiResponse<MemberPayload>> getMember(
-        @PathVariable(name="email")
-        @Schema(description = "사용자 이메일", example = "user01@test.com") final String email
+    @PostMapping("/update/password")
+    public ResponseEntity<CommonApiResponse<Void>> updatePassword(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody MemberUpdatePasswordRequest updatePasswordRequest
     ) {
-        if(email.equals("user01@test.com")){
-            MemberPayload response = new MemberPayload();
-            response.setEmail("user01@test.com");
-            response.setName("홍길동");
-            response.setNickname("닉네임");
-            response.setResidenceExperience(ResidenceExperience.OVER_10Y);
-            response.setRegionDept1("서울시");
-            response.setRegionDept2("강북구");
-            response.setRegionDept3("미아동");
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        } else {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+        String userEmail = userDetails.getUsername();
+        String userPassword = userDetails.getPassword();
+        //TODO: Dev때 Service로 옮기기
+        if(userEmail.equals("user01@test.com") && passwordEncoder.matches("1111", userPassword)){
+            return ResponseEntity.ok(CommonApiResponse.noContent());
         }
-    }
-
-    @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createMember(@RequestBody @Valid final MemberDTO memberDTO) {
-        final Long createdId = memberService.create(memberDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
     }
 
     @PutMapping("/{id}")
