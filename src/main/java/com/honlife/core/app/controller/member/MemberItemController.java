@@ -6,28 +6,19 @@ import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.model.member.model.MemberItemDTO;
 import com.honlife.core.app.model.member.service.MemberItemService;
 
 
@@ -51,8 +42,8 @@ public class MemberItemController {
     @GetMapping
     @Operation(summary = "로그인된 회원의 보유 아이템 조회", description = "로그인된 사용자의 보유 아이템을 조회합니다. <br>type 작성 시 해당 타입에 대한 아이템만 조회됩니다.")
     public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getMemberItems(
-        @Parameter(name="type", description = "Item Type (TOP, BOTTOM, ACCESSORY)", example = "HEAD")
-        @RequestParam(required = false) ItemType itemType,
+        @Parameter( description = "Item Type (TOP, BOTTOM, ACCESSORY)", example = "TOP")
+        @RequestParam(name="type", required = false) String itemType,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         // 임시 데이터
@@ -81,20 +72,22 @@ public class MemberItemController {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-        if(itemType == ItemType.TOP) {
-            List<MemberItemResponse> response = List.of(top);
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }else if(itemType == ItemType.BOTTOM) {
-            List<MemberItemResponse> response = List.of(bottom);
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }else if(itemType == ItemType.ACCESSORY) {
-            List<MemberItemResponse> response = List.of(accessory);
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }else{
+        if(itemType==null || itemType.isEmpty()) {
             // 전체 조회
             List<MemberItemResponse> response = List.of(top, bottom, accessory);
             return ResponseEntity.ok(CommonApiResponse.success(response));
-
+        }else if(itemType.equals(ItemType.TOP.name())) {
+            List<MemberItemResponse> response = List.of(top);
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }else if(itemType.equals(ItemType.BOTTOM.name())) {
+            List<MemberItemResponse> response = List.of(bottom);
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }else if(itemType.equals(ItemType.ACCESSORY.name())) {
+            List<MemberItemResponse> response = List.of(accessory);
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }else{
+            return ResponseEntity.status(ResponseCode.BAD_REQUEST.status())
+                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
     }
 
