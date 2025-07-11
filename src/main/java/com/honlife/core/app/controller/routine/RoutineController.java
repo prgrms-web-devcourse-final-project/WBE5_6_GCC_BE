@@ -160,7 +160,15 @@ public class RoutineController {
 
         String userId = userDetails.getUsername();
         if (userId.equals("user01@test.com")) {
-            // 실제 구현 시에는 routineSavePayload를 RoutineDTO로 변환하여 routineService.create() 호출
+            // RepeatType이 NONE인 경우 targetDate 체크
+            if (routineSaveRequest.getRepeatType() == RepeatType.NONE && routineSaveRequest.getTargetDate() == null) {
+                return ResponseEntity
+                    .status(ResponseCode.BAD_REQUEST.status())
+                    .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+            }
+
+            // 실제 구현 시에는 routineSaveRequest를 RoutineDTO로 변환하여 routineService.create() 호출
+            // RepeatType이 NONE인 경우 RoutineSchedule도 함께 생성
             return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonApiResponse.noContent());
         }
@@ -212,6 +220,15 @@ public class RoutineController {
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
         }
 
+        // RepeatType이 NONE인 경우 targetDate 체크
+        if (routineSaveRequest.getRepeatType() == RepeatType.NONE && routineSaveRequest.getTargetDate() == null) {
+            return ResponseEntity
+                .status(ResponseCode.BAD_REQUEST.status())
+                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+        }
+
+        // 실제 구현 시에는 기존 루틴 타입과 새로운 타입을 비교하여
+        // 스케줄 재생성 또는 기존 스케줄 업데이트 처리
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
@@ -241,6 +258,7 @@ public class RoutineController {
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
         }
 
+        // 실제 구현 시에는 루틴과 관련된 모든 스케줄도 함께 삭제 처리
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
