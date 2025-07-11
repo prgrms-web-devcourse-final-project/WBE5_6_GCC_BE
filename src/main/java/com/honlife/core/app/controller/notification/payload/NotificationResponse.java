@@ -12,5 +12,5 @@ public class NotificationResponse {
     private Long notificationId;
     private Boolean isEmail;
     private Boolean isRoutine;
-    private Boolean isChallenge;
+    private Boolean isBadge;
 }

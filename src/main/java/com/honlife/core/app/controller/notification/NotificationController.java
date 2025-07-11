@@ -14,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,7 +49,7 @@ public class NotificationController {
             @Schema(description = "루틴 알림 설정", example = "true")
             @RequestParam(name="routine", required = false) final Boolean isRoutine,
             @Schema(description = "업적 알림 설정", example = "false")
-            @RequestParam(name="challenge", required = false) final Boolean isChallenge
+            @RequestParam(name="badge", required = false) final Boolean isChallenge
             ){
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
@@ -71,7 +70,7 @@ public class NotificationController {
                     .notificationId(10000L)
                     .isEmail(true)
                     .isRoutine(false)
-                    .isChallenge(true).build()
+                    .isBadge(true).build()
             ));
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(
