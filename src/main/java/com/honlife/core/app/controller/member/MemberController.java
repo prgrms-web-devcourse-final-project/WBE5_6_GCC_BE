@@ -58,14 +58,13 @@ public class MemberController {
      * @return
      */
     @Operation(summary = "로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping("/me")
+    @GetMapping
     public ResponseEntity<CommonApiResponse<MemberPayload>> getCurrentMember(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
         if(userId.equals("user01@test.com")){
             MemberPayload response = new MemberPayload();
-            response.setEmail("user01@test.com");
             response.setName("홍길동");
             response.setNickname("닉네임");
             response.setResidenceExperience(ResidenceExperience.OVER_10Y);
@@ -87,7 +86,7 @@ public class MemberController {
     @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
         + "현재 비밀번호와 변경할 비밀번호를 받으며, 내부적으로 비밀번호 비교 후 비밀번호가 일치할 때 변경합니다.<br>"
         + "비밀번호가 일치하지 않는 경우, 401응답이 반환됩니다.")
-    @PostMapping("/update/password")
+    @PostMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
@@ -101,11 +100,22 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Long> updateMember(@PathVariable(name = "id") final Long id,
-        @RequestBody @Valid final MemberDTO memberDTO) {
-        memberService.update(id, memberDTO);
-        return ResponseEntity.ok(id);
+    /**
+     * 회원 정보 변경 요청 처리 API
+     * @param memberPayload 회원 정보 객체
+     * @return 변경에 성공하면 {@code 200}을 반환합니다.
+     * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
+     */
+    @PutMapping
+    public ResponseEntity<CommonApiResponse<Void>> updateMember(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody @Valid final MemberPayload memberPayload
+    ) {
+        String userEmail = userDetails.getUsername();
+        if(userEmail.equals("user01@test.com")){
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        }
+        return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
     }
 
     /**
