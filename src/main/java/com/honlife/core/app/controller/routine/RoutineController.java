@@ -92,8 +92,8 @@ public class RoutineController {
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
 
-        return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+        return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
     }
 
     /**
@@ -127,8 +127,8 @@ public class RoutineController {
         }
 
         // 존재하지 않는 루틴
-        return ResponseEntity.status(ResponseCode.NOT_EXIST_ROUTINE.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_ROUTINE));
+        return ResponseEntity.status(ResponseCode.NOT_FOUND_ROUTINE.status())
+            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
     }
 
     /**
@@ -165,8 +165,8 @@ public class RoutineController {
                 .body(CommonApiResponse.noContent());
         }
 
-        return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+        return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
     }
 
     /**
@@ -201,15 +201,15 @@ public class RoutineController {
 
         String userId = userDetails.getUsername();
         if (!userId.equals("user01@test.com")) {
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
 
         // 존재하지 않는 루틴 아이디로 접근
         if (id != 1L && id != 2L) {
             return ResponseEntity
-                .status(ResponseCode.NOT_EXIST_ROUTINE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_ROUTINE));
+                .status(ResponseCode.NOT_FOUND_ROUTINE.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
         }
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
@@ -230,15 +230,15 @@ public class RoutineController {
     ) {
         String userId = userDetails.getUsername();
         if (!userId.equals("user01@test.com")) {
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_MEMBER));
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
 
         // 존재하지 않는 루틴 아이디로 접근
         if (id != 1L && id != 2L) {
             return ResponseEntity
-                .status(ResponseCode.NOT_EXIST_ROUTINE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_ROUTINE));
+                .status(ResponseCode.NOT_FOUND_ROUTINE.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
         }
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
