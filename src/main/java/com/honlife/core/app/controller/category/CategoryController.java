@@ -116,17 +116,17 @@ public class CategoryController {
 
     /**
      * 카테고리 특정 조회 API
-     * @param id 카테고리 아이디.
+     * @param categoryId 카테고리 아이디.
      * @return CategoryResponse
      */
     @Operation(summary = "특정 카테고리 조회", description = "카테고리 id를 통해 카테고리에 대한 정보를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<CategoryResponse>> getCategory(
-        @PathVariable
+        @PathVariable("id")
         @Schema(description="카테고리 id", example = "1")
-        final Long id
+        final Long categoryId
     ) {
-        if(id ==1L){
+        if(categoryId ==1L){
             CategoryResponse response = CategoryResponse.builder()
                 .categoryId(1L)
                 .memberId(null)
@@ -137,7 +137,7 @@ public class CategoryController {
                 .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
-        if(id ==2L){
+        if(categoryId ==2L){
             CategoryResponse response = CategoryResponse.builder()
                 .categoryId(2L)
                 .memberId(null)
@@ -148,7 +148,7 @@ public class CategoryController {
                 .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
-        if(id ==3L){
+        if(categoryId ==3L){
             CategoryResponse response = CategoryResponse.builder()
                 .categoryId(3L)
                 .memberId(1L)
@@ -192,16 +192,16 @@ public class CategoryController {
 
     /**
      * 카테고리 수정 API
-     * @param id 수정할 카테고리 id
+     * @param categoryId 수정할 카테고리 id
      * @param bindingResult validation
      * @return
      */
     @Operation(summary = "카테고리 수정", description = "특정 카테고리를 수정합니다. <br>id가 1,2,3 인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     @PutMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
-        @PathVariable
+        @PathVariable("id")
         @Schema(description = "카테고리 id", example = "3")
-        final Long id,
+        final Long categoryId,
         @RequestBody @Valid final CategorySaveRequest categorySavePayload,
         BindingResult bindingResult
     ) {
@@ -211,7 +211,7 @@ public class CategoryController {
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
         // 존재하지 않는 카테고리 아이디로 접근
-        if(id != 1L && id != 2L && id != 3L){
+        if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
             return ResponseEntity
                 .status(ResponseCode.NOT_FOUND_CATEGORY.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
@@ -222,21 +222,21 @@ public class CategoryController {
 
     /**
      * 카테고리 삭제 API
-     * @param id 삭제할 카테고리 id
+     * @param categoryId 삭제할 카테고리 id
      * @return
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "카테고리 삭제", description = "특정 카테고리를 삭제합니다. <br>id가 1,2,3 인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
-        @PathVariable
-        @Schema(description = "카테고리 id", example = "1") final Long id){
+        @PathVariable(name="id")
+        @Schema(description = "카테고리 id", example = "1") final Long categoryId){
 //        final ReferencedWarning referencedWarning = categoryService.getReferencedWarning(id);
 //        if (referencedWarning != null) {
 //            throw new ReferencedException(referencedWarning);
 //        }
-        categoryService.delete(id);
+        categoryService.delete(categoryId);
         // 존재하지 않는 카테고리 아이디로 접근
-        if(id != 1L && id != 2L && id != 3L){
+        if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
             return ResponseEntity
                 .status(ResponseCode.NOT_FOUND_CATEGORY.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
