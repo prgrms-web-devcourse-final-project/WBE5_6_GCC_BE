@@ -8,7 +8,6 @@ import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.dto.NotificationDTO;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
-import com.honlife.core.infra.util.ReferencedWarning;
 import com.honlife.core.infra.util.NotFoundException;
 
 
@@ -57,18 +56,18 @@ public class NotificationService {
     private NotificationDTO mapToDTO(final Notification notification,
         final NotificationDTO notificationDTO) {
         notificationDTO.setId(notification.getId());
-        notificationDTO.setEmail(notification.getEmail());
-        notificationDTO.setRoutine(notification.getRoutine());
-        notificationDTO.setChallenge(notification.getChallenge());
+        notificationDTO.setIsEmail(notification.getIsEmail());
+        notificationDTO.setIsRoutine(notification.getIsRoutine());
+        notificationDTO.setIsBadge(notification.getIsBadge());
         notificationDTO.setMember(notification.getMember() == null ? null : notification.getMember().getId());
         return notificationDTO;
     }
 
     private Notification mapToEntity(final NotificationDTO notificationDTO,
         final Notification notification) {
-        notification.setEmail(notificationDTO.getEmail());
-        notification.setRoutine(notificationDTO.getRoutine());
-        notification.setChallenge(notificationDTO.getChallenge());
+        notification.setIsEmail(notificationDTO.getIsEmail());
+        notification.setIsRoutine(notificationDTO.getIsRoutine());
+        notification.setIsBadge(notificationDTO.getIsBadge());
         final Member member = notificationDTO.getMember() == null ? null : memberRepository.findById(notificationDTO.getMember())
             .orElseThrow(() -> new NotFoundException("member not found"));
         notification.setMember(member);
