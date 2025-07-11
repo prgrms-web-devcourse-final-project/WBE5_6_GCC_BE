@@ -1,7 +1,7 @@
 package com.honlife.core.app.controller.item;
 
-import com.honlife.core.app.controller.item.payload.BuyItemResponse;
 import com.honlife.core.app.controller.item.payload.ItemResponse;
+import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.dto.ItemDTO;
 import com.honlife.core.app.model.item.service.ItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -10,6 +10,7 @@ import com.honlife.core.infra.util.ReferencedException;
 import com.honlife.core.infra.util.ReferencedWarning;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,14 +49,14 @@ public class ItemController {
         List<ItemResponse> items = new ArrayList<>();
         items.add(ItemResponse.builder()
                 .itemId(1L)
-                .type("모자")
+                .itemType("모자")
                 .itemKey("head_item_01")
                 .itemName("청소 모자")
                 .itemPoint(100)
                 .build());
         items.add(ItemResponse.builder()
                 .itemId(2L)
-                .type("신발")
+                .itemType("신발")
                 .itemKey("shoes_item_01")
                 .itemName("러닝 신발")
                 .itemPoint(100)
@@ -64,14 +65,76 @@ public class ItemController {
     }
 
     /**
-     * 아이템 구매 API
+     * 아이템 타입을 통한 단건 조회 API
      *
+     *
+     * @return List<ItemResponse> 타입이 일치하는 아이템 조회
+     */
+    @Operation(summary = "타입 일치 아이템 조회", description = "아이템 type 값을 통해 특정 아이템을 조회합니다.")
+    @Schema(name = "itemType",description = "아이템 타입을 적어주세요" ,example = "모자")
+    @GetMapping("/by-type")
+    public ResponseEntity<CommonApiResponse<List<ItemResponse>>> getItemByType(
+            @Schema(name = "itemType",description = "아이템 타입을 적어주세요" ,example = "모자")
+            @RequestParam("itemType") String itemType) {
+        List<ItemResponse> items = new ArrayList<>();
+        if(!itemType.equals("모자")){
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM_TYPE.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM_TYPE));
+        }
+        items.add(ItemResponse.builder()
+                .itemId(1L)
+                .itemType("모자")
+                .itemKey("head_item_01")
+                .itemName("청소 모자")
+                .itemPoint(100)
+                .build());
+        items.add(ItemResponse.builder()
+                .itemId(2L)
+                .itemType("모자")
+                .itemKey("head_item_02")
+                .itemName("요리 모자")
+                .itemPoint(101)
+                .build());
+        return ResponseEntity.ok(CommonApiResponse.success(items));
+    }
+
+    /**
+     * 아이템 key값을 통한 단건 조회 API
+     *
+     * @param itemKey 아이템 고유 아이다
+     * @return ItemResponse itenKey 값과 일치하는 아이템 정보 반환
+     */
+    @Operation(summary = "아이템 단건 조회", description = "아이템 key 값을 통해 특정 아이템을 조회합니다.")
+    @GetMapping("/by-key")
+    public ResponseEntity<CommonApiResponse<ItemResponse>> getItemByKey(
+            @Schema(name = "itemKey",description = "아이템 Key 값을 적어주세요" ,example = "head_item_01")
+            @RequestParam("itemKey") String itemKey) {
+
+
+        if(!itemKey.equals("head_item_01")){
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM_KEY.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM_KEY));
+        }
+        ItemResponse item = ItemResponse.builder()
+                .itemId(1L)
+                .itemType("모자")
+                .itemKey("head_item_01")
+                .itemName("청소 모자")
+                .itemPoint(100)
+                .build();
+
+        return ResponseEntity.ok(CommonApiResponse.success(item));
+    }
+
+
+
+    /**
+     * 아이템 구매 API
      * @param itemId 아이템 고유 아이다
-     * @return BuyItemResponse 사용자가 구매한 아이템 정보 반환
      */
     @Operation(summary = "아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
     @PostMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<BuyItemResponse>> getItem(
+    public ResponseEntity<CommonApiResponse<Void>> getItem(
             @Parameter(name = "id", description = "구매할 아이템의 ID", example = "1")
             @PathVariable("id") Long itemId,
             @AuthenticationPrincipal UserDetails userDetails

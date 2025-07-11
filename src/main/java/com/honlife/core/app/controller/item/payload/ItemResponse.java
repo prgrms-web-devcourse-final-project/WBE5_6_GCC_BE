@@ -11,7 +11,7 @@ import lombok.Setter;
 public class ItemResponse {
     private Long itemId;
 
-    private String type;
+    private String itemType;
 
     private String itemKey;
 
