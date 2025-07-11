@@ -58,7 +58,7 @@ public class RoutinePresetService {
         routinePresetDTO.setCreatedAt(routinePreset.getCreatedAt());
         routinePresetDTO.setUpdatedAt(routinePreset.getUpdatedAt());
         routinePresetDTO.setIsActive(routinePreset.getIsActive());
-        routinePresetDTO.setId(routinePreset.getId());
+        routinePresetDTO.setRoutinePresetId(routinePreset.getId());
         routinePresetDTO.setContent(routinePreset.getContent());
         routinePresetDTO.setCategory(routinePreset.getCategory() == null ? null : routinePreset.getCategory().getId());
         return routinePresetDTO;

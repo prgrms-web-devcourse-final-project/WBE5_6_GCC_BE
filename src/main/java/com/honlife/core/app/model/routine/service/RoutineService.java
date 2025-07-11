@@ -67,7 +67,7 @@ public class RoutineService {
         routineDTO.setCreatedAt(routine.getCreatedAt());
         routineDTO.setUpdatedAt(routine.getUpdatedAt());
         routineDTO.setIsActive(routine.getIsActive());
-        routineDTO.setId(routine.getId());
+        routineDTO.setRoutineId(routine.getId());
         routineDTO.setContent(routine.getContent());
         routineDTO.setTriggerTime(routine.getTriggerTime());
         routineDTO.setIsImportant(routine.getIsImportant());

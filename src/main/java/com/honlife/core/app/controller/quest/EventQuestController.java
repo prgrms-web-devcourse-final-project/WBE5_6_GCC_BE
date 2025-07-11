@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.model.quest.dto.EventQuestDTO;
+import com.honlife.core.app.model.quest.dto.EventQuestRequestDTO;
 import com.honlife.core.app.model.quest.service.EventQuestService;
 
 
@@ -29,26 +29,26 @@ public class EventQuestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventQuestDTO>> getAllEventQuests() {
+    public ResponseEntity<List<EventQuestRequestDTO>> getAllEventQuests() {
         return ResponseEntity.ok(eventQuestService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventQuestDTO> getEventQuest(@PathVariable(name = "id") final Long id) {
+    public ResponseEntity<EventQuestRequestDTO> getEventQuest(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(eventQuestService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createEventQuest(
-        @RequestBody @Valid final EventQuestDTO eventQuestDTO) {
+        @RequestBody @Valid final EventQuestRequestDTO eventQuestDTO) {
         final Long createdId = eventQuestService.create(eventQuestDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateEventQuest(@PathVariable(name = "id") final Long id,
-        @RequestBody @Valid final EventQuestDTO eventQuestDTO) {
+        @RequestBody @Valid final EventQuestRequestDTO eventQuestDTO) {
         eventQuestService.update(id, eventQuestDTO);
         return ResponseEntity.ok(id);
     }
