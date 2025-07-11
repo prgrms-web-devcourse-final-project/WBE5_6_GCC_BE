@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Schema(description = "사용자 루틴 조회 응답")
-public class UserRoutinesResponse {
+public class RoutinesResponse {
 
     @Schema(description = "조회 날짜", example = "2025-01-15")
     private LocalDate date;

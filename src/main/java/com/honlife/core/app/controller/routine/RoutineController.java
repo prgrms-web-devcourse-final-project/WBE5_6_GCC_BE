@@ -1,8 +1,8 @@
 package com.honlife.core.app.controller.routine;
 
-import com.honlife.core.app.controller.routine.payload.RoutineResponse;
+import com.honlife.core.app.controller.routine.payload.RoutineDetailResponse;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
-import com.honlife.core.app.controller.routine.payload.UserRoutinesResponse;
+import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -52,7 +52,7 @@ public class RoutineController {
      */
     @Operation(summary = "사용자 루틴 조회", description = "특정 날짜의 사용자 루틴 목록을 조회합니다. <br>date를 넣지 않으면 오늘 날짜 기준으로 조회됩니다.")
     @GetMapping
-    public ResponseEntity<CommonApiResponse<UserRoutinesResponse>> getUserRoutines(
+    public ResponseEntity<CommonApiResponse<RoutinesResponse>> getUserRoutines(
         @Schema(name = "date", description = "조회할 날짜를 적어주세요", example = "2025-01-15")
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @AuthenticationPrincipal UserDetails userDetails
@@ -63,11 +63,11 @@ public class RoutineController {
         }
 
         if (userId.equals("user01@test.com")) {
-            UserRoutinesResponse response = new UserRoutinesResponse();
+            RoutinesResponse response = new RoutinesResponse();
             response.setDate(date);
 
-            List<UserRoutinesResponse.RoutineItem> routines = new ArrayList<>();
-            routines.add(UserRoutinesResponse.RoutineItem.builder()
+            List<RoutinesResponse.RoutineItem> routines = new ArrayList<>();
+            routines.add(RoutinesResponse.RoutineItem.builder()
                 .scheduleId(1L)
                 .routineId(1L)
                 .majorCategory("청소")
@@ -77,7 +77,7 @@ public class RoutineController {
                 .isDone(true)
                 .isImportant(false)
                 .build());
-            routines.add(UserRoutinesResponse.RoutineItem.builder()
+            routines.add(RoutinesResponse.RoutineItem.builder()
                 .scheduleId(2L)
                 .routineId(2L)
                 .majorCategory("건강")
@@ -98,20 +98,20 @@ public class RoutineController {
 
     /**
      * 특정 루틴 조회 API
-     * @param id 조회할 루틴 ID
+     * @param routineId 조회할 루틴 ID
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinePayload
      */
     @Operation(summary = "특정 루틴 조회", description = "특정 루틴의 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<RoutineResponse>> getRoutine(
+    public ResponseEntity<CommonApiResponse<RoutineDetailResponse>> getRoutine(
         @PathVariable(name = "id")
-        @Schema(description = "루틴 ID", example = "1") final Long id,
+        @Schema(description = "루틴 ID", example = "1") final Long routineId,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
-        if (userId.equals("user01@test.com") && id == 1L) {
-            RoutineResponse response = RoutineResponse.builder()
+        if (userId.equals("user01@test.com") && routineId == 1L) {
+            RoutineDetailResponse response = RoutineDetailResponse.builder()
                 .routineId(1L)
                 .categoryId(1L)
                 .majorCategory("청소")
@@ -171,7 +171,7 @@ public class RoutineController {
 
     /**
      * 루틴 수정 API
-     * @param id 수정할 루틴 ID
+     * @param routineId 수정할 루틴 ID
      * @param routineSaveRequest 수정할 루틴의 정보
      * @param userDetails 로그인된 사용자 정보
      * @param bindingResult validation
@@ -188,7 +188,7 @@ public class RoutineController {
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateRoutine(
         @PathVariable(name = "id")
-        @Schema(description = "루틴 ID", example = "1") final Long id,
+        @Schema(description = "루틴 ID", example = "1") final Long routineId,
         @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
         @AuthenticationPrincipal UserDetails userDetails,
         BindingResult bindingResult
@@ -206,7 +206,7 @@ public class RoutineController {
         }
 
         // 존재하지 않는 루틴 아이디로 접근
-        if (id != 1L && id != 2L) {
+        if (routineId != 1L && routineId != 2L) {
             return ResponseEntity
                 .status(ResponseCode.NOT_FOUND_ROUTINE.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
@@ -217,7 +217,7 @@ public class RoutineController {
 
     /**
      * 루틴 삭제 API
-     * @param id 삭제할 루틴 ID
+     * @param routineId 삭제할 루틴 ID
      * @param userDetails 로그인된 사용자 정보
      * @return
      */
@@ -225,7 +225,7 @@ public class RoutineController {
     @Operation(summary = "루틴 삭제", description = "특정 루틴을 삭제합니다. <br>id가 1, 2인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     public ResponseEntity<CommonApiResponse<Void>> deleteRoutine(
         @PathVariable(name = "id")
-        @Schema(description = "루틴 ID", example = "1") final Long id,
+        @Schema(description = "루틴 ID", example = "1") final Long routineId,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
@@ -235,7 +235,7 @@ public class RoutineController {
         }
 
         // 존재하지 않는 루틴 아이디로 접근
-        if (id != 1L && id != 2L) {
+        if (routineId != 1L && routineId != 2L) {
             return ResponseEntity
                 .status(ResponseCode.NOT_FOUND_ROUTINE.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));

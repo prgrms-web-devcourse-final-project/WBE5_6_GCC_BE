@@ -10,7 +10,7 @@ import com.honlife.core.app.model.routine.code.RepeatType;
 @Setter
 @Builder
 @Schema(description = "특정 루틴 조회 응답")
-public class RoutineResponse {
+public class RoutineDetailResponse {
 
     @Schema(description = "루틴 ID", example = "1")
     private Long routineId;
