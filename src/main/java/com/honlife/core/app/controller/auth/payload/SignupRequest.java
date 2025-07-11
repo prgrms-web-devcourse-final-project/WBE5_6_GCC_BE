@@ -16,8 +16,8 @@ public class SignupRequest {
     private String name;
     @Schema(description = "닉네임", example = "닉네임3")
     private String nickname;
-    @Schema(description = "관심 카테고리", example = "[청소, 요리]")
-    private List<Long> categoryInterests;
+    @Schema(description = "관심 카테고리", example = "[1, 2]")
+    private List<Long> interestedCategoryIds;
     @Schema(description = "거주 경력", example = "UNDER_1Y", allowableValues = {"UNDER_1Y", "Y1_TO_3", "Y3_TO_5", "Y5_TO_10", "OVER_10Y"})
     private ResidenceExperience residenceExperience;
     @Schema(description = "시/도", example = "서울특별시")
