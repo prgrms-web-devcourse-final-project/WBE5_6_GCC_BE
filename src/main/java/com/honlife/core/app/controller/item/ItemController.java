@@ -118,10 +118,10 @@ public class ItemController {
      * @param itemId 아이템 고유 아이다
      */
     @Operation(summary = "아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
-    @PostMapping("/{id}")
+    @PostMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> getItem(
-            @Parameter(name = "id", description = "구매할 아이템의 ID", example = "1")
-            @PathVariable("id") Long itemId,
+            @Parameter(name = "key", description = "구매할 아이템의 key", example = "top_item_01")
+            @PathVariable("key") String itemKey,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String memberId = userDetails.getUsername();
@@ -129,11 +129,11 @@ public class ItemController {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-        if(itemId != 1L && itemId != 2L) {
+        if(!itemKey.equals("top_item_01") && !itemKey.equals("top_item_02")) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
         }
-        if(memberId.equals("user01@test.com") && itemId == 2L ){
+        if(memberId.equals("user01@test.com") && itemKey.equals("top_item_02")){
             return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_ITEM));
         }
