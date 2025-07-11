@@ -53,22 +53,24 @@ public class ItemController {
 
         List<ItemResponse> items = new ArrayList<>();
         if(itemType != null) {
-            items.add(ItemResponse.builder()
-                    .itemId(1L)
-                    .itemType(ItemType.TOP)
-                    .itemKey("top_item_01")
-                    .itemName("청소 상의")
-                    .itemPoint(100)
-                    .build());
-            items.add(ItemResponse.builder()
-                    .itemId(2L)
-                    .itemType(ItemType.TOP)
-                    .itemKey("top_item_02")
-                    .itemName("요리 상의")
-                    .itemPoint(101)
-                    .build());
-        }
-        else{
+            if(itemType == ItemType.TOP){
+                items.add(ItemResponse.builder()
+                        .itemId(1L)
+                        .itemType(ItemType.TOP)
+                        .itemKey("top_item_01")
+                        .itemName("청소 상의")
+                        .itemPoint(100)
+                        .build());
+                items.add(ItemResponse.builder()
+                        .itemId(2L)
+                        .itemType(ItemType.TOP)
+                        .itemKey("top_item_02")
+                        .itemName("요리 상의")
+                        .itemPoint(101)
+                        .build());
+            }
+
+        } else{
             items.add(ItemResponse.builder()
                     .itemId(1L)
                     .itemType(ItemType.TOP)
@@ -95,7 +97,7 @@ public class ItemController {
     @Operation(summary = "아이템 단건 조회", description = "아이템 key 값을 통해 특정 아이템을 조회합니다.")
     @GetMapping("/{itemKey}")
     public ResponseEntity<CommonApiResponse<ItemResponse>> getItemByKey(
-            @Schema(name = "itemKey",description = "아이템 Key 값을 적어주세요" ,example = "head_item_01")
+            @Schema(name = "itemKey",description = "아이템 Key 값을 적어주세요" ,example = "top_item_01")
             @RequestParam("itemKey") String itemKey) {
 
         ItemResponse item = ItemResponse.builder()
