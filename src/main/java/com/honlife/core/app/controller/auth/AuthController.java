@@ -114,6 +114,7 @@ public class AuthController {
      * @return {@link CommonApiResponse}의 data에 중복여부를 담아 반환합니다.
      */
     @PostMapping("/check")
+    @Operation(summary = "중복 검사", description = "이메일 또는 닉네임의 중복 여부를 검사합니다.<br>이메일 또는 닉네임만 param으로 받습니다. 둘 모두가 들어오거나 둘 모두 없는 경우 Bad Request를 응답합니다.")
     public ResponseEntity<CommonApiResponse<Map<String, Boolean>>> isEmailDuplicated(
         @RequestParam(name = "email", required = false)
         @Schema(description = "이메일", example = "user01@test.com") final String email,
