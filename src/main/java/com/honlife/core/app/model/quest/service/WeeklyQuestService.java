@@ -53,7 +53,7 @@ public class WeeklyQuestService {
         weeklyQuestRequestDTO.setCreatedAt(weeklyQuest.getCreatedAt());
         weeklyQuestRequestDTO.setUpdatedAt(weeklyQuest.getUpdatedAt());
         weeklyQuestRequestDTO.setIsActive(weeklyQuest.getIsActive());
-        weeklyQuestRequestDTO.setId(weeklyQuest.getId());
+        weeklyQuestRequestDTO.setWeeklyQuestId(weeklyQuest.getId());
         weeklyQuestRequestDTO.setKey(weeklyQuest.getKey());
         weeklyQuestRequestDTO.setName(weeklyQuest.getName());
         weeklyQuestRequestDTO.setInfo(weeklyQuest.getInfo());

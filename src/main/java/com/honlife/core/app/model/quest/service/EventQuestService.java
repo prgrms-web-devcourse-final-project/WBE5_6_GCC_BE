@@ -52,7 +52,7 @@ public class EventQuestService {
         eventQuestDTO.setCreatedAt(eventQuest.getCreatedAt());
         eventQuestDTO.setUpdatedAt(eventQuest.getUpdatedAt());
         eventQuestDTO.setIsActive(eventQuest.getIsActive());
-        eventQuestDTO.setId(eventQuest.getId());
+        eventQuestDTO.setEventQuestId(eventQuest.getId());
         eventQuestDTO.setKey(eventQuest.getKey());
         eventQuestDTO.setName(eventQuest.getName());
         eventQuestDTO.setInfo(eventQuest.getInfo());
