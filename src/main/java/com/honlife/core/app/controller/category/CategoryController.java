@@ -107,8 +107,8 @@ public class CategoryController {
             }
             // 해당하는 카테고리가 없을 경우
             default -> {
-                return ResponseEntity.status(ResponseCode.NOT_EXIST_CATEGORY.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_CATEGORY));
+                return ResponseEntity.status(ResponseCode.NOT_FOUND_CATEGORY.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
             }
         }
     }
@@ -116,16 +116,17 @@ public class CategoryController {
 
     /**
      * 카테고리 특정 조회 API
-     * @param categoryId 카테고리 아이디.
+     * @param id 카테고리 아이디.
      * @return CategoryResponse
      */
     @Operation(summary = "특정 카테고리 조회", description = "카테고리 id를 통해 카테고리에 대한 정보를 조회합니다.")
-    @GetMapping("{categoryId}")
+    @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<CategoryResponse>> getCategory(
-        @Schema(name="category_id", description="카테고리 아이디를 적어주세요", example = "1")
-        @PathVariable Long categoryId
+        @PathVariable
+        @Schema(description="카테고리 id", example = "1")
+        final Long id
     ) {
-        if(categoryId ==1L){
+        if(id ==1L){
             CategoryResponse response = CategoryResponse.builder()
                 .categoryId(1L)
                 .memberId(null)
@@ -136,7 +137,7 @@ public class CategoryController {
                 .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
-        if(categoryId ==2L){
+        if(id ==2L){
             CategoryResponse response = CategoryResponse.builder()
                 .categoryId(2L)
                 .memberId(null)
@@ -147,7 +148,7 @@ public class CategoryController {
                 .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
-        if(categoryId ==3L){
+        if(id ==3L){
             CategoryResponse response = CategoryResponse.builder()
                 .categoryId(3L)
                 .memberId(1L)
@@ -160,8 +161,8 @@ public class CategoryController {
         }
         // 해당하는 카테고리가 없을 경우
         else{
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_CATEGORY));
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_CATEGORY.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
         }
 
     }
@@ -191,16 +192,16 @@ public class CategoryController {
 
     /**
      * 카테고리 수정 API
-     * @param categoryId 수정할 카테고리 id
+     * @param id 수정할 카테고리 id
      * @param bindingResult validation
      * @return
      */
     @Operation(summary = "카테고리 수정", description = "특정 카테고리를 수정합니다. <br>id가 1,2,3 인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
-    @PutMapping("/{categoryId}")
+    @PutMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
-        @PathVariable(name = "categoryId")
+        @PathVariable
         @Schema(description = "카테고리 id", example = "3")
-        final Long categoryId,
+        final Long id,
         @RequestBody @Valid final CategorySaveRequest categorySavePayload,
         BindingResult bindingResult
     ) {
@@ -210,10 +211,10 @@ public class CategoryController {
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
         // 존재하지 않는 카테고리 아이디로 접근
-        if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
+        if(id != 1L && id != 2L && id != 3L){
             return ResponseEntity
-                .status(ResponseCode.NOT_EXIST_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_CATEGORY));
+                .status(ResponseCode.NOT_FOUND_CATEGORY.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
         }
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
@@ -221,24 +222,24 @@ public class CategoryController {
 
     /**
      * 카테고리 삭제 API
-     * @param categoryId 삭제할 카테고리 id
+     * @param id 삭제할 카테고리 id
      * @return
      */
-    @DeleteMapping("/{categoryId}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "카테고리 삭제", description = "특정 카테고리를 삭제합니다. <br>id가 1,2,3 인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
-        @PathVariable(name = "categoryId")
-        @Schema(description = "카테고리 id", example = "1") final Long categoryId){
+        @PathVariable
+        @Schema(description = "카테고리 id", example = "1") final Long id){
 //        final ReferencedWarning referencedWarning = categoryService.getReferencedWarning(id);
 //        if (referencedWarning != null) {
 //            throw new ReferencedException(referencedWarning);
 //        }
-        categoryService.delete(categoryId);
+        categoryService.delete(id);
         // 존재하지 않는 카테고리 아이디로 접근
-        if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
+        if(id != 1L && id != 2L && id != 3L){
             return ResponseEntity
-                .status(ResponseCode.NOT_EXIST_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_CATEGORY));
+                .status(ResponseCode.NOT_FOUND_CATEGORY.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
         }
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
