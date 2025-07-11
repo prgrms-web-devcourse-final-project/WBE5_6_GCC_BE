@@ -7,7 +7,7 @@ import com.honlife.core.app.model.member.model.MemberDTO;
 
 @Getter
 @Setter
-public class MemberPayload {
+public class MemberResponse {
 
     private String email;
     private String name;
@@ -18,8 +18,8 @@ public class MemberPayload {
     private String regionDept3;
 
     //TODO: 개발시 활용
-    public static MemberPayload fromDTO(MemberDTO memberDTO) {
-        MemberPayload memberPayload = new MemberPayload();
+    public static MemberResponse fromDTO(MemberDTO memberDTO) {
+        MemberResponse memberPayload = new MemberResponse();
         memberPayload.email = memberDTO.getEmail();
         memberPayload.nickname = memberDTO.getNickname();
         memberPayload.residenceExperience = memberDTO.getResidenceExperience();
