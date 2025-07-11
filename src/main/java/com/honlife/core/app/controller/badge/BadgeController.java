@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,19 +38,15 @@ public class BadgeController {
 
     /**
      * 업적 조회 API
-     * @param badgeKey 업적 key 값
      * @return List<BadgePayload> 모든 업적에 대한 정보
      */
-    @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다. <br>key 값을 입력하면 해당하는 업적의 정보를 리턴합니다.")
+    @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges(
-        @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
-        @RequestParam(required = false) String badgeKey,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if(badgeKey == null || badgeKey.isEmpty()){
-            List<BadgeResponse> achievements = new ArrayList<>();
-            achievements.add(BadgeResponse.builder()
+            List<BadgeResponse> responses = new ArrayList<>();
+            responses.add(BadgeResponse.builder()
                 .badgeId(1L)
                 .badgeKey("clean_bronze")
                 .badgeName("초보 청소부")
@@ -61,7 +58,7 @@ public class BadgeController {
                 .isReceived(false)
                 .receivedDate(LocalDateTime.now())
                 .build());
-            achievements.add(BadgeResponse.builder()
+            responses.add(BadgeResponse.builder()
                 .badgeId(2L)
                 .badgeKey("cook_bronze")
                 .badgeName("초보 요리사")
@@ -73,10 +70,23 @@ public class BadgeController {
                 .isReceived(true)
                 .receivedDate(LocalDateTime.now())
                 .build());
-            return ResponseEntity.ok(CommonApiResponse.success(achievements));
-        }
+
+            return ResponseEntity.ok(CommonApiResponse.success(responses));
+    }
+
+    /**
+     * 업적 단건 조회 API
+     * @return BadgePayload 특정 업적에 대한 정보
+     */
+    @Operation(summary = "업적 단건 조회", description = "key에 해당하는 업적에 대해 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
+    @GetMapping("/{key}")
+    public ResponseEntity<CommonApiResponse<BadgeResponse>> getBadge(
+        @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
+        @PathVariable(name="key") String badgeKey,
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
         if(badgeKey.equals("clean_bronze")){
-            List<BadgeResponse> response = List.of(BadgeResponse.builder()
+            BadgeResponse response = BadgeResponse.builder()
                 .badgeId(1L)
                 .badgeKey(badgeKey)
                 .badgeName("초보 청소부")
@@ -87,11 +97,11 @@ public class BadgeController {
                 .categoryName("청소")
                 .isReceived(false)
                 .receivedDate(LocalDateTime.now())
-                .build());
+                .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
         if(badgeKey.equals("cook_bronze")){
-            List<BadgeResponse> response = List.of(BadgeResponse.builder()
+            BadgeResponse response = BadgeResponse.builder()
                 .badgeId(2L)
                 .badgeKey(badgeKey)
                 .badgeName("초보 요리사")
@@ -102,14 +112,13 @@ public class BadgeController {
                 .categoryName("요리")
                 .isReceived(true)
                 .receivedDate(LocalDateTime.now())
-                .build());
+                .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }else{
             return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
         }
     }
-
     /**
      * 업적 보상 수령 API
      * @param badgeKey 업적 key 값
