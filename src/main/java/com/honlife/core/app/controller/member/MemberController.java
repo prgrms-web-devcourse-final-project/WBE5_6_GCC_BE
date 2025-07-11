@@ -90,7 +90,7 @@ public class MemberController {
     @PostMapping("/update/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestBody MemberUpdatePasswordRequest updatePasswordRequest
+        @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
     ) {
         String userEmail = userDetails.getUsername();
         String userPassword = userDetails.getPassword();
