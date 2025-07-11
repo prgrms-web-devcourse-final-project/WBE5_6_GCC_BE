@@ -36,7 +36,7 @@ public class NotificationController {
      * @param userDetails 인증 정보
      * @param isEmail 이메일 알림 설정 값
      * @param isRoutine 루틴 알림 설정 값
-     * @param isChallenge 업적 알림 설정 값
+     * @param isBadge 업적 알림 설정 값
      * @return {@code Void}
      */
     @Operation(summary = "알림 설정 변경", description = "로그인한 유저의 알림 설정을 변경합니다."
@@ -49,7 +49,7 @@ public class NotificationController {
             @Schema(description = "루틴 알림 설정", example = "true")
             @RequestParam(name="routine", required = false) final Boolean isRoutine,
             @Schema(description = "업적 알림 설정", example = "false")
-            @RequestParam(name="badge", required = false) final Boolean isChallenge
+            @RequestParam(name= "badge", required = false) final Boolean isBadge
             ){
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
