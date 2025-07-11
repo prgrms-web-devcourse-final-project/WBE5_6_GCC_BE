@@ -41,3 +41,5 @@ bin/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+application.properties
