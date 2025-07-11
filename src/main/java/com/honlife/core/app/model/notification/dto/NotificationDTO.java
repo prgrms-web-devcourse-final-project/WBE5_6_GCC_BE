@@ -12,11 +12,11 @@ public class NotificationDTO {
 
     private Long id;
 
-    private Boolean email;
+    private Boolean isEmail;
 
-    private Boolean routine;
+    private Boolean isRoutine;
 
-    private Boolean challenge;
+    private Boolean isBadge;
 
     @NotNull
     @NotificationMemberUnique
