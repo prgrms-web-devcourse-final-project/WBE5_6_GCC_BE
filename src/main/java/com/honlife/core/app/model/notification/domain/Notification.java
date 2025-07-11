@@ -34,13 +34,13 @@ public class Notification {
     private Long id;
 
     @Column
-    private Boolean email;
+    private Boolean isEmail;
 
     @Column
-    private Boolean routine;
+    private Boolean isRoutine;
 
     @Column
-    private Boolean challenge;
+    private Boolean isBadge;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false, unique = true)
