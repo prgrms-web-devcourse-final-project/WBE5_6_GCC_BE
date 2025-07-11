@@ -54,9 +54,9 @@ public class RoutineScheduleController {
             "수요일 스케줄만 완료 처리하고 싶을 때 해당 scheduleId 사용<br><br>" +
             "*실제 DB에 반영되지 않음*"
     )
-    @PatchMapping("/{scheduleId}/complete")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> completeRoutineSchedule(
-        @PathVariable(name = "scheduleId")
+        @PathVariable(name = "id")
         @Schema(description = "루틴 스케줄 ID", example = "1") final Long scheduleId,
         @RequestBody @Valid final RoutineScheduleCompleteRequest request,
         @AuthenticationPrincipal UserDetails userDetails,
