@@ -1,6 +1,8 @@
 package com.honlife.core.app.controller.member;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -18,8 +20,10 @@ import com.honlife.core.app.model.member.model.MemberItemDTO;
 import com.honlife.core.app.model.member.service.MemberItemService;
 
 
+@Tag(name="회원 보유 아이템", description = "현재 로그인한 회원이 보유하고 있는 아이템 관련 API 입니다.")
 @RestController
-@RequestMapping(value = "/api/memberItems", produces = MediaType.APPLICATION_JSON_VALUE)
+@SecurityRequirement(name = "bearerAuth")
+@RequestMapping(value = "/api/members/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberItemController {
 
     private final MemberItemService memberItemService;
