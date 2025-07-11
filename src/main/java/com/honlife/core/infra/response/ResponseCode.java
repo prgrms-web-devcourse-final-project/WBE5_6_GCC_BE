@@ -18,8 +18,6 @@ public enum ResponseCode {
     NOT_FOUND_CATEGORY("4045", HttpStatus.NOT_FOUND, "Category not found."),
     NOT_FOUND_QUEST("4046", HttpStatus.NOT_FOUND, "Quest not found."),
     NOT_FOUND_POLICY("4047", HttpStatus.NOT_FOUND, "Policy not found."),
-    NOT_FOUND_ITEM_TYPE("4048", HttpStatus.NOT_FOUND, "ItemType not found."),
-    NOT_FOUND_ITEM_KEY("4049", HttpStatus.NOT_FOUND, "ItemKey not found."),
     GRANT_CONFLICT_BADGE("4090", HttpStatus.CONFLICT, "Badge Already granted."),
     GRANT_CONFLICT_POINT("4091", HttpStatus.CONFLICT, "Point Already granted."),
     GRANT_CONFLICT_ITEM("4092", HttpStatus.CONFLICT, "Item Already granted."),
