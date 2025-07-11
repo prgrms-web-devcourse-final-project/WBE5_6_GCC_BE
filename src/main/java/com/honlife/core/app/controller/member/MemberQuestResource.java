@@ -1,6 +1,8 @@
 package com.honlife.core.app.controller.member;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -18,8 +20,12 @@ import com.honlife.core.app.model.member.model.MemberQuestDTO;
 import com.honlife.core.app.model.member.service.MemberQuestService;
 
 
+
+@Tag(name="회원 보유 퀘스트", description = "현재 로그인한 회원이 보유하고 있는 퀘스트 관련 API 입니다.")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping(value = "/api/memberQuests", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/members/quests", produces = MediaType.APPLICATION_JSON_VALUE)
+
 public class MemberQuestResource {
 
     private final MemberQuestService memberQuestService;
@@ -28,6 +34,7 @@ public class MemberQuestResource {
         this.memberQuestService = memberQuestService;
     }
 
+    
     @GetMapping
     public ResponseEntity<List<MemberQuestDTO>> getAllMemberQuests() {
         return ResponseEntity.ok(memberQuestService.findAll());
