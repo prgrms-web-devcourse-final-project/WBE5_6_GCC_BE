@@ -1,4 +1,4 @@
-package com.honlife.core.app.controller.member.payload.memberItem;
+package com.honlife.core.app.controller.member.payload;
 
 import com.honlife.core.app.model.item.code.ItemType;
 import lombok.Builder;
