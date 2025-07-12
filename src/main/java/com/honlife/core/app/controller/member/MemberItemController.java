@@ -69,8 +69,8 @@ public class MemberItemController {
 
         String userId = userDetails.getUsername();
         if (!userId.equals("user01@test.com")) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+            return ResponseEntity.status(ResponseCode.UNAUTHORIZED.status())
+                .body(CommonApiResponse.error(ResponseCode.UNAUTHORIZED));
         }
         if(itemType==null) {
             // 전체 조회
@@ -137,8 +137,8 @@ public class MemberItemController {
     ) {
         String userId = userDetails.getUsername();
         if (!userId.equals("user01@test.com")) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+            return ResponseEntity.status(ResponseCode.UNAUTHORIZED.status())
+                .body(CommonApiResponse.error(ResponseCode.UNAUTHORIZED));
         }
 
         if (itemKey.equals("top_item_01")) {
