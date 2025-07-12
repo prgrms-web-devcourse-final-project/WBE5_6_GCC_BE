@@ -30,11 +30,6 @@ public class MemberImageController {
         this.memberImageService = memberImageService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<MemberImageDTO>> getAllMemberImages() {
-        return ResponseEntity.ok(memberImageService.findAll());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<MemberImageDTO> getMemberImage(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(memberImageService.get(id));
