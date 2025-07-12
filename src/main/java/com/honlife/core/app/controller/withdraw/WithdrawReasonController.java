@@ -1,6 +1,12 @@
 package com.honlife.core.app.controller.withdraw;
 
+import com.honlife.core.app.controller.withdraw.payload.WithdrawReasonRequest;
+import com.honlife.core.app.model.withdraw.code.WithdrawType;
+import com.honlife.core.infra.response.CommonApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.withdraw.dto.WithdrawReasonDTO;
 import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 
-
+@Tag(name = "탈퇴 사유",description = "탈퇴 사유 관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/withdrawReasons", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WithdrawReasonController {
@@ -39,12 +45,30 @@ public class WithdrawReasonController {
         return ResponseEntity.ok(withdrawReasonService.get(id));
     }
 
+    @Operation(
+            summary = "탈퇴 사유 등록",
+            description = """
+    enum 값을 통해 탈퇴 사유를 등록합니다.
+    - type이 'ETC'인 경우: 사용자가 입력한 reason이 저장됩니다.  
+    - 그 외의 경우: 선택한 사유(enum의 label)가 서버에서 자동으로 reason으로 저장됩니다.
+    """
+    )
     @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createWithdrawReason(
-            @RequestBody @Valid final WithdrawReasonDTO withdrawReasonDTO) {
-        final Long createdId = withdrawReasonService.create(withdrawReasonDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
+    public ResponseEntity<CommonApiResponse<Void>> createWithdrawReason(
+            @Parameter(description = "탈퇴 사유 등록 요청 객체")
+            @RequestBody WithdrawReasonRequest request
+    ){
+        String reasonToSave;
+
+        if (request.getType() == WithdrawType.ETC) {
+            if (request.getReason() == null || request.getReason().isBlank()) {
+                throw new IllegalArgumentException("직접 입력 시 사유는 필수입니다.");
+            }
+            reasonToSave = request.getReason();
+        } else {
+            reasonToSave = request.getType().getLabel(); // enum의 한글 설명 사용
+        }
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
     @PutMapping("/{id}")
