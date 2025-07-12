@@ -82,6 +82,8 @@ public class InterestCategoryController {
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
+        // 실제 로직 개발 시 이미 존재하는 관심 카테고리라면 상태를 수정하고, 없다면 추가하도록
+
         if(userDetails.getUsername().equals("user01@test.com")) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
