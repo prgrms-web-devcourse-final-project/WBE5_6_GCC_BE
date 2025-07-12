@@ -1,6 +1,8 @@
 package com.honlife.core.app.controller.category;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.category.dto.InterestCategoryDTO;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
 
-
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name="선호 카테고리", description = "선호 카테고리 관련 API 입니다.")
 @RestController
-@RequestMapping(value = "/api/interestCategories", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/interestCategories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class InterestCategoryController {
 
     private final InterestCategoryService interestCategoryService;
