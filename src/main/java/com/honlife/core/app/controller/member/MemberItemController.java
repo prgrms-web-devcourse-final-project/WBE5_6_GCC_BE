@@ -1,7 +1,7 @@
 package com.honlife.core.app.controller.member;
 
-import com.honlife.core.app.controller.member.payload.memberItem.MemberItemEquippedRequest;
-import com.honlife.core.app.controller.member.payload.memberItem.MemberItemResponse;
+import com.honlife.core.app.controller.member.payload.MemberItemEquippedRequest;
+import com.honlife.core.app.controller.member.payload.MemberItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

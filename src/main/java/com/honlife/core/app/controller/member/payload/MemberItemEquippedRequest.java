@@ -1,4 +1,4 @@
-package com.honlife.core.app.controller.member.payload.memberItem;
+package com.honlife.core.app.controller.member.payload;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
