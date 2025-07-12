@@ -42,8 +42,8 @@ public class MemberItemController {
     @GetMapping
     @Operation(summary = "로그인된 회원의 보유 아이템 조회", description = "로그인된 사용자의 보유 아이템을 조회합니다. <br>type 작성 시 해당 타입에 대한 아이템만 조회됩니다.")
     public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getMemberItems(
-        @Parameter( description = "Item Type (TOP, BOTTOM, ACCESSORY)", example = "TOP")
-        @RequestParam(name="type", required = false) String itemType,
+        @Parameter( description = "아이템 타입", example = "TOP")
+        @RequestParam(name="type", required = false) ItemType itemType,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         // 임시 데이터
@@ -72,17 +72,17 @@ public class MemberItemController {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-        if(itemType==null || itemType.isEmpty()) {
+        if(itemType==null) {
             // 전체 조회
             List<MemberItemResponse> response = List.of(top, bottom, accessory);
             return ResponseEntity.ok(CommonApiResponse.success(response));
-        }else if(itemType.equals(ItemType.TOP.name())) {
+        }else if(itemType.equals(ItemType.TOP)) {
             List<MemberItemResponse> response = List.of(top);
             return ResponseEntity.ok(CommonApiResponse.success(response));
-        }else if(itemType.equals(ItemType.BOTTOM.name())) {
+        }else if(itemType.equals(ItemType.BOTTOM)) {
             List<MemberItemResponse> response = List.of(bottom);
             return ResponseEntity.ok(CommonApiResponse.success(response));
-        }else if(itemType.equals(ItemType.ACCESSORY.name())) {
+        }else if(itemType.equals(ItemType.ACCESSORY)) {
             List<MemberItemResponse> response = List.of(accessory);
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }else{
