@@ -1,17 +1,22 @@
 package com.honlife.core.app.controller.category;
 
+import com.honlife.core.app.controller.category.payload.InterestCategoryPayload;
+import com.honlife.core.app.controller.category.payload.UpdateInterestCategoryRequest;
+import com.honlife.core.infra.response.CommonApiResponse;
+import com.honlife.core.infra.response.ResponseCode;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,37 +36,31 @@ public class InterestCategoryController {
         this.interestCategoryService = interestCategoryService;
     }
 
+    /**
+     * 선호 카테고리 조회
+     * @param userDetails
+     * @return
+     */
+    @Operation(summary = "선호 카테고리 조회", description = "로그인한 회원의 선호 카테고리를 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<InterestCategoryDTO>> getAllInterestCategories() {
-        return ResponseEntity.ok(interestCategoryService.findAll());
-    }
+    public ResponseEntity<CommonApiResponse<List<InterestCategoryPayload>>> getInterestCategories(@AuthenticationPrincipal UserDetails userDetails) {
 
-    @GetMapping("/{id}")
-    public ResponseEntity<InterestCategoryDTO> getInterestCategory(
-            @PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(interestCategoryService.get(id));
-    }
+        if(userDetails.getUsername().equals("user01@test.com")) {
+            List<InterestCategoryPayload> response = new ArrayList<>();
 
-    @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createInterestCategory(
-            @RequestBody @Valid final InterestCategoryDTO interestCategoryDTO) {
-        final Long createdId = interestCategoryService.create(interestCategoryDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-    }
+            response.add(InterestCategoryPayload.builder()
+                .categoryId(1L)
+                .categoryName("청소").build());
+            response.add(InterestCategoryPayload.builder()
+                .categoryId(2L)
+                .categoryName("요리").build());
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Long> updateInterestCategory(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final InterestCategoryDTO interestCategoryDTO) {
-        interestCategoryService.update(id, interestCategoryDTO);
-        return ResponseEntity.ok(id);
-    }
+            return ResponseEntity.ok(CommonApiResponse.success(response));
 
-    @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteInterestCategory(@PathVariable(name = "id") final Long id) {
-        interestCategoryService.delete(id);
-        return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(ResponseCode.UNAUTHORIZED.status())
+            .body(CommonApiResponse.error(ResponseCode.UNAUTHORIZED));
+
     }
 
 }
