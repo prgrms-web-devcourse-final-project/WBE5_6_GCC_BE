@@ -86,7 +86,7 @@ public class MemberController {
     @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
         + "현재 비밀번호와 변경할 비밀번호를 받으며, 내부적으로 비밀번호 비교 후 비밀번호가 일치할 때 변경합니다.<br>"
         + "비밀번호가 일치하지 않는 경우, 401응답이 반환됩니다.")
-    @PostMapping("/password")
+    @PutMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
