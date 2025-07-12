@@ -25,7 +25,7 @@ import com.honlife.core.app.model.category.service.InterestCategoryService;
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name="선호 카테고리", description = "선호 카테고리 관련 API 입니다.")
 @RestController
-@RequestMapping(value = "/api/v1/interestCategories", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/categories/interests", produces = MediaType.APPLICATION_JSON_VALUE)
 public class InterestCategoryController {
 
     private final InterestCategoryService interestCategoryService;
