@@ -47,11 +47,6 @@ public class MemberController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping
-    public ResponseEntity<List<MemberDTO>> getAllMembers() {
-        return ResponseEntity.ok(memberService.findAll());
-    }
-
     /**
      * 로그인된 회원의 정보 조회
      * @param userDetails
