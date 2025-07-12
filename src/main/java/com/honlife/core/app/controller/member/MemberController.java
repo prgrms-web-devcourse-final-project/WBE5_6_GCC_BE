@@ -102,6 +102,7 @@ public class MemberController {
 
     /**
      * 회원 정보 변경 요청 처리 API
+     * @param userDetails 유저 인증 정보
      * @param memberPayload 회원 정보 객체
      * @return 변경에 성공하면 {@code 200}을 반환합니다.
      * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
