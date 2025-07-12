@@ -21,7 +21,7 @@ import com.honlife.core.infra.util.ReferencedWarning;
 
 
 @RestController
-@RequestMapping(value = "/api/memberImages", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members/images", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberImageController {
 
     private final MemberImageService memberImageService;
