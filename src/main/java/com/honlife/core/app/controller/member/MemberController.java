@@ -1,6 +1,7 @@
 package com.honlife.core.app.controller.member;
 
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
+import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -117,15 +118,18 @@ public class MemberController {
     }
 
     /**
-     * 회원 삭제 (아직 미구현 상태입니다.)
-     * @param id
-     * @return
+     * 회원 탈퇴 요청 처리 API
+     * @param userDetails 인증 정보
+     * @param withdrawRequest 탈퇴 사유 타입
+     * @return 탈퇴처리에 성공 시 {@code 200}을 반환합니다.
+     * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
-    @DeleteMapping("/{id}")
-    @Operation(summary = "특정 회원 삭제", description = "특정 회원에 대한 정보를 삭제합니다.")
+    @DeleteMapping
+    @Operation(summary = "회원 탈퇴", description = "회원탈퇴를 처리합니다.<br>"
+        + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요.")
     public ResponseEntity<CommonApiResponse<Void>> deleteMember(
-        @PathVariable(name = "id")
-        @Schema(description = "사용자 식별 id", example = "10000") final Long id
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody @Valid final MemberWithdrawRequest withdrawRequest
     ) {
 //        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
 //        if (referencedWarning != null) {
@@ -134,13 +138,11 @@ public class MemberController {
 //        memberService.delete(id);
 
         // 예시 응답
-        if(id == 10000) {
+        String userEmail = userDetails.getUsername();
+        if(userEmail.equals("user01@test.com")) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
-        } else {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-
+        return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
     }
 
 }
