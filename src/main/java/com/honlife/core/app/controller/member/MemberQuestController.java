@@ -1,9 +1,11 @@
 package com.honlife.core.app.controller.member;
 
 import com.honlife.core.app.controller.member.payload.MemberQuestResponse;
+import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,8 +42,8 @@ public class MemberQuestController {
         + "<br>type을 입력하지 않으면 전체 조회를, 입력하면 type에 해당하는 퀘스트를 조회합니다.")
     public ResponseEntity<CommonApiResponse<List<MemberQuestResponse>>> getMemberQuests(
         @AuthenticationPrincipal UserDetails userDetails,
-        @Schema(description="퀘스트 타입 (WEEKLY, EVENT)", example = "WEEKLY")
-        @RequestParam(name = "type", required = false) String questType
+        @Parameter(description="퀘스트 타입", example = "WEEKLY", schema = @Schema(allowableValues = {"WEEKLY", "EVENT"}))
+        @RequestParam(name = "type", required = false) PointSourceType questType
     ) {
         // 퀘스트 데이터들
         MemberQuestResponse weeklyQuest1 = MemberQuestResponse.builder()
@@ -78,20 +80,20 @@ public class MemberQuestController {
             .build();
 
         if(userDetails.getUsername().equals("user01@test.com")) {
-            if(questType==null||questType.isEmpty()) {
+            if(questType==null) {
                 List<MemberQuestResponse> response = List.of(weeklyQuest1,weeklyQuest2, eventQuest1, eventQuest2);
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
-            if(questType.equals("WEEKLY")){
+            if(questType.equals(PointSourceType.WEEKLY)){
                 List<MemberQuestResponse> response = List.of(weeklyQuest1,weeklyQuest2);
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
-            if(questType.equals("EVENT")){
+            if(questType.equals(PointSourceType.EVENT)){
                 List<MemberQuestResponse> response = List.of(eventQuest1, eventQuest2);
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
         }
-        return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+        return ResponseEntity.status(ResponseCode.UNAUTHORIZED.status())
+            .body(CommonApiResponse.error(ResponseCode.UNAUTHORIZED));
     }
 }
