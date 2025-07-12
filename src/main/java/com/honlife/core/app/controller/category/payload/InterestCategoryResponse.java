@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class InterestCategoryPayload {
+public class InterestCategoryResponse {
 
     private Long categoryId;
 
