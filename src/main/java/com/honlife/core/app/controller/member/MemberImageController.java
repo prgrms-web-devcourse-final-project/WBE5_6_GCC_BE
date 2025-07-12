@@ -1,6 +1,7 @@
 package com.honlife.core.app.controller.member;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import com.honlife.core.infra.util.ReferencedException;
 import com.honlife.core.infra.util.ReferencedWarning;
 
 
+@Tag(name="회원")
 @RestController
 @RequestMapping(value = "/api/v1/members/images", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberImageController {
