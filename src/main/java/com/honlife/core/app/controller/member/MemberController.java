@@ -49,8 +49,8 @@ public class MemberController {
 
     /**
      * 로그인된 회원의 정보 조회
-     * @param userDetails
-     * @return
+     * @param userDetails 유저 인증 정보 객체
+     * @return 조회 성공시 {@code CommonApiResponse<}{@link MemberPayload}{@code >}형태로 사용자의 정보를 반한홥니다.
      */
     @Operation(summary = "로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
