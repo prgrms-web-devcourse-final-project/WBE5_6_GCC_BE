@@ -6,6 +6,7 @@ import com.honlife.core.infra.response.CommonApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -26,6 +27,7 @@ import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 @Tag(name = "탈퇴 사유",description = "탈퇴 사유 관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/withdrawReasons", produces = MediaType.APPLICATION_JSON_VALUE)
+@SecurityRequirement(name = "bearerAuth")
 public class WithdrawReasonController {
 
     private final WithdrawReasonService withdrawReasonService;
