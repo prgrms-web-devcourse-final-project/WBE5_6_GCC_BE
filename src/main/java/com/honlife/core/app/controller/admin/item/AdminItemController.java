@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -42,9 +43,9 @@ public class AdminItemController {
      * @param itemType 아이템 타입
      * @return 모든 아이템에 대한 리스트를 반환합니다. 만약 특정 타입이 함께 넘어온 경우, 해당 타입의 모든 아이템 리스트가 반환됩니다.
      */
-    @GetMapping("/{type}")
+    @GetMapping
     public ResponseEntity<CommonApiResponse<?>> getItems(
-        @PathVariable(name = "type") final ItemType itemType
+        @RequestParam(value = "type", required = false) final ItemType itemType
     ) {
         List<AdminItemResponse> items = new ArrayList<>();
         if(itemType != null) {
