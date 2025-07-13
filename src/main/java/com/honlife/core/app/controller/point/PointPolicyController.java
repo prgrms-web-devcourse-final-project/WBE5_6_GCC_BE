@@ -17,8 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -45,13 +44,16 @@ public class PointPolicyController {
 
     /**
      * 포인트 정책 목록 조회 API
-     * @param userDetails 로그인된 사용자 정보
+     * @param type 포인트 소스 타입 (선택사항)
      * @return List<PointPolicyDTO>
      */
     @Operation(
         summary = "포인트 정책 목록 조회",
         description = "관리자가 설정한 모든 포인트 정책 목록을 조회합니다.<br><br>" +
             "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
+            "<strong>파라미터:</strong><br>" +
+            "• type 있음: 해당 타입의 정책만 반환<br>" +
+            "• type 없음: 모든 타입의 정책 반환<br><br>" +
             "<strong>응답 데이터:</strong><br>" +
             "• 모든 포인트 정책 목록 (활성/비활성 포함)<br>" +
             "• 포인트 소스 타입별 정책<br>" +
@@ -66,69 +68,62 @@ public class PointPolicyController {
     )
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<PointPolicyDTO>>> getAllPointPolicies(
-        @AuthenticationPrincipal UserDetails userDetails
+        @RequestParam(required = false)
+        @Schema(description = "포인트 소스 타입 (선택사항)", example = "ROUTINE") PointSourceType type
     ) {
         // 모킹 데이터 생성
         List<PointPolicyDTO> policies = new ArrayList<>();
 
-        // 루틴 관련 정책들
-        PointPolicyDTO routineComplete = new PointPolicyDTO();
-        routineComplete.setId(1L);
-        routineComplete.setType(PointSourceType.ROUTINE);
-        routineComplete.setReferenceKey("ROUTINE_COMPLETE");
-        routineComplete.setPoint(10);
-        routineComplete.setIsActive(true);
-        routineComplete.setCreatedAt(LocalDateTime.of(2025, 1, 10, 9, 0));
-        routineComplete.setUpdatedAt(LocalDateTime.of(2025, 1, 10, 9, 0));
-        policies.add(routineComplete);
+        if (type == null) {
+            // 전체 타입 정책 반환
+            PointPolicyDTO routineComplete = new PointPolicyDTO();
+            routineComplete.setId(1L);
+            routineComplete.setType(PointSourceType.ROUTINE);
+            routineComplete.setReferenceKey("ROUTINE_COMPLETE");
+            routineComplete.setPoint(10);
+            routineComplete.setIsActive(true);
+            routineComplete.setCreatedAt(LocalDateTime.of(2025, 1, 10, 9, 0));
+            routineComplete.setUpdatedAt(LocalDateTime.of(2025, 1, 10, 9, 0));
+            policies.add(routineComplete);
 
-        PointPolicyDTO streakBonus = new PointPolicyDTO();
-        streakBonus.setId(2L);
-        streakBonus.setType(PointSourceType.ROUTINE);
-        streakBonus.setReferenceKey("STREAK_7_DAYS");
-        streakBonus.setPoint(50);
-        streakBonus.setIsActive(true);
-        streakBonus.setCreatedAt(LocalDateTime.of(2025, 1, 10, 9, 15));
-        streakBonus.setUpdatedAt(LocalDateTime.of(2025, 1, 12, 14, 20));
-        policies.add(streakBonus);
-
-        // 주간 퀘스트 정책
-        PointPolicyDTO weeklyQuest = new PointPolicyDTO();
-        weeklyQuest.setId(3L);
-        weeklyQuest.setType(PointSourceType.WEEKLY);
-        weeklyQuest.setReferenceKey("W_COMPLETE_10_ROUTINES");
-        weeklyQuest.setPoint(100);
-        weeklyQuest.setIsActive(true);
-        weeklyQuest.setCreatedAt(LocalDateTime.of(2025, 1, 11, 10, 30));
-        weeklyQuest.setUpdatedAt(LocalDateTime.of(2025, 1, 11, 10, 30));
-        policies.add(weeklyQuest);
-
-        // 이벤트 퀘스트 정책
-        PointPolicyDTO eventQuest = new PointPolicyDTO();
-        eventQuest.setId(4L);
-        eventQuest.setType(PointSourceType.EVENT);
-        eventQuest.setReferenceKey("E_NEW_YEAR_CHALLENGE");
-        eventQuest.setPoint(500);
-        eventQuest.setIsActive(false);
-        eventQuest.setCreatedAt(LocalDateTime.of(2024, 12, 25, 15, 0));
-        eventQuest.setUpdatedAt(LocalDateTime.of(2025, 1, 5, 12, 0));
-        policies.add(eventQuest);
-
-        // 도전과제 정책
-        PointPolicyDTO challengeBadge = new PointPolicyDTO();
-        challengeBadge.setId(5L);
-        challengeBadge.setType(PointSourceType.CHALLENGE);
-        challengeBadge.setReferenceKey("BADGE_GOLD_CLEANER");
-        challengeBadge.setPoint(200);
-        challengeBadge.setIsActive(true);
-        challengeBadge.setCreatedAt(LocalDateTime.of(2025, 1, 8, 14, 45));
-        challengeBadge.setUpdatedAt(LocalDateTime.of(2025, 1, 8, 14, 45));
-        policies.add(challengeBadge);
+            PointPolicyDTO weeklyQuest = new PointPolicyDTO();
+            weeklyQuest.setId(2L);
+            weeklyQuest.setType(PointSourceType.WEEKLY);
+            weeklyQuest.setReferenceKey("W_COMPLETE_10_ROUTINES");
+            weeklyQuest.setPoint(100);
+            weeklyQuest.setIsActive(true);
+            weeklyQuest.setCreatedAt(LocalDateTime.of(2025, 1, 11, 10, 30));
+            weeklyQuest.setUpdatedAt(LocalDateTime.of(2025, 1, 11, 10, 30));
+            policies.add(weeklyQuest);
+        } else if (type == PointSourceType.ROUTINE) {
+            // 루틴 관련 정책만
+            PointPolicyDTO routineComplete = new PointPolicyDTO();
+            routineComplete.setId(1L);
+            routineComplete.setType(PointSourceType.ROUTINE);
+            routineComplete.setReferenceKey("ROUTINE_COMPLETE");
+            routineComplete.setPoint(10);
+            routineComplete.setIsActive(true);
+            routineComplete.setCreatedAt(LocalDateTime.of(2025, 1, 10, 9, 0));
+            routineComplete.setUpdatedAt(LocalDateTime.of(2025, 1, 10, 9, 0));
+            policies.add(routineComplete);
+        } else if (type == PointSourceType.WEEKLY) {
+            // 주간 퀘스트 정책만
+            PointPolicyDTO weeklyQuest = new PointPolicyDTO();
+            weeklyQuest.setId(2L);
+            weeklyQuest.setType(PointSourceType.WEEKLY);
+            weeklyQuest.setReferenceKey("W_COMPLETE_10_ROUTINES");
+            weeklyQuest.setPoint(100);
+            weeklyQuest.setIsActive(true);
+            weeklyQuest.setCreatedAt(LocalDateTime.of(2025, 1, 11, 10, 30));
+            weeklyQuest.setUpdatedAt(LocalDateTime.of(2025, 1, 11, 10, 30));
+            policies.add(weeklyQuest);
+        }
 
         // 실제 구현 시에는 다음과 같은 로직 수행:
-        // 1. 모든 PointPolicy 조회 (활성/비활성 포함)
-        // 2. 생성일시 기준 정렬
-        // 3. DTO 변환하여 반환
+        // 1. type이 있으면 해당 타입의 정책만 조회
+        // 2. type이 없으면 모든 정책 조회 (활성/비활성 포함)
+        // 3. 생성일시 기준 정렬
+        // 4. DTO 변환하여 반환
 
         return ResponseEntity.ok(CommonApiResponse.success(policies));
     }
@@ -136,7 +131,6 @@ public class PointPolicyController {
     /**
      * 특정 포인트 정책 조회 API
      * @param policyId 정책 ID
-     * @param userDetails 로그인된 사용자 정보
      * @return PointPolicyDTO
      */
     @Operation(
@@ -148,11 +142,10 @@ public class PointPolicyController {
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<PointPolicyDTO>> getPointPolicy(
         @PathVariable(name = "id")
-        @Schema(description = "정책 ID", example = "1") final Long policyId,
-        @AuthenticationPrincipal UserDetails userDetails
+        @Schema(description = "정책 ID", example = "1") final Long policyId
     ) {
         // 존재하지 않는 정책 ID로 접근
-        if (policyId < 1L || policyId > 5L) {
+        if (policyId != 1L && policyId != 2L) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_POLICY.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_POLICY));
         }
@@ -173,7 +166,6 @@ public class PointPolicyController {
     /**
      * 포인트 정책 생성 API
      * @param request 정책 생성 요청 정보
-     * @param userDetails 로그인된 사용자 정보
      * @param bindingResult validation
      * @return
      */
@@ -196,9 +188,8 @@ public class PointPolicyController {
             "*실제 DB에 반영되지 않음*"
     )
     @PostMapping
-    public ResponseEntity<CommonApiResponse<Long>> createPointPolicy(
+    public ResponseEntity<CommonApiResponse<Void>> createPointPolicy(
         @RequestBody @Valid final PointPolicyDTO request,
-        @AuthenticationPrincipal UserDetails userDetails,
         BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -211,18 +202,15 @@ public class PointPolicyController {
         // 1. referenceKey 중복 검사
         // 2. 포인트 양수 검증
         // 3. pointPolicyService.create() 호출
-        // 4. 생성된 ID 반환
 
-        Long createdId = 999L; // 모킹 ID
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(CommonApiResponse.success(createdId));
+            .body(CommonApiResponse.noContent());
     }
 
     /**
      * 포인트 정책 수정 API
      * @param policyId 수정할 정책 ID
      * @param request 정책 수정 요청 정보
-     * @param userDetails 로그인된 사용자 정보
      * @param bindingResult validation
      * @return
      */
@@ -245,7 +233,6 @@ public class PointPolicyController {
         @PathVariable(name = "id")
         @Schema(description = "정책 ID", example = "1") final Long policyId,
         @RequestBody @Valid final PointPolicyDTO request,
-        @AuthenticationPrincipal UserDetails userDetails,
         BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -255,7 +242,7 @@ public class PointPolicyController {
         }
 
         // 존재하지 않는 정책 ID로 접근
-        if (policyId < 1L || policyId > 5L) {
+        if (policyId != 1L && policyId != 2L) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_POLICY.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_POLICY));
         }
@@ -272,7 +259,6 @@ public class PointPolicyController {
     /**
      * 포인트 정책 삭제 API
      * @param policyId 삭제할 정책 ID
-     * @param userDetails 로그인된 사용자 정보
      * @return
      */
     @Operation(
@@ -290,11 +276,10 @@ public class PointPolicyController {
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> deletePointPolicy(
         @PathVariable(name = "id")
-        @Schema(description = "정책 ID", example = "1") final Long policyId,
-        @AuthenticationPrincipal UserDetails userDetails
+        @Schema(description = "정책 ID", example = "1") final Long policyId
     ) {
         // 존재하지 않는 정책 ID로 접근
-        if (policyId < 1L || policyId > 5L) {
+        if (policyId != 1L && policyId != 2L) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_POLICY.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_POLICY));
         }
