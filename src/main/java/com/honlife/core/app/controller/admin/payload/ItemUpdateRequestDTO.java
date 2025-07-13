@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.item.dto;
+package com.honlife.core.app.controller.admin.payload;
 
 import com.honlife.core.app.model.item.code.ItemType;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.routine.dto;
+package com.honlife.core.app.controller.admin.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;

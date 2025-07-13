@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.quest.dto;
+package com.honlife.core.app.controller.admin.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
@@ -8,13 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter

@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.quest.domain.EventQuest;
-import com.honlife.core.app.model.quest.dto.EventQuestRequestDTO;
+import com.honlife.core.app.controller.admin.payload.EventQuestRequestDTO;
 import com.honlife.core.app.model.quest.repos.EventQuestRepository;
 import com.honlife.core.infra.util.NotFoundException;
 

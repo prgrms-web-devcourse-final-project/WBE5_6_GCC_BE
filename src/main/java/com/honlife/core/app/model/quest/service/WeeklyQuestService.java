@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.quest.domain.WeeklyQuest;
-import com.honlife.core.app.model.quest.dto.WeeklyQuestRequestDTO;
+import com.honlife.core.app.controller.admin.payload.WeeklyQuestRequestDTO;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestRepository;
 import com.honlife.core.infra.util.NotFoundException;
 
