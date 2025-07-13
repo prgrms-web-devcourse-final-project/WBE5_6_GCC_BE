@@ -1,8 +1,6 @@
 package com.honlife.core.app.controller.admin.routine.payload;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
