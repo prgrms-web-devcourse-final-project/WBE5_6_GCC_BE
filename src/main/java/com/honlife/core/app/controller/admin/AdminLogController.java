@@ -40,7 +40,7 @@ public class AdminLogController {
             description = " 지정한 시작일(`startDate`)과 종료일(`endDate`) 사이의 로그인 기록을 조회합니다. <br>" +
                     "- 날짜는 yyyy-MM-dd'T'HH:mm:ss 형식으로 전달해야 합니다. <br>" +
                     "- 추후 pagination(페이지네이션)이 적용될 예정입니다.")
-    @GetMapping("/log/login")
+    @GetMapping("/login")
     public ResponseEntity<CommonApiResponse<List<LoginLogResponse>>> getLoginLogsByDate(
             @RequestBody LoginLogRequest loginLogRequest
     ) {
@@ -72,7 +72,7 @@ public class AdminLogController {
                     "- 날짜는 yyyy-MM-dd'T'HH:mm:ss 형식으로 전달해야 합니다. <br>" +
                     "- 추후 pagination(페이지네이션)이 적용될 예정입니다."
     )
-    @GetMapping("/log/point")
+    @GetMapping("/point")
     public ResponseEntity<CommonApiResponse<List<PointLogResponse>>> getPointLogs(
             @RequestBody PointLogRequest pointLogRequest
     ) {
