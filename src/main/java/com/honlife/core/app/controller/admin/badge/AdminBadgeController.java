@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.MediaType;
@@ -44,6 +45,9 @@ public class AdminBadgeController {
         .requirement(5)
         .info("이제 청소 좀 한다고 말할 수 있겠네요!")
         .categoryName("청소")
+        .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
+        .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+        .isActive(true)
         .build());
     responses.add(AdminBadgeResponse.builder()
         .badgeId(2L)
@@ -54,6 +58,9 @@ public class AdminBadgeController {
         .requirement(5)
         .info("나름 계란 프라이는 할 수 있다구요!")
         .categoryName("요리")
+        .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
+        .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+        .isActive(true)
         .build());
 
     return ResponseEntity.ok(CommonApiResponse.success(responses));
@@ -81,6 +88,9 @@ public class AdminBadgeController {
           .requirement(5)
           .info("이제 청소 좀 한다고 말할 수 있겠네요!")
           .categoryName("청소")
+          .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
+          .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+          .isActive(true)
           .build();
       return ResponseEntity.ok(CommonApiResponse.success(response));
     }
@@ -94,6 +104,9 @@ public class AdminBadgeController {
           .requirement(5)
           .info("나름 계란 프라이는 할 수 있다구요!")
           .categoryName("요리")
+          .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
+          .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+          .isActive(true)
           .build();
       return ResponseEntity.ok(CommonApiResponse.success(response));
     }else{
