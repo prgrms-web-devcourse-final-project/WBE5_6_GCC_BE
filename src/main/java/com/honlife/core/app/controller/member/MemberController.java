@@ -1,8 +1,9 @@
 package com.honlife.core.app.controller.member;
 
+import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
+import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,30 +39,28 @@ import com.honlife.core.infra.response.ResponseCode;
 public class MemberController {
 
     private final MemberService memberService;
+    //TODO: Dev로 넘어가면 Service로 넘기기
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberController(final MemberService memberService) {
+    public MemberController(final MemberService memberService, PasswordEncoder passwordEncoder) {
         this.memberService = memberService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<MemberDTO>> getAllMembers() {
-        return ResponseEntity.ok(memberService.findAll());
+        //TODO: Dev로 넘어가면 Service로 넘기기
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
      * 로그인된 회원의 정보 조회
-     * @param userDetails
-     * @return
+     * @param userDetails 유저 인증 정보 객체
+     * @return 조회 성공시 {@code CommonApiResponse<}{@link MemberPayload}{@code >}형태로 사용자의 정보를 반한홥니다.
      */
     @Operation(summary = "로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping("/me")
+    @GetMapping
     public ResponseEntity<CommonApiResponse<MemberPayload>> getCurrentMember(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
         if(userId.equals("user01@test.com")){
             MemberPayload response = new MemberPayload();
-            response.setEmail("user01@test.com");
             response.setName("홍길동");
             response.setNickname("닉네임");
             response.setResidenceExperience(ResidenceExperience.OVER_10Y);
@@ -74,56 +74,62 @@ public class MemberController {
     }
 
     /**
-     * 특정 회원의 정보 조회
-     * @param email
-     * @return
+     * 비밀번호 변경 요청 처리 API
+     * @param userDetails 유저 인증 정보
+     * @param updatePasswordRequest 현재 비밀번호와 변경할 비밀번호를 담은 객체
+     * @return 변경 처리 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
      */
-    @GetMapping("/{email}")
-    @Operation(summary = "특정 회원의 정보 조회", description = "특정 회원에 대한 정보를 조회합니다.")
-    public ResponseEntity<CommonApiResponse<MemberPayload>> getMember(
-        @PathVariable(name="email")
-        @Schema(description = "사용자 이메일", example = "user01@test.com") final String email
+    @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
+        + "현재 비밀번호와 변경할 비밀번호를 받으며, 내부적으로 비밀번호 비교 후 비밀번호가 일치할 때 변경합니다.<br>"
+        + "비밀번호가 일치하지 않는 경우, 401응답이 반환됩니다.")
+    @PutMapping("/password")
+    public ResponseEntity<CommonApiResponse<Void>> updatePassword(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
     ) {
-        if(email.equals("user01@test.com")){
-            MemberPayload response = new MemberPayload();
-            response.setEmail("user01@test.com");
-            response.setName("홍길동");
-            response.setNickname("닉네임");
-            response.setResidenceExperience(ResidenceExperience.OVER_10Y);
-            response.setRegionDept1("서울시");
-            response.setRegionDept2("강북구");
-            response.setRegionDept3("미아동");
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        } else {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+        String userEmail = userDetails.getUsername();
+        String userPassword = userDetails.getPassword();
+        //TODO: Dev때 Service로 옮기기
+        if(userEmail.equals("user01@test.com") && passwordEncoder.matches("1111", userPassword)){
+            return ResponseEntity.ok(CommonApiResponse.noContent());
         }
-    }
-
-    @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createMember(@RequestBody @Valid final MemberDTO memberDTO) {
-        final Long createdId = memberService.create(memberDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Long> updateMember(@PathVariable(name = "id") final Long id,
-        @RequestBody @Valid final MemberDTO memberDTO) {
-        memberService.update(id, memberDTO);
-        return ResponseEntity.ok(id);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
     }
 
     /**
-     * 회원 삭제 (아직 미구현 상태입니다.)
-     * @param id
-     * @return
+     * 회원 정보 변경 요청 처리 API
+     * @param userDetails 유저 인증 정보
+     * @param memberPayload 회원 정보 객체
+     * @return 변경에 성공하면 {@code 200}을 반환합니다.
+     * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
-    @DeleteMapping("/{id}")
-    @Operation(summary = "특정 회원 삭제", description = "특정 회원에 대한 정보를 삭제합니다.")
+    @Operation(summary="회원정보 업데이트", description="회원정보를 업데이트 합니다.<br>"
+        + "이름, 닉네임은 필수 정보입니다. 나머지 정보는 비어있어도 되지만, 요청에는 포함되어있어야 합니다.")
+    @PutMapping
+    public ResponseEntity<CommonApiResponse<Void>> updateMember(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody @Valid final MemberPayload memberPayload
+    ) {
+        String userEmail = userDetails.getUsername();
+        if(userEmail.equals("user01@test.com")){
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        }
+        return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+    }
+
+    /**
+     * 회원 탈퇴 요청 처리 API
+     * @param userDetails 인증 정보
+     * @param withdrawRequest 탈퇴 사유 타입
+     * @return 탈퇴처리에 성공 시 {@code 200}을 반환합니다.
+     * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
+     */
+    @DeleteMapping
+    @Operation(summary = "회원 탈퇴", description = "회원탈퇴를 처리합니다.<br>"
+        + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요.")
     public ResponseEntity<CommonApiResponse<Void>> deleteMember(
-        @PathVariable(name = "id")
-        @Schema(description = "사용자 식별 id", example = "10000") final Long id
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody @Valid final MemberWithdrawRequest withdrawRequest
     ) {
 //        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
 //        if (referencedWarning != null) {
@@ -132,13 +138,11 @@ public class MemberController {
 //        memberService.delete(id);
 
         // 예시 응답
-        if(id == 10000) {
+        String userEmail = userDetails.getUsername();
+        if(userEmail.equals("user01@test.com")) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
-        } else {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-
+        return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
     }
 
 }
