@@ -1,35 +1,25 @@
 package com.honlife.core.app.controller.admin.payload;
 
 import com.honlife.core.app.model.point.code.PointLogType;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
+import com.honlife.core.app.model.point.code.PointSourceType;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Schema(description = "포인트 지급/소비 기록 응답 DTO")
+@Setter
+@Builder
 public class PointLogResponse {
 
-  @Schema(description = "기록 ID", example = "10")
-  private Long pointLogId;
+    private Long pointLogId;
 
-  @Schema(description = "이메일", example = "aakjdf@naver.com")
-  private String email;
+    private Long memberId;
 
-  @Schema(description = "타입 (GET/USE)", example = "GET")
-  private PointLogType type;
+    private PointLogType pointLogType;
 
-  @Schema(description = "포인트 양", example = "1000")
-  private Integer point;
+    private PointSourceType reason;
 
-  @Schema(description = "사유", example = "퀘스트 완료")
-  private String reason;
-
-  @Schema(description = "발생 시간", example = "2025-07-05T14:00:00")
-  private LocalDateTime time;
+    private LocalDateTime time;
 }
-
