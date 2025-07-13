@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.w3c.dom.Text;
 
 @Getter
 @Setter
@@ -20,5 +21,5 @@ public class WeeklyQuestUpdateRequestDTO {
   private String name;
 
   @Schema(description = "퀘스트 설명", example = "수정된 퀘스트 설명입니다.")
-  private String info;
+  private Text info;
 }

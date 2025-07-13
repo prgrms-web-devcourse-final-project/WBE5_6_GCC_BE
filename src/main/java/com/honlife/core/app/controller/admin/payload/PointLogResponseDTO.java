@@ -1,5 +1,6 @@
-package com.honlife.core.app.model.point.dto;
+package com.honlife.core.app.controller.admin.payload;
 
+import com.honlife.core.app.model.point.code.PointLogType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class PointLogResponseDTO {
   private String email;
 
   @Schema(description = "타입 (GET/USE)", example = "GET")
-  private String type;
+  private PointLogType type;
 
   @Schema(description = "포인트 양", example = "1000")
   private Integer point;

@@ -18,16 +18,6 @@ public class EventQuestRequestDTO {
     @Schema(description = "퀘스트 ID (수정 시 사용)", example = "1")
     private Long eventQuestId;
 
-    @Schema(description = "생성 시간", example = "2025-07-01T00:00:00")
-    private LocalDateTime createdAt;
-
-    @Schema(description = "수정 시간", example = "2025-07-05T12:00:00")
-    private LocalDateTime updatedAt;
-
-    @JsonProperty("isActive")
-    @Schema(description = "활성 여부", example = "true")
-    private Boolean isActive;
-
     @Size(max = 50)
     @Schema(description = "퀘스트 고유 키", example = "event_001")
     private String key;

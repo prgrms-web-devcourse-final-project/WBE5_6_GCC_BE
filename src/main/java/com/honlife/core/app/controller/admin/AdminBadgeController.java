@@ -44,6 +44,9 @@ public class AdminBadgeController {
   @Operation(
       summary = "뱃지 수정",
       description = "기존 뱃지 정보를 수정합니다.",
+      parameters = {
+          @Parameter(name = "badgeId", description = "수정할 뱃지 ID", required = true, example = "1")
+      },
       requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
           required = true,
           content = @Content(
@@ -52,14 +55,13 @@ public class AdminBadgeController {
           )
       )
   )
-
   @PatchMapping("/{badgeId}")
   public ResponseEntity<CommonApiResponse<String>> updateBadge(
       @PathVariable Long badgeId,
       @RequestBody BadgeDTO request,
       Authentication authentication
   ) {
-    if (badgeId == 9999L) {
+    if (badgeId == 1L) {
       return ResponseEntity
           .status(ResponseCode.NOT_FOUND_BADGE.status())
           .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
@@ -81,7 +83,7 @@ public class AdminBadgeController {
       @PathVariable Long badgeId,
       Authentication authentication
   ) {
-    if (badgeId == 9999L) {
+    if (badgeId == 1L) {
       return ResponseEntity
           .status(ResponseCode.NOT_FOUND_BADGE.status())
           .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));

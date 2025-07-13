@@ -1,4 +1,4 @@
-package com.honlife.core.app.controller.admin.payload;
+package com.honlife.core.app.model.withdraw.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;

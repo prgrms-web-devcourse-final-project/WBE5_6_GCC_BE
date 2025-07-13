@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +54,14 @@ public class AdminWeeklyQuestController {
   @Operation(
       summary = "주간 퀘스트 수정",
       description = "주간 퀘스트를 수정합니다.",
+      parameters = {
+          @Parameter(
+              name = "weeklyId",
+              description = "주간 퀘스트 수정 ID",
+              required = true,
+              example = "1"
+          )
+      },
       requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
           required = true,
           content = @Content(
@@ -69,7 +76,7 @@ public class AdminWeeklyQuestController {
       @RequestBody WeeklyQuestUpdateRequestDTO request,
       Authentication authentication
   ) {
-    if (weeklyId == 9999L) {
+    if (weeklyId == 1) {
       return ResponseEntity.status(ResponseCode.NOT_EXIST_QUEST.status())
           .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_QUEST));
     }
@@ -95,7 +102,7 @@ public class AdminWeeklyQuestController {
       @PathVariable Long weeklyId,
       Authentication authentication
   ) {
-    if (weeklyId == 9999L) {
+    if (weeklyId == 1L) {
       return ResponseEntity.status(ResponseCode.NOT_EXIST_QUEST.status())
           .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_QUEST));
     }

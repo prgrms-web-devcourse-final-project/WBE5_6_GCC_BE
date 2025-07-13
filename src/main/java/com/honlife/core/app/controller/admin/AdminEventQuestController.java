@@ -68,7 +68,7 @@ public class AdminEventQuestController {
       @RequestBody EventQuestUpdateRequestDTO request,
       Authentication authentication
   ) {
-    if (eventId == 10L) {
+    if (eventId == 1L) {
       return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 수정 완료"));
     } else {
       return ResponseEntity.status(ResponseCode.NOT_EXIST_EVENT_QUEST.status())

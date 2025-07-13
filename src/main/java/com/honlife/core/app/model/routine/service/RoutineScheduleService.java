@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.domain.RoutineSchedule;
-import com.honlife.core.app.controller.admin.payload.RoutineScheduleDTO;
+import com.honlife.core.app.model.withdraw.dto.RoutineScheduleDTO;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import com.honlife.core.infra.util.NotFoundException;

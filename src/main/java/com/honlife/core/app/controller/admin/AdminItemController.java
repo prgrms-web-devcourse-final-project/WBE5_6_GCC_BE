@@ -49,6 +49,14 @@ public class AdminItemController {
   @Operation(
       summary = "상점 아이템 수정",
       description = "상점 아이템을 수정합니다.",
+      parameters = {
+          @Parameter(
+              name = "itemId",
+              description = "수정할 아이템의 ID",
+              required = true,
+              example = "10"
+          )
+      },
       requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
           required = true,
           content = @Content(

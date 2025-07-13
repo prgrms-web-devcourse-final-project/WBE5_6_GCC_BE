@@ -56,6 +56,14 @@ public class AdminPresetRoutineController {
   @Operation(
       summary = "추천 루틴 수정",
       description = "추천 루틴을 수정합니다.",
+      parameters = {
+          @Parameter(
+              name = "presetId",
+              description = "추천 루틴 수정 ID",
+              required = true,
+              example = "2"
+          )
+      },
       requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
           required = true,
           content = @Content(
@@ -70,7 +78,7 @@ public class AdminPresetRoutineController {
       @RequestBody RoutinePresetUpdateRequestDTO request,
       Authentication authentication
   ) {
-    if (presetId == 99L) {
+    if (presetId == 1) {
       return ResponseEntity.status(ResponseCode.NOT_EXIST_PRESET.status())
           .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_PRESET));
     }
@@ -96,7 +104,7 @@ public class AdminPresetRoutineController {
       @PathVariable Long presetId,
       Authentication authentication
   ) {
-    if (presetId == 9999L) {
+    if (presetId == 1) {
       return ResponseEntity.status(ResponseCode.NOT_EXIST_PRESET.status())
           .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_PRESET));
     }
