@@ -45,10 +45,11 @@ public class AdminItemController {
      */
     @GetMapping
     public ResponseEntity<CommonApiResponse<?>> getItems(
+        @Schema(description = "아이템 타입 입니다.", example = "TOP")
         @RequestParam(value = "type", required = false) final ItemType itemType
     ) {
         List<AdminItemResponse> items = new ArrayList<>();
-        if(itemType != null) {
+        if(itemType != null && itemType.name().equals("TOP")) {
             items.add(AdminItemResponse.builder()
                 .itemId(1L)
                 .itemKey("top_item_01")
@@ -70,6 +71,8 @@ public class AdminItemController {
                 .isActive(true)
                 .build());
             return ResponseEntity.ok(CommonApiResponse.success(items));
+        } else if (itemType != null) {
+            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
         }
         items.add(AdminItemResponse.builder()
             .itemId(1L)
