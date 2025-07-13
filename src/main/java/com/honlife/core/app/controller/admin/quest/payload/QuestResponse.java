@@ -1,9 +1,8 @@
-package com.honlife.core.app.controller.admin.payload;
+package com.honlife.core.app.controller.admin.quest.payload;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
