@@ -9,7 +9,7 @@ import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,9 +56,9 @@ public class AdminQuestController {
             .questId(1L)
             .name("청소 루틴 3번 완료하기")
             .reward(100)
-            .categoryId(1)
-            .startDate(OffsetDateTime.parse("2025-07-01T00:00:00+09:00"))
-            .endDate(OffsetDateTime.parse("2025-07-12T23:59:59+09:00"))
+            .categoryName(1)
+            .startDate(LocalDateTime.parse("2025-07-01T00:00:00+09:00"))
+            .endDate(LocalDateTime.parse("2025-07-12T23:59:59+09:00"))
             .build()
     );
 
@@ -91,8 +91,8 @@ public class AdminQuestController {
           .name("청소 루틴 3번 완료하기")
           .info("정해진 청소 루틴을 일주일에 3회 완료하세요.")
           .reward(100)
-          .startDate(OffsetDateTime.parse("2025-07-01T00:00:00+09:00"))
-          .endDate(OffsetDateTime.parse("2025-07-12T23:59:59+09:00"))
+          .startDate(LocalDateTime.parse("2025-07-01T00:00:00+09:00"))
+          .endDate(LocalDateTime.parse("2025-07-12T23:59:59+09:00"))
           .build();
 
       return ResponseEntity.ok(CommonApiResponse.success(response));

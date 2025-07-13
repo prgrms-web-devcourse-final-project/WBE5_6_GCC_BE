@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.admin.payload;
 
 import com.honlife.core.app.model.point.code.PointSourceType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,10 +36,10 @@ public class QuestDetailResponse {
 
   @Schema(description = "이벤트 시작일 (ISO-8601 형식)", example = "2025-07-01T00:00:00+09:00")
   //nullable 허용
-  private OffsetDateTime startDate;
+  private LocalDateTime startDate;
 
   @Schema(description = "이벤트 종료일 (ISO-8601 형식)", example = "2025-07-12T23:59:59+09:00")
   //nullable 허용
-  private OffsetDateTime endDate;
+  private LocalDateTime endDate;
 }
 

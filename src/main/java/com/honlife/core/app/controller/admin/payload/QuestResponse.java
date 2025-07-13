@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.admin.payload;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,9 +27,9 @@ public class QuestResponse {
   private int categoryName;
 
   @Schema(description = "시작일", example = "2025-07-01T00:00:00+09:00")
-  private OffsetDateTime startDate;
+  private LocalDateTime startDate;
 
   @Schema(description = "종료일", example = "2025-07-12T23:59:59+09:00")
-  private OffsetDateTime endDate;
+  private LocalDateTime endDate;
 
 }

@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.admin.payload;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,9 +30,9 @@ public class QuestRequest {
 
     @Schema(description = "이벤트 시작일 (ISO-8601 형식)", example = "2025-07-01T00:00:00+09:00")
     //nullable 허용
-    private OffsetDateTime startDate;
+    private LocalDateTime startDate;
 
     @Schema(description = "이벤트 종료일 (ISO-8601 형식)", example = "2025-07-12T23:59:59+09:00")
     //nullable 허용
-    private OffsetDateTime endDate;
+    private LocalDateTime endDate;
 }
