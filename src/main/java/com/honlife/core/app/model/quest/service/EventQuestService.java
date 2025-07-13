@@ -21,14 +21,14 @@ public class EventQuestService {
     public List<EventQuestDTO> findAll() {
         final List<EventQuest> eventQuests = eventQuestRepository.findAll(Sort.by("id"));
         return eventQuests.stream()
-                .map(eventQuest -> mapToDTO(eventQuest, new EventQuestDTO()))
-                .toList();
+            .map(eventQuest -> mapToDTO(eventQuest, new EventQuestDTO()))
+            .toList();
     }
 
     public EventQuestDTO get(final Long id) {
         return eventQuestRepository.findById(id)
-                .map(eventQuest -> mapToDTO(eventQuest, new EventQuestDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(eventQuest -> mapToDTO(eventQuest, new EventQuestDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
     public Long create(final EventQuestDTO eventQuestDTO) {
@@ -39,7 +39,7 @@ public class EventQuestService {
 
     public void update(final Long id, final EventQuestDTO eventQuestDTO) {
         final EventQuest eventQuest = eventQuestRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(eventQuestDTO, eventQuest);
         eventQuestRepository.save(eventQuest);
     }
