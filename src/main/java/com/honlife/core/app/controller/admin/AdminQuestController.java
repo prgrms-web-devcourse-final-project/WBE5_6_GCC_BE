@@ -3,7 +3,6 @@ package com.honlife.core.app.controller.admin;
 import com.honlife.core.app.controller.admin.payload.QuestDetailResponse;
 import com.honlife.core.app.controller.admin.payload.QuestRequest;
 import com.honlife.core.app.controller.admin.payload.QuestResponse;
-import com.honlife.core.app.controller.admin.payload.QuestUpdateRequest;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -26,13 +25,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 
-
+/**
+ * 관리자 전용 퀘스트 관리 컨트롤러입니다.
+ * EVENT, WEEKLY 타입 퀘스트에 대한 CRUD 작업을 처리합니다.
+ */
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
 @Tag(name = "관리자 퀘스트 관리", description = "EVENT / WEEKLY 퀘스트 통합 관리 API입니다.")
 @RequestMapping(value = "/api/v1/admin/quests/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminQuestController {
 
+  /**
+   * 퀘스트 타입별 목록을 조회합니다.
+   *
+   * @param type 퀘스트 타입 (EVENT 또는 WEEKLY)
+   * @return 퀘스트 목록 응답
+   */
   @Operation(summary = "퀘스트 목록 조회", description = "퀘스트 타입별 목록을 조회합니다. 지원 타입: EVENT, WEEKLY")
   @GetMapping
   public ResponseEntity<CommonApiResponse<List<QuestResponse>>> getQuestsByType(
@@ -57,7 +65,13 @@ public class AdminQuestController {
     return ResponseEntity.ok(CommonApiResponse.success(list));
   }
 
-  //퀘스트 상세 조회
+  /**
+   * 특정 ID의 퀘스트 상세 정보를 조회합니다.
+   *
+   * @param type 퀘스트 타입 (EVENT 또는 WEEKLY)
+   * @param id   퀘스트 ID
+   * @return 퀘스트 상세 응답
+   */
   @Operation(summary = "퀘스트 상세 조회", description = "퀘스트 타입과 ID에 해당하는 퀘스트 상세 정보를 반환합니다.")
   @GetMapping("/{id}")
   public ResponseEntity<CommonApiResponse<QuestDetailResponse>> getQuestDetail(
@@ -77,18 +91,24 @@ public class AdminQuestController {
           .name("청소 루틴 3번 완료하기")
           .info("정해진 청소 루틴을 일주일에 3회 완료하세요.")
           .reward(100)
-          .categoryId(1)
           .startDate(OffsetDateTime.parse("2025-07-01T00:00:00+09:00"))
           .endDate(OffsetDateTime.parse("2025-07-12T23:59:59+09:00"))
           .build();
 
-      return ResponseEntity.ok(CommonApiResponse.success(response));} else {
+      return ResponseEntity.ok(CommonApiResponse.success(response));
+    } else {
       return ResponseEntity.status(ResponseCode.NOT_FOUND_QUEST.status())
           .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_QUEST));
     }
   }
 
-  //퀘스트 생성
+  /**
+   * 새로운 퀘스트를 생성합니다.
+   *
+   * @param type    퀘스트 타입 (EVENT 또는 WEEKLY)
+   * @param request 퀘스트 생성 요청 본문
+   * @return 생성 결과 응답
+   */
   @Operation(summary = "퀘스트 생성", description = "퀘스트를 생성합니다. 키가 중복되면 409 응답을 반환합니다.")
   @PostMapping
   public ResponseEntity<CommonApiResponse<Void>> createQuest(
@@ -99,7 +119,6 @@ public class AdminQuestController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
     }
-    // TODO: 실제 구현에서는 DB에서 key 중복 여부를 확인해야 합니다.
     if ("event_key_10".equals(request.getKey())) {
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(CommonApiResponse.noContent());
@@ -109,14 +128,21 @@ public class AdminQuestController {
     }
   }
 
-  //퀘스트 수정
+  /**
+   * 특정 ID의 퀘스트를 수정합니다.
+   *
+   * @param type    퀘스트 타입 (EVENT 또는 WEEKLY)
+   * @param id      수정할 퀘스트 ID
+   * @param request 수정 요청 본문
+   * @return 수정 결과 응답
+   */
   @Operation(summary = "퀘스트 수정", description = "ID에 해당하는 퀘스트를 수정합니다.")
   @PatchMapping("/{id}")
   public ResponseEntity<CommonApiResponse<Void>> updateQuest(
       @PathVariable PointSourceType type,
       @Parameter(description = "수정할 퀘스트 ID", example = "1")
       @PathVariable Long id,
-      @RequestBody @Valid QuestUpdateRequest request
+      @RequestBody @Valid QuestRequest request
   ) {
     if (type != PointSourceType.EVENT && type != PointSourceType.WEEKLY) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -130,13 +156,19 @@ public class AdminQuestController {
     }
   }
 
-  //퀘스트 삭제
+  /**
+   * 특정 ID의 퀘스트를 삭제합니다.
+   *
+   * @param type 퀘스트 타입 (EVENT 또는 WEEKLY)
+   * @param id   삭제할 퀘스트 ID
+   * @return 삭제 결과 응답
+   */
   @Operation(summary = "퀘스트 삭제", description = "ID에 해당하는 퀘스트를 삭제합니다.")
   @DeleteMapping("/{id}")
   public ResponseEntity<CommonApiResponse<Void>> deleteQuest(
       @PathVariable PointSourceType type,
       @Parameter(description = "삭제할 퀘스트 ID", example = "10")
-      @PathVariable  Long id
+      @PathVariable Long id
   ) {
     if (type != PointSourceType.EVENT && type != PointSourceType.WEEKLY) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -150,5 +182,3 @@ public class AdminQuestController {
     }
   }
 }
-
-

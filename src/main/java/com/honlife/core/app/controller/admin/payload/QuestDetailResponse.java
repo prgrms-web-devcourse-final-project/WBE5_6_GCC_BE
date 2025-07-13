@@ -32,9 +32,6 @@ public class QuestDetailResponse {
   @Schema(description = "보상 포인트", example = "100")
   private int reward;
 
-  @Schema(description = "카테고리 ID", example = "1")
-  private int categoryId;
-
 
   @Schema(description = "이벤트 시작일 (ISO-8601 형식)", example = "2025-07-01T00:00:00+09:00")
   //nullable 허용
