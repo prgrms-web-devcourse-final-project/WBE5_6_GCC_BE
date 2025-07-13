@@ -31,6 +31,4 @@ public class AdminBadgeResponse {
 
     private LocalDateTime updateTime;
 
-    private Boolean isActive;
-
 }

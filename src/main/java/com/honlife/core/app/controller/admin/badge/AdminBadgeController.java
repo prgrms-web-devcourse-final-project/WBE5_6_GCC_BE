@@ -1,7 +1,7 @@
 package com.honlife.core.app.controller.admin.badge;
 
 import com.honlife.core.app.controller.admin.badge.payload.AdminBadgeResponse;
-import com.honlife.core.app.controller.admin.badge.payload.AdminBadgeSaveRequest;
+import com.honlife.core.app.controller.admin.badge.payload.AdminBadgeRequest;
 import com.honlife.core.app.model.badge.code.BadgeTier;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -51,7 +51,6 @@ public class AdminBadgeController {
           .categoryName(null)
           .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
           .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-          .isActive(true)
           .build());
       return ResponseEntity.ok(CommonApiResponse.success(responses));
     }
@@ -68,7 +67,6 @@ public class AdminBadgeController {
           .categoryName("청소")
           .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
           .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-          .isActive(true)
           .build());
       return ResponseEntity.ok(CommonApiResponse.success(responses));
     }
@@ -86,7 +84,6 @@ public class AdminBadgeController {
           .categoryName("요리")
           .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
           .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-          .isActive(true)
           .build());
     }
     List<AdminBadgeResponse> responses = new ArrayList<>();
@@ -101,7 +98,6 @@ public class AdminBadgeController {
         .categoryName("청소")
         .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
         .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-        .isActive(true)
         .build());
     responses.add(AdminBadgeResponse.builder()
         .badgeId(2L)
@@ -114,7 +110,6 @@ public class AdminBadgeController {
         .categoryName("요리")
         .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
         .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-        .isActive(true)
         .build());
 
     return ResponseEntity.ok(CommonApiResponse.success(responses));
@@ -144,7 +139,6 @@ public class AdminBadgeController {
           .categoryName("청소")
           .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
           .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-          .isActive(true)
           .build();
       return ResponseEntity.ok(CommonApiResponse.success(response));
     }
@@ -160,7 +154,6 @@ public class AdminBadgeController {
           .categoryName("요리")
           .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
           .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-          .isActive(true)
           .build();
       return ResponseEntity.ok(CommonApiResponse.success(response));
     }else{
@@ -183,13 +176,13 @@ public class AdminBadgeController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = AdminBadgeSaveRequest.class)
+              schema = @Schema(implementation = AdminBadgeRequest.class)
           )
       )
   )
   @PostMapping
   public ResponseEntity<CommonApiResponse<Void>> registerBadge(
-      @RequestBody @Valid AdminBadgeSaveRequest badgeSaveRequest
+      @RequestBody @Valid AdminBadgeRequest badgeSaveRequest
   ) {
 
     return ResponseEntity.ok(CommonApiResponse.noContent());
@@ -214,14 +207,14 @@ public class AdminBadgeController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = AdminBadgeSaveRequest.class)
+              schema = @Schema(implementation = AdminBadgeRequest.class)
           )
       )
   )
   @PatchMapping("/{id}")
   public ResponseEntity<CommonApiResponse<Void>> updateBadge(
       @PathVariable(name="id") Long badgeId,
-      @RequestBody @Valid AdminBadgeSaveRequest badgeSaveRequest
+      @RequestBody @Valid AdminBadgeRequest badgeSaveRequest
   ) {
 
     if (badgeId != 1L) {
