@@ -22,7 +22,9 @@ import java.util.Map;
     info = @Info(
         title = "혼라이프 API 명세서",
         description = "1차적으로 완성된 API 목록이며, 추후 변경사항이 있을 수 있습니다.<br>"
-            + "제안 및 문의사항이 있다면 언제든 알려주세요.",
+            + "특히 <strong>HTTP 메소드에 대한 변경 및 요청 파라메터에 대한 변경이 있을 수 있음</strong>에 유의하세요.<br>"
+            + "제안 및 문의사항이 있다면 언제든 알려주세요.<br><br>"
+            + "<strong>*모든 API는 로그인 API실행후 발급받은 토큰을 Authorize에 입력하고 난뒤 사용할 수 있습니다.</strong>",
         version = "v1"
     )
 )
@@ -47,7 +49,8 @@ public class SwaggerConfig {
                         .name("Authorization")
                         .type(SecurityScheme.Type.HTTP)
                         .scheme("bearer")
-                        .bearerFormat("JWT"))
+                        .bearerFormat("JWT")
+                        .description("Bearer는 제외하고 입력하세요."))
 
                 // 에러 응답 스키마 - status, message, data 순서
                 .addSchemas("ApiErrorResponse", errorSchema)
