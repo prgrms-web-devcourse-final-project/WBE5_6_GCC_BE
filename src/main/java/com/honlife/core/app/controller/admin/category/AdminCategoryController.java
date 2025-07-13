@@ -36,14 +36,14 @@ public class AdminCategoryController {
         List<AdminCategoryResponse> response = new ArrayList<>();
         response.add(AdminCategoryResponse.builder()
             .categoryId(1L)
-            .categoryName("화장실 청소")
+            .categoryName("청소")
             .categoryType(CategoryType.SUB)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
             .build());
         response.add(AdminCategoryResponse.builder()
             .categoryId(2L)
-            .categoryName("식재료 준비")
+            .categoryName("요리")
             .categoryType(CategoryType.SUB)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
