@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminBadgeSaveRequest {
-    
+
     @NotBlank
     @Schema(description = "업적의 키", example = "clean_bronze")
     private String badgeKey;
@@ -37,5 +37,9 @@ public class AdminBadgeSaveRequest {
 
     @Schema(description = "업적과 연관된 카테고리", example = "1")
     private Long categoryId;
+
+    @NotNull
+    @Schema(description = "활성화 여부", example = "true")
+    private Boolean isActive;
 
 }
