@@ -39,6 +39,10 @@ public class AdminQuestController {
       @Parameter(description = "퀘스트 타입", example = "EVENT")
       @PathVariable PointSourceType type
   ) {
+    if (type != PointSourceType.EVENT && type != PointSourceType.WEEKLY) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
     List<QuestResponse> list = List.of(
         QuestResponse.builder()
             .questId(1L)
@@ -61,6 +65,10 @@ public class AdminQuestController {
       @Parameter(description = "조회할 퀘스트 ID", example = "1")
       @PathVariable Long id
   ) {
+    if (type != PointSourceType.EVENT && type != PointSourceType.WEEKLY) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
     if (id == 1L) {
       QuestDetailResponse response = QuestDetailResponse.builder()
           .questId(1L)
@@ -87,6 +95,10 @@ public class AdminQuestController {
       @PathVariable PointSourceType type,
       @RequestBody @Valid QuestRequest request
   ) {
+    if (type != PointSourceType.EVENT && type != PointSourceType.WEEKLY) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
     // TODO: 실제 구현에서는 DB에서 key 중복 여부를 확인해야 합니다.
     if ("event_key_10".equals(request.getKey())) {
       return ResponseEntity.status(HttpStatus.CREATED)
@@ -106,6 +118,10 @@ public class AdminQuestController {
       @PathVariable Long id,
       @RequestBody @Valid QuestUpdateRequest request
   ) {
+    if (type != PointSourceType.EVENT && type != PointSourceType.WEEKLY) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
     if (id == 1L) {
       return ResponseEntity.ok(CommonApiResponse.noContent());
     } else {
@@ -122,6 +138,10 @@ public class AdminQuestController {
       @Parameter(description = "삭제할 퀘스트 ID", example = "10")
       @PathVariable  Long id
   ) {
+    if (type != PointSourceType.EVENT && type != PointSourceType.WEEKLY) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
     if (id == 10L) {
       return ResponseEntity.ok(CommonApiResponse.noContent());
     } else {
