@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,9 +42,9 @@ public class EventQuest extends BaseEntity {
     private String info;
 
     @Column
-    private OffsetDateTime startDate;
+    private LocalDateTime startDate;
 
     @Column
-    private OffsetDateTime endDate;
+    private LocalDateTime endDate;
 
 }
