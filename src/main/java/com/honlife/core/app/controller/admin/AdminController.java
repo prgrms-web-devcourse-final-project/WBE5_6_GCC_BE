@@ -1,4 +1,4 @@
-package com.honlife.core.app.controller.member.admin;
+package com.honlife.core.app.controller.admin;
 
 import com.honlife.core.app.model.loginLog.dto.LoginLogResponseDTO;
 import com.honlife.core.app.model.point.dto.PointLogResponseDTO;
@@ -32,15 +32,8 @@ public class AdminController {
       summary = "유저 접속 기록 조회",
       description = "유저의 로그인 기록을 반환합니다."
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= LoginLogResponseDTO.class)
-      )
-  )
   @GetMapping("/log/login")
-  public ResponseEntity<?> getLoginLogsByMember(Authentication authentication) {
+  public ResponseEntity<CommonApiResponse<List<LoginLogResponseDTO>>> getLoginLogsByMember(Authentication authentication) {
     List<LoginLogResponseDTO> logs = List.of(
         new LoginLogResponseDTO(1L, "aakjdf@naver.com", LocalDateTime.parse("2025-07-06T09:00:00")),
         new LoginLogResponseDTO(2L, "aakjdf@naver.com", LocalDateTime.parse("2025-07-07T08:45:00"))
@@ -49,28 +42,20 @@ public class AdminController {
     return ResponseEntity.ok(CommonApiResponse.success(logs));
   }
 
-
-
-  @Operation(summary = "포인트 기록 조회", description = "포인트 지급 및 소비 기록을 반환합니다.")
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= PointLogResponseDTO.class)
-      )
+  @Operation(
+      summary = "포인트 기록 조회",
+      description = "포인트 지급 및 소비 기록을 반환합니다."
   )
   @GetMapping("/log/point")
-  public ResponseEntity<?> getPointLogs(Authentication authentication) {
+  public ResponseEntity<CommonApiResponse<List<PointLogResponseDTO>>> getPointLogs(Authentication authentication) {
     List<PointLogResponseDTO> logs = List.of(
         new PointLogResponseDTO(10L, "aakjdf@naver.com", "GET", 1000, "퀘스트 완료", LocalDateTime.parse("2025-07-05T14:00:00")),
-            new PointLogResponseDTO(10L, "aakjdf@naver.com", "GET", 1000, "퀘스트 완료", LocalDateTime.parse("2025-07-05T14:00:00"))
+        new PointLogResponseDTO(11L, "aakjdf@naver.com", "USE", 500, "아이템 구매", LocalDateTime.parse("2025-07-05T15:00:00"))
     );
 
     return ResponseEntity.ok(CommonApiResponse.success(logs));
   }
 
-
-  //포인트 로그 삭제
   @Operation(
       summary = "포인트 로그 삭제",
       description = "포인트 지급 및 소비 기록을 삭제합니다.",
@@ -83,15 +68,8 @@ public class AdminController {
           )
       }
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
   @DeleteMapping("/log/point/{logId}")
-  public ResponseEntity<?> pointLogsDelete(@PathVariable Long logId, Authentication authentication) {
+  public ResponseEntity<CommonApiResponse<String>> pointLogsDelete(@PathVariable Long logId, Authentication authentication) {
     if (logId == 42L) {
       return ResponseEntity.ok(CommonApiResponse.success("포인트 로그 삭제 완료"));
     } else {
@@ -99,6 +77,7 @@ public class AdminController {
           .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_LOG));
     }
   }
+
 
 
 

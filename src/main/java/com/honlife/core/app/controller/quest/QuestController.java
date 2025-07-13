@@ -1,13 +1,12 @@
 package com.honlife.core.app.controller.quest;
 
-import com.honlife.core.app.model.quest.dto.QuestDetailResponseDTO;
+import com.honlife.core.app.controller.admin.payload.QuestDetailResponseDTO;
 import com.honlife.core.infra.response.ApiEntityResponse;
 import com.honlife.core.infra.response.CommonApiResponse;
+import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,15 +32,8 @@ public class QuestController {
           @Parameter(name = "key", description = "퀘스트 고유 키값 (선택)", required = false, example = "weekly_clean_3times")
       }
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
   @GetMapping("/quest/{type}")
-  public ResponseEntity<?> getQuestsByTypeAndKey(
+  public ResponseEntity<CommonApiResponse<List<QuestDetailResponseDTO>>> getQuestsByTypeAndKey(
       @PathVariable String type,
       @RequestParam(required = false) String key,
       Authentication authentication
@@ -53,6 +45,8 @@ public class QuestController {
     return ResponseEntity.ok(CommonApiResponse.success(logs));
   }
 
+
+
   @Operation(
       summary = "퀘스트 완료 처리",
       description = "퀘스트를 완료 처리합니다.",
@@ -61,27 +55,37 @@ public class QuestController {
           @Parameter(name = "key", description = "퀘스트 고유 키값", required = true, example = "weekly_do_clean_3T")
       }
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
   @PostMapping("/quest/{type}")
-  public ResponseEntity<?> completeQuest(
+  public ResponseEntity<CommonApiResponse<Map<String, Object>>> completeQuest(
       @PathVariable String type,
       @RequestParam String key,
       Authentication authentication
   ) {
-    // reward 값은 실제 처리 결과에 따라 바뀔 수 있음
-    int reward = 200;
+    // 간단한 유효성 체크 예시
+    if (!type.equalsIgnoreCase("WEEKLY") && !type.equalsIgnoreCase("EVENT")) {
+      return ResponseEntity.status(ResponseCode.INVALID_QUEST_TYPE.status())
+          .body(CommonApiResponse.error(ResponseCode.INVALID_QUEST_TYPE));
+    }
 
+    if (key == null || key.isBlank()) {
+      return ResponseEntity.status(ResponseCode.BAD_REQUEST.status())
+          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
+
+    if (key.equals("weekly_already_done")) {
+      return ResponseEntity.status(ResponseCode.QUEST_ALREADY_COMPLETED.status())
+          .body(CommonApiResponse.error(ResponseCode.QUEST_ALREADY_COMPLETED));
+    }
+
+    // 정상 완료 처리
+    int reward = 200;
     Map<String, Object> data = new HashMap<>();
     data.put("reward", reward);
 
-    return ResponseEntity.ok(new ApiEntityResponse(2000, "OK", data));
+    return ResponseEntity.ok(CommonApiResponse.success(data));
   }
+
+
 
 
 }

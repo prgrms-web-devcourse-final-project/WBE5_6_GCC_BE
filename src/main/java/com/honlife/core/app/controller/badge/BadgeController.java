@@ -8,19 +8,23 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.controller.badge.payload.BadgePayload;
-import com.honlife.core.app.controller.badge.payload.BadgeRewardPayload;
+import com.honlife.core.app.controller.badge.payload.BadgeResponse;
+import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 
 
 @RequiredArgsConstructor
@@ -33,56 +37,104 @@ public class BadgeController {
     private final BadgeService badgeService;
 
     /**
-     * 모든 업적 조회 API
-     * @return List<BadgePayload> 모든 업적에 대한 정보 + 사용자가 가지고 있는지에 대한 정보 DTO
+     * 업적 조회 API
+     * @return List<BadgePayload> 모든 업적에 대한 정보
      */
-    @Operation(summary = "모든 업적 조회", description = "현재 로그인한 사용자에 대한 모든 업적의 정보를 조회합니다.")
-    @GetMapping()
-    public ResponseEntity<CommonApiResponse<List<BadgePayload>>> getAllBadges() {
+    @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
+    @GetMapping
+    public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges(
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+            List<BadgeResponse> responses = new ArrayList<>();
+            responses.add(BadgeResponse.builder()
+                .badgeId(1L)
+                .badgeKey("clean_bronze")
+                .badgeName("초보 청소부")
+                .tier(BadgeTier.BRONZE)
+                .how("청소 루틴 5번 이상 성공")
+                .requirement(5)
+                .info("이제 청소 좀 한다고 말할 수 있겠네요!")
+                .categoryName("청소")
+                .isReceived(false)
+                .receivedDate(LocalDateTime.now())
+                .build());
+            responses.add(BadgeResponse.builder()
+                .badgeId(2L)
+                .badgeKey("cook_bronze")
+                .badgeName("초보 요리사")
+                .tier(BadgeTier.BRONZE)
+                .how("요리 루틴 5번 이상 성공")
+                .requirement(5)
+                .info("나름 계란 프라이는 할 수 있다구요!")
+                .categoryName("요리")
+                .isReceived(true)
+                .receivedDate(LocalDateTime.now())
+                .build());
 
-        List<BadgePayload> achievements = new ArrayList<>();
-        achievements.add(BadgePayload.builder()
-            .badgeId(1L)
-            .badgeKey("clean_bronze")
-            .badgeName("초보 청소부")
-            .tier(BadgeTier.BRONZE)
-            .how("청소 루틴 5번 이상 성공")
-            .requirement(5)
-            .info("이제 청소 좀 한다고 말할 수 있겠네요!")
-            .category("청소")
-            .isReceived(false)
-            .build());
-        achievements.add(BadgePayload.builder()
-            .badgeId(2L)
-            .badgeKey("cook_bronze")
-            .badgeName("초보 요리사")
-            .tier(BadgeTier.BRONZE)
-            .how("요리 루틴 5번 이상 성공")
-            .requirement(5)
-            .info("나름 계란 프라이는 할 수 있다구요!")
-            .category("요리")
-            .isReceived(true)
-            .build());
-
-        return ResponseEntity.ok(CommonApiResponse.success(achievements));
+            return ResponseEntity.ok(CommonApiResponse.success(responses));
     }
 
     /**
+     * 업적 단건 조회 API
+     * @return BadgePayload 특정 업적에 대한 정보
+     */
+    @Operation(summary = "업적 단건 조회", description = "key에 해당하는 업적에 대해 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
+    @GetMapping("/{key}")
+    public ResponseEntity<CommonApiResponse<BadgeResponse>> getBadge(
+        @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
+        @PathVariable(name="key") String badgeKey,
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if(badgeKey.equals("clean_bronze")){
+            BadgeResponse response = BadgeResponse.builder()
+                .badgeId(1L)
+                .badgeKey(badgeKey)
+                .badgeName("초보 청소부")
+                .tier(BadgeTier.BRONZE)
+                .how("청소 루틴 5번 이상 성공")
+                .requirement(5)
+                .info("이제 청소 좀 한다고 말할 수 있겠네요!")
+                .categoryName("청소")
+                .isReceived(false)
+                .receivedDate(LocalDateTime.now())
+                .build();
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }
+        if(badgeKey.equals("cook_bronze")){
+            BadgeResponse response = BadgeResponse.builder()
+                .badgeId(2L)
+                .badgeKey(badgeKey)
+                .badgeName("초보 요리사")
+                .tier(BadgeTier.BRONZE)
+                .how("요리 루틴 5번 이상 성공")
+                .requirement(5)
+                .info("나름 계란 프라이는 할 수 있다구요!")
+                .categoryName("요리")
+                .isReceived(true)
+                .receivedDate(LocalDateTime.now())
+                .build();
+            return ResponseEntity.ok(CommonApiResponse.success(response));
+        }else{
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
+        }
+    }
+    /**
      * 업적 보상 수령 API
-     * @param key 업적 key 값
+     * @param badgeKey 업적 key 값
      * @return BadgeRewardPayload 완료한 업적에 대한 정보 및 포인트 획득 내역
      */
-    @Operation(summary = "업적 보상 수령", description = "key 값을 통해 특정 업적의 보상을 획득합니다.")
+    @Operation(summary = "업적 보상 수령", description = "badge_key 값을 통해 특정 업적의 보상을 획득합니다.")
     @PostMapping
-    public ResponseEntity<CommonApiResponse<BadgeRewardPayload>> claimBadgeReward(
+    public ResponseEntity<CommonApiResponse<BadgeRewardResponse>> claimBadgeReward(
         @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
-        @RequestParam String key){
+        @RequestParam String badgeKey){
         // 달성한 적 없는 업적
-        if(key.equals("clean_bronze")){
-            BadgeRewardPayload response =
-                BadgeRewardPayload.builder()
+        if(badgeKey.equals("clean_bronze")){
+            BadgeRewardResponse response =
+                BadgeRewardResponse.builder()
                     .badgeId(1L)
-                    .badgeKey(key)
+                    .badgeKey(badgeKey)
                     .badgeName("초보 청소부")
                     .pointAdded(50L)
                     .totalPoint(150L)
@@ -91,14 +143,14 @@ public class BadgeController {
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
         // 달성한 적 있는 업적
-        if(key.equals("cook_bronze")){
-            return ResponseEntity.status(ResponseCode.ALREADY_CLAIMED_BADGE.status())
-                .body(CommonApiResponse.error(ResponseCode.ALREADY_CLAIMED_BADGE));
+        if(badgeKey.equals("cook_bronze")){
+            return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_BADGE.status())
+                .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_BADGE));
         }
         // 해당 하는 키가 DB에 없을 경우
         else{
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_BADGE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_BADGE));
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
         }
     }
 

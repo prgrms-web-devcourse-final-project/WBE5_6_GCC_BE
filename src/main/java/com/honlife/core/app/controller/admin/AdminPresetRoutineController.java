@@ -1,7 +1,7 @@
-package com.honlife.core.app.controller.member.admin;
+package com.honlife.core.app.controller.admin;
 
-import com.honlife.core.app.model.routine.dto.RoutinePresetRequestDTO;
-import com.honlife.core.app.model.routine.dto.RoutinePresetUpdateRequestDTO;
+import com.honlife.core.app.controller.admin.payload.RoutinePresetRequestDTO;
+import com.honlife.core.app.controller.admin.payload.RoutinePresetUpdateRequestDTO;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Tag(name="관리자 추천 루틴 관리", description = "관리자 추천루틴 관련 API 입니다.")
-@RequestMapping(value = "/api/v1/admin", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/admin/preset", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminPresetRoutineController {
 
 
-  //추천 루틴 추가
+  // 추천 루틴 추가
   @Operation(
       summary = "추천 루틴 추가",
       description = "추천 루틴을 추가합니다.",
@@ -39,15 +39,11 @@ public class AdminPresetRoutineController {
           )
       )
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
-  @PostMapping("/preset")
-  public ResponseEntity<?> addRoutinePreset(@RequestBody RoutinePresetRequestDTO request, Authentication authentication) {
+  @PostMapping
+  public ResponseEntity<CommonApiResponse<String>> addRoutinePreset(
+      @RequestBody RoutinePresetRequestDTO request,
+      Authentication authentication
+  ) {
     if (request.getContent() == null || request.getCategoryId() == null) {
       return ResponseEntity.status(ResponseCode.BAD_REQUEST.status())
           .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
@@ -56,8 +52,7 @@ public class AdminPresetRoutineController {
     return ResponseEntity.ok(CommonApiResponse.success("추천 루틴 추가 완료"));
   }
 
-
-  //추천 루틴 수정
+  // 추천 루틴 수정
   @Operation(
       summary = "추천 루틴 수정",
       description = "추천 루틴을 수정합니다.",
@@ -69,15 +64,8 @@ public class AdminPresetRoutineController {
           )
       )
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
-  @PatchMapping("/preset/{presetId}")
-  public ResponseEntity<?> modifyRoutinePreset(
+  @PatchMapping("/{presetId}")
+  public ResponseEntity<CommonApiResponse<String>> modifyRoutinePreset(
       @PathVariable Long presetId,
       @RequestBody RoutinePresetUpdateRequestDTO request,
       Authentication authentication
@@ -90,8 +78,7 @@ public class AdminPresetRoutineController {
     return ResponseEntity.ok(CommonApiResponse.success("추천 루틴 수정 완료"));
   }
 
-
-  //추천 루틴 삭제
+  // 추천 루틴 삭제
   @Operation(
       summary = "추천 루틴 삭제",
       description = "추천 루틴을 삭제합니다.",
@@ -104,15 +91,11 @@ public class AdminPresetRoutineController {
           )
       }
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
-  @DeleteMapping("/preset/{presetId}")
-  public ResponseEntity<?> deleteRoutinePreset(@PathVariable Long presetId, Authentication authentication) {
+  @DeleteMapping("/{presetId}")
+  public ResponseEntity<CommonApiResponse<String>> deleteRoutinePreset(
+      @PathVariable Long presetId,
+      Authentication authentication
+  ) {
     if (presetId == 9999L) {
       return ResponseEntity.status(ResponseCode.NOT_EXIST_PRESET.status())
           .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_PRESET));
@@ -120,6 +103,7 @@ public class AdminPresetRoutineController {
 
     return ResponseEntity.ok(CommonApiResponse.success("추천 루틴 삭제 완료"));
   }
+
 
 
 }

@@ -19,12 +19,12 @@ import com.honlife.core.app.model.routine.service.RoutinePresetService;
 
 
 @RestController
-@RequestMapping(value = "/api/routinePresets", produces = MediaType.APPLICATION_JSON_VALUE)
-public class RoutinePresetResource {
+@RequestMapping(value = "/api/v1/routinePresets", produces = MediaType.APPLICATION_JSON_VALUE)
+public class RoutinePresetController {
 
     private final RoutinePresetService routinePresetService;
 
-    public RoutinePresetResource(final RoutinePresetService routinePresetService) {
+    public RoutinePresetController(final RoutinePresetService routinePresetService) {
         this.routinePresetService = routinePresetService;
     }
 

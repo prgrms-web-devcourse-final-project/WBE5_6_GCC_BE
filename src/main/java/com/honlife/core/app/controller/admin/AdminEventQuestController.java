@@ -1,7 +1,7 @@
-package com.honlife.core.app.controller.member.admin;
+package com.honlife.core.app.controller.admin;
 
-import com.honlife.core.app.model.quest.dto.EventQuestRequestDTO;
-import com.honlife.core.app.model.quest.dto.EventQuestUpdateRequestDTO;
+import com.honlife.core.app.controller.admin.payload.EventQuestRequestDTO;
+import com.honlife.core.app.controller.admin.payload.EventQuestUpdateRequestDTO;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,14 +38,11 @@ public class AdminEventQuestController {
           )
       )
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
-  public ResponseEntity<?> eventRegister(@RequestBody EventQuestRequestDTO request, Authentication authentication) {
+  @PostMapping("/quest/event")
+  public ResponseEntity<CommonApiResponse<String>> eventRegister(
+      @RequestBody EventQuestRequestDTO request,
+      Authentication authentication
+  ) {
     if ("event_key_10".equals(request.getKey())) {
       return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 등록 성공"));
     } else {
@@ -54,8 +51,6 @@ public class AdminEventQuestController {
     }
   }
 
-
-  //이벤트 퀘스트 수정
   @Operation(
       summary = "이벤트 퀘스트 수정",
       description = "이벤트 퀘스트를 수정합니다.",
@@ -67,15 +62,8 @@ public class AdminEventQuestController {
           )
       )
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
   @PatchMapping("/quest/event/{eventId}")
-  public ResponseEntity<?> eventModify(
+  public ResponseEntity<CommonApiResponse<String>> eventModify(
       @PathVariable Long eventId,
       @RequestBody EventQuestUpdateRequestDTO request,
       Authentication authentication
@@ -88,28 +76,23 @@ public class AdminEventQuestController {
     }
   }
 
-  //이벤트 퀘스트 삭제
   @Operation(
       summary = "이벤트 퀘스트 삭제",
       description = "이벤트 퀘스트를 삭제합니다.",
       parameters = {
           @Parameter(
-              name = "id",
+              name = "eventId",
               description = "삭제할 퀘스트 ID",
               required = true,
-              example = "1"
+              example = "10"
           )
       }
   )
-  @ApiResponse(
-      responseCode="200",
-      content=@Content(
-          mediaType="application/json",
-          schema=@Schema(implementation= CommonApiResponse.class)
-      )
-  )
   @DeleteMapping("/quest/event/{eventId}")
-  public ResponseEntity<?> eventDelete(@PathVariable Long eventId, Authentication authentication) {
+  public ResponseEntity<CommonApiResponse<String>> eventDelete(
+      @PathVariable Long eventId,
+      Authentication authentication
+  ) {
     if (eventId == 10L) {
       return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 삭제 완료"));
     } else {
@@ -117,5 +100,6 @@ public class AdminEventQuestController {
           .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_EVENT_QUEST));
     }
   }
+
 
 }
