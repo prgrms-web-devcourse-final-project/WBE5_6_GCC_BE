@@ -23,7 +23,7 @@ import com.honlife.core.app.model.member.service.MemberQuestService;
 @Tag(name="회원 보유 퀘스트", description = "현재 로그인한 회원이 보유하고 있는 퀘스트 관련 API 입니다.")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping(value = "/api/members/quests", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members/quests", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class MemberQuestController {
 
