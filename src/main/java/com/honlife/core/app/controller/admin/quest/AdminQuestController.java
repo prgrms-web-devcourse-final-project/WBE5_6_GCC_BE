@@ -8,6 +8,7 @@ import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +34,7 @@ import jakarta.validation.Valid;
 @RestController
 @Tag(name = "관리자 퀘스트 관리", description = "EVENT / WEEKLY 퀘스트 통합 관리 API입니다.")
 @RequestMapping(value = "/api/v1/admin/quests/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
+@SecurityRequirement(name = "bearerAuth")
 public class AdminQuestController {
 
   /**
