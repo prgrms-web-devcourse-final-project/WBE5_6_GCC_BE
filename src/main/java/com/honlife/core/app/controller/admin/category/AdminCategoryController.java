@@ -37,14 +37,14 @@ public class AdminCategoryController {
         response.add(AdminCategoryResponse.builder()
             .categoryId(1L)
             .categoryName("청소")
-            .categoryType(CategoryType.SUB)
+            .categoryType(CategoryType.MAJOR)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
             .build());
         response.add(AdminCategoryResponse.builder()
             .categoryId(2L)
             .categoryName("요리")
-            .categoryType(CategoryType.SUB)
+            .categoryType(CategoryType.MAJOR)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
             .build());
