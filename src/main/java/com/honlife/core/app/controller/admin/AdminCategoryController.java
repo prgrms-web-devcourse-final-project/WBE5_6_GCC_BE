@@ -19,13 +19,17 @@ import java.util.List;
 import java.util.ArrayList;
 
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "관리자 카테고리", description = "관리자가 사용하는 카테고리 관리용 API입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminCategoryController {
 
-    @Operation(summary = "카테고리 목록 조회", description = "모든 관리자 카테고리를 조회합니다.")
+    /**
+     * 기본 카테고리 수정 API
+     * @return List<CategoryResponse>
+     */
+    @Operation(summary = "카테고리 목록 조회", description = "모든 기본 카테고리를 조회합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<CategoryResponse>>> getAllCategories() {
         List<CategoryResponse> response = new ArrayList<>();
@@ -49,8 +53,12 @@ public class AdminCategoryController {
         return ResponseEntity.ok(CommonApiResponse.success(response));
     }
 
-    @Operation(summary = "카테고리 생성", description = "관리자 카테고리를 생성합니다. type에는 SUB만을 입력하여야 합니다." +
-            "<br> (사용자에게 예시를 보여주어야 하기 때문에 상위 하위 카테고리가 모두 필요합니다.)")
+    /**
+     * 기본 카테고리 생성 API
+     *  @param request 생성할 카테고리의 정보
+     * @return
+     */
+    @Operation(summary = "카테고리 생성", description = "기본 카테고리를 생성합니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createCategory(
         @RequestBody CategoryCreateRequest request
@@ -58,6 +66,12 @@ public class AdminCategoryController {
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
+    /**
+     * 카테고리 수정 API
+     * @param categoryId 수정할 카테고리 id
+     * @param request 생성할 카테고리의 정보
+     * @return
+     */
     @Operation(summary = "카테고리 수정", description = "카테고리 이름 또는 타입을 수정합니다. id는 1,2,3 중 하나만 가능합니다.")
     @PutMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
@@ -73,6 +87,11 @@ public class AdminCategoryController {
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
+    /**
+     * 카테고리 삭제 API
+     * @param categoryId 삭제할 카테고리 id
+     * @return
+     */
     @Operation(summary = "카테고리 삭제", description = "카테고리를 삭제합니다. id는 1,2,3 중 하나만 가능합니다.")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
