@@ -59,7 +59,7 @@ public class AdminRoutinePresetController {
   )
   @GetMapping
   public ResponseEntity<CommonApiResponse<AdminRoutinePresetsResponse>> getAllRoutinePresets(
-      @RequestParam(required = false)
+      @RequestParam(value = "id", required = false)
       @Schema(description = "카테고리 ID (선택사항)", example = "1") Long categoryId
   ) {
     // 모킹 데이터 생성
