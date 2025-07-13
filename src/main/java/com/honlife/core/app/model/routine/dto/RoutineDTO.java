@@ -1,6 +1,7 @@
 package com.honlife.core.app.model.routine.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Setter
 public class RoutineDTO {
 
-    private Long id;
+    private Long routineId;
 
     private LocalDateTime createdAt;
 
@@ -30,11 +31,10 @@ public class RoutineDTO {
     @JsonProperty("isImportant")
     private Boolean isImportant;
 
-    @Size(max = 20)
-    private String repeateType;
+    private RepeatType repeatType;
 
     @Size(max = 100)
-    private String repeateValue;
+    private String repeatValue;
 
     @NotNull
     private Long member;

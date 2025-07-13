@@ -11,21 +11,21 @@ import lombok.Setter;
 @Setter
 public class WeeklyQuestDTO {
 
-    private Long id;
+  private Long id;
 
-    private LocalDateTime createdAt;
+  private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+  private LocalDateTime updatedAt;
 
-    @JsonProperty("isActive")
-    private Boolean isActive;
+  @JsonProperty("isActive")
+  private Boolean isActive;
 
-    @Size(max = 50)
-    private String key;
+  @Size(max = 50)
+  private String key;
 
-    @Size(max = 255)
-    private String name;
+  @Size(max = 255)
+  private String name;
 
-    private String info;
+  private String info;
 
 }

@@ -1,7 +1,10 @@
 package com.honlife.core.app.model.routine.domain;
 
+import com.honlife.core.app.model.routine.code.RepeatType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,10 +48,11 @@ public class Routine extends BaseEntity {
     private Boolean isImportant;
 
     @Column(length = 20)
-    private String repeateType;
+    @Enumerated(EnumType.STRING)
+    private RepeatType repeatType = RepeatType.DAILY;
 
     @Column(length = 100)
-    private String repeateValue;
+    private String repeatValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

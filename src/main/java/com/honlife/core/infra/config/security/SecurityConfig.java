@@ -24,11 +24,11 @@ import com.honlife.core.infra.auth.jwt.filter.JwtExceptionFilter;
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-    
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -41,10 +41,12 @@ public class SecurityConfig {
             .logout(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(
                 (requests) -> requests
-                                  .requestMatchers("/favicon.ico", "/img/**", "/js/**","/css/**").permitAll()
-                                  .requestMatchers("/", "/error", "/auth/login", "/auth/signup").permitAll()
-                                  .requestMatchers("/api/**").authenticated()
-                                  .anyRequest().permitAll()
+                    .requestMatchers("/favicon.ico", "/img/**", "/js/**", "/css/**").permitAll()
+                    .requestMatchers("/", "/error", "/api/v1/check/**", "/api/v1/signin",
+                        "/auth/v1/signup").permitAll()
+                    .requestMatchers("/api/v1/email/**").permitAll()
+                    .requestMatchers("/api/**").authenticated()
+                    .anyRequest().permitAll()
             )
             // jwtAuthenticationEntryPoint 는 oauth 인증을 사용할 경우 제거
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
@@ -52,13 +54,13 @@ public class SecurityConfig {
             .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
         return http.build();
     }
-    
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                            .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();

@@ -37,6 +37,9 @@ public class Category extends BaseEntity {
     )
     private Long id;
 
+    @Column
+    private Long parentId;
+
     @Column(length = 25)
     private String name;
 

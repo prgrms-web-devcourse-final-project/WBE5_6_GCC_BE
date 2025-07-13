@@ -21,14 +21,14 @@ public class WeeklyQuestService {
     public List<WeeklyQuestDTO> findAll() {
         final List<WeeklyQuest> weeklyQuests = weeklyQuestRepository.findAll(Sort.by("id"));
         return weeklyQuests.stream()
-                .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestDTO()))
-                .toList();
+            .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestDTO()))
+            .toList();
     }
 
     public WeeklyQuestDTO get(final Long id) {
         return weeklyQuestRepository.findById(id)
-                .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestDTO()))
-                .orElseThrow(NotFoundException::new);
+            .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
     public Long create(final WeeklyQuestDTO weeklyQuestDTO) {
@@ -39,7 +39,7 @@ public class WeeklyQuestService {
 
     public void update(final Long id, final WeeklyQuestDTO weeklyQuestDTO) {
         final WeeklyQuest weeklyQuest = weeklyQuestRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(weeklyQuestDTO, weeklyQuest);
         weeklyQuestRepository.save(weeklyQuest);
     }
@@ -49,7 +49,7 @@ public class WeeklyQuestService {
     }
 
     private WeeklyQuestDTO mapToDTO(final WeeklyQuest weeklyQuest,
-            final WeeklyQuestDTO weeklyQuestDTO) {
+        final WeeklyQuestDTO weeklyQuestDTO) {
         weeklyQuestDTO.setCreatedAt(weeklyQuest.getCreatedAt());
         weeklyQuestDTO.setUpdatedAt(weeklyQuest.getUpdatedAt());
         weeklyQuestDTO.setIsActive(weeklyQuest.getIsActive());
@@ -61,7 +61,7 @@ public class WeeklyQuestService {
     }
 
     private WeeklyQuest mapToEntity(final WeeklyQuestDTO weeklyQuestDTO,
-            final WeeklyQuest weeklyQuest) {
+        final WeeklyQuest weeklyQuest) {
         weeklyQuest.setCreatedAt(weeklyQuestDTO.getCreatedAt());
         weeklyQuest.setUpdatedAt(weeklyQuestDTO.getUpdatedAt());
         weeklyQuest.setIsActive(weeklyQuestDTO.getIsActive());
