@@ -7,10 +7,12 @@ import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,8 +20,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Tag(name = "로그", description = "관리자 로그 관련 API 입니다.")
-@RequestMapping(value = "/api/v1/admin", produces = MediaType.APPLICATION_JSON_VALUE)
+@SecurityRequirement(name = "bearerAuth")
+@PreAuthorize("hasRole('ADMIN')")
+@Tag(name = "로그", description = "로그 관련 API들 입니다.")
+@RequestMapping(value = "/api/v1/admin/logs", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminLogController {
 
     /**
@@ -96,11 +100,12 @@ public class AdminLogController {
     ) {
 
         List<PointLogResponse> logs = new ArrayList<>();
-        if(type == PointLogType.GET) {
+        if (type == PointLogType.GET) {
             logs.add(PointLogResponse.builder()
                     .pointLogId(1L)
                     .memberId(1L)
                     .pointLogType(PointLogType.GET)
+                    .point(100)
                     .reason(PointSourceType.CHALLENGE)
                     .time(LocalDateTime.of(2025, 7, 2, 10, 30))
                     .build());
@@ -108,14 +113,16 @@ public class AdminLogController {
                     .pointLogId(2L)
                     .memberId(2L)
                     .pointLogType(PointLogType.GET)
+                    .point(100)
                     .reason(PointSourceType.WEEKLY)
                     .time(LocalDateTime.of(2025, 7, 10, 12, 30))
                     .build());
-        } else if (type==PointLogType.USE) {
+        } else if (type == PointLogType.USE) {
             logs.add(PointLogResponse.builder()
                     .pointLogId(3L)
                     .memberId(4L)
                     .pointLogType(PointLogType.USE)
+                    .point(100)
                     .reason(PointSourceType.CHALLENGE)
                     .time(LocalDateTime.of(2025, 7, 5, 11, 30))
                     .build());
@@ -123,14 +130,16 @@ public class AdminLogController {
                     .pointLogId(4L)
                     .memberId(5L)
                     .pointLogType(PointLogType.USE)
+                    .point(100)
                     .reason(PointSourceType.WEEKLY)
                     .time(LocalDateTime.of(2025, 7, 9, 12, 30))
                     .build());
-        }else{
+        } else {
             logs.add(PointLogResponse.builder()
                     .pointLogId(5L)
                     .memberId(6L)
                     .pointLogType(PointLogType.GET)
+                    .point(100)
                     .reason(PointSourceType.CHALLENGE)
                     .time(LocalDateTime.of(2025, 7, 2, 10, 30))
                     .build());
@@ -138,6 +147,7 @@ public class AdminLogController {
                     .pointLogId(6L)
                     .memberId(5L)
                     .pointLogType(PointLogType.USE)
+                    .point(100)
                     .reason(PointSourceType.WEEKLY)
                     .time(LocalDateTime.of(2025, 7, 9, 12, 30))
                     .build());

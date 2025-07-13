@@ -19,6 +19,8 @@ public class PointLogResponse {
 
     private PointLogType pointLogType;
 
+    private Integer point;
+
     private PointSourceType reason;
 
     private LocalDateTime time;
