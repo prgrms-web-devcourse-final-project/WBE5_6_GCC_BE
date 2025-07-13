@@ -9,7 +9,7 @@ import org.w3c.dom.Text;
 @Getter
 @AllArgsConstructor
 @Schema(description = "퀘스트 상세 DTO")
-public class QuestDetailResponseDTO {
+public class QuestDetailResponse {
 
   @Schema(description = "퀘스트 ID", example = "1")
   private Long questId;

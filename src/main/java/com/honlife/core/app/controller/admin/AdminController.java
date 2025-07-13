@@ -1,7 +1,7 @@
 package com.honlife.core.app.controller.admin;
 
 import com.honlife.core.app.model.loginLog.dto.LoginLogResponseDTO;
-import com.honlife.core.app.controller.admin.payload.PointLogResponseDTO;
+import com.honlife.core.app.controller.admin.payload.PointLogResponse;
 import com.honlife.core.app.model.point.code.PointLogType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -45,10 +45,10 @@ public class AdminController {
       description = "포인트 지급 및 소비 기록을 반환합니다."
   )
   @GetMapping("/point")
-  public ResponseEntity<CommonApiResponse<List<PointLogResponseDTO>>> getPointLogs(Authentication authentication) {
-    List<PointLogResponseDTO> logs = List.of(
-        new PointLogResponseDTO(10L, "aakjdf@naver.com", PointLogType.GET, 1000, "퀘스트 완료", LocalDateTime.parse("2025-07-05T14:00:00")),
-        new PointLogResponseDTO(11L, "aakjdf@naver.com", PointLogType.USE, 500, "아이템 구매", LocalDateTime.parse("2025-07-05T15:00:00"))
+  public ResponseEntity<CommonApiResponse<List<PointLogResponse>>> getPointLogs(Authentication authentication) {
+    List<PointLogResponse> logs = List.of(
+        new PointLogResponse(10L, "aakjdf@naver.com", PointLogType.GET, 1000, "퀘스트 완료", LocalDateTime.parse("2025-07-05T14:00:00")),
+        new PointLogResponse(11L, "aakjdf@naver.com", PointLogType.USE, 500, "아이템 구매", LocalDateTime.parse("2025-07-05T15:00:00"))
     );
 
     return ResponseEntity.ok(CommonApiResponse.success(logs));

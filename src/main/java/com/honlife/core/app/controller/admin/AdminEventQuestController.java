@@ -1,14 +1,13 @@
 package com.honlife.core.app.controller.admin;
 
-import com.honlife.core.app.controller.admin.payload.EventQuestRequestDTO;
-import com.honlife.core.app.controller.admin.payload.EventQuestUpdateRequestDTO;
+import com.honlife.core.app.controller.admin.payload.EventQuestRequest;
+import com.honlife.core.app.controller.admin.payload.EventQuestUpdateRequest;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +33,13 @@ public class AdminEventQuestController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = EventQuestRequestDTO.class)
+              schema = @Schema(implementation = EventQuestRequest.class)
           )
       )
   )
   @PostMapping("/quest/event")
   public ResponseEntity<CommonApiResponse<String>> eventRegister(
-      @RequestBody EventQuestRequestDTO request,
+      @RequestBody EventQuestRequest request,
       Authentication authentication
   ) {
     if ("event_key_10".equals(request.getKey())) {
@@ -58,14 +57,14 @@ public class AdminEventQuestController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = EventQuestUpdateRequestDTO.class)
+              schema = @Schema(implementation = EventQuestUpdateRequest.class)
           )
       )
   )
   @PatchMapping("/quest/event/{eventId}")
   public ResponseEntity<CommonApiResponse<String>> eventModify(
       @PathVariable Long eventId,
-      @RequestBody EventQuestUpdateRequestDTO request,
+      @RequestBody EventQuestUpdateRequest request,
       Authentication authentication
   ) {
     if (eventId == 1L) {

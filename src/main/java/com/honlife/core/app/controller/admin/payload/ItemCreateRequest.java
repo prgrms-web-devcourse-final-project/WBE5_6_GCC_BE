@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(name = "ItemCreateRequestDTO", description = "상점 아이템 추가 요청 DTO")
-public class ItemCreateRequestDTO {
+public class ItemCreateRequest {
 
   @NotNull
   @Size(max = 50)

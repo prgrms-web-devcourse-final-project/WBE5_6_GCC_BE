@@ -10,7 +10,7 @@ import org.w3c.dom.Text;
 @Getter
 @Setter
 @Schema(name = "WeeklyQuestUpdateDTO", description = "주간 퀘스트 수정 요청 DTO")
-public class WeeklyQuestUpdateRequestDTO {
+public class WeeklyQuestUpdateRequest {
 
   @NotNull
   @Schema(description = "퀘스트 ID", example = "1")

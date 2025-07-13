@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(name = "ItemUpdateRequestDTO", description = "상점 아이템 수정 요청 DTO")
-public class ItemUpdateRequestDTO {
+public class ItemUpdateRequest {
 
   @NotNull
   @Schema(description = "아이템 ID", example = "1")

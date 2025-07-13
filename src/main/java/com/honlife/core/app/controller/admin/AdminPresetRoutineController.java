@@ -1,14 +1,13 @@
 package com.honlife.core.app.controller.admin;
 
-import com.honlife.core.app.controller.admin.payload.RoutinePresetRequestDTO;
-import com.honlife.core.app.controller.admin.payload.RoutinePresetUpdateRequestDTO;
+import com.honlife.core.app.controller.admin.payload.RoutinePresetRequest;
+import com.honlife.core.app.controller.admin.payload.RoutinePresetUpdateRequest;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +34,13 @@ public class AdminPresetRoutineController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = RoutinePresetRequestDTO.class)
+              schema = @Schema(implementation = RoutinePresetRequest.class)
           )
       )
   )
   @PostMapping
   public ResponseEntity<CommonApiResponse<String>> addRoutinePreset(
-      @RequestBody RoutinePresetRequestDTO request,
+      @RequestBody RoutinePresetRequest request,
       Authentication authentication
   ) {
     if (request.getContent() == null || request.getCategoryId() == null) {
@@ -68,14 +67,14 @@ public class AdminPresetRoutineController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = RoutinePresetUpdateRequestDTO.class)
+              schema = @Schema(implementation = RoutinePresetUpdateRequest.class)
           )
       )
   )
   @PatchMapping("/{presetId}")
   public ResponseEntity<CommonApiResponse<String>> modifyRoutinePreset(
       @PathVariable Long presetId,
-      @RequestBody RoutinePresetUpdateRequestDTO request,
+      @RequestBody RoutinePresetUpdateRequest request,
       Authentication authentication
   ) {
     if (presetId == 1) {

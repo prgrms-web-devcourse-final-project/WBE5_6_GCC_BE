@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(name = "RoutinePresetRequestDTO", description = "추천 루틴 추가 요청 DTO")
-public class RoutinePresetRequestDTO {
+public class RoutinePresetRequest {
 
   @NotNull
   @Schema(description = "카테고리 ID", example = "1")

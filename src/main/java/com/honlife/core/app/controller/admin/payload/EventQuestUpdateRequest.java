@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(name = "EventQuestUpdateDTO", description = "이벤트 퀘스트 수정 요청 DTO")
-public class EventQuestUpdateRequestDTO {
+public class EventQuestUpdateRequest {
 
   @NotNull
   @Schema(description = "퀘스트 ID", example = "1")

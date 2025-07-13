@@ -1,7 +1,7 @@
 package com.honlife.core.app.controller.admin;
 
-import com.honlife.core.app.controller.admin.payload.WeeklyQuestRequestDTO;
-import com.honlife.core.app.controller.admin.payload.WeeklyQuestUpdateRequestDTO;
+import com.honlife.core.app.controller.admin.payload.WeeklyQuestRequest;
+import com.honlife.core.app.controller.admin.payload.WeeklyQuestUpdateRequest;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,13 +33,13 @@ public class AdminWeeklyQuestController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = WeeklyQuestRequestDTO.class)
+              schema = @Schema(implementation = WeeklyQuestRequest.class)
           )
       )
   )
   @PostMapping
   public ResponseEntity<CommonApiResponse<String>> weeklyRegister(
-      @RequestBody WeeklyQuestRequestDTO request,
+      @RequestBody WeeklyQuestRequest request,
       Authentication authentication
   ) {
     if (request.getKey() == null || request.getName() == null) {
@@ -66,14 +66,14 @@ public class AdminWeeklyQuestController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = WeeklyQuestUpdateRequestDTO.class)
+              schema = @Schema(implementation = WeeklyQuestUpdateRequest.class)
           )
       )
   )
   @PatchMapping("/{weeklyId}")
   public ResponseEntity<CommonApiResponse<String>> weeklyModify(
       @PathVariable Long weeklyId,
-      @RequestBody WeeklyQuestUpdateRequestDTO request,
+      @RequestBody WeeklyQuestUpdateRequest request,
       Authentication authentication
   ) {
     if (weeklyId == 1) {

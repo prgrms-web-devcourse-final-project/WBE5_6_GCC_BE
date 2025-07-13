@@ -1,7 +1,7 @@
 package com.honlife.core.app.controller.admin;
 
-import com.honlife.core.app.controller.admin.payload.ItemCreateRequestDTO;
-import com.honlife.core.app.controller.admin.payload.ItemUpdateRequestDTO;
+import com.honlife.core.app.controller.admin.payload.ItemCreateRequest;
+import com.honlife.core.app.controller.admin.payload.ItemUpdateRequest;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,12 +32,12 @@ public class AdminItemController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = ItemCreateRequestDTO.class)
+              schema = @Schema(implementation = ItemCreateRequest.class)
           )
       )
   )
   @PostMapping
-  public ResponseEntity<CommonApiResponse<String>> addStoreItem(@RequestBody ItemCreateRequestDTO request, Authentication authentication) {
+  public ResponseEntity<CommonApiResponse<String>> addStoreItem(@RequestBody ItemCreateRequest request, Authentication authentication) {
     if (request.getItemKey() == null || request.getName() == null) {
       return ResponseEntity.status(ResponseCode.BAD_REQUEST.status())
           .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
@@ -61,14 +61,14 @@ public class AdminItemController {
           required = true,
           content = @Content(
               mediaType = MediaType.APPLICATION_JSON_VALUE,
-              schema = @Schema(implementation = ItemUpdateRequestDTO.class)
+              schema = @Schema(implementation = ItemUpdateRequest.class)
           )
       )
   )
   @PatchMapping("/{itemId}")
   public ResponseEntity<CommonApiResponse<String>> modifyStoreItem(
       @PathVariable Long itemId,
-      @RequestBody ItemUpdateRequestDTO request,
+      @RequestBody ItemUpdateRequest request,
       Authentication authentication
   ) {
     if (itemId == 10L) {

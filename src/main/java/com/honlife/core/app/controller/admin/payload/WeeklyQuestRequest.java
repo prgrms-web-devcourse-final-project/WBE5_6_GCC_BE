@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Schema(description = "주간 퀘스트 등록 요청 DTO")
-public class WeeklyQuestRequestDTO {
+public class WeeklyQuestRequest {
 
     @Schema(description = "퀘스트 ID (수정 시 사용)", example = "1")
     private Long weeklyQuestId;

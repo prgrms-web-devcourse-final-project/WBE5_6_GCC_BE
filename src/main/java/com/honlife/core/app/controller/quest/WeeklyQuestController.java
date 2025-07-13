@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.controller.admin.payload.WeeklyQuestRequestDTO;
+import com.honlife.core.app.controller.admin.payload.WeeklyQuestRequest;
 import com.honlife.core.app.model.quest.service.WeeklyQuestService;
 
 
@@ -29,27 +29,27 @@ public class WeeklyQuestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<WeeklyQuestRequestDTO>> getAllWeeklyQuests() {
+    public ResponseEntity<List<WeeklyQuestRequest>> getAllWeeklyQuests() {
         return ResponseEntity.ok(weeklyQuestService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WeeklyQuestRequestDTO> getWeeklyQuest(@PathVariable(name = "id") final Long id) {
+    public ResponseEntity<WeeklyQuestRequest> getWeeklyQuest(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(weeklyQuestService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createWeeklyQuest(
-        @RequestBody @Valid final WeeklyQuestRequestDTO weeklyQuestRequestDTO) {
-        final Long createdId = weeklyQuestService.create(weeklyQuestRequestDTO);
+        @RequestBody @Valid final WeeklyQuestRequest weeklyQuestRequest) {
+        final Long createdId = weeklyQuestService.create(weeklyQuestRequest);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateWeeklyQuest(@PathVariable(name = "id") final Long id,
-        @RequestBody @Valid final WeeklyQuestRequestDTO weeklyQuestRequestDTO) {
-        weeklyQuestService.update(id, weeklyQuestRequestDTO);
+        @RequestBody @Valid final WeeklyQuestRequest weeklyQuestRequest) {
+        weeklyQuestService.update(id, weeklyQuestRequest);
         return ResponseEntity.ok(id);
     }
 

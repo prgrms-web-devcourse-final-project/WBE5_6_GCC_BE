@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "포인트 지급/소비 기록 응답 DTO")
-public class PointLogResponseDTO {
+public class PointLogResponse {
 
   @Schema(description = "기록 ID", example = "10")
   private Long pointLogId;

@@ -1,8 +1,6 @@
 package com.honlife.core.app.controller.admin.payload;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Getter
 @Setter
 @Schema(description = "이벤트 퀘스트 등록/수정 요청 DTO")
-public class EventQuestRequestDTO {
+public class EventQuestRequest {
 
     @Schema(description = "퀘스트 ID (수정 시 사용)", example = "1")
     private Long eventQuestId;
