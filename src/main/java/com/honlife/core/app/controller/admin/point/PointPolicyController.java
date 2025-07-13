@@ -1,8 +1,8 @@
-package com.honlife.core.app.controller.admin;
+package com.honlife.core.app.controller.admin.point;
 
-import com.honlife.core.app.controller.admin.payload.AdminPointPoliciesResponse;
-import com.honlife.core.app.controller.admin.payload.AdminPointPolicyDetailResponse;
-import com.honlife.core.app.controller.admin.payload.AdminPointPolicyRequest;
+import com.honlife.core.app.controller.admin.point.payload.AdminPointPoliciesResponse;
+import com.honlife.core.app.controller.admin.point.payload.AdminPointPolicyDetailResponse;
+import com.honlife.core.app.controller.admin.point.payload.AdminPointPolicyRequest;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.app.model.point.service.PointPolicyService;
 import com.honlife.core.infra.response.CommonApiResponse;
