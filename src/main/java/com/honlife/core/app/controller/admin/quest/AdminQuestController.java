@@ -1,8 +1,8 @@
-package com.honlife.core.app.controller.admin;
+package com.honlife.core.app.controller.admin.quest;
 
-import com.honlife.core.app.controller.admin.payload.QuestDetailResponse;
-import com.honlife.core.app.controller.admin.payload.QuestRequest;
-import com.honlife.core.app.controller.admin.payload.QuestResponse;
+import com.honlife.core.app.controller.admin.quest.payload.QuestDetailResponse;
+import com.honlife.core.app.controller.admin.quest.payload.QuestRequest;
+import com.honlife.core.app.controller.admin.quest.payload.QuestResponse;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;

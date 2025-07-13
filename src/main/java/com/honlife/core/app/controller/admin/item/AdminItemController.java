@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 관리자 아이템 컨트롤러입니다. 관리자 페이지에서 아이템 조회, 추가, 수정 및 삭제에 사용되는 API 들을 정의합니다.
  */
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "관리자 아이템 관리", description = "관리자 아이템 관련 API 입니다.")
 @RequestMapping(value = "/api/v1/admin/items", produces = MediaType.APPLICATION_JSON_VALUE)
