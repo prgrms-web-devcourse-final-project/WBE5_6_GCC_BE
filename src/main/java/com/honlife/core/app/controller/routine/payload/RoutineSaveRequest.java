@@ -1,13 +1,12 @@
 package com.honlife.core.app.controller.routine.payload;
 
+import com.honlife.core.app.model.routine.code.RepeatType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-import com.honlife.core.app.model.routine.code.RepeatType;
 
 @Getter
 @Setter
@@ -22,9 +21,6 @@ public class RoutineSaveRequest {
     @Size(max = 255, message = "루틴 내용은 255자를 초과할 수 없습니다")
     @Schema(description = "루틴 내용", example = "아침 운동하기", required = true)
     private String content;
-
-    @Schema(description = "수행 날짜 (RepeatType이 NONE일 때 사용)", example = "2025-01-15")
-    private LocalDate targetDate;
 
     @Size(max = 255, message = "트리거 시간은 255자를 초과할 수 없습니다")
     @Schema(description = "트리거 시간대", example = "07:00")
