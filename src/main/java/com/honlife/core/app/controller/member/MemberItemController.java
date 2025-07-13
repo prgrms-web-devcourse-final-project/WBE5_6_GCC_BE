@@ -26,7 +26,7 @@ import com.honlife.core.app.model.member.service.MemberItemService;
 @Tag(name="회원 보유 아이템", description = "현재 로그인한 회원이 보유하고 있는 아이템 관련 API 입니다.")
 @RestController
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping(value = "/api/members/items", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberItemController {
 
     private final MemberItemService memberItemService;
