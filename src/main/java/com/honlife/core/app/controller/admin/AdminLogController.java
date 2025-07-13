@@ -1,23 +1,22 @@
 package com.honlife.core.app.controller.admin;
 
+import com.honlife.core.app.controller.admin.payload.LoginLogRequest;
 import com.honlife.core.app.controller.admin.payload.LoginLogResponse;
 import com.honlife.core.app.controller.admin.payload.PointLogRequest;
 import com.honlife.core.app.controller.admin.payload.PointLogResponse;
-import com.honlife.core.app.controller.auth.payload.LoginRequest;
 import com.honlife.core.app.model.point.code.PointLogType;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class AdminLogController {
      * ※ 추후 pagination(페이지네이션)이 적용될 예정입니다.
      * * 현재는 전체 데이터를 반환하지만, 향후 페이지 단위로 분리될 수 있습니다.
      *
-     * @param loginRequest 로그 조회 시 필요 정보(필수 아님)
+     * @param loginLogRequest 로그 조회 시 필요 정보(필수 아님)
      * @return List<LoginLogResponse>
      */
     @Operation(
@@ -43,7 +42,7 @@ public class AdminLogController {
                     "- 추후 pagination(페이지네이션)이 적용될 예정입니다.")
     @GetMapping("/log/login")
     public ResponseEntity<CommonApiResponse<List<LoginLogResponse>>> getLoginLogsByDate(
-            @RequestBody LoginRequest loginRequest
+            @RequestBody LoginLogRequest loginLogRequest
     ) {
         List<LoginLogResponse> logs = new ArrayList<>();
         logs.add(LoginLogResponse.builder()
