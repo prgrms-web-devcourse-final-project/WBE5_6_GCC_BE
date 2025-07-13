@@ -4,6 +4,12 @@ import org.springframework.http.HttpStatus;
 
 public enum ResponseCode {
   OK("0000", HttpStatus.OK, "OK"),
+  CREATED("2010", HttpStatus.CREATED, "Created"),
+  BADGE_CREATED("2011", HttpStatus.CREATED, "Badge created"),
+  ROUTINE_CREATED("2012", HttpStatus.CREATED, "Routine created"),
+  ITEM_CREATED("2013", HttpStatus.CREATED, "Item created"),
+  CATEGORY_CREATED("2014", HttpStatus.CREATED, "Category created"),
+  QUESTION_CREATED("2015", HttpStatus.CREATED, "Question created"),
   BAD_REQUEST("4000", HttpStatus.BAD_REQUEST, "Bad Request."),
   INVALID_FILENAME("4001", HttpStatus.BAD_REQUEST, "Unsupported Filename."),
   UNAUTHORIZED("4010", HttpStatus.UNAUTHORIZED, "Authentication required"),
