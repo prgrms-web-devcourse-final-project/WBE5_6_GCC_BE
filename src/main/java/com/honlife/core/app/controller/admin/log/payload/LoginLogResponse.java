@@ -1,4 +1,4 @@
-package com.honlife.core.app.controller.admin.payload;
+package com.honlife.core.app.controller.admin.log.payload;
 
 import lombok.Builder;
 import lombok.Getter;

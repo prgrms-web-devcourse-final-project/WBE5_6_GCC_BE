@@ -1,4 +1,4 @@
-package com.honlife.core.app.controller.admin.payload;
+package com.honlife.core.app.controller.admin.log.payload;
 
 import com.honlife.core.app.model.point.code.PointLogType;
 import com.honlife.core.app.model.point.code.PointSourceType;

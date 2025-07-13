@@ -1,9 +1,9 @@
-package com.honlife.core.app.controller.admin;
+package com.honlife.core.app.controller.admin.log;
 
-import com.honlife.core.app.controller.admin.payload.LoginLogRequest;
-import com.honlife.core.app.controller.admin.payload.LoginLogResponse;
-import com.honlife.core.app.controller.admin.payload.PointLogRequest;
-import com.honlife.core.app.controller.admin.payload.PointLogResponse;
+import com.honlife.core.app.controller.admin.log.payload.LoginLogRequest;
+import com.honlife.core.app.controller.admin.log.payload.LoginLogResponse;
+import com.honlife.core.app.controller.admin.log.payload.PointLogRequest;
+import com.honlife.core.app.controller.admin.log.payload.PointLogResponse;
 import com.honlife.core.app.model.point.code.PointLogType;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.CommonApiResponse;
