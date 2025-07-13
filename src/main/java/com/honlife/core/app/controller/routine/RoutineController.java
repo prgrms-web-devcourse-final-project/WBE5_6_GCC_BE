@@ -160,13 +160,6 @@ public class RoutineController {
 
         String userId = userDetails.getUsername();
         if (userId.equals("user01@test.com")) {
-            // RepeatType이 NONE인 경우 targetDate 체크
-            if (routineSaveRequest.getRepeatType() == RepeatType.NONE && routineSaveRequest.getTargetDate() == null) {
-                return ResponseEntity
-                    .status(ResponseCode.BAD_REQUEST.status())
-                    .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-            }
-
             // 실제 구현 시에는 routineSaveRequest를 RoutineDTO로 변환하여 routineService.create() 호출
             // RepeatType이 NONE인 경우 RoutineSchedule도 함께 생성
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -218,13 +211,6 @@ public class RoutineController {
             return ResponseEntity
                 .status(ResponseCode.NOT_FOUND_ROUTINE.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
-        }
-
-        // RepeatType이 NONE인 경우 targetDate 체크
-        if (routineSaveRequest.getRepeatType() == RepeatType.NONE && routineSaveRequest.getTargetDate() == null) {
-            return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.status())
-                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
         // 실제 구현 시에는 기존 루틴 타입과 새로운 타입을 비교하여
