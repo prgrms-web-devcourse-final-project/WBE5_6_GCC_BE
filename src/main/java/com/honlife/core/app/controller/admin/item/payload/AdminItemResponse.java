@@ -16,5 +16,4 @@ public class AdminItemResponse {
     private ItemType itemType;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private Boolean isActive;
 }
