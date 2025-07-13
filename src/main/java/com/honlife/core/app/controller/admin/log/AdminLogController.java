@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "로그", description = "로그 관련 API들 입니다.")
+@Tag(name = "관리자 - 로그", description = "로그 관련 API들 입니다.")
 @RequestMapping(value = "/api/v1/admin/logs", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminLogController {
 
