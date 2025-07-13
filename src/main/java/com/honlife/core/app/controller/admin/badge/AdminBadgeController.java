@@ -136,14 +136,8 @@ public class AdminBadgeController {
   )
   @PostMapping
   public ResponseEntity<CommonApiResponse<Void>> registerBadge(
-      @RequestBody @Valid AdminBadgeSaveRequest badgeSaveRequest,
-      BindingResult bindingResult
+      @RequestBody @Valid AdminBadgeSaveRequest badgeSaveRequest
   ) {
-    if (bindingResult.hasErrors()) {
-      return ResponseEntity
-          .status(ResponseCode.BAD_REQUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-    }
 
     return ResponseEntity.ok(CommonApiResponse.noContent());
   }
@@ -152,7 +146,6 @@ public class AdminBadgeController {
    * 기존 업적 정보를 수정하는 API
    * @param badgeId pathVariable로 쓰이는 업적 아이디
    * @param badgeSaveRequest 수정할 업적 정보를 담은 request
-   * @param bindingResult validation
    * @return 수정 성공 시 ok, 존재하지 않는 ID일 경우 Not Found Badge, 누락된 정보가 있다면 Bad Request 응답
    */
   @Operation(
@@ -175,14 +168,8 @@ public class AdminBadgeController {
   @PatchMapping("/{id}")
   public ResponseEntity<CommonApiResponse<Void>> updateBadge(
       @PathVariable(name="id") Long badgeId,
-      @RequestBody AdminBadgeSaveRequest badgeSaveRequest,
-      BindingResult bindingResult
+      @RequestBody @Valid AdminBadgeSaveRequest badgeSaveRequest
   ) {
-    if (bindingResult.hasErrors()) {
-      return ResponseEntity
-          .status(ResponseCode.BAD_REQUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-    }
 
     if (badgeId != 1L) {
       return ResponseEntity
