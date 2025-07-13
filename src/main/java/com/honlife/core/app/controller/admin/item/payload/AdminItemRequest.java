@@ -32,8 +32,4 @@ public class AdminItemRequest {
   @NotNull
   @Schema(description = "아이템 타입", example = "TOP")
   private ItemType itemType;
-
-  @NotNull
-  @Schema(description = "활성화 여부", example = "true")
-  private Boolean isActive;
 }
