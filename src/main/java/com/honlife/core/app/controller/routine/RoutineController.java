@@ -144,7 +144,6 @@ public class RoutineController {
         "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
         "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
         "• CUSTOM: 사용자 정의 반복 패턴<br>" +
-        "• NONE: 반복 없음, 일회성 루틴<br>" +
         "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createRoutine(
@@ -184,7 +183,6 @@ public class RoutineController {
         "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
         "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
         "• CUSTOM: 사용자 정의 반복 패턴<br>" +
-        "• NONE: 반복 없음, 일회성 루틴<br>" +
         "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateRoutine(
