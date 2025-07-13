@@ -1,7 +1,9 @@
 package com.honlife.core.app.controller.admin;
 
 import com.honlife.core.app.controller.admin.payload.LoginLogResponse;
+import com.honlife.core.app.controller.admin.payload.PointLogRequest;
 import com.honlife.core.app.controller.admin.payload.PointLogResponse;
+import com.honlife.core.app.controller.auth.payload.LoginRequest;
 import com.honlife.core.app.model.point.code.PointLogType;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -31,8 +33,7 @@ public class AdminLogController {
      * ※ 추후 pagination(페이지네이션)이 적용될 예정입니다.
      * * 현재는 전체 데이터를 반환하지만, 향후 페이지 단위로 분리될 수 있습니다.
      *
-     * @param startDate 조회 시작일 (yyyy-MM-dd'T'HH:mm:ss 형식)
-     * @param endDate   조회 종료일 (yyyy-MM-dd'T'HH:mm:ss 형식)
+     * @param loginRequest 로그 조회 시 필요 정보(필수 아님)
      * @return List<LoginLogResponse>
      */
     @Operation(
@@ -42,15 +43,7 @@ public class AdminLogController {
                     "- 추후 pagination(페이지네이션)이 적용될 예정입니다.")
     @GetMapping("/log/login")
     public ResponseEntity<CommonApiResponse<List<LoginLogResponse>>> getLoginLogsByDate(
-            @Parameter(description = "조회 시작일 (yyyy-MM-dd'T'HH:mm:ss)", example = "2025-07-01T00:00:00")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime startDate,
-
-            @Parameter(description = "조회 종료일 (yyyy-MM-dd'T'HH:mm:ss)", example = "2025-07-14T00:00:00")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime endDate
+            @RequestBody LoginRequest loginRequest
     ) {
         List<LoginLogResponse> logs = new ArrayList<>();
         logs.add(LoginLogResponse.builder()
@@ -66,15 +59,13 @@ public class AdminLogController {
         return ResponseEntity.ok(CommonApiResponse.success(logs));
     }
 
-    /*
+    /**
      * 지정한 기간 내 포인트 로그를 조회합니다.
      * ※ 추후 pagination(페이지네이션)이 적용될 예정입니다.
      * * 현재는 전체 데이터를 반환하지만, 향후 페이지 단위로 분리될 수 있습니다.
      *
-     * @param startDate 조회 시작일 (yyyy-MM-dd'T'HH:mm:ss 형식)
-     * @param endDate   조회 종료일 (yyyy-MM-dd'T'HH:mm:ss 형식)
+     * @param pointLogRequest 로그 조회 시 필요 정보(필수 아님)
      * @return List<PointLogResponse>
-     * @Param
      */
     @Operation(
             summary = "포인트 기록 조회",
@@ -84,23 +75,11 @@ public class AdminLogController {
     )
     @GetMapping("/log/point")
     public ResponseEntity<CommonApiResponse<List<PointLogResponse>>> getPointLogs(
-            @Parameter(description = "조회 시작일 (yyyy-MM-dd'T'HH:mm:ss)", example = "2025-07-01T00:00:00")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime startDate,
-
-            @Parameter(description = "조회 종료일 (yyyy-MM-dd'T'HH:mm:ss)", example = "2025-07-14T00:00:00")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime endDate,
-
-            @Parameter(description = "포인트 로그 타입 (GET: 지급, USE: 사용)", example = "GET")
-            @RequestParam(required = false)
-            PointLogType type
+            @RequestBody PointLogRequest pointLogRequest
     ) {
 
         List<PointLogResponse> logs = new ArrayList<>();
-        if (type == PointLogType.GET) {
+        if (pointLogRequest.getPointLogType() == PointLogType.GET) {
             logs.add(PointLogResponse.builder()
                     .pointLogId(1L)
                     .memberId(1L)
@@ -117,7 +96,7 @@ public class AdminLogController {
                     .reason(PointSourceType.WEEKLY)
                     .time(LocalDateTime.of(2025, 7, 10, 12, 30))
                     .build());
-        } else if (type == PointLogType.USE) {
+        } else if (pointLogRequest.getPointLogType() == PointLogType.USE) {
             logs.add(PointLogResponse.builder()
                     .pointLogId(3L)
                     .memberId(4L)
