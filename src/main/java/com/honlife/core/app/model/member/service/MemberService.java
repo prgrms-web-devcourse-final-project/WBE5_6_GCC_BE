@@ -11,13 +11,11 @@ import com.honlife.core.app.model.loginLog.domain.LoginLog;
 import com.honlife.core.app.model.loginLog.repos.LoginLogRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
-import com.honlife.core.app.model.member.domain.MemberImage;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.domain.MemberQuest;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
-import com.honlife.core.app.model.member.repos.MemberImageRepository;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.repos.MemberQuestRepository;
@@ -36,7 +34,6 @@ import com.honlife.core.infra.util.NotFoundException;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final MemberImageRepository memberImageRepository;
     private final RoutineRepository routineRepository;
     private final CategoryRepository categoryRepository;
     private final MemberItemRepository memberItemRepository;
@@ -49,7 +46,6 @@ public class MemberService {
     private final MemberPointRepository memberPointRepository;
 
     public MemberService(final MemberRepository memberRepository,
-        final MemberImageRepository memberImageRepository,
         final RoutineRepository routineRepository, final CategoryRepository categoryRepository,
         final MemberItemRepository memberItemRepository,
         final MemberQuestRepository memberQuestRepository,
@@ -60,7 +56,6 @@ public class MemberService {
         final InterestCategoryRepository interestCategoryRepository,
         final MemberPointRepository memberPointRepository) {
         this.memberRepository = memberRepository;
-        this.memberImageRepository = memberImageRepository;
         this.routineRepository = routineRepository;
         this.categoryRepository = categoryRepository;
         this.memberItemRepository = memberItemRepository;
@@ -153,12 +148,6 @@ public class MemberService {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Member member = memberRepository.findById(id)
             .orElseThrow(NotFoundException::new);
-        final MemberImage memberMemberImage = memberImageRepository.findFirstByMember(member);
-        if (memberMemberImage != null) {
-            referencedWarning.setKey("member.memberImage.member.referenced");
-            referencedWarning.addParam(memberMemberImage.getId());
-            return referencedWarning;
-        }
         final Routine memberRoutine = routineRepository.findFirstByMember(member);
         if (memberRoutine != null) {
             referencedWarning.setKey("member.routine.member.referenced");
