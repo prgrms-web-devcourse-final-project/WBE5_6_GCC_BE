@@ -21,7 +21,8 @@ import java.util.Map;
 @OpenAPIDefinition(
     info = @Info(
         title = "혼라이프 API 명세서",
-        description = "백엔드 API 서버(완성된 API가 아닙니다.)",
+        description = "1차적으로 완성된 API 목록이며, 추후 변경사항이 있을 수 있습니다.<br>"
+            + "제안 및 문의사항이 있다면 언제든 알려주세요.",
         version = "v1"
     )
 )
