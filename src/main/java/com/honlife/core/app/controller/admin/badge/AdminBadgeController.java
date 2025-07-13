@@ -1,6 +1,9 @@
 package com.honlife.core.app.controller.admin.badge;
 
+import com.honlife.core.app.controller.admin.badge.payload.AdminBadgeResponse;
 import com.honlife.core.app.controller.admin.badge.payload.AdminBadgeSaveRequest;
+import com.honlife.core.app.controller.badge.payload.BadgeResponse;
+import com.honlife.core.app.model.badge.code.BadgeTier;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +13,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +28,80 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name="관리자 업적 관리", description = "관리자 업적 관련 API 입니다.")
 @RequestMapping(value = "/api/v1/admin/badges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminBadgeController {
+
+  /**
+   * 업적 조회 API
+   * @return List<BadgePayload> 모든 업적에 대한 정보
+   */
+  @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다.")
+  @GetMapping
+  public ResponseEntity<CommonApiResponse<List<AdminBadgeResponse>>> getAllBadges() {
+    List<AdminBadgeResponse> responses = new ArrayList<>();
+    responses.add(AdminBadgeResponse.builder()
+        .badgeId(1L)
+        .badgeKey("clean_bronze")
+        .badgeName("초보 청소부")
+        .tier(BadgeTier.BRONZE)
+        .how("청소 루틴 5번 이상 성공")
+        .requirement(5)
+        .info("이제 청소 좀 한다고 말할 수 있겠네요!")
+        .categoryName("청소")
+        .build());
+    responses.add(AdminBadgeResponse.builder()
+        .badgeId(2L)
+        .badgeKey("cook_bronze")
+        .badgeName("초보 요리사")
+        .tier(BadgeTier.BRONZE)
+        .how("요리 루틴 5번 이상 성공")
+        .requirement(5)
+        .info("나름 계란 프라이는 할 수 있다구요!")
+        .categoryName("요리")
+        .build());
+
+    return ResponseEntity.ok(CommonApiResponse.success(responses));
+  }
+
+
+  /**
+   * 업적 단건 조회 API
+   * @return BadgePayload 특정 업적에 대한 정보
+   */
+  @Operation(summary = "업적 단건 조회", description = "id에 해당하는 업적에 대해 조회합니다.")
+  @GetMapping("/{id}")
+  public ResponseEntity<CommonApiResponse<AdminBadgeResponse>> getBadge(
+      @Schema(name="id", description="업적의 아이디 값", example = "1")
+      @PathVariable(name="id") Long badgeId
+  ) {
+    if(badgeId==1){
+      AdminBadgeResponse response = AdminBadgeResponse.builder()
+          .badgeId(badgeId)
+          .badgeKey("clean_bronze")
+          .badgeName("초보 청소부")
+          .tier(BadgeTier.BRONZE)
+          .how("청소 루틴 5번 이상 성공")
+          .requirement(5)
+          .info("이제 청소 좀 한다고 말할 수 있겠네요!")
+          .categoryName("청소")
+          .build();
+      return ResponseEntity.ok(CommonApiResponse.success(response));
+    }
+    if(badgeId==2){
+      AdminBadgeResponse response = AdminBadgeResponse.builder()
+          .badgeId(badgeId)
+          .badgeKey("cook_bronze")
+          .badgeName("초보 요리사")
+          .tier(BadgeTier.BRONZE)
+          .how("요리 루틴 5번 이상 성공")
+          .requirement(5)
+          .info("나름 계란 프라이는 할 수 있다구요!")
+          .categoryName("요리")
+          .build();
+      return ResponseEntity.ok(CommonApiResponse.success(response));
+    }else{
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
+    }
+  }
 
   /**
    * 새로운 업적을 등록하는 API
