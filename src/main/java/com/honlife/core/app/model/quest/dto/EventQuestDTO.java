@@ -28,8 +28,8 @@ public class EventQuestDTO {
 
   private String info;
 
-  private OffsetDateTime startDate;
+  private LocalDateTime startDate;
 
-  private OffsetDateTime endDate;
+  private LocalDateTime endDate;
 
 }
