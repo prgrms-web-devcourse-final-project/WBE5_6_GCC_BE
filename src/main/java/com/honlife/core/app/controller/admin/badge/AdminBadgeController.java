@@ -2,7 +2,6 @@ package com.honlife.core.app.controller.admin.badge;
 
 import com.honlife.core.app.controller.admin.badge.payload.AdminBadgeResponse;
 import com.honlife.core.app.controller.admin.badge.payload.AdminBadgeSaveRequest;
-import com.honlife.core.app.controller.badge.payload.BadgeResponse;
 import com.honlife.core.app.model.badge.code.BadgeTier;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.MediaType;
@@ -63,8 +61,9 @@ public class AdminBadgeController {
 
 
   /**
-   * 업적 단건 조회 API
-   * @return BadgePayload 특정 업적에 대한 정보
+   * id에 해당하는 특정 조건을 조회
+   * @param badgeId 뱃지 id 값
+   * @return AdminBadgeResponse
    */
   @Operation(summary = "업적 단건 조회", description = "id에 해당하는 업적에 대해 조회합니다.")
   @GetMapping("/{id}")
@@ -107,7 +106,7 @@ public class AdminBadgeController {
    * 새로운 업적을 등록하는 API
    * @param badgeSaveRequest 새로운 업적 정보를 담은 request
    * @param bindingResult validation
-   * @return
+   * @return 등록 성공 시 ok, 누락된 정보가 있다면 Bad Request 응답
    */
   @Operation(
       summary = "업적 등록",
@@ -136,7 +135,13 @@ public class AdminBadgeController {
     return ResponseEntity.ok(CommonApiResponse.noContent());
   }
 
-
+  /**
+   * 기존 업적 정보를 수정하는 API
+   * @param badgeId pathVariable로 쓰이는 업적 아이디
+   * @param badgeSaveRequest 수정할 업적 정보를 담은 request
+   * @param bindingResult validation
+   * @return 수정 성공 시 ok, 존재하지 않는 ID일 경우 Not Found Badge, 누락된 정보가 있다면 Bad Request 응답
+   */
   @Operation(
       summary = "업적 수정",
       description = "기존 업적 정보를 수정합니다.<br>"
@@ -175,7 +180,11 @@ public class AdminBadgeController {
     return ResponseEntity.ok(CommonApiResponse.noContent());
   }
 
-
+  /**
+   * id에 해당하는 업적을 삭제하는 API
+   * @param badgeId pathVariable로 쓰이는 업적 아이디
+   * @return 삭제 성공 시 ok, 존재하지 않는 ID일 경우 Not Found Badge 응답
+   */
   @Operation(
       summary = "업적 삭제",
       description = "지정된 업적을 삭제합니다.<br>"
