@@ -22,8 +22,8 @@ public class QuestResponse {
   @Schema(description = "보상 포인트", example = "100")
   private int reward;
 
-  @Schema(description = "카테고리 이름", example = "1")
-  private int categoryId;
+  @Schema(description = "카테고리 ID", example = "1")
+  private int categoryName;
 
   @Schema(description = "시작일", example = "2025-07-01T00:00:00+09:00")
   private OffsetDateTime startDate;
