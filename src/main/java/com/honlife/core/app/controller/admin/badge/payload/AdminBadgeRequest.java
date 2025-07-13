@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AdminBadgeSaveRequest {
+public class AdminBadgeRequest {
 
     @NotBlank
     @Schema(description = "업적의 키", example = "clean_bronze")
