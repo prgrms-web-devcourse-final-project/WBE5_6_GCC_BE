@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.controller.admin.payload.WeeklyQuestRequest;
+import com.honlife.core.app.model.quest.dto.WeeklyQuestDTO;
 import com.honlife.core.app.model.quest.service.WeeklyQuestService;
 
 
@@ -29,27 +29,27 @@ public class WeeklyQuestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<WeeklyQuestRequest>> getAllWeeklyQuests() {
+    public ResponseEntity<List<WeeklyQuestDTO>> getAllWeeklyQuests() {
         return ResponseEntity.ok(weeklyQuestService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WeeklyQuestRequest> getWeeklyQuest(@PathVariable(name = "id") final Long id) {
+    public ResponseEntity<WeeklyQuestDTO> getWeeklyQuest(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(weeklyQuestService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createWeeklyQuest(
-        @RequestBody @Valid final WeeklyQuestRequest weeklyQuestRequest) {
-        final Long createdId = weeklyQuestService.create(weeklyQuestRequest);
+        @RequestBody @Valid final WeeklyQuestDTO weeklyQuestDTO) {
+        final Long createdId = weeklyQuestService.create(weeklyQuestDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateWeeklyQuest(@PathVariable(name = "id") final Long id,
-        @RequestBody @Valid final WeeklyQuestRequest weeklyQuestRequest) {
-        weeklyQuestService.update(id, weeklyQuestRequest);
+        @RequestBody @Valid final WeeklyQuestDTO weeklyQuestDTO) {
+        weeklyQuestService.update(id, weeklyQuestDTO);
         return ResponseEntity.ok(id);
     }
 

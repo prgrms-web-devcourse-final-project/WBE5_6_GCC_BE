@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.quest.domain.EventQuest;
-import com.honlife.core.app.controller.admin.payload.EventQuestRequest;
+import com.honlife.core.app.model.quest.dto.EventQuestDTO;
 import com.honlife.core.app.model.quest.repos.EventQuestRepository;
 import com.honlife.core.infra.util.NotFoundException;
 
@@ -18,28 +18,28 @@ public class EventQuestService {
         this.eventQuestRepository = eventQuestRepository;
     }
 
-    public List<EventQuestRequest> findAll() {
+    public List<EventQuestDTO> findAll() {
         final List<EventQuest> eventQuests = eventQuestRepository.findAll(Sort.by("id"));
         return eventQuests.stream()
-                .map(eventQuest -> mapToDTO(eventQuest, new EventQuestRequest()))
-                .toList();
+            .map(eventQuest -> mapToDTO(eventQuest, new EventQuestDTO()))
+            .toList();
     }
 
-    public EventQuestRequest get(final Long id) {
+    public EventQuestDTO get(final Long id) {
         return eventQuestRepository.findById(id)
-                .map(eventQuest -> mapToDTO(eventQuest, new EventQuestRequest()))
-                .orElseThrow(NotFoundException::new);
+            .map(eventQuest -> mapToDTO(eventQuest, new EventQuestDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final EventQuestRequest eventQuestDTO) {
+    public Long create(final EventQuestDTO eventQuestDTO) {
         final EventQuest eventQuest = new EventQuest();
         mapToEntity(eventQuestDTO, eventQuest);
         return eventQuestRepository.save(eventQuest).getId();
     }
 
-    public void update(final Long id, final EventQuestRequest eventQuestDTO) {
+    public void update(final Long id, final EventQuestDTO eventQuestDTO) {
         final EventQuest eventQuest = eventQuestRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(NotFoundException::new);
         mapToEntity(eventQuestDTO, eventQuest);
         eventQuestRepository.save(eventQuest);
     }
@@ -48,11 +48,11 @@ public class EventQuestService {
         eventQuestRepository.deleteById(id);
     }
 
-    private EventQuestRequest mapToDTO(final EventQuest eventQuest, final EventQuestRequest eventQuestDTO) {
+    private EventQuestDTO mapToDTO(final EventQuest eventQuest, final EventQuestDTO eventQuestDTO) {
         eventQuestDTO.setCreatedAt(eventQuest.getCreatedAt());
         eventQuestDTO.setUpdatedAt(eventQuest.getUpdatedAt());
         eventQuestDTO.setIsActive(eventQuest.getIsActive());
-        eventQuestDTO.setEventQuestId(eventQuest.getId());
+        eventQuestDTO.setId(eventQuest.getId());
         eventQuestDTO.setKey(eventQuest.getKey());
         eventQuestDTO.setName(eventQuest.getName());
         eventQuestDTO.setInfo(eventQuest.getInfo());
@@ -61,7 +61,7 @@ public class EventQuestService {
         return eventQuestDTO;
     }
 
-    private EventQuest mapToEntity(final EventQuestRequest eventQuestDTO, final EventQuest eventQuest) {
+    private EventQuest mapToEntity(final EventQuestDTO eventQuestDTO, final EventQuest eventQuest) {
         eventQuest.setCreatedAt(eventQuestDTO.getCreatedAt());
         eventQuest.setUpdatedAt(eventQuestDTO.getUpdatedAt());
         eventQuest.setIsActive(eventQuestDTO.getIsActive());

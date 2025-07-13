@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.quest.domain.WeeklyQuest;
-import com.honlife.core.app.controller.admin.payload.WeeklyQuestRequest;
+import com.honlife.core.app.model.quest.dto.WeeklyQuestDTO;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestRepository;
 import com.honlife.core.infra.util.NotFoundException;
 
@@ -18,29 +18,29 @@ public class WeeklyQuestService {
         this.weeklyQuestRepository = weeklyQuestRepository;
     }
 
-    public List<WeeklyQuestRequest> findAll() {
+    public List<WeeklyQuestDTO> findAll() {
         final List<WeeklyQuest> weeklyQuests = weeklyQuestRepository.findAll(Sort.by("id"));
         return weeklyQuests.stream()
-                .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestRequest()))
-                .toList();
+            .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestDTO()))
+            .toList();
     }
 
-    public WeeklyQuestRequest get(final Long id) {
+    public WeeklyQuestDTO get(final Long id) {
         return weeklyQuestRepository.findById(id)
-                .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestRequest()))
-                .orElseThrow(NotFoundException::new);
+            .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestDTO()))
+            .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final WeeklyQuestRequest weeklyQuestRequest) {
+    public Long create(final WeeklyQuestDTO weeklyQuestDTO) {
         final WeeklyQuest weeklyQuest = new WeeklyQuest();
-        mapToEntity(weeklyQuestRequest, weeklyQuest);
+        mapToEntity(weeklyQuestDTO, weeklyQuest);
         return weeklyQuestRepository.save(weeklyQuest).getId();
     }
 
-    public void update(final Long id, final WeeklyQuestRequest weeklyQuestRequest) {
+    public void update(final Long id, final WeeklyQuestDTO weeklyQuestDTO) {
         final WeeklyQuest weeklyQuest = weeklyQuestRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
-        mapToEntity(weeklyQuestRequest, weeklyQuest);
+            .orElseThrow(NotFoundException::new);
+        mapToEntity(weeklyQuestDTO, weeklyQuest);
         weeklyQuestRepository.save(weeklyQuest);
     }
 
@@ -48,26 +48,26 @@ public class WeeklyQuestService {
         weeklyQuestRepository.deleteById(id);
     }
 
-    private WeeklyQuestRequest mapToDTO(final WeeklyQuest weeklyQuest,
-            final WeeklyQuestRequest weeklyQuestRequest) {
-        weeklyQuestRequest.setCreatedAt(weeklyQuest.getCreatedAt());
-        weeklyQuestRequest.setUpdatedAt(weeklyQuest.getUpdatedAt());
-        weeklyQuestRequest.setIsActive(weeklyQuest.getIsActive());
-        weeklyQuestRequest.setWeeklyQuestId(weeklyQuest.getId());
-        weeklyQuestRequest.setKey(weeklyQuest.getKey());
-        weeklyQuestRequest.setName(weeklyQuest.getName());
-        weeklyQuestRequest.setInfo(weeklyQuest.getInfo());
-        return weeklyQuestRequest;
+    private WeeklyQuestDTO mapToDTO(final WeeklyQuest weeklyQuest,
+        final WeeklyQuestDTO weeklyQuestDTO) {
+        weeklyQuestDTO.setCreatedAt(weeklyQuest.getCreatedAt());
+        weeklyQuestDTO.setUpdatedAt(weeklyQuest.getUpdatedAt());
+        weeklyQuestDTO.setIsActive(weeklyQuest.getIsActive());
+        weeklyQuestDTO.setId(weeklyQuest.getId());
+        weeklyQuestDTO.setKey(weeklyQuest.getKey());
+        weeklyQuestDTO.setName(weeklyQuest.getName());
+        weeklyQuestDTO.setInfo(weeklyQuest.getInfo());
+        return weeklyQuestDTO;
     }
 
-    private WeeklyQuest mapToEntity(final WeeklyQuestRequest weeklyQuestRequest,
-            final WeeklyQuest weeklyQuest) {
-        weeklyQuest.setCreatedAt(weeklyQuestRequest.getCreatedAt());
-        weeklyQuest.setUpdatedAt(weeklyQuestRequest.getUpdatedAt());
-        weeklyQuest.setIsActive(weeklyQuestRequest.getIsActive());
-        weeklyQuest.setKey(weeklyQuestRequest.getKey());
-        weeklyQuest.setName(weeklyQuestRequest.getName());
-        weeklyQuest.setInfo(weeklyQuestRequest.getInfo());
+    private WeeklyQuest mapToEntity(final WeeklyQuestDTO weeklyQuestDTO,
+        final WeeklyQuest weeklyQuest) {
+        weeklyQuest.setCreatedAt(weeklyQuestDTO.getCreatedAt());
+        weeklyQuest.setUpdatedAt(weeklyQuestDTO.getUpdatedAt());
+        weeklyQuest.setIsActive(weeklyQuestDTO.getIsActive());
+        weeklyQuest.setKey(weeklyQuestDTO.getKey());
+        weeklyQuest.setName(weeklyQuestDTO.getName());
+        weeklyQuest.setInfo(weeklyQuestDTO.getInfo());
         return weeklyQuest;
     }
 
