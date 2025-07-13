@@ -2,7 +2,6 @@ package com.honlife.core.app.controller.admin.item;
 
 import com.honlife.core.app.controller.admin.item.payload.AdminItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemResponse;
-import com.honlife.core.app.controller.item.payload.ItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -58,7 +57,6 @@ public class AdminItemController {
                 .itemType(ItemType.TOP)
                 .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
                 .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-                .isActive(true)
                 .build());
             items.add(AdminItemResponse.builder()
                 .itemId(2L)
@@ -68,7 +66,6 @@ public class AdminItemController {
                 .itemType(ItemType.TOP)
                 .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
                 .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-                .isActive(true)
                 .build());
             return ResponseEntity.ok(CommonApiResponse.success(items));
         } else if (itemType != null) {
@@ -82,7 +79,6 @@ public class AdminItemController {
             .itemType(ItemType.TOP)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-            .isActive(true)
             .build());
         items.add(AdminItemResponse.builder()
             .itemId(3L)
@@ -92,7 +88,6 @@ public class AdminItemController {
             .itemType(ItemType.BOTTOM)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-            .isActive(true)
             .build());
         return ResponseEntity.ok(CommonApiResponse.success(items));
     }
@@ -117,7 +112,6 @@ public class AdminItemController {
             .itemType(ItemType.TOP)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
-            .isActive(true)
             .build();
         return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
     }
@@ -206,8 +200,8 @@ public class AdminItemController {
         if (id == 10L) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
         } else {
-            return ResponseEntity.status(ResponseCode.NOT_EXIST_ITEM.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_ITEM));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
         }
     }
 }
