@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
-@Tag(name="관리자 업적 관리", description = "관리자 업적 관련 API 입니다.")
+@Tag(name="[관리자] 업적 관리", description = "관리자 업적 관련 API 입니다.")
 @RequestMapping(value = "/api/v1/admin/badges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminBadgeController {
 

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "관리자 카테고리", description = "관리자가 사용하는 카테고리 관리용 API입니다.")
+@Tag(name = "[관리자] 카테고리", description = "관리자가 사용하는 카테고리 관리용 API입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminCategoryController {

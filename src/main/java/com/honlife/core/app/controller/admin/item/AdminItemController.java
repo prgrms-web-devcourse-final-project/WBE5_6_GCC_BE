@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "관리자 아이템 관리", description = "관리자 아이템 관련 API 입니다.")
+@Tag(name = "[관리자] 아이템 관리", description = "관리자 아이템 관련 API 입니다.")
 @RequestMapping(value = "/api/v1/admin/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminItemController {
 
@@ -44,6 +44,8 @@ public class AdminItemController {
      * @param itemType 아이템 타입
      * @return 모든 아이템에 대한 리스트를 반환합니다. 만약 특정 타입이 함께 넘어온 경우, 해당 타입의 모든 아이템 리스트가 반환됩니다.
      */
+    @Operation(summary = "아이템 전체 조회", description = "아이템의 전체 목록을 조회합니다.<br>"
+        + "{type} 에 값을 넣으면, 해당 아이템 타입의 모든 아이템 목록을 조회할 수 있습니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<?>> getItems(
         @Schema(description = "아이템 타입 입니다.", example = "TOP")
@@ -99,6 +101,7 @@ public class AdminItemController {
      * @param itemId 특정 아이템 ID
      * @return 성공시 {@code AdminItemResponse} 를 응답객체에 담아 반환합니다.
      */
+    @Operation(summary = "특정 아이템 조회", description = "아이템 id를 통해 특정 아이템에 대한 정보를 조회할 수 있습니다.")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<?>> getItem(
         @PathVariable(name = "id") final Long itemId

@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "관리자 - 추천 루틴", description = "관리자용 추천 루틴 관리 API 입니다.")
+@Tag(name = "[관리자] 추천 루틴", description = "관리자용 추천 루틴 관리 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/routines/presets", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")

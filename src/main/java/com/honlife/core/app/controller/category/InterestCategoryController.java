@@ -69,6 +69,8 @@ public class InterestCategoryController {
      * @param bindingResult 요청 본문에 대한 유효성 검사 결과
      * @return 유효하지 않은 요청일 경우 {@code 400 Bad Request}, 사용자가 존재하지 않을 경우 {@code 404 Not Found}를 반환합니다.
      */
+    @Operation(summary = "선호 카테고리 수정", description = "로그인한 회원의 관심 카테고리 정보를 수정하는 API입니다.<br>"
+        + "요청 본문으로 새로운 관심 카테고리 정보를 전달받아 해당 사용자의 선호 카테고리 목록을 갱신합니다.")
     @PutMapping
     public ResponseEntity<CommonApiResponse<Void>> updateInterestCategory(
         @AuthenticationPrincipal UserDetails userDetails,

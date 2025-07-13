@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
  */
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
-@Tag(name = "관리자 퀘스트 관리", description = "EVENT / WEEKLY 퀘스트 통합 관리 API입니다.")
+@Tag(name = "[관리자] 퀘스트 관리", description = "EVENT / WEEKLY 퀘스트 통합 관리 API입니다.")
 @RequestMapping(value = "/api/v1/admin/quests/{type}", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
 public class AdminQuestController {

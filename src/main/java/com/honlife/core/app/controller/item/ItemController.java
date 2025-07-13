@@ -40,7 +40,7 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-    /*
+    /**
      * 모든 아이템 또는 Type 일치 아이템 조회 API
      * @return List<ItemResponse> 모든 아이템에 대한 정보
      * */
@@ -138,30 +138,5 @@ public class ItemController {
                     .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_ITEM));
         }
             return ResponseEntity.ok(CommonApiResponse.noContent());
-    }
-
-    @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createItem(@RequestBody @Valid final ItemDTO itemDTO) {
-        final Long createdId = itemService.create(itemDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Long> updateItem(@PathVariable(name = "id") final Long id,
-        @RequestBody @Valid final ItemDTO itemDTO) {
-        itemService.update(id, itemDTO);
-        return ResponseEntity.ok(id);
-    }
-
-    @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
-    public ResponseEntity<Void> deleteItem(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = itemService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
-        itemService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }

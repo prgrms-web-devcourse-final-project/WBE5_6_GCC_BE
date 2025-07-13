@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "관리자 - 포인트 정책", description = "관리자용 포인트 정책 관리 API 입니다.")
+@Tag(name = "[관리자] 포인트 정책", description = "관리자용 포인트 정책 관리 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/points/policies", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
