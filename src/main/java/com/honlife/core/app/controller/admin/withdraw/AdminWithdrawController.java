@@ -25,6 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminWithdrawController {
 
+
+    /**
+     * 회원 탈퇴 사유를 조회하는 API입니다.
+     * @param startDate 조회 시작일
+     * @param endDate 조회 종료일
+     * @return 모든 탈퇴 사유에 대한 리스트를 반환합니다. 시작일과 종료일이 함께 넘어온 경우, 두 날짜 사이의 탈퇴 사유만 반환합니다.
+     */
     @Operation(
         summary = "회원 탈퇴 사유 조회",
         description = "회원 탈퇴 사유를 전체 조회합니다."
