@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(description = "포인트 정책 생성/수정 요청")
-public class AdminPointPolicySaveRequest {
+public class AdminPointPolicyRequest {
 
     @NotNull(message = "포인트 소스 타입은 필수입니다")
     @Schema(description = "포인트 소스 타입", example = "ROUTINE", required = true)

@@ -2,7 +2,7 @@ package com.honlife.core.app.controller.point;
 
 import com.honlife.core.app.controller.point.payload.AdminPointPoliciesResponse;
 import com.honlife.core.app.controller.point.payload.AdminPointPolicyDetailResponse;
-import com.honlife.core.app.controller.point.payload.AdminPointPolicySaveRequest;
+import com.honlife.core.app.controller.point.payload.AdminPointPolicyRequest;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.app.model.point.service.PointPolicyService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -194,7 +194,7 @@ public class PointPolicyController {
     )
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createPointPolicy(
-        @RequestBody @Valid final AdminPointPolicySaveRequest request,
+        @RequestBody @Valid final AdminPointPolicyRequest request,
         BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -238,7 +238,7 @@ public class PointPolicyController {
     public ResponseEntity<CommonApiResponse<Void>> updatePointPolicy(
         @PathVariable(name = "id")
         @Schema(description = "정책 ID", example = "1") final Long policyId,
-        @RequestBody @Valid final AdminPointPolicySaveRequest request,
+        @RequestBody @Valid final AdminPointPolicyRequest request,
         BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
