@@ -28,10 +28,4 @@ public enum RepeatType {
      * repeat_value: 사용자가 직접 정의한 패턴
      */
     CUSTOM,
-
-    /**
-     * 반복 없음 (일회성)
-     * repeat_value: null 또는 빈 문자열
-     */
-    NONE
 }
