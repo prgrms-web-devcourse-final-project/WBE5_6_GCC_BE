@@ -23,11 +23,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "관리자 - 추천 루틴", description = "관리자용 추천 루틴 관리 API 입니다.")
@@ -45,7 +47,6 @@ public class AdminRoutinePresetController {
 
   /**
    * 추천 루틴 프리셋 목록 조회 API
-   * @param userDetails 로그인된 사용자 정보
    * @return AdminRoutinePresetsResponse
    */
   @Operation(
@@ -61,47 +62,65 @@ public class AdminRoutinePresetController {
   )
   @GetMapping
   public ResponseEntity<CommonApiResponse<AdminRoutinePresetsResponse>> getAllRoutinePresets(
-      @AuthenticationPrincipal UserDetails userDetails
+      @RequestParam(required = false)
+      @Schema(description = "카테고리 ID (선택사항)", example = "1") Long categoryId
   ) {
     // 모킹 데이터 생성
     AdminRoutinePresetsResponse response = new AdminRoutinePresetsResponse();
     List<AdminRoutinePresetsResponse.PresetItem> presets = new ArrayList<>();
 
-    presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-        .presetId(1L)
-        .categoryId(1L)
-        .categoryName("청소")
-        .content("화장실 청소하기")
-        .isActive(true)
-        .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
-        .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
-        .build());
-    presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-        .presetId(2L)
-        .categoryId(2L)
-        .categoryName("건강")
-        .content("자기 전 명상 10분")
-        .isActive(true)
-        .createdAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-        .updatedAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-        .build());
-    presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-        .presetId(3L)
-        .categoryId(4L)
-        .categoryName("운동")
-        .content("아침 스트레칭 하기")
-        .isActive(false)
-        .createdAt(LocalDateTime.of(2025, 1, 8, 15, 20))
-        .updatedAt(LocalDateTime.of(2025, 1, 13, 11, 45))
-        .build());
+    if (categoryId == null) {
+      // 전체 카테고리 프리셋 반환
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(1L)
+          .categoryId(1L)
+          .categoryName("청소")
+          .content("화장실 청소하기")
+          .isActive(true)
+          .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
+          .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
+          .build());
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(2L)
+          .categoryId(2L)
+          .categoryName("건강")
+          .content("자기 전 명상 10분")
+          .isActive(true)
+          .createdAt(LocalDateTime.of(2025, 1, 11, 10, 15))
+          .updatedAt(LocalDateTime.of(2025, 1, 11, 10, 15))
+          .build());
+    } else if (categoryId == 1L) {
+      // 청소 카테고리 프리셋만
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(1L)
+          .categoryId(1L)
+          .categoryName("청소")
+          .content("화장실 청소하기")
+          .isActive(true)
+          .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
+          .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
+          .build());
+    } else if (categoryId == 2L) {
+      // 건강 카테고리 프리셋만
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(2L)
+          .categoryId(2L)
+          .categoryName("건강")
+          .content("자기 전 명상 10분")
+          .isActive(true)
+          .createdAt(LocalDateTime.of(2025, 1, 11, 10, 15))
+          .updatedAt(LocalDateTime.of(2025, 1, 11, 10, 15))
+          .build());
+    }
 
     response.setPresets(presets);
 
     // 실제 구현 시에는 다음과 같은 로직 수행:
-    // 1. 모든 RoutinePreset 조회 (활성/비활성 포함)
-    // 2. Category 정보 조인하여 카테고리명 조회
-    // 3. 생성일시 기준 정렬
-    // 4. DTO 변환하여 반환
+    // 1. categoryId가 있으면 해당 카테고리의 프리셋만 조회
+    // 2. categoryId가 없으면 모든 프리셋 조회 (활성/비활성 포함)
+    // 3. Category 정보 조인하여 카테고리명 조회
+    // 4. 생성일시 기준 정렬
+    // 5. DTO 변환하여 반환
 
     return ResponseEntity.ok(CommonApiResponse.success(response));
   }
@@ -109,7 +128,6 @@ public class AdminRoutinePresetController {
   /**
    * 특정 추천 루틴 프리셋 조회 API
    * @param presetId 프리셋 ID
-   * @param userDetails 로그인된 사용자 정보
    * @return AdminRoutinePresetDetailResponse
    */
   @Operation(
@@ -121,8 +139,7 @@ public class AdminRoutinePresetController {
   @GetMapping("/{id}")
   public ResponseEntity<CommonApiResponse<AdminRoutinePresetDetailResponse>> getRoutinePreset(
       @PathVariable(name = "id")
-      @Schema(description = "프리셋 ID", example = "1") final Long presetId,
-      @AuthenticationPrincipal UserDetails userDetails
+      @Schema(description = "프리셋 ID", example = "1") final Long presetId
   ) {
     // 존재하지 않는 프리셋 ID로 접근
     if (presetId != 1L && presetId != 2L && presetId != 3L) {
@@ -147,7 +164,6 @@ public class AdminRoutinePresetController {
   /**
    * 추천 루틴 프리셋 생성 API
    * @param request 프리셋 생성 요청 정보
-   * @param userDetails 로그인된 사용자 정보
    * @param bindingResult validation
    * @return
    */
@@ -165,7 +181,6 @@ public class AdminRoutinePresetController {
   @PostMapping
   public ResponseEntity<CommonApiResponse<Long>> createRoutinePreset(
       @RequestBody @Valid final AdminRoutinePresetSaveRequest request,
-      @AuthenticationPrincipal UserDetails userDetails,
       BindingResult bindingResult
   ) {
     if (bindingResult.hasErrors()) {
@@ -189,7 +204,6 @@ public class AdminRoutinePresetController {
    * 추천 루틴 프리셋 수정 API
    * @param presetId 수정할 프리셋 ID
    * @param request 프리셋 수정 요청 정보
-   * @param userDetails 로그인된 사용자 정보
    * @param bindingResult validation
    * @return
    */
@@ -203,12 +217,11 @@ public class AdminRoutinePresetController {
           "• isActive: 활성화 상태 변경<br><br>" +
           "*실제 DB에 반영되지 않음*"
   )
-  @PutMapping("/{id}")
+  @PatchMapping("/{id}")
   public ResponseEntity<CommonApiResponse<Void>> updateRoutinePreset(
       @PathVariable(name = "id")
       @Schema(description = "프리셋 ID", example = "1") final Long presetId,
       @RequestBody @Valid final AdminRoutinePresetSaveRequest request,
-      @AuthenticationPrincipal UserDetails userDetails,
       BindingResult bindingResult
   ) {
     if (bindingResult.hasErrors()) {
@@ -235,7 +248,6 @@ public class AdminRoutinePresetController {
   /**
    * 추천 루틴 프리셋 삭제 API
    * @param presetId 삭제할 프리셋 ID
-   * @param userDetails 로그인된 사용자 정보
    * @return
    */
   @Operation(
@@ -250,8 +262,7 @@ public class AdminRoutinePresetController {
   @DeleteMapping("/{id}")
   public ResponseEntity<CommonApiResponse<Void>> deleteRoutinePreset(
       @PathVariable(name = "id")
-      @Schema(description = "프리셋 ID", example = "1") final Long presetId,
-      @AuthenticationPrincipal UserDetails userDetails
+      @Schema(description = "프리셋 ID", example = "1") final Long presetId
   ) {
     // 존재하지 않는 프리셋 ID로 접근
     if (presetId != 1L && presetId != 2L && presetId != 3L) {
