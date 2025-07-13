@@ -24,11 +24,10 @@ public enum ResponseCode {
   ASSIGN_CONFLICT_QUEST("4093", HttpStatus.CONFLICT, "Quest Already assigned."),
   INTERNAL_SERVER_ERROR("5000", HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
   SECURITY_INCIDENT("6000", HttpStatus.OK, "An unusual login attempt has been detected."),
-  NOT_EXIST_EVENT_QUEST("4704", HttpStatus.NOT_FOUND,"해당 이벤트 퀘스트가 존재하지 않습니다."),
+  NOT_FOUND_EVENT_QUEST("4704", HttpStatus.NOT_FOUND,"해당 이벤트 퀘스트가 존재하지 않습니다."),
     NOT_EXIST_ITEM("4804", HttpStatus.NOT_FOUND,"해당 상점 아이템이 존재하지 않습니다."),
-    NOT_EXIST_PRESET("4604",HttpStatus.NOT_FOUND, "존재하지 않는 추천 루틴입니다."),
-    NOT_EXIST_QUEST("4605", HttpStatus.NOT_FOUND, "존재하지 않는 퀘스트입니다."),
-    NOT_EXIST_LOG("4606",HttpStatus.NOT_FOUND ,"존재하지 않는 로그입니다."),
+    NOT_FOUND_PRESET("4604",HttpStatus.NOT_FOUND, "존재하지 않는 추천 루틴입니다."),
+    NOT_FOUND_LOG("4606",HttpStatus.NOT_FOUND ,"존재하지 않는 로그입니다."),
     INVALID_QUEST_TYPE("4607", HttpStatus.BAD_REQUEST, "지원하지 않는 퀘스트 타입입니다."),
     QUEST_ALREADY_COMPLETED("4608", HttpStatus.CONFLICT, "이미 완료한 퀘스트입니다.");
 

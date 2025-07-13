@@ -79,8 +79,8 @@ public class AdminPresetRoutineController {
       Authentication authentication
   ) {
     if (presetId == 1) {
-      return ResponseEntity.status(ResponseCode.NOT_EXIST_PRESET.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_PRESET));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_PRESET.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_PRESET));
     }
 
     return ResponseEntity.ok(CommonApiResponse.success("추천 루틴 수정 완료"));
@@ -105,8 +105,8 @@ public class AdminPresetRoutineController {
       Authentication authentication
   ) {
     if (presetId == 1) {
-      return ResponseEntity.status(ResponseCode.NOT_EXIST_PRESET.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_PRESET));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_PRESET.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_PRESET));
     }
 
     return ResponseEntity.ok(CommonApiResponse.success("추천 루틴 삭제 완료"));

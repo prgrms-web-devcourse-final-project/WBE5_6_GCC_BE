@@ -71,8 +71,8 @@ public class AdminController {
     if (logId == 42L) {
       return ResponseEntity.ok(CommonApiResponse.success("포인트 로그 삭제 완료"));
     } else {
-      return ResponseEntity.status(ResponseCode.NOT_EXIST_LOG.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_LOG));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_LOG.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_LOG));
     }
   }
 

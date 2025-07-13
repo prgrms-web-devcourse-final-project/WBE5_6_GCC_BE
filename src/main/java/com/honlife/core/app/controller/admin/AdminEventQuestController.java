@@ -46,8 +46,8 @@ public class AdminEventQuestController {
     if ("event_key_10".equals(request.getKey())) {
       return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 등록 성공"));
     } else {
-      return ResponseEntity.status(ResponseCode.NOT_EXIST_EVENT_QUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_EVENT_QUEST));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_EVENT_QUEST.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_EVENT_QUEST));
     }
   }
 
@@ -71,8 +71,8 @@ public class AdminEventQuestController {
     if (eventId == 1L) {
       return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 수정 완료"));
     } else {
-      return ResponseEntity.status(ResponseCode.NOT_EXIST_EVENT_QUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_EVENT_QUEST));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_EVENT_QUEST.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_EVENT_QUEST));
     }
   }
 
@@ -96,8 +96,8 @@ public class AdminEventQuestController {
     if (eventId == 10L) {
       return ResponseEntity.ok(CommonApiResponse.success("이벤트 퀘스트 삭제 완료"));
     } else {
-      return ResponseEntity.status(ResponseCode.NOT_EXIST_EVENT_QUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_EVENT_QUEST));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_EVENT_QUEST.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_EVENT_QUEST));
     }
   }
 

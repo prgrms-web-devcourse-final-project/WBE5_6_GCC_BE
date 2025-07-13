@@ -77,8 +77,8 @@ public class AdminWeeklyQuestController {
       Authentication authentication
   ) {
     if (weeklyId == 1) {
-      return ResponseEntity.status(ResponseCode.NOT_EXIST_QUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_QUEST));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_QUEST.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_QUEST));
     }
 
     return ResponseEntity.ok(CommonApiResponse.success("주간 퀘스트 수정 완료"));
@@ -103,8 +103,8 @@ public class AdminWeeklyQuestController {
       Authentication authentication
   ) {
     if (weeklyId == 1L) {
-      return ResponseEntity.status(ResponseCode.NOT_EXIST_QUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_EXIST_QUEST));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_QUEST.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_QUEST));
     }
 
     return ResponseEntity.ok(CommonApiResponse.success("주간 퀘스트 삭제 완료"));
