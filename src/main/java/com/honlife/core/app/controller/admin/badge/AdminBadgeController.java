@@ -18,7 +18,6 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @SecurityRequirement(name = "bearerAuth")
@@ -34,7 +33,62 @@ public class AdminBadgeController {
    */
   @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다.")
   @GetMapping
-  public ResponseEntity<CommonApiResponse<List<AdminBadgeResponse>>> getAllBadges() {
+  public ResponseEntity<CommonApiResponse<List<AdminBadgeResponse>>> getAllBadges(
+      @Schema(description = "카테고리 아이디", example = "1")
+      @RequestParam Long categoryId
+  ) {
+    // 해당하는 카테고리가 없는 업적
+    if(categoryId == 0) {
+      List<AdminBadgeResponse> responses = new ArrayList<>();
+      responses.add(AdminBadgeResponse.builder()
+          .badgeId(3L)
+          .badgeKey("attendance_bronze")
+          .badgeName("성실하답니다")
+          .tier(BadgeTier.BRONZE)
+          .how("연속 3번 출석")
+          .requirement(3)
+          .info("연속 3번으로 출석한 나, 꽤나 장한걸요?")
+          .categoryName(null)
+          .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
+          .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+          .isActive(true)
+          .build());
+      return ResponseEntity.ok(CommonApiResponse.success(responses));
+    }
+    if(categoryId == 1) {
+      List<AdminBadgeResponse> responses = new ArrayList<>();
+      responses.add(AdminBadgeResponse.builder()
+          .badgeId(1L)
+          .badgeKey("clean_bronze")
+          .badgeName("초보 청소부")
+          .tier(BadgeTier.BRONZE)
+          .how("청소 루틴 5번 이상 성공")
+          .requirement(5)
+          .info("이제 청소 좀 한다고 말할 수 있겠네요!")
+          .categoryName("청소")
+          .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
+          .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+          .isActive(true)
+          .build());
+      return ResponseEntity.ok(CommonApiResponse.success(responses));
+    }
+
+    if(categoryId == 2) {
+      List<AdminBadgeResponse> responses = new ArrayList<>();
+      responses.add(AdminBadgeResponse.builder()
+          .badgeId(2L)
+          .badgeKey("cook_bronze")
+          .badgeName("초보 요리사")
+          .tier(BadgeTier.BRONZE)
+          .how("요리 루틴 5번 이상 성공")
+          .requirement(5)
+          .info("나름 계란 프라이는 할 수 있다구요!")
+          .categoryName("요리")
+          .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
+          .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+          .isActive(true)
+          .build());
+    }
     List<AdminBadgeResponse> responses = new ArrayList<>();
     responses.add(AdminBadgeResponse.builder()
         .badgeId(1L)
@@ -118,7 +172,6 @@ public class AdminBadgeController {
   /**
    * 새로운 업적을 등록하는 API
    * @param badgeSaveRequest 새로운 업적 정보를 담은 request
-   * @param bindingResult validation
    * @return 등록 성공 시 ok, 누락된 정보가 있다면 Bad Request 응답
    */
   @Operation(
