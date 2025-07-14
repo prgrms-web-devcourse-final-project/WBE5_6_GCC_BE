@@ -304,12 +304,12 @@ INSERT INTO POINT_POLICY (id, reference_key, type, point, created_at, updated_at
 -- 루틴
 (1, NULL, 'ROUTINE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 -- 업적
-(2, 'clean_bronze', 'CHALLENGE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(3, 'explorer_silver', 'CHALLENGE', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(4, 'attendance_bronze', 'CHALLENGE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(5, 'battle_gold', 'CHALLENGE', 150, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(6, 'platinum', 'CHALLENGE', 200, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(7, 'dungeon_bronze', 'CHALLENGE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(2, 'clean_bronze', 'BADGE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(3, 'explorer_silver', 'BADGE', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(4, 'attendance_bronze', 'BADGE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(5, 'battle_gold', 'BADGE', 150, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(6, 'platinum', 'BADGE', 200, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(7, 'dungeon_bronze', 'BADGE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 -- 주간퀘
 (8, 'weekly_team_play', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 (9, 'weekly_dungeon_clear', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
