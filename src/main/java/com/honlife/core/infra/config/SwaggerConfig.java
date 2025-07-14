@@ -24,14 +24,14 @@ import java.util.Map;
         description = """
             1차적으로 완성된 API 목록이며, 추후 변경사항이 있을 수 있습니다.<br>\
             특히 <strong>HTTP 메소드에 대한 변경 및 요청 파라메터에 대한 변경이 있을 수 있음</strong>에 유의하세요.<br>\
-            제안 및 문의사항이 있다면 언제든 알려주세요.<br><br>\
-            <strong>*모든 API는 로그인 API 실행 후 발급받은 토큰을 Authorize에 입력한 뒤 사용할 수 있습니다.</strong><br>\
+            제안 및 문의사항이 있다면 언제든 알려주세요.<br>\
+            <i>만약 API 예시 또는 응답이 다음 구조가 아니라면 즉시 백엔드에게 알려주세요.</i><br>\
             <pre>{
               &nbsp;&nbsp;"status": ,
               &nbsp;&nbsp;"message": ,
               &nbsp;&nbsp;"data":
-            }</pre><br><br>
-            <i>만약 API 예시 또는 응답이 다음 구조가 아니라면 즉시 백엔드에게 알려주세요.</i>""",
+            }</pre><br>
+            <strong>*모든 API는 로그인 API 실행 후 발급받은 토큰을 Authorize에 입력한 뒤 사용할 수 있습니다.</strong>""",
         version = "v1"
     )
 )
