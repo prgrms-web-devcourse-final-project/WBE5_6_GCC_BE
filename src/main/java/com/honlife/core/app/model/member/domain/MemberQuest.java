@@ -37,7 +37,7 @@ public class MemberQuest extends BaseEntity {
     private String referenceKey;
 
     @Column
-    private Boolean idDone;
+    private Boolean isDone;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

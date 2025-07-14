@@ -60,7 +60,7 @@ public class MemberQuestService {
         memberQuestDTO.setIsActive(memberQuest.getIsActive());
         memberQuestDTO.setId(memberQuest.getId());
         memberQuestDTO.setReferenceKey(memberQuest.getReferenceKey());
-        memberQuestDTO.setIdDone(memberQuest.getIdDone());
+        memberQuestDTO.setIdDone(memberQuest.getIsDone());
         memberQuestDTO.setMember(memberQuest.getMember() == null ? null : memberQuest.getMember().getId());
         return memberQuestDTO;
     }
@@ -71,7 +71,7 @@ public class MemberQuestService {
         memberQuest.setUpdatedAt(memberQuestDTO.getUpdatedAt());
         memberQuest.setIsActive(memberQuestDTO.getIsActive());
         memberQuest.setReferenceKey(memberQuestDTO.getReferenceKey());
-        memberQuest.setIdDone(memberQuestDTO.getIdDone());
+        memberQuest.setIsDone(memberQuestDTO.getIdDone());
         final Member member = memberQuestDTO.getMember() == null ? null : memberRepository.findById(memberQuestDTO.getMember())
                 .orElseThrow(() -> new NotFoundException("member not found"));
         memberQuest.setMember(member);

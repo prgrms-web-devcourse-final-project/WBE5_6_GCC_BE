@@ -286,12 +286,12 @@ INSERT INTO ROUTINE_SCHEDULE ("id", "routine_id", "date", "is_done", "created_at
 -- 선호 카테고리 insert
 INSERT INTO INTEREST_CATEGORY (id, member_id, category_id, created_at, updated_at, is_active) VALUES
 -- 2 회원의 선호 카테고리
-  (1, 2, 10000, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-  (2, 2, 10001, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-  (3, 2, 10002, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(1, 2, 1, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(2, 2, 2, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(3, 2, 3, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 -- 3 회원의 선호 카테고리
-  (4, 3, 10001, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-  (5, 3, 10004, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
+(4, 3, 2, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(5, 3, 5, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
 
 
 -- 멤버 포인트 insert
@@ -325,25 +325,25 @@ INSERT INTO POINT_POLICY (id, reference_key, type, point, created_at, updated_at
 (17, 'event_summer_fireworks', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 (18, 'event_summer_login', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
 
-INSERT INTO WEEKLY_QUEST (id, key, name, info, created_at, updated_at, is_active, complete) VALUES
-(1, 'weekly_clean_room', '방 청소', '이번 주에 방을 1번 이상 청소하세요.', NOW(), NOW(), true, false),
-(2, 'weekly_do_laundry', '빨래하기', '이번 주에 세탁을 완료하세요.', NOW(), NOW(), true, false),
-(3, 'weekly_plan_meals', '식단 계획', '일주일 식사를 미리 계획해보세요.', NOW(), NOW(), true, false),
-(4, 'weekly_morning_routine', '아침 루틴 실천', '5일 이상 정해진 시간에 기상하세요.', NOW(), NOW(), true, false),
-(5, 'weekly_trash_out', '쓰레기 정리', '쓰레기를 정리하고 분리수거를 완료하세요.', NOW(), NOW(), true, false),
-(6, 'weekly_organize_drawer', '서랍 정리', '서랍 또는 책상을 정리하세요.', NOW(), NOW(), true, false);
+INSERT INTO WEEKLY_QUEST (id, key, name, info, created_at, updated_at, is_active) VALUES
+(1, 'weekly_clean_room', '방 청소', '이번 주에 방을 1번 이상 청소하세요.', NOW(), NOW(), true),
+(2, 'weekly_do_laundry', '빨래하기', '이번 주에 세탁을 완료하세요.', NOW(), NOW(), true),
+(3, 'weekly_plan_meals', '식단 계획', '일주일 식사를 미리 계획해보세요.', NOW(), NOW(), true),
+(4, 'weekly_morning_routine', '아침 루틴 실천', '5일 이상 정해진 시간에 기상하세요.', NOW(), NOW(), true),
+(5, 'weekly_trash_out', '쓰레기 정리', '쓰레기를 정리하고 분리수거를 완료하세요.', NOW(), NOW(), true),
+(6, 'weekly_organize_drawer', '서랍 정리', '서랍 또는 책상을 정리하세요.', NOW(), NOW(), true);
 
 
-INSERT INTO EVENT_QUEST (id, key, name, info, start_date, end_date, created_at, updated_at, is_active, complete) VALUES
-(1, 'event_summer_cleaning', '여름 대청소', '여름맞이 창틀, 에어컨 필터 등 대청소에 도전해보세요.', '2025-07-01', '2025-07-10', NOW(), NOW(), true, false),
-(2, 'event_summer_icebox', '냉장고 정리', '여름철 식중독 예방을 위한 냉장고 정리 미션!', '2025-07-05', '2025-07-15', NOW(), NOW(), true, false),
-(3, 'event_winter_mealprep', '겨울 식사 준비', '겨울을 위한 따뜻한 식단을 미리 준비해보세요.', '2025-12-20', '2026-01-05', NOW(), NOW(), true, false),
-(4, 'event_winter_blanket', '이불 빨래 챌린지', '겨울 이불을 깨끗하게 세탁해보세요.', '2025-12-24', '2026-01-02', NOW(), NOW(), true, false),
-(5, 'event_spring_refresh', '봄맞이 새출발', '봄을 맞아 공간이나 루틴을 새롭게 정비해보세요.', '2025-04-01', '2025-04-15', NOW(), NOW(), true, false),
-(6, 'event_autumn_stock', '가을 저장식 정리', '가을철 저장 식품을 정리하고 신선하게 유지하세요.', '2025-10-01', '2025-10-10', NOW(), NOW(), true, false);
+INSERT INTO EVENT_QUEST (id, key, name, info, start_date, end_date, created_at, updated_at, is_active) VALUES
+(1, 'event_summer_cleaning', '여름 대청소', '여름맞이 창틀, 에어컨 필터 등 대청소에 도전해보세요.', '2025-07-01', '2025-07-10', NOW(), NOW(), true),
+(2, 'event_summer_icebox', '냉장고 정리', '여름철 식중독 예방을 위한 냉장고 정리 미션!', '2025-07-05', '2025-07-15', NOW(), NOW(), true),
+(3, 'event_winter_mealprep', '겨울 식사 준비', '겨울을 위한 따뜻한 식단을 미리 준비해보세요.', '2025-12-20', '2026-01-05', NOW(), NOW(), true),
+(4, 'event_winter_blanket', '이불 빨래 챌린지', '겨울 이불을 깨끗하게 세탁해보세요.', '2025-12-24', '2026-01-02', NOW(), NOW(), true),
+(5, 'event_spring_refresh', '봄맞이 새출발', '봄을 맞아 공간이나 루틴을 새롭게 정비해보세요.', '2025-04-01', '2025-04-15', NOW(), NOW(), true),
+(6, 'event_autumn_stock', '가을 저장식 정리', '가을철 저장 식품을 정리하고 신선하게 유지하세요.', '2025-10-01', '2025-10-10', NOW(), NOW(), true);
 
 
-INSERT INTO MEMBER_QUEST (id, user_id, reference_key, id_done, created_at, updated_at, is_activate) VALUES
+INSERT INTO MEMBER_QUEST (id, member_id, reference_key, is_done, created_at, updated_at, is_active) VALUES
 (1, 2, 'weekly_login', true, NOW(), NOW(), true),
 (2, 2, 'weekly_coin_collect', false, NOW(), NOW(), true),
 (3, 2, 'event_summer_login', true, NOW(), NOW(), true),
@@ -361,34 +361,34 @@ INSERT INTO MEMBER_QUEST (id, user_id, reference_key, id_done, created_at, updat
 
 
 
-INSERT INTO BADGE (id, category_id, key, name, rank, how, requirement, info, created_at, updated_at, is_active) VALUES
+INSERT INTO BADGE (id, category_id, key, name, tier, how, requirement, info, created_at, updated_at, is_active) VALUES
 -- 🧹 카테고리 1: 청소
-(1, 1, 'clean_bronze', '청소왕 브론즈', 'bronze', '청소 퀘스트 1회 완료', 1, '첫 번째 청소 완료 시', NOW(), NOW(), true),
-(2, 1, 'clean_silver', '청소왕 실버', 'silver', '청소 퀘스트 5회 완료', 5, '청소 5회 달성 시 지급', NOW(), NOW(), true),
-(3, 1, 'clean_gold', '청소왕 골드', 'gold', '청소 퀘스트 10회 완료', 10, '청소 10회 달성 시 지급', NOW(), NOW(), true),
+(1, 1, 'clean_bronze', '청소왕 브론즈', 'BRONZE', '청소 퀘스트 1회 완료', 1, '첫 번째 청소 완료 시', NOW(), NOW(), true),
+(2, 1, 'clean_silver', '청소왕 실버', 'SILVER', '청소 퀘스트 5회 완료', 5, '청소 5회 달성 시 지급', NOW(), NOW(), true),
+(3, 1, 'clean_gold', '청소왕 골드', 'GOLD', '청소 퀘스트 10회 완료', 10, '청소 10회 달성 시 지급', NOW(), NOW(), true),
 (4, 1, 'clean_master', '청소 마스터', NULL, '청소 퀘스트 올클리어', 20, '청소 달인의 길', NOW(), NOW(), true),
 
 -- 🧺 카테고리 2: 정리정돈
-(5, 2, 'organize_bronze', '정리왕 브론즈', 'bronze', '정리 퀘스트 1회 완료', 1, '첫 정리 성공 시 지급', NOW(), NOW(), true),
-(6, 2, 'organize_silver', '정리왕 실버', 'silver', '정리 퀘스트 5회 완료', 5, '정리 5회 달성 시 지급', NOW(), NOW(), true),
-(7, 2, 'organize_gold', '정리왕 골드', 'gold', '정리 퀘스트 10회 완료', 10, '정리의 신에게 주어지는 칭호', NOW(), NOW(), true),
+(5, 2, 'organize_bronze', '정리왕 브론즈', 'BRONZE', '정리 퀘스트 1회 완료', 1, '첫 정리 성공 시 지급', NOW(), NOW(), true),
+(6, 2, 'organize_silver', '정리왕 실버', 'SILVER', '정리 퀘스트 5회 완료', 5, '정리 5회 달성 시 지급', NOW(), NOW(), true),
+(7, 2, 'organize_gold', '정리왕 골드', 'GOLD', '정리 퀘스트 10회 완료', 10, '정리의 신에게 주어지는 칭호', NOW(), NOW(), true),
 (8, 2, 'organize_master', '정리 마스터', NULL, '정리 루틴 2주 연속 성공', 14, '매일 정리 습관화 달성 시', NOW(), NOW(), true),
 
 -- ⏰ 카테고리 3: 출석
-(9, 3, 'attendance_bronze', '출석왕 브론즈', 'bronze', '3일 연속 로그인 성공', 3, '3일 연속 앱 접속 시', NOW(), NOW(), true),
-(10, 3, 'attendance_silver', '출석왕 실버', 'silver', '7일 연속 로그인 성공', 7, '꾸준함이 만든 결과', NOW(), NOW(), true),
-(11, 3, 'attendance_gold', '출석왕 골드', 'gold', '14일 연속 로그인 성공', 14, '성실의 상징', NOW(), NOW(), true),
+(9, 3, 'attendance_bronze', '출석왕 브론즈', 'BRONZE', '3일 연속 로그인 성공', 3, '3일 연속 앱 접속 시', NOW(), NOW(), true),
+(10, 3, 'attendance_silver', '출석왕 실버', 'SILVER', '7일 연속 로그인 성공', 7, '꾸준함이 만든 결과', NOW(), NOW(), true),
+(11, 3, 'attendance_gold', '출석왕 골드', 'GOLD', '14일 연속 로그인 성공', 14, '성실의 상징', NOW(), NOW(), true),
 (12, 3, 'attendance_master', '출석 마스터', NULL, '30일 연속 출석 성공', 30, '완벽한 루틴 형성 시', NOW(), NOW(), true),
 
 -- 🍱 카테고리 4: 식사관리
-(13, 4, 'meal_bronze', '식사왕 브론즈', 'bronze', '제시간 식사 3회 완료', 3, '혼밥 잘 챙기기 시작!', NOW(), NOW(), true),
-(14, 4, 'meal_silver', '식사왕 실버', 'silver', '제시간 식사 7회 완료', 7, '한 주 동안 잘 먹었어요', NOW(), NOW(), true),
-(15, 4, 'meal_gold', '식사왕 골드', 'gold', '식사 퀘스트 15회 완료', 15, '스스로 끼니 잘 챙긴 자', NOW(), NOW(), true),
+(13, 4, 'meal_bronze', '식사왕 브론즈', 'BRONZE', '제시간 식사 3회 완료', 3, '혼밥 잘 챙기기 시작!', NOW(), NOW(), true),
+(14, 4, 'meal_silver', '식사왕 실버', 'SILVER', '제시간 식사 7회 완료', 7, '한 주 동안 잘 먹었어요', NOW(), NOW(), true),
+(15, 4, 'meal_gold', '식사왕 골드', 'GOLD', '식사 퀘스트 15회 완료', 15, '스스로 끼니 잘 챙긴 자', NOW(), NOW(), true),
 (16, 4, 'meal_master', '식사 마스터', NULL, '한 달 식사 루틴 유지', 30, '혼라이프 건강관리 완성', NOW(), NOW(), true);
 
 
 
-INSERT INTO MEMBER_BADGE (id, user_id, badge_id, created_at, updated_at, is_active) VALUES
+INSERT INTO MEMBER_BADGE (id, member_id, badge_id, created_at, updated_at, is_active) VALUES
 (1, 3, 1, NOW(), NOW(), true),
 (2, 3, 2, NOW(), NOW(), true),
 (3, 3, 3, NOW(), NOW(), true),
