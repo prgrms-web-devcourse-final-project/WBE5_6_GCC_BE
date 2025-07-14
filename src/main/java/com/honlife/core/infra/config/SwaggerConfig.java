@@ -12,6 +12,8 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import java.util.Collections;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +52,7 @@ public class SwaggerConfig {
             new ObjectSchema().nullable(true).description("에러 데이터").example(null));
 
         return new OpenAPI()
+            .servers(Collections.singletonList(new Server().url("/")))
             .components(new Components()
                 .addSecuritySchemes("bearerAuth",
                     new SecurityScheme()
