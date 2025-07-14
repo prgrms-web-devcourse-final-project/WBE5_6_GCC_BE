@@ -1,10 +1,12 @@
+### env ###
+.env
+
 HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-application-local.properties
 *.log
 .DS_Store
 
