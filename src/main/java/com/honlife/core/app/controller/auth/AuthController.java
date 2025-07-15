@@ -107,7 +107,7 @@ public class AuthController {
      * @param verifyCode 이메일로 전송된 인증 코드입니다.
      * @return
      */
-    //TODO: Session 처리 필요한지 고민해보기, 인증로직 이메일 + 코드로 할건지 다른 방법으로 인증하고 코드만으로 비교할건지 고민해보기
+    //TODO: Redis를 활용한 인증 방식 고민해보기. (Redis에 이메일과 인증번호를 저장해 두는 방식. TTL설정이 가능하기에 3분내 입력같은 기능 구현 가능)
     @PostMapping("/email/verify/{code}")
     @Operation(summary = "이메일 인증", description = "이메일 인증 요청을 처리합니다. 이메일로 전송된 코드가 올바른지 검사합니다.<br>*로직이 정해지지 않았습니다. 추후 변동 가능이 있습니다.*")
     public ResponseEntity<CommonApiResponse<Void>> verifyEmail(
