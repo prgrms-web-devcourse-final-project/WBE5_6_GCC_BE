@@ -6,29 +6,23 @@ import com.honlife.core.app.model.item.service.ItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemController {
 
     private final ItemService itemService;
-
-    public ItemController(final ItemService itemService) {
-        this.itemService = itemService;
-    }
 
     /**
      * 모든 아이템 또는 Type 일치 아이템 조회 API
@@ -39,42 +33,8 @@ public class ItemController {
     public ResponseEntity<CommonApiResponse<List<ItemResponse>>> getAllItems(
             @RequestParam(value = "type", required = false) ItemType itemType
     ) {
+        List<ItemResponse> items = itemService.getAllItems(itemType);
 
-        List<ItemResponse> items = new ArrayList<>();
-        if(itemType != null) {
-            if(itemType == ItemType.TOP){
-                items.add(ItemResponse.builder()
-                        .itemId(1L)
-                        .itemType(ItemType.TOP)
-                        .itemKey("top_item_01")
-                        .itemName("청소 상의")
-                        .itemPoint(100)
-                        .build());
-                items.add(ItemResponse.builder()
-                        .itemId(2L)
-                        .itemType(ItemType.TOP)
-                        .itemKey("top_item_02")
-                        .itemName("요리 상의")
-                        .itemPoint(101)
-                        .build());
-            }
-
-        } else{
-            items.add(ItemResponse.builder()
-                    .itemId(1L)
-                    .itemType(ItemType.TOP)
-                    .itemKey("top_item_01")
-                    .itemName("청소 상의")
-                    .itemPoint(100)
-                    .build());
-            items.add(ItemResponse.builder()
-                    .itemId(2L)
-                    .itemType(ItemType.BOTTOM)
-                    .itemKey("bottom_item_01")
-                    .itemName("러닝 바지")
-                    .itemPoint(100)
-                    .build());
-        }
         return ResponseEntity.ok(CommonApiResponse.success(items));
     }
     /**
@@ -87,13 +47,7 @@ public class ItemController {
     public ResponseEntity<CommonApiResponse<ItemResponse>> getItemByKey(
             @PathVariable("key") String itemKey) {
 
-        ItemResponse item = ItemResponse.builder()
-                .itemId(1L)
-                .itemType(ItemType.TOP)
-                .itemKey(itemKey)
-                .itemName("청소 상의")
-                .itemPoint(100)
-                .build();
+        ItemResponse item = itemService.getItemByKey(itemKey);
 
         return ResponseEntity.ok(CommonApiResponse.success(item));
     }

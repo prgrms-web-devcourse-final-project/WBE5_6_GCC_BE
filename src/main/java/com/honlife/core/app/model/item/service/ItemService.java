@@ -1,6 +1,11 @@
 package com.honlife.core.app.model.item.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.honlife.core.app.controller.item.payload.ItemResponse;
+import com.honlife.core.app.model.item.code.ItemType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.domain.Item;
@@ -13,47 +18,49 @@ import com.honlife.core.infra.util.ReferencedWarning;
 
 
 @Service
+@RequiredArgsConstructor
 public class ItemService {
 
     private final ItemRepository itemRepository;
-    private final MemberItemRepository memberItemRepository;
 
-    public ItemService(final ItemRepository itemRepository,
-        final MemberItemRepository memberItemRepository) {
-        this.itemRepository = itemRepository;
-        this.memberItemRepository = memberItemRepository;
-    }
+    public List<ItemResponse> getAllItems(ItemType itemType) {
+        List<Item> items;
 
-    public List<ItemDTO> findAll() {
-        final List<Item> items = itemRepository.findAll(Sort.by("id"));
+        if (itemType != null) {
+            items = itemRepository.findByTypeAndIsActiveTrue(itemType);
+        } else {
+            items = itemRepository.findAllByIsActiveTrue();
+        }
+
         return items.stream()
-            .map(item -> mapToDTO(item, new ItemDTO()))
-            .toList();
+                .map(item -> ItemResponse.builder()
+                        .itemId(item.getId())
+                        .itemKey(item.getItemKey())
+                        .itemName(item.getName())
+                        .itemType(item.getType())
+                        .itemPoint(item.getPrice())
+                        .build())
+                .collect(Collectors.toList());
+    }
+    /**
+     * itemKey로 단일 아이템 조회
+     */
+    public ItemResponse getItemByKey(String itemKey) {
+        Item item = itemRepository.findByItemKeyAndIsActiveTrue(itemKey)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이템이 존재하지 않습니다."));
+
+        return ItemResponse.builder()
+                .itemId(item.getId())
+                .itemKey(item.getItemKey())
+                .itemName(item.getName())
+                .itemType(item.getType())
+                .itemPoint(item.getPrice())
+                .build();
     }
 
-    public ItemDTO get(final Long id) {
-        return itemRepository.findById(id)
-            .map(item -> mapToDTO(item, new ItemDTO()))
-            .orElseThrow(NotFoundException::new);
+    public boolean itemKeyExists(final String itemKey) {
+        return itemRepository.existsByItemKeyIgnoreCase(itemKey);
     }
-
-    public Long create(final ItemDTO itemDTO) {
-        final Item item = new Item();
-        mapToEntity(itemDTO, item);
-        return itemRepository.save(item).getId();
-    }
-
-    public void update(final Long id, final ItemDTO itemDTO) {
-        final Item item = itemRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
-        mapToEntity(itemDTO, item);
-        itemRepository.save(item);
-    }
-
-    public void delete(final Long id) {
-        itemRepository.deleteById(id);
-    }
-
     private ItemDTO mapToDTO(final Item item, final ItemDTO itemDTO) {
         itemDTO.setCreatedAt(item.getCreatedAt());
         itemDTO.setUpdatedAt(item.getUpdatedAt());
@@ -77,21 +84,9 @@ public class ItemService {
         return item;
     }
 
-    public boolean itemKeyExists(final String itemKey) {
-        return itemRepository.existsByItemKeyIgnoreCase(itemKey);
+    public ItemDTO get(final Long id) {
+        return itemRepository.findById(id)
+                .map(item -> mapToDTO(item, new ItemDTO()))
+                .orElseThrow(NotFoundException::new);
     }
-
-    public ReferencedWarning getReferencedWarning(final Long id) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final Item item = itemRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
-        final MemberItem itemMemberItem = memberItemRepository.findFirstByItem(item);
-        if (itemMemberItem != null) {
-            referencedWarning.setKey("item.memberItem.item.referenced");
-            referencedWarning.addParam(itemMemberItem.getId());
-            return referencedWarning;
-        }
-        return null;
-    }
-
 }
