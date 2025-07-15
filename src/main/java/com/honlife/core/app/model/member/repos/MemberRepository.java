@@ -13,6 +13,15 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByEmail(String email);
 
+    boolean findIsVerifiedByEmailIgnoreCase(String email);
+
+    /**
+     * email을 이용하여 기존의 회원정보를 검색하고 반환합니다.<br>
+     * IgnoreCase : 대소문자 구별없이 검색함
+     * @param email - 사용자 이메일
+     * @return {@link Member}
+     */
+    Member findByEmailIgnoreCase(String email);
     /**
      * email과 isActive를 사용하여 기존의 회원정보를 검색하고 반환합니다.
      * @param email member의 email

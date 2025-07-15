@@ -1,6 +1,7 @@
 package com.honlife.core.app.controller.auth;
 
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
+import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,7 @@ import com.honlife.core.infra.response.CommonApiResponse;
 public class AuthController {
     
     private final AuthService authService;
+    private final MemberService memberService;
 
 
     /**
@@ -72,11 +75,22 @@ public class AuthController {
      * @return
      */
     @PostMapping("/signup")
-    @Operation(summary = "회원가입", description = "회원가입 요청을 처리합니다. 요청시 이메일로 인증번호를 전송합니다.<br>JSON Request 필요.")
     public ResponseEntity<CommonApiResponse<Void>> signup(
         @RequestBody SignupRequest signupRequest
     ) {
-        //TODO: API 요청시 이메일로 인증번호 보내는 로직 추가 필요
+        String userEmail = signupRequest.getEmail();
+        if(memberService.isEmailExists(userEmail)) {        // 이미 존재하는 계정정보인지 확인
+            if(memberService.isEmailVerified(userEmail)) {  // 인증이 완료된 계정인지 확인
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(CommonApiResponse.error(ResponseCode.CONFLICT_EXIST_MEMBER));
+            }
+            // 회원가입을 재시도하는 익명사용자의 경우에, 기존에 저장된 정보를 업데이트
+            memberService.updateNotVerifiedMember(signupRequest);
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        };
+        // 신규 회원의 경우에 새로운 정보 저장
+        memberService.saveNotVerifiedMember(signupRequest);
+        // TODO: 인증코드 전송 로직 추가
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
@@ -93,7 +107,7 @@ public class AuthController {
      * @param verifyCode 이메일로 전송된 인증 코드입니다.
      * @return
      */
-    //TODO: Session 처리 필요한지 고민해보기, 인증로직 이메일 + 코드로 할건지 다른 방법으로 인증하고 코드만으로 비교할건지 고민해보기
+    //TODO: Redis를 활용한 인증 방식 고민해보기. (Redis에 이메일과 인증번호를 저장해 두는 방식. TTL설정이 가능하기에 3분내 입력같은 기능 구현 가능)
     @PostMapping("/email/verify/{code}")
     @Operation(summary = "이메일 인증", description = "이메일 인증 요청을 처리합니다. 이메일로 전송된 코드가 올바른지 검사합니다.<br>*로직이 정해지지 않았습니다. 추후 변동 가능이 있습니다.*")
     public ResponseEntity<CommonApiResponse<Void>> verifyEmail(

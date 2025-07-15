@@ -1,6 +1,10 @@
 package com.honlife.core.app.model.category.service;
 
+import jakarta.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
@@ -82,4 +86,64 @@ public class InterestCategoryService {
         return interestCategory;
     }
 
+    /**
+     * 회원의 관심카테고리 목록을 업데이트<br>
+     * 입력받은 카테고리 id 리스트를 기준으로, 기존에 {@code isActive=ture} 인 카테고리들은 유지<br>
+     * {@code isActive=false} 인 카테고리들은 true로 갱신<br>
+     * 새로운 List에 포함되지 않은 기존 카테고리들을 {@code isActive=false} 로 갱신<br>
+     * 새로운 관심 카테고리는 추가
+     * @param member 회원 정보 객체
+     * @param newCategoryIds 새로 입력받은 관심 카테고리 List
+     */
+    @Transactional
+    public void updateInterestCategory(Member member, List<Long> newCategoryIds) {
+        if (newCategoryIds == null || newCategoryIds.isEmpty()) return;
+
+        List<InterestCategory> existingList = interestCategoryRepository.findAllByMember(member);
+
+        Set<Long> newCategoryIdSet = new HashSet<>(newCategoryIds);
+
+        // 기존에 존재하던 관심카테고리 상태 유지 or 변경
+        for (InterestCategory interestCategory : existingList) {
+            Long categoryId = interestCategory.getCategory().getId();
+            interestCategory.setIsActive(newCategoryIdSet.contains(categoryId));
+        }
+
+        // 새로운 관심 카테고리 추가
+        Set<Long> existingCategoryIds = existingList.stream()
+            .map(InterestCategory::getId)
+            .collect(Collectors.toSet());
+
+        List<Long> toAdd = newCategoryIds.stream()
+            .filter(categoryId -> !existingCategoryIds.contains(categoryId))
+            .toList();
+
+        List<Category> categoriesToAdd = categoryRepository.findAllById(toAdd);
+        for(Category category : categoriesToAdd) {
+            InterestCategory newInterestCategory = new InterestCategory();
+            newInterestCategory.setMember(member);
+            newInterestCategory.setCategory(category);
+            newInterestCategory.setIsActive(true);
+            interestCategoryRepository.save(newInterestCategory);
+        }
+    }
+
+
+    /**
+     * 관심 카테고리 추가
+     * @param member 회원 정보 객체
+     * @param CategoryIds 관심 카테고리로 등록된 카테고리 List
+     */
+    @Transactional
+    public void saveInterestCategory(Member member, List<Long> CategoryIds) {
+        if (CategoryIds == null || CategoryIds.isEmpty()) return;
+
+        for(Category category : categoryRepository.findAllById(CategoryIds)) {
+            InterestCategory newInterestCategory = new InterestCategory();
+            newInterestCategory.setMember(member);
+            newInterestCategory.setCategory(category);
+            newInterestCategory.setIsActive(true);
+            interestCategoryRepository.save(newInterestCategory);
+        }
+    }
 }
