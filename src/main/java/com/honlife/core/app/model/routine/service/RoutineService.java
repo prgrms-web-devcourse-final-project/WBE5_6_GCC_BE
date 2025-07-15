@@ -1,7 +1,14 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
+import com.honlife.core.infra.response.CommonApiResponse;
+import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
@@ -24,6 +31,7 @@ public class RoutineService {
     private final CategoryRepository categoryRepository;
     private final RoutineScheduleRepository routineScheduleRepository;
 
+
     public RoutineService(final RoutineRepository routineRepository,
             final MemberRepository memberRepository, final CategoryRepository categoryRepository,
             final RoutineScheduleRepository routineScheduleRepository) {
@@ -32,7 +40,9 @@ public class RoutineService {
         this.categoryRepository = categoryRepository;
         this.routineScheduleRepository = routineScheduleRepository;
     }
-
+    /**
+     * 혹시 이거 다 지워도 되나요?
+     */
     public List<RoutineDTO> findAll() {
         final List<Routine> routines = routineRepository.findAll(Sort.by("id"));
         return routines.stream()
@@ -108,5 +118,44 @@ public class RoutineService {
         }
         return null;
     }
+    /**
+     * 사용자 루틴 조회 입니다
+     * return RoutinesResponse
+     * 성능 때문에 나중에 fetch join 쓸거같습니다 아마도,,, 아마 우리 는 소규모라 필요없을수도 있지만?
+     */
+  public RoutinesResponse getUserRoutines(String userName, LocalDate date) {
+
+      Member member = memberRepository.findByEmail(userName)
+          .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
+
+      List<Routine> routines = routineRepository.findAllByMember(member);
+
+      List<RoutinesResponse.RoutineItem> responseRoutines = routines.stream()
+          .map(routine -> {
+              Category parentCategory = categoryRepository.findById(
+                  routine.getCategory().getParentId()
+              ).orElseThrow(() -> new RuntimeException("카테고리 없음"));
+              RoutineSchedule routineSchedule = routineScheduleRepository
+                  .findByRoutineIdAndDate(routine.getId(), date);
+
+              return RoutinesResponse.RoutineItem.builder()
+                  .scheduleId(routineSchedule.getId())
+                  .routineId(routine.getId())
+                  .majorCategory(parentCategory.getName())
+                  .subCategory(routine.getCategory().getName())
+                  .name(routine.getContent())
+                  .triggerTime(routine.getTriggerTime())
+                  .isDone(routineSchedule.getIsDone())
+                  .isImportant(routine.getIsImportant())
+                  .build();
+          })
+          .toList();
+
+      RoutinesResponse response = new RoutinesResponse();
+      response.setDate(date);
+      response.setRoutines(responseRoutines);
+
+      return response;
+  }
 
 }

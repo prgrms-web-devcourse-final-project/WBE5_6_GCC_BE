@@ -3,6 +3,8 @@ package com.honlife.core.app.controller.routine;
 import com.honlife.core.app.controller.routine.payload.RoutineDetailResponse;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
+import com.honlife.core.app.model.member.domain.Member;
+import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -11,10 +13,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,13 +41,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
+@RequiredArgsConstructor
 public class RoutineController {
 
     private final RoutineService routineService;
+    private final MemberRepository memberRepository;
 
-    public RoutineController(final RoutineService routineService) {
-        this.routineService = routineService;
-    }
 
     /**
      * 사용자 루틴 조회 API
@@ -57,43 +61,26 @@ public class RoutineController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userId = userDetails.getUsername();
+        String userName = userDetails.getUsername();
+
+
         if (date == null) {
             date = LocalDate.now();
         }
 
-        if (userId.equals("user01@test.com")) {
-            RoutinesResponse response = new RoutinesResponse();
-            response.setDate(date);
+        Optional<Member> member = memberRepository.findByEmail(userName);
 
-            List<RoutinesResponse.RoutineItem> routines = new ArrayList<>();
-            routines.add(RoutinesResponse.RoutineItem.builder()
-                .scheduleId(1L)
-                .routineId(1L)
-                .majorCategory("청소")
-                .subCategory("화장실 청소")
-                .name("변기 청소하기")
-                .triggerTime("09:00")
-                .isDone(true)
-                .isImportant(false)
-                .build());
-            routines.add(RoutinesResponse.RoutineItem.builder()
-                .scheduleId(2L)
-                .routineId(2L)
-                .majorCategory("건강")
-                .subCategory(null)
-                .name("아침 운동하기")
-                .triggerTime("07:00")
-                .isDone(false)
-                .isImportant(true)
-                .build());
-
-            response.setRoutines(routines);
-            return ResponseEntity.ok(CommonApiResponse.success(response));
+        if (member.isEmpty()) {
+            return ResponseEntity
+                .status(ResponseCode.NOT_FOUND_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
+        RoutinesResponse routinesResponses = routineService.getUserRoutines(userName, date);
 
-        return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+        return ResponseEntity.ok(CommonApiResponse.success(routinesResponses));
+
+
+
     }
 
     /**
@@ -105,8 +92,7 @@ public class RoutineController {
     @Operation(summary = "특정 루틴 조회", description = "특정 루틴의 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<RoutineDetailResponse>> getRoutine(
-        @PathVariable(name = "id")
-        @Schema(description = "루틴 ID", example = "1") final Long routineId,
+        @PathVariable(name = "id") Long routineId,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
@@ -177,13 +163,7 @@ public class RoutineController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "루틴 수정", description = "특정 루틴을 수정합니다. <br>id가 1, 2인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br><br>" +
-        "<strong>RepeatType 설명:</strong><br>" +
-        "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
-        "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
-        "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
-        "• CUSTOM: 사용자 정의 반복 패턴<br>" +
-        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
+
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateRoutine(
         @PathVariable(name = "id")
@@ -223,7 +203,7 @@ public class RoutineController {
      * @return
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "루틴 삭제", description = "특정 루틴을 삭제합니다. <br>id가 1, 2인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
+
     public ResponseEntity<CommonApiResponse<Void>> deleteRoutine(
         @PathVariable(name = "id")
         @Schema(description = "루틴 ID", example = "1") final Long routineId,
