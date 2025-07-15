@@ -22,6 +22,7 @@ public class MemberPayload {
     //TODO: 개발시 활용
     public static MemberPayload fromDTO(MemberDTO memberDTO) {
         MemberPayload memberPayload = new MemberPayload();
+        memberPayload.name = memberDTO.getName();
         memberPayload.nickname = memberDTO.getNickname();
         memberPayload.residenceExperience = memberDTO.getResidenceExperience();
         memberPayload.regionDept1 = memberDTO.getRegion1Dept();
