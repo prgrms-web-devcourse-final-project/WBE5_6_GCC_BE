@@ -5,13 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.member.domain.Member;
 
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
     boolean existsByEmailIgnoreCase(String email);
 
     Optional<Member> findByEmail(String email);
-
-    boolean findIsVerifiedByEmailIgnoreCase(String email);
 
     /**
      * 파라메터로 전달받은 닉네임과 동일한 닉네임이 `Member` 테이블에 존재하는지 검사합니다.
