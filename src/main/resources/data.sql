@@ -1,7 +1,8 @@
 INSERT INTO MEMBER (id, role, email, password, name, nickname, residence_experience, region1dept, region2dept, region3dept, created_at, updated_at, is_active) VALUES
 (1, 'ROLE_ADMIN', 'admin@test.com', '{bcrypt}$2a$10$iC0JoLYyZ1kflTuNTtVsr.3rKS0Hl7jaCe4xjSxMWbFcYd0DOb0AO', '관리자', '관리자', null, null, null, null, null, null, true),
 (2, 'ROLE_USER', 'user01@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '홍길동', '닉네임1', 'OVER_10Y', '서울특별시', '강북구', '미아동', '2025-06-01 10:15:00', '2025-06-01 10:15:00', true),
-(3, 'ROLE_USER', 'user02@test.com', '{bcrypt}$2a$10$4dTVUJL9Rp/b8.q3upjZIuIewKcu6cBTlzskYQnasQZfZoI5RtgMK', '김영희', '닉네임2', 'Y1_TO_3', '서울특별시', '강북구', '수유1동', '2025-06-03 09:00:00', '2025-06-05 18:30:00', true);
+(3, 'ROLE_USER', 'user02@test.com', '{bcrypt}$2a$10$4dTVUJL9Rp/b8.q3upjZIuIewKcu6cBTlzskYQnasQZfZoI5RtgMK', '김영희', '닉네임2', 'Y1_TO_3', '서울특별시', '강북구', '수유1동', '2025-06-03 09:00:00', '2025-06-05 18:30:00', true),
+(4, 'ROLE_USER', 'user03@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '박철수', '닉네임3', 'UNDER_1Y', '서울특별시', '강남구', '역삼동', '2025-07-14 10:00:00', '2025-07-14 10:00:00', true);
 
 -- 카테고리 insert
 INSERT INTO CATEGORY (id, member_id, parent_id, name, type, created_at, updated_at, is_active) VALUES
@@ -32,7 +33,7 @@ INSERT INTO CATEGORY (id, member_id, parent_id, name, type, created_at, updated_
 -- ROUTINE_PRESET 테스트 데이터 (PostgreSQL)
 -- 카테고리: 1=청소/정리, 2=세탁/의류, 3=쓰레기/환경, 4=요리, 5=소비, 6=행정, 7=건강, 8=외출, 9=기타
 
-INSERT INTO ROUTINE_PRESET ("id", "category_id", "content", "is_active", "created_at", "updated_at") VALUES
+INSERT INTO ROUTINE_PRESET (id, category_id, content, is_active, created_at, updated_at) VALUES
 -- 1. 청소/정리 카테고리
 (1, 1, '방 청소하기', true, '2025-01-15 09:30:00', '2025-01-15 09:30:00'),
 (2, 1, '화장실 청소하기', true, '2025-01-16 14:20:00', '2025-01-16 14:20:00'),
@@ -101,52 +102,52 @@ INSERT INTO ROUTINE_PRESET ("id", "category_id", "content", "is_active", "create
 -- category_id: 1=청소/정리, 2=세탁/의류, 3=쓰레기/환경, 4=요리, 5=소비, 6=행정, 7=건강, 8=외출, 9=기타
 -- repeat_type: DAILY, WEEKLY, MONTHLY
 
-INSERT INTO ROUTINE ("id", "member_id", "category_id", "content", "trigger_time", "is_important", "repeat_type", "repeat_value", "is_active", "created_at", "updated_at") VALUES
+INSERT INTO ROUTINE (id, member_id, category_id, content, trigger_time, is_important, repeat_type, repeat_value, is_active, created_at, updated_at) VALUES
 
--- 10000 멤버의 루틴들
+-- 2 멤버의 루틴들
 -- 매일 루틴들
-(1, 1, 7, '물 마시기', '눈 뜨자마자', true, 'DAILY', null, true, '2025-06-01 10:30:00', '2025-06-01 10:30:00'),
-(2, 1, 7, '일찍 자기', '23:00', true, 'DAILY', null, true, '2025-06-01 10:35:00', '2025-06-01 10:35:00'),
-(3, 1, 4, '아침 준비하기', '07:30', false, 'DAILY', null, true, '2025-06-02 09:20:00', '2025-06-02 09:20:00'),
-(4, 1, 7, '비타민 챙겨먹기', '08:30', false, 'DAILY', null, true, '2025-06-19 09:00:00', '2025-06-19 09:00:00'),
+(1, 2, 7, '물 마시기', '눈 뜨자마자', true, 'DAILY', null, true, '2025-06-01 10:30:00', '2025-06-01 10:30:00'),
+(2, 2, 7, '일찍 자기', '23:00', true, 'DAILY', null, true, '2025-06-01 10:35:00', '2025-06-01 10:35:00'),
+(3, 2, 4, '아침 준비하기', '07:30', false, 'DAILY', null, true, '2025-06-02 09:20:00', '2025-06-02 09:20:00'),
+(4, 2, 7, '비타민 챙겨먹기', '08:30', false, 'DAILY', null, true, '2025-06-19 09:00:00', '2025-06-19 09:00:00'),
 
 -- 매주 루틴들
-(5, 1, 2, '빨래하기', '10:00', false, 'WEEKLY', '7', true, '2025-06-03 14:15:00', '2025-06-03 14:15:00'),
-(6, 1, 3, '분리수거하기', '19:00', false, 'WEEKLY', '3,6', true, '2025-06-04 16:45:00', '2025-06-04 16:45:00'),
-(7, 1, 1, '방 청소하기', '14:00', false, 'WEEKLY', '6', true, '2025-06-05 11:20:00', '2025-06-05 11:20:00'),
-(8, 1, 7, '운동하기', '18:00', true, 'WEEKLY', '2,4,6', true, '2025-06-06 13:30:00', '2025-06-06 13:30:00'),
-(9, 1, 8, '장보기', '11:00', false, 'WEEKLY', '1,5', true, '2025-06-09 12:10:00', '2025-06-09 12:10:00'),
-(10, 1, 1, '부엌 정리하기', '21:30', false, 'WEEKLY', '3,7', true, '2025-06-20 15:30:00', '2025-06-20 15:30:00'),
-(11, 1, 9, '명상하기', '06:30', true, 'WEEKLY', '1,3,5', true, '2025-06-23 07:20:00', '2025-06-23 07:20:00'),
+(5, 2, 2, '빨래하기', '10:00', false, 'WEEKLY', '7', true, '2025-06-03 14:15:00', '2025-06-03 14:15:00'),
+(6, 2, 3, '분리수거하기', '19:00', false, 'WEEKLY', '3,6', true, '2025-06-04 16:45:00', '2025-06-04 16:45:00'),
+(7, 2, 1, '방 청소하기', '14:00', false, 'WEEKLY', '6', true, '2025-06-05 11:20:00', '2025-06-05 11:20:00'),
+(8, 2, 7, '운동하기', '18:00', true, 'WEEKLY', '2,4,6', true, '2025-06-06 13:30:00', '2025-06-06 13:30:00'),
+(9, 2, 8, '장보기', '11:00', false, 'WEEKLY', '1,5', true, '2025-06-09 12:10:00', '2025-06-09 12:10:00'),
+(10, 2, 1, '부엌 정리하기', '21:30', false, 'WEEKLY', '3,7', true, '2025-06-20 15:30:00', '2025-06-20 15:30:00'),
+(11, 2, 9, '명상하기', '06:30', true, 'WEEKLY', '1,3,5', true, '2025-06-23 07:20:00', '2025-06-23 07:20:00'),
 
 -- 매월 루틴들
-(12, 1, 6, '공과금 납부하기', '10:00', true, 'MONTHLY', '5', true, '2025-06-07 15:40:00', '2025-06-07 15:40:00'),
-(13, 1, 5, '가계부 작성하기', '21:00', false, 'MONTHLY', '1,15', true, '2025-06-08 18:25:00', '2025-06-08 18:25:00'),
+(12, 2, 6, '공과금 납부하기', '10:00', true, 'MONTHLY', '5', true, '2025-06-07 15:40:00', '2025-06-07 15:40:00'),
+(13, 2, 5, '가계부 작성하기', '21:00', false, 'MONTHLY', '1,15', true, '2025-06-08 18:25:00', '2025-06-08 18:25:00'),
 
--- 10001 멤버의 루틴들
+-- 3 멤버의 루틴들
 -- 매일 루틴들
-(14, 2, 7, '스트레칭하기', '07:00', true, 'DAILY', null, true, '2025-06-10 08:15:00', '2025-06-10 08:15:00'),
-(15, 2, 9, '일기 쓰기', '22:30', false, 'DAILY', null, true, '2025-06-10 08:20:00', '2025-06-10 08:20:00'),
-(16, 2, 4, '설거지하기', '20:00', false, 'DAILY', null, true, '2025-06-11 19:30:00', '2025-06-11 19:30:00'),
+(14, 3, 7, '스트레칭하기', '07:00', true, 'DAILY', null, true, '2025-06-10 08:15:00', '2025-06-10 08:15:00'),
+(15, 3, 9, '일기 쓰기', '22:30', false, 'DAILY', null, true, '2025-06-10 08:20:00', '2025-06-10 08:20:00'),
+(16, 3, 4, '설거지하기', '20:00', false, 'DAILY', null, true, '2025-06-11 19:30:00', '2025-06-11 19:30:00'),
 
 -- 매주 루틴들
-(17, 2, 1, '화장실 청소하기', '13:00', false, 'WEEKLY', '7', true, '2025-06-12 14:50:00', '2025-06-12 14:50:00'),
-(18, 2, 2, '빨래 개기', '15:00', false, 'WEEKLY', '1,4', true, '2025-06-13 16:35:00', '2025-06-13 16:35:00'),
-(19, 2, 3, '쓰레기 버리기', '08:30', false, 'WEEKLY', '2,5', true, '2025-06-14 17:20:00', '2025-06-14 17:20:00'),
-(20, 2, 8, '산책하기', '17:30', true, 'WEEKLY', '1,3,5,7', true, '2025-06-15 20:10:00', '2025-06-15 20:10:00'),
-(21, 2, 9, '독서하기', '21:00', true, 'WEEKLY', '6,7', true, '2025-06-18 19:45:00', '2025-06-18 19:45:00'),
-(22, 2, 4, '저녁 준비하기', '18:30', true, 'WEEKLY', '1,2,3,4,5', true, '2025-06-21 12:40:00', '2025-06-21 12:40:00'),
-(23, 2, 6, '우편물 확인하기', '09:00', false, 'WEEKLY', '1', true, '2025-06-22 08:50:00', '2025-06-22 08:50:00'),
+(17, 3, 1, '화장실 청소하기', '13:00', false, 'WEEKLY', '7', true, '2025-06-12 14:50:00', '2025-06-12 14:50:00'),
+(18, 3, 2, '빨래 개기', '15:00', false, 'WEEKLY', '1,4', true, '2025-06-13 16:35:00', '2025-06-13 16:35:00'),
+(19, 3, 3, '쓰레기 버리기', '08:30', false, 'WEEKLY', '2,5', true, '2025-06-14 17:20:00', '2025-06-14 17:20:00'),
+(20, 3, 8, '산책하기', '17:30', true, 'WEEKLY', '1,3,5,7', true, '2025-06-15 20:10:00', '2025-06-15 20:10:00'),
+(21, 3, 9, '독서하기', '21:00', true, 'WEEKLY', '6,7', true, '2025-06-18 19:45:00', '2025-06-18 19:45:00'),
+(22, 3, 4, '저녁 준비하기', '18:30', true, 'WEEKLY', '1,2,3,4,5', true, '2025-06-21 12:40:00', '2025-06-21 12:40:00'),
+(23, 3, 6, '우편물 확인하기', '09:00', false, 'WEEKLY', '1', true, '2025-06-22 08:50:00', '2025-06-22 08:50:00'),
 
 -- 매월 루틴들
-(24, 2, 6, '서류 정리하기', '16:00', false, 'MONTHLY', '10', true, '2025-06-16 11:45:00', '2025-06-16 11:45:00'),
-(25, 2, 5, '온라인 쇼핑하기', '20:30', false, 'MONTHLY', '25', true, '2025-06-17 22:15:00', '2025-06-17 22:15:00');
+(24, 3, 6, '서류 정리하기', '16:00', false, 'MONTHLY', '10', true, '2025-06-16 11:45:00', '2025-06-16 11:45:00'),
+(25, 3, 5, '온라인 쇼핑하기', '20:30', false, 'MONTHLY', '25', true, '2025-06-17 22:15:00', '2025-06-17 22:15:00');
 
 -- ROUTINE_SCHEDULE 테스트 데이터 (PostgreSQL)
 -- 2025년 7월 1일~15일 기간의 스케줄 데이터
 -- repeat_type과 repeat_value에 따라 자동 생성된 스케줄들
 
-INSERT INTO ROUTINE_SCHEDULE ("id", "routine_id", "date", "is_done", "created_at") VALUES
+INSERT INTO ROUTINE_SCHEDULE (id, routine_id, date, is_done, created_at) VALUES
 
 -- 10000 멤버의 매일 루틴들 (routine_id: 1,2,3,4)
 -- routine_id=1: 물 마시기 (DAILY)
@@ -286,12 +287,12 @@ INSERT INTO ROUTINE_SCHEDULE ("id", "routine_id", "date", "is_done", "created_at
 -- 선호 카테고리 insert
 INSERT INTO INTEREST_CATEGORY (id, member_id, category_id, created_at, updated_at, is_active) VALUES
 -- 2 회원의 선호 카테고리
-(1, 2, 1, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(2, 2, 2, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(3, 2, 3, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+  (1, 2, 1, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+  (2, 2, 2, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+  (3, 2, 3, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 -- 3 회원의 선호 카테고리
-(4, 3, 2, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(5, 3, 5, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
+  (4, 3, 2, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+  (5, 3, 5, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
 
 
 -- 멤버 포인트 insert
@@ -405,7 +406,7 @@ INSERT INTO MEMBER_BADGE (id, member_id, badge_id, created_at, updated_at, is_ac
 --         : bottom_item_01 = 청소 바지, bottom_item_02 = 요리 바지, bottom_item_03 = 헬스 바지, bottom_item_04 = 쇼핑 바지, bottom_item_05 = 공부 반바지
 --         : accessory_item_01 = 청소 마스크, accessory_item_02 =  요리 후라이팬, accessory_item_03 = 헬스 덤벨, accessory_item_04 = 쇼핑 바구니, accessory_item_05 = 연필
 -- item_type: TOP, BOTTOM, ACCESSORY
-INSERT INTO ITEM ("id", "item_key", "name", "price", "type", "created_at", "updated_at", "is_active")
+INSERT INTO ITEM (id, item_key, name, price, type, created_at, updated_at, is_active)
 VALUES
 -- 상의 아이템
 (1, 'top_item_01', '청소 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
@@ -430,7 +431,7 @@ VALUES
 
 
 -- MEMBER_ITEM 테스트 데이터 (PostgreSQL)
-INSERT INTO MEMBER_ITEM ("id", "item_id", "member_id", "is_equipped", "created_at", "updated_at", "is_active")
+INSERT INTO MEMBER_ITEM (id, item_id, member_id, is_equipped, created_at, updated_at, is_active)
 VALUES (1, 1, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
        (2, 2, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
        (3, 3, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
@@ -438,6 +439,6 @@ VALUES (1, 1, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
        (5, 5, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
 
 -- NOTIFICATION 테스트 데이터 (PostgreSQL)
-INSERT INTO NOTIFICATION("id", "member_id", "is_email", "is_routine", "is_badge")
+INSERT INTO NOTIFICATION(id, member_id, is_email, is_routine, is_badge)
 VALUES (1, 2, true, true, true),
        (2, 3, true, true, true);
