@@ -84,8 +84,12 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
 
-        memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+        try{
+            memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        }catch (CommonException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        }
 
     }
 

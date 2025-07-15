@@ -3,6 +3,8 @@ package com.honlife.core.app.model.member.service;
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
@@ -266,6 +268,7 @@ public class MemberService {
         Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
         return mapper.map(targetMember, MemberDTO.class);
     }
+
     /**
      * 사용자가 입력한 oldPassword의 값이 현재 DB에 저장되어 있는 password과 같은지 비교
      * @param userEmail 회원 이메일
@@ -289,7 +292,9 @@ public class MemberService {
      */
     @Transactional
     public void updatePassword(String userEmail, @NotBlank String newPassword) {
-        Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
+        Member targetMember = memberRepository
+            .findByEmailAndIsActive(userEmail, true).orElseThrow(() -> new CommonException(
+                ResponseCode.NOT_FOUND_MEMBER));
 
         targetMember.setPassword(passwordEncoder.encode(newPassword));
         memberRepository.save(targetMember);
