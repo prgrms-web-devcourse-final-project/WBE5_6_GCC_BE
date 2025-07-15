@@ -59,7 +59,7 @@ public @interface MemberNicknameUnique {
                 // value hasn't changed
                 return true;
             }
-            return !memberService.nicknameExists(value);
+            return !memberService.isNicknameExists(value);
         }
 
     }
