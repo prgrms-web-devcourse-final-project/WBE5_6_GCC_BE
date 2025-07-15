@@ -78,7 +78,7 @@ public class MemberService {
      * @return 회원의 정보가 없다면 null을, 있다면 회원의 정보를 담은 dto를 반환합니다.
      */
     public MemberDTO findByEmail(String userEmail){
-        Member targetMember = memberRepository.findByEmail(userEmail).orElse(null);
+        Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
         return mapper.map(targetMember, MemberDTO.class);
     }
 
