@@ -19,6 +19,7 @@ import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.infra.util.NotFoundException;
 import com.honlife.core.infra.util.ReferencedWarning;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -75,6 +76,7 @@ public class BadgeService {
      * @param memberId 회원 ID
      * @return 배지 정보 + 사용자 획득 여부
      */
+    @Transactional(readOnly = true)
     public BadgeWithMemberInfoDTO getBadgeWithMemberInfo(String badgeKey, Long memberId) {
         // 1. 배지 조회
         Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey)
@@ -105,6 +107,7 @@ public class BadgeService {
      * @param memberId 회원 ID
      * @return 모든 배지 정보 + 사용자 획득 여부 리스트
      */
+    @Transactional(readOnly = true)
     public List<BadgeWithMemberInfoDTO> getAllBadgesWithMemberInfo(Long memberId) {
         // 1. 모든 활성 배지 조회
         List<Badge> badges = badgeRepository.findAllByIsActiveTrue();

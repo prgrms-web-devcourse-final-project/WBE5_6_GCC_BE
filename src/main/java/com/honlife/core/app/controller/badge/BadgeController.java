@@ -1,14 +1,18 @@
 package com.honlife.core.app.controller.badge;
 
+import com.honlife.core.app.controller.badge.payload.BadgeResponse;
+import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 import com.honlife.core.app.model.badge.code.BadgeTier;
+import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import com.honlife.core.app.model.badge.service.BadgeService;
+import com.honlife.core.app.model.member.domain.Member;
+import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,24 +27,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.controller.badge.payload.BadgeResponse;
-import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 
 
 @RequiredArgsConstructor
-@Tag(name="업적", description = "업적 관련 API 입니다.")
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping(value = "/api/v1/badges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BadgeController {
 
     private final BadgeService badgeService;
+    private final MemberRepository memberRepository;
 
     /**
      * 업적 조회 API
      * @return List<BadgePayload> 모든 업적에 대한 정보
      */
-    @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges(
         @AuthenticationPrincipal UserDetails userDetails
@@ -85,40 +86,28 @@ public class BadgeController {
         @PathVariable(name="key") String badgeKey,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if(badgeKey.equals("clean_bronze")){
-            BadgeResponse response = BadgeResponse.builder()
-                .badgeId(1L)
-                .badgeKey(badgeKey)
-                .badgeName("초보 청소부")
-                .tier(BadgeTier.BRONZE)
-                .how("청소 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("이제 청소 좀 한다고 말할 수 있겠네요!")
-                .categoryName("청소")
-                .isReceived(false)
-                .receivedDate(LocalDateTime.now())
-                .build();
+        try {
+            // 1. 사용자 이메일 추출
+            String email = userDetails.getUsername();
+
+            // 2. 이메일로 Member 조회
+            Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Member not found with email: " + email));
+
+            // 3. Service에서 배지 정보 조회
+            BadgeWithMemberInfoDTO dto = badgeService.getBadgeWithMemberInfo(badgeKey, member.getId());
+
+            // 4. DTO → Payload 변환
+            BadgeResponse response = convertToPayload(dto);
+
             return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        if(badgeKey.equals("cook_bronze")){
-            BadgeResponse response = BadgeResponse.builder()
-                .badgeId(2L)
-                .badgeKey(badgeKey)
-                .badgeName("초보 요리사")
-                .tier(BadgeTier.BRONZE)
-                .how("요리 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("나름 계란 프라이는 할 수 있다구요!")
-                .categoryName("요리")
-                .isReceived(true)
-                .receivedDate(LocalDateTime.now())
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }else{
+
+        } catch (NotFoundException ex) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
         }
     }
+
     /**
      * 업적 보상 수령 API
      * @param badgeKey 업적 key 값
@@ -154,4 +143,21 @@ public class BadgeController {
         }
     }
 
+    /**
+     * DTO를 Payload로 변환하는 헬퍼 메서드
+     */
+    private BadgeResponse convertToPayload(BadgeWithMemberInfoDTO dto) {
+        return BadgeResponse.builder()
+            .badgeId(dto.getBadge().getId())
+            .badgeKey(dto.getBadge().getKey())
+            .badgeName(dto.getBadge().getName())
+            .tier(dto.getBadge().getTier())
+            .how(dto.getBadge().getHow())
+            .requirement(dto.getBadge().getRequirement())
+            .info(dto.getBadge().getInfo())
+            .categoryName(dto.getCategoryName())
+            .isReceived(dto.getIsReceived())
+            .receivedDate(dto.getReceivedDate())
+            .build();
+    }
 }
