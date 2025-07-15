@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.member;
 
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -83,14 +84,8 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
 
-        // 해당 회원이 이메일 인증이 되어 있는지 검증 필요
-        if(memberService.isEmailVerified(userEmail)){
-            memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        }
-
-        // 이메일 인증 실패 시 이쪽으로 가는데 이거 옳은 에러 코드가 아닌 거 같음
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
+        return ResponseEntity.ok(CommonApiResponse.noContent());
 
     }
 
