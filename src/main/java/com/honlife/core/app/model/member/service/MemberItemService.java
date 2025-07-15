@@ -82,4 +82,16 @@ public class MemberItemService {
         return memberItem;
     }
 
+    /**
+     * 맴버 아이디를 통해 아이템을 보유하고있는 회원 조회
+     * @param memberId 유저 Id 입력
+     * @return
+     */
+    public List<Long> getOwnedItemIdsByMember(Long memberId) {
+        return memberItemRepository.findItemsByMemberId(memberId);
+    }
+
+    public Boolean isItemOwnByMember(Long memberId,Long itemId) {
+        return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
+    }
 }

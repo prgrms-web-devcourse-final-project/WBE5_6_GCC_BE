@@ -15,4 +15,10 @@ public interface MemberItemRepository extends JpaRepository<MemberItem, Long> {
 
     MemberItem findFirstByItem(Item item);
 
+    // memberId를 통해 member가 보유하고있는 Item_id List 형식으로 반환
+    @Query("SELECT mi.item.id FROM MemberItem mi WHERE mi.member.id = :memberId")
+    List<Long> findItemsByMemberId(Long memberId);
+
+    // memberId와 ItemId를 통해 아이템 보유여부 확인
+    Boolean existsByMemberIdAndItemId(Long memberId, Long itemId);
 }
