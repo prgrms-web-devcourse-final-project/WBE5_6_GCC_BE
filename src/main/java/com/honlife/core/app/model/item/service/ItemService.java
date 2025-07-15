@@ -1,12 +1,18 @@
 package com.honlife.core.app.model.item.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.honlife.core.app.controller.item.payload.ItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
+import com.honlife.core.app.model.member.domain.Member;
+import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.infra.response.CommonApiResponse;
+import com.honlife.core.infra.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.dto.ItemDTO;
@@ -22,41 +28,30 @@ import com.honlife.core.infra.util.ReferencedWarning;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final MemberRepository memberRepository;
+    private final MemberItemRepository memberItemRepository;
 
-    public List<ItemResponse> getAllItems(ItemType itemType) {
-        List<Item> items;
-
+    public List<Item> getAllItems(ItemType itemType) {
         if (itemType != null) {
-            items = itemRepository.findByTypeAndIsActiveTrue(itemType);
+            return itemRepository.findByTypeAndIsActiveTrue(itemType);
         } else {
-            items = itemRepository.findAllByIsActiveTrue();
+            return itemRepository.findAllByIsActiveTrue();
         }
-
-        return items.stream()
-                .map(item -> ItemResponse.builder()
-                        .itemId(item.getId())
-                        .itemKey(item.getItemKey())
-                        .itemName(item.getName())
-                        .itemType(item.getType())
-                        .itemPoint(item.getPrice())
-                        .build())
-                .collect(Collectors.toList());
     }
     /**
      * itemKey로 단일 아이템 조회
      */
-    public ItemResponse getItemByKey(String itemKey) {
-        Item item = itemRepository.findByItemKeyAndIsActiveTrue(itemKey)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이템이 존재하지 않습니다."));
-
-        return ItemResponse.builder()
-                .itemId(item.getId())
-                .itemKey(item.getItemKey())
-                .itemName(item.getName())
-                .itemType(item.getType())
-                .itemPoint(item.getPrice())
-                .build();
+    public Optional<Item> getItemByKey(String itemKey) {
+        return itemRepository.findByItemKeyAndIsActiveTrue(itemKey);
     }
+    //    public void purchaseItem(String itemKey, String username) {
+//        Optional<Member> member = memberRepository.findByEmail(username)
+//
+//
+//    }
+
+
+
 
     public boolean itemKeyExists(final String itemKey) {
         return itemRepository.existsByItemKeyIgnoreCase(itemKey);
@@ -88,5 +83,17 @@ public class ItemService {
         return itemRepository.findById(id)
                 .map(item -> mapToDTO(item, new ItemDTO()))
                 .orElseThrow(NotFoundException::new);
+    }
+    public ReferencedWarning getReferencedWarning(final Long id) {
+        final ReferencedWarning referencedWarning = new ReferencedWarning();
+        final Item item = itemRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        final MemberItem itemMemberItem = memberItemRepository.findFirstByItem(item);
+        if (itemMemberItem != null) {
+            referencedWarning.setKey("item.memberItem.item.referenced");
+            referencedWarning.addParam(itemMemberItem.getId());
+            return referencedWarning;
+        }
+        return null;
     }
 }
