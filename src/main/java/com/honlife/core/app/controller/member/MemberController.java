@@ -55,8 +55,8 @@ public class MemberController {
         String userEmail = userDetails.getUsername();
         MemberDTO targetMember = null;
 
-        // 이메일 인증이 된 사용자인지 확인
-        if(memberService.isEmailVerified(userEmail)){
+        // 존재하는 사용자인지 확인
+        if(memberService.isEmailExists(userEmail)){
             targetMember = memberService.findMemberByEmail(userEmail);
         }
 
