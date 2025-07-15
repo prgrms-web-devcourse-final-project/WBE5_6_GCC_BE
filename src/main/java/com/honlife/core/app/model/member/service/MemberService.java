@@ -214,7 +214,7 @@ public class MemberService {
      * @return {@code Boolean}
      */
     public boolean isEmailVerified(final String email) {
-        return memberRepository.findIsVerifiedByEmailIgnoreCase(email);
+        return memberRepository.isEmailVerified(email);
     }
 
     /**
