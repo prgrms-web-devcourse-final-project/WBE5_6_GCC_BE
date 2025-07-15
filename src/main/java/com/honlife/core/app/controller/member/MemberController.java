@@ -52,7 +52,6 @@ public class MemberController {
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userEmail = userDetails.getUsername();
-
         MemberDTO targetMember = memberService.findMemberByEmail(userEmail);
 
         // 해당하는 member가 없을 때
