@@ -69,7 +69,7 @@ public class MemberController {
      * 비밀번호 변경 요청 처리 API
      * @param userDetails 유저 인증 정보
      * @param updatePasswordRequest 현재 비밀번호와 변경할 비밀번호를 담은 객체
-     * @return 변경 처리 성공시 {@code 200}을 반환합니다. <br>현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.<br>업데이트 실패 시 {@code 400}을 반환합니다.
+     * @return 변경 처리 성공시 {@code 200}을 반환합니다. <br>현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.<br>이메일 인증 실패 시 {@code 400}을 반환합니다.
      */
     @PatchMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
@@ -83,12 +83,13 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
 
-        // 해당 이메일이 이메일 인증이 되어 있는지 검증 필요
+        // 해당 회원이 이메일 인증이 되어 있는지 검증 필요
         if(memberService.isEmailVerified(userEmail)){
             memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
 
+        // 이메일 인증 실패 시 이쪽으로 가는데 이거 옳은 에러 코드가 아닌 거 같음
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
 
     }
