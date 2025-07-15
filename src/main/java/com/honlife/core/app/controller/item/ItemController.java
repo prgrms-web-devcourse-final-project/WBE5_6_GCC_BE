@@ -6,6 +6,7 @@ import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.service.ItemService;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberPoint;
+import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -29,6 +30,7 @@ public class ItemController {
     private final ItemService itemService;
     private final MemberService memberService;
     private final MemberPointService memberPointService;
+    private final MemberItemService memberItemService;
     /**
      * 모든 아이템 또는 Type 일치 아이템 조회 API
      *
@@ -36,11 +38,25 @@ public class ItemController {
      */
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<ItemResponse>>> getAllItems(
-            @RequestParam(value = "type", required = false) ItemType itemType
+            @RequestParam(value = "type", required = false) ItemType itemType,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
 
+        // email 기반 member 조회 (memberId 얻기 위함)
+        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+        }
+        // 여기서 memberId 얻을 수 있음
+        Member member = memberOptional.get();
+        // 사용자 ID 꺼내기
+        Long memberId = member.getId();
+
+        List<Long> ownedItemIds = memberItemService.getOwnedItemIdsByMember(memberId);
 
         List<Item> items = itemService.getAllItems(itemType);
+
         List<ItemResponse> responseList =  items.stream()
                 .map(item -> ItemResponse.builder()
                         .itemId(item.getId())
@@ -48,6 +64,7 @@ public class ItemController {
                         .itemName(item.getName())
                         .itemType(item.getType())
                         .itemPoint(item.getPrice())
+                        .isOwned(ownedItemIds.contains(item.getId()))
                         .build())
                 .toList();
 
@@ -62,9 +79,21 @@ public class ItemController {
      */
     @GetMapping("/{key}")
     public ResponseEntity<CommonApiResponse<ItemResponse>> getItemByKey(
-            @PathVariable("key") String itemKey) {
+            @PathVariable("key") String itemKey,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         Optional<Item> itemOptional = itemService.getItemByKey(itemKey);
+
+        // email 기반 member 조회 (memberId 얻기 위함)
+        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+        }
+        // 여기서 memberId 얻을 수 있음
+        Member member = memberOptional.get();
+        // 사용자 ID 꺼내기
+        Long memberId = member.getId();
 
         // ItemKey 값의 존재 여부 확인
         if (itemOptional.isEmpty()) {
@@ -73,12 +102,15 @@ public class ItemController {
         }
 
         Item item = itemOptional.get();
+
+        Boolean ownedItemId = memberItemService.isItemOwnByMember(memberId,item.getId());
         ItemResponse itemResponse = ItemResponse.builder()
                 .itemId(item.getId())
                 .itemKey(item.getItemKey())
                 .itemName(item.getName())
                 .itemType(item.getType())
                 .itemPoint(item.getPrice())
+                .isOwned(ownedItemId)
                 .build();
 
         return ResponseEntity.ok(CommonApiResponse.success(itemResponse));

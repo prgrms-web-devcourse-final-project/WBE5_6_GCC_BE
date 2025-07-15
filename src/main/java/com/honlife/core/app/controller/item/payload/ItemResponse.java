@@ -20,4 +20,6 @@ public class ItemResponse {
     private String itemName;
 
     private Integer itemPoint;
+
+    private Boolean isOwned;
 }
