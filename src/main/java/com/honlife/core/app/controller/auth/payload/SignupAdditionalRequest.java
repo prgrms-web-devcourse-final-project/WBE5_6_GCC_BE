@@ -3,17 +3,16 @@ package com.honlife.core.app.controller.auth.payload;
 import com.honlife.core.app.model.member.code.ResidenceExperience;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-public class SignupRequest {
+/**
+ * 회원가입 Phase 2 에서 사용됩니다.
+ */
+@Getter
+public class SignupAdditionalRequest {
 
     @NotBlank
     private String email;
-    @NotBlank
-    private String password;
-    @NotBlank
-    private String name;
     @NotBlank
     private String nickname;
     private List<Long> interestedCategoryIds;
