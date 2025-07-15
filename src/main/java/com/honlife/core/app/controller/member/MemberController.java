@@ -77,20 +77,19 @@ public class MemberController {
         @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
     ) {
         String userEmail = userDetails.getUsername();
-        // 해당 이메일이 이메일 인증이 되어 있는지 검증 필요
-        
+
         // DB에 저장된 password 값과 입력한 oldPassword 비교
         if(!memberService.isCorrectPassword(userEmail, updatePasswordRequest.getOldPassword())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
 
-        // update 실패 시
-        if(!memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword())){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        // 해당 이메일이 이메일 인증이 되어 있는지 검증 필요
+        if(memberService.isEmailVerified(userEmail)){
+            memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
+            return ResponseEntity.ok(CommonApiResponse.noContent());
         }
 
-        // update 성공
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
 
     }
 

@@ -37,7 +37,6 @@ import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.infra.util.ReferencedWarning;
 import com.honlife.core.infra.util.NotFoundException;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -286,22 +285,13 @@ public class MemberService {
      * 비밀번호를 업데이트 합니다.
      * @param userEmail 유저 이메일
      * @param newPassword 새로 변경할 비밀번호
-     * @return {@code Boolean}
+     * @return
      */
     @Transactional
-    public Boolean updatePassword(String userEmail, @NotBlank String newPassword) {
+    public void updatePassword(String userEmail, @NotBlank String newPassword) {
         Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
-        if (targetMember == null) {
-            return false;
-        }
-        targetMember.setPassword(passwordEncoder.encode(newPassword));
 
-        // 제대로 update가 되었는지 확인
-        try {
-            memberRepository.save(targetMember);
-            return true;
-        }catch (Exception e){
-            return false;
-        }
+        targetMember.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(targetMember);
     }
 }
