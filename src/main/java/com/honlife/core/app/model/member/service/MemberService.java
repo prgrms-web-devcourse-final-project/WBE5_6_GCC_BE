@@ -117,10 +117,6 @@ public class MemberService {
         return member;
     }
 
-    public boolean nicknameExists(final String nickname) {
-        return memberRepository.existsByNicknameIgnoreCase(nickname);
-    }
-
     /**
      * 참조 무결성을 점검하고, 경고 메시지를 제공하는 사전 검증용 로직
      * @param id
@@ -191,6 +187,15 @@ public class MemberService {
             return referencedWarning;
         }
         return null;
+    }
+
+    /**
+     * 회원 테이블에 이미 존재하는 닉네임인지 확인
+     * @param nickname 검사하고하 하는 닉네임
+     * @return {@code Boolean}
+     */
+    public boolean isNicknameExists(final String nickname) {
+        return memberRepository.existsByNickname(nickname);
     }
 
     /**
