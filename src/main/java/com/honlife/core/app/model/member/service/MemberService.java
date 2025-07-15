@@ -6,9 +6,12 @@ import com.honlife.core.app.model.category.service.InterestCategoryService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
+import com.honlife.core.app.controller.member.payload.MemberPayload;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import java.util.Optional;
 import org.springframework.data.domain.Sort;
@@ -42,6 +45,7 @@ import com.honlife.core.infra.util.NotFoundException;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class MemberService {
 
     private final ModelMapper modelMapper;
@@ -297,6 +301,37 @@ public class MemberService {
                 ResponseCode.NOT_FOUND_MEMBER));
 
         targetMember.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(targetMember);
+    }
+
+    /**
+     * 멤버 정보를 update 합니다. 관련 정보가 null로 넘어온 경우 기존의 데이터를 유지합니다.
+     * @param userEmail 유저 이메일
+     * @param updatedMemberDTO 유저의 새로운 정보가 담긴 DTO
+     */
+    @Transactional
+    public void updateMember(String userEmail, MemberDTO updatedMemberDTO) {
+        Member targetMember = memberRepository
+            .findByEmailAndIsActive(userEmail, true).orElseThrow(() -> new CommonException(
+                ResponseCode.NOT_FOUND_MEMBER));
+
+        // 요청에 반드시 포함되는 필드
+        targetMember.setName(updatedMemberDTO.getName());
+        targetMember.setNickname(updatedMemberDTO.getNickname());
+
+        // 관련 정보가 null로 넘어온 경우 기존의 데이터 유지
+        if(updatedMemberDTO.getResidenceExperience()!=null){
+            targetMember.setResidenceExperience(updatedMemberDTO.getResidenceExperience());
+        }
+        if(updatedMemberDTO.getRegion1Dept()!=null&&!updatedMemberDTO.getRegion1Dept().isBlank()){
+            targetMember.setRegion1Dept(updatedMemberDTO.getRegion1Dept());
+        }
+        if(updatedMemberDTO.getRegion2Dept()!=null&&!updatedMemberDTO.getRegion2Dept().isBlank()){
+            targetMember.setRegion2Dept(updatedMemberDTO.getRegion2Dept());
+        }
+        if(updatedMemberDTO.getRegion3Dept()!=null&&!updatedMemberDTO.getRegion3Dept().isBlank()){
+            targetMember.setRegion3Dept(updatedMemberDTO.getRegion3Dept());
+        }
         memberRepository.save(targetMember);
     }
 }

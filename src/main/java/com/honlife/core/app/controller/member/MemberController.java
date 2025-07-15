@@ -13,13 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -100,18 +96,20 @@ public class MemberController {
      * @return 변경에 성공하면 {@code 200}을 반환합니다.
      * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
-    @Operation(summary="회원정보 업데이트", description="회원정보를 업데이트 합니다.<br>"
-        + "이름, 닉네임은 필수 정보입니다. 나머지 정보는 비어있어도 되지만, 요청에는 포함되어있어야 합니다.")
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<CommonApiResponse<Void>> updateMember(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody @Valid final MemberPayload memberPayload
     ) {
         String userEmail = userDetails.getUsername();
-        if(userEmail.equals("user01@test.com")){
+
+        try{
+            memberService.updateMember(userEmail, memberPayload.toDTO());
             return ResponseEntity.ok(CommonApiResponse.noContent());
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
         }
-        return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+
     }
 
     /**
