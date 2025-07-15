@@ -53,8 +53,12 @@ public class MemberController {
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userEmail = userDetails.getUsername();
+        MemberDTO targetMember = null;
 
-        MemberDTO targetMember = memberService.findMemberByEmail(userEmail);
+        // 이메일 인증이 된 사용자인지 확인
+        if(memberService.isEmailVerified(userEmail)){
+            targetMember = memberService.findMemberByEmail(userEmail);
+        }
 
         // 해당하는 member가 없을 때
         if(targetMember == null) {
