@@ -53,24 +53,23 @@ public class MemberController {
      * @param userDetails 유저 인증 정보 객체
      * @return 조회 성공시 {@code CommonApiResponse<}{@link MemberPayload}{@code >}형태로 사용자의 정보를 반한홥니다.
      */
-    @Operation(summary = "로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
     public ResponseEntity<CommonApiResponse<MemberPayload>> getCurrentMember(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userId = userDetails.getUsername();
-        if(userId.equals("user01@test.com")){
-            MemberPayload response = new MemberPayload();
-            response.setName("홍길동");
-            response.setNickname("닉네임");
-            response.setResidenceExperience(ResidenceExperience.OVER_10Y);
-            response.setRegionDept1("서울시");
-            response.setRegionDept2("강북구");
-            response.setRegionDept3("미아동");
-            return ResponseEntity.ok(CommonApiResponse.success(response));
+        String userEmail = userDetails.getUsername();
+
+        MemberDTO targetMember = memberService.findByEmail(userEmail);
+
+        // 해당하는 member가 없을 때
+        if(targetMember == null) {
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-        return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+
+        MemberPayload response = MemberPayload.fromDTO(targetMember);
+
+        return ResponseEntity.ok(CommonApiResponse.success(response));
     }
 
     /**

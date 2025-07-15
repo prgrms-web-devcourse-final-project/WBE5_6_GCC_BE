@@ -1,6 +1,7 @@
 package com.honlife.core.app.model.member.service;
 
 import java.util.List;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
@@ -29,7 +30,6 @@ import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.infra.util.ReferencedWarning;
 import com.honlife.core.infra.util.NotFoundException;
 
-
 @Service
 public class MemberService {
 
@@ -44,6 +44,7 @@ public class MemberService {
     private final LoginLogRepository loginLogRepository;
     private final InterestCategoryRepository interestCategoryRepository;
     private final MemberPointRepository memberPointRepository;
+    private final ModelMapper mapper;
 
     public MemberService(final MemberRepository memberRepository,
         final RoutineRepository routineRepository, final CategoryRepository categoryRepository,
@@ -54,7 +55,9 @@ public class MemberService {
         final MemberBadgeRepository memberBadgeRepository,
         final LoginLogRepository loginLogRepository,
         final InterestCategoryRepository interestCategoryRepository,
-        final MemberPointRepository memberPointRepository) {
+        final MemberPointRepository memberPointRepository,
+        final ModelMapper maper
+        ) {
         this.memberRepository = memberRepository;
         this.routineRepository = routineRepository;
         this.categoryRepository = categoryRepository;
@@ -66,7 +69,19 @@ public class MemberService {
         this.loginLogRepository = loginLogRepository;
         this.interestCategoryRepository = interestCategoryRepository;
         this.memberPointRepository = memberPointRepository;
+        this.mapper = maper;
     }
+
+    /**
+     * 회원의 이메일을 받아 회원 정보를 리턴하는 메소드
+     * @param userEmail 현재 로그인한 회원의 이메일
+     * @return 회원의 정보가 없다면 null을, 있다면 회원의 정보를 담은 dto를 반환합니다.
+     */
+    public MemberDTO findByEmail(String userEmail){
+        Member targetMember = memberRepository.findByEmail(userEmail).orElse(null);
+        return mapper.map(targetMember, MemberDTO.class);
+    }
+
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
