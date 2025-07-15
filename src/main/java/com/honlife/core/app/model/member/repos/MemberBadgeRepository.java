@@ -25,7 +25,7 @@ public interface MemberBadgeRepository extends JpaRepository<MemberBadge, Long> 
     List<MemberBadge> findByMember(Member member);
 
     /**
-     * 특정 회원의 특정 배지 획득 여부 확인 (성능 최적화용)
+     * 특정 회원의 특정 배지 획득 여부 확인
      */
     boolean existsByMemberAndBadge(Member member, Badge badge);
 }
