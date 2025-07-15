@@ -1,6 +1,8 @@
 package com.honlife.core.app.model.member.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
@@ -80,5 +82,7 @@ public class MemberPointService {
     public boolean memberExists(final Long id) {
         return memberPointRepository.existsByMemberId(id);
     }
-
+    public Optional<MemberPoint> getByMemberId(final Long memberId) {
+        return memberPointRepository.findByMemberId(memberId);
+    }
 }

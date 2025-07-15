@@ -1,6 +1,8 @@
 package com.honlife.core.app.model.member.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
@@ -211,4 +213,7 @@ public class MemberService {
         return null;
     }
 
+    public Optional<Member> getByEmail(String username) {
+        return memberRepository.findByEmail(username);
+    }
 }
