@@ -46,7 +46,6 @@ public class AuthController {
      * @return
      */
     @PostMapping("/signin")
-    @Operation(summary = "로그인", description = "로그인 요청을 처리합니다. JSON Request 필요.")
     public ResponseEntity<CommonApiResponse<TokenResponse>> login(
         @RequestBody LoginRequest loginRequest,
         HttpServletResponse response
