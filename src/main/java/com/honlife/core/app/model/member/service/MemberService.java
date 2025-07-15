@@ -217,6 +217,7 @@ public class MemberService {
      * 회원 정보를 입력받아 {@code isActive = false} 인 상태로 테이블에 저장
      * @param signupRequest 회원가입 단계에서 넘어오는 회원 정보 객체
      */
+    @Transactional
     public void saveNotVerifiedMember(SignupRequest signupRequest) {
         Member member = new Member();
         modelMapper.map(signupRequest, member);
