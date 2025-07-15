@@ -191,7 +191,7 @@ public class MemberService {
 
     /**
      * 회원 테이블에 이미 존재하는 닉네임인지 확인
-     * @param nickname 검사하고하 하는 닉네임
+     * @param nickname 검사하고자 하는 닉네임
      * @return {@code Boolean}
      */
     public boolean isNicknameExists(final String nickname) {
