@@ -54,10 +54,8 @@ public class RoutineController {
      * @param userDetails 로그인된 사용자 정보
      * @return UserRoutinesPayload
      */
-    @Operation(summary = "사용자 루틴 조회", description = "특정 날짜의 사용자 루틴 목록을 조회합니다. <br>date를 넣지 않으면 오늘 날짜 기준으로 조회됩니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<RoutinesResponse>> getUserRoutines(
-        @Schema(name = "date", description = "조회할 날짜를 적어주세요", example = "2025-01-15")
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @AuthenticationPrincipal UserDetails userDetails
     ) {

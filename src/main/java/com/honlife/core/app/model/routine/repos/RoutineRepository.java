@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.routine.domain.Routine;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 public interface RoutineRepository extends JpaRepository<Routine, Long> {
@@ -13,5 +15,10 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> {
 
     Routine findFirstByCategory(Category category);
 
-    List<Routine> findAllByMember(Member member);
+    @Query("""
+    SELECT r FROM Routine r
+    JOIN FETCH r.category c
+    WHERE r.member = :member
+""")
+    List<Routine> findAllByMemberWithCategory(@Param("member") Member member);
 }

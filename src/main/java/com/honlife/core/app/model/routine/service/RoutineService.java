@@ -121,31 +121,37 @@ public class RoutineService {
     /**
      * 사용자 루틴 조회 입니다
      * return RoutinesResponse
-     * 성능 때문에 나중에 fetch join 쓸거같습니다 아마도,,, 아마 우리 는 소규모라 필요없을수도 있지만?
+     * 지연로딩으로 fetch join사용 했습니다
      */
   public RoutinesResponse getUserRoutines(String userName, LocalDate date) {
 
       Member member = memberRepository.findByEmail(userName)
           .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
 
-      List<Routine> routines = routineRepository.findAllByMember(member);
+      List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
       List<RoutinesResponse.RoutineItem> responseRoutines = routines.stream()
           .map(routine -> {
-              Category parentCategory = categoryRepository.findById(
-                  routine.getCategory().getParentId()
-              ).orElseThrow(() -> new RuntimeException("카테고리 없음"));
+              Category parentCategory = null;
+              Long parentId = routine.getCategory().getParentId();
+              if (parentId != null) {
+                  parentCategory = categoryRepository.findById(parentId)
+                      .orElseThrow(() -> new RuntimeException("부모 카테고리 없음"));
+              }
+
               RoutineSchedule routineSchedule = routineScheduleRepository
                   .findByRoutineIdAndDate(routine.getId(), date);
 
+
+
               return RoutinesResponse.RoutineItem.builder()
-                  .scheduleId(routineSchedule.getId())
+                  .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
                   .routineId(routine.getId())
-                  .majorCategory(parentCategory.getName())
+                  .majorCategory(parentCategory != null ? parentCategory.getName() : null)
                   .subCategory(routine.getCategory().getName())
                   .name(routine.getContent())
                   .triggerTime(routine.getTriggerTime())
-                  .isDone(routineSchedule.getIsDone())
+                  .isDone(routineSchedule != null ? routineSchedule.getIsDone() : null)
                   .isImportant(routine.getIsImportant())
                   .build();
           })
