@@ -15,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,13 +37,9 @@ import com.honlife.core.infra.response.ResponseCode;
 public class MemberController {
 
     private final MemberService memberService;
-    //TODO: Dev로 넘어가면 Service로 넘기기
-    private final PasswordEncoder passwordEncoder;
 
-    public MemberController(final MemberService memberService, PasswordEncoder passwordEncoder) {
+    public MemberController(final MemberService memberService) {
         this.memberService = memberService;
-        //TODO: Dev로 넘어가면 Service로 넘기기
-        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -71,23 +70,29 @@ public class MemberController {
      * 비밀번호 변경 요청 처리 API
      * @param userDetails 유저 인증 정보
      * @param updatePasswordRequest 현재 비밀번호와 변경할 비밀번호를 담은 객체
-     * @return 변경 처리 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
+     * @return 변경 처리 성공시 {@code 200}을 반환합니다. <br>현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.<br>업데이트 실패 시 {@code 400}을 반환합니다.
      */
-    @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
-        + "현재 비밀번호와 변경할 비밀번호를 받으며, 내부적으로 비밀번호 비교 후 비밀번호가 일치할 때 변경합니다.<br>"
-        + "비밀번호가 일치하지 않는 경우, 401응답이 반환됩니다.")
-    @PutMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
     ) {
         String userEmail = userDetails.getUsername();
-        String userPassword = userDetails.getPassword();
-        //TODO: Dev때 Service로 옮기기
-        if(userEmail.equals("user01@test.com") && passwordEncoder.matches("1111", userPassword)){
-            return ResponseEntity.ok(CommonApiResponse.noContent());
+        // 해당 이메일이 이메일 인증이 되어 있는지 검증 필요
+        
+        // DB에 저장된 password 값과 입력한 oldPassword 비교
+        if(!memberService.isCorrectPassword(userEmail, updatePasswordRequest.getOldPassword())){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
+
+        // update 실패 시
+        if(!memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword())){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        }
+
+        // update 성공
+        return ResponseEntity.ok(CommonApiResponse.noContent());
+
     }
 
     /**

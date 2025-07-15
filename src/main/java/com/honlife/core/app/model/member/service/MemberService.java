@@ -1,8 +1,11 @@
 package com.honlife.core.app.model.member.service;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import org.modelmapper.ModelMapper;
+import java.util.Optional;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.domain.InterestCategory;
@@ -29,6 +32,7 @@ import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.infra.util.ReferencedWarning;
 import com.honlife.core.infra.util.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
@@ -45,6 +49,7 @@ public class MemberService {
     private final InterestCategoryRepository interestCategoryRepository;
     private final MemberPointRepository memberPointRepository;
     private final ModelMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
     public MemberService(final MemberRepository memberRepository,
         final RoutineRepository routineRepository, final CategoryRepository categoryRepository,
@@ -56,8 +61,8 @@ public class MemberService {
         final LoginLogRepository loginLogRepository,
         final InterestCategoryRepository interestCategoryRepository,
         final MemberPointRepository memberPointRepository,
-        final ModelMapper maper
-        ) {
+        final ModelMapper maper,
+        final PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.routineRepository = routineRepository;
         this.categoryRepository = categoryRepository;
@@ -70,6 +75,7 @@ public class MemberService {
         this.interestCategoryRepository = interestCategoryRepository;
         this.memberPointRepository = memberPointRepository;
         this.mapper = maper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -226,4 +232,41 @@ public class MemberService {
         return null;
     }
 
+    /**
+     * 사용자가 입력한 oldPassword의 값이 현재 DB에 저장되어 있는 password과 같은지 비교
+     * @param userEmail 회원 이메일
+     * @param oldPassword 회원이 입력한 기존 비밀 번호
+     * @return {@code Boolean}
+     */
+    public Boolean isCorrectPassword(String userEmail, @NotBlank String oldPassword) {
+        Optional<Member> user = memberRepository.findByEmailAndIsActive(userEmail,true);
+        String savedPassword="";
+        if(user.isPresent()){
+            savedPassword = user.get().getPassword();
+        }
+        return passwordEncoder.matches(oldPassword, savedPassword);
+    }
+
+    /**
+     * 비밀번호를 업데이트 합니다.
+     * @param userEmail 유저 이메일
+     * @param newPassword 새로 변경할 비밀번호
+     * @return {@code Boolean}
+     */
+    @Transactional
+    public Boolean updatePassword(String userEmail, @NotBlank String newPassword) {
+        Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
+        if (targetMember == null) {
+            return false;
+        }
+        targetMember.setPassword(passwordEncoder.encode(newPassword));
+
+        // 제대로 update가 되었는지 확인
+        try {
+            memberRepository.save(targetMember);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
 }
