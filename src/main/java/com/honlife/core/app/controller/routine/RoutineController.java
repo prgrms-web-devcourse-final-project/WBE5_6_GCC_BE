@@ -87,7 +87,6 @@ public class RoutineController {
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinePayload
      */
-    @Operation(summary = "특정 루틴 조회", description = "특정 루틴의 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<RoutineDetailResponse>> getRoutine(
         @PathVariable(name = "id") Long routineId,

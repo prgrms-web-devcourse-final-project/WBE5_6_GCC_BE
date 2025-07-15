@@ -1,10 +1,12 @@
 package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.infra.response.CommonApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
@@ -122,6 +124,7 @@ public class RoutineService {
      * 사용자 루틴 조회 입니다
      * return RoutinesResponse
      * 지연로딩으로 fetch join사용 했습니다
+     * 스케줄러에 들어가지있지 않을경우 값을 넣어주는 로직까지 추가했습니다
      */
   public RoutinesResponse getUserRoutines(String userName, LocalDate date) {
 
@@ -143,6 +146,15 @@ public class RoutineService {
                   .findByRoutineIdAndDate(routine.getId(), date);
 
 
+              if (routineSchedule == null && isDateMatched(routine, date)) {
+                  routineSchedule = RoutineSchedule.builder()
+                      .routine(routine)
+                      .date(date)
+                      .isDone(false)
+                      .build();
+
+                  routineSchedule = routineScheduleRepository.save(routineSchedule);
+              }
 
               return RoutinesResponse.RoutineItem.builder()
                   .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
@@ -163,5 +175,41 @@ public class RoutineService {
 
       return response;
   }
+    private boolean isDateMatched(Routine routine, LocalDate date) {
+        RepeatType type = routine.getRepeatType();
+        String value = routine.getRepeatValue(); // 예: "1,3,5" 또는 "1,15,30"
+
+        switch (type) {
+            case DAILY:
+                return true;
+
+            case WEEKLY:
+                if (value == null || value.isBlank()) return false;
+                int dayOfWeek = date.getDayOfWeek().getValue(); // 월=1 ~ 일=7
+                return containsNumber(value, dayOfWeek);
+
+            case MONTHLY:
+                if (value == null || value.isBlank()) return false;
+                int dayOfMonth = date.getDayOfMonth();
+                return containsNumber(value, dayOfMonth);
+
+            case CUSTOM:
+
+                return false;
+
+            default:
+                return false;
+        }
+    }
+    private boolean containsNumber(String value, int target) {
+        for (String part : value.split(",")) {
+            if (part.trim().equals(String.valueOf(target))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
 }
