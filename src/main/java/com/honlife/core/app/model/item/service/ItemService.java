@@ -36,6 +36,12 @@ public class ItemService {
     private final MemberItemRepository memberItemRepository;
     private final MemberRepository memberRepository;
 
+    /**
+     * 아이템 전체 조회 기능
+     * itemType 값이 존재 시 그 Type의 아이템 전체 조회
+     * @param itemType
+     * @return List<Item>
+     */
     public List<Item> getAllItems(ItemType itemType) {
         if (itemType != null) {
             return itemRepository.findByTypeAndIsActiveTrue(itemType);
@@ -45,11 +51,18 @@ public class ItemService {
     }
     /**
      * itemKey로 단일 아이템 조회
+     * @param itemKey
+     * return Optional<Item></Item>
      */
     public Optional<Item> getItemByKey(String itemKey) {
         return itemRepository.findByItemKeyAndIsActiveTrue(itemKey);
     }
 
+    /**
+     * 아이템 구매 기능
+     * @param item 컨트롤러에서 key값을 통해 구매하려는 Item 정보를 가지고 있음
+     * @param member 구매하는 사용자 정보를 가지고 있음
+     */
     public void purchaseItem(Item item, Member member) {
         Long memberId = member.getId();
         Optional<MemberPoint> pointOptional = memberPointRepository.findByMemberId(memberId);

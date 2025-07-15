@@ -108,11 +108,16 @@ public class ItemController {
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
 
+        // itemKey 값을 통해 구매하고자하는 Item 정보 가지고 있음
         Item item = itemOptional.get();
-        Member member = memberOptional.get(); // 여기서 memberId 얻을 수 있음
+        // 여기서 memberId 얻을 수 있음
+        Member member = memberOptional.get();
+        // 사용자 ID 꺼내기
         Long memberId = member.getId();
 
+        // memberId를 통해 사용자 Point 테이블 정보 가져옴
         Optional<MemberPoint> pointOptional = memberPointService.getByMemberId(memberId);
+
         // memberPoint에 point 값이 있는지 없는지 검증로직을 거치지 않아서 표시되는 warning
         MemberPoint memberPoint = pointOptional.get();
 
