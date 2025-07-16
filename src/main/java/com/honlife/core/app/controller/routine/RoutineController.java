@@ -46,7 +46,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class RoutineController {
 
     private final RoutineService routineService;
-    private final MemberRepository memberRepository;
 
 
     /**
