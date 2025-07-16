@@ -2,6 +2,7 @@ package com.honlife.core.app.model.member.service;
 
 import java.util.List;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.repos.ItemRepository;
@@ -83,15 +84,21 @@ public class MemberItemService {
     }
 
     /**
-     * 맴버 아이디를 통해 아이템을 보유하고있는 회원 조회
-     * @param memberId 유저 Id 입력
-     * @return
+     * user email 값을  통해 보유하고있는 itemId 값 조회
+     * @param userDetails 유저 이메일 입력
+     * @return List<Long>
      */
-    public List<Long> getOwnedItemIdsByMember(Long memberId) {
-        return memberItemRepository.findItemsByMemberId(memberId);
+    public List<Long> getOwnedItemIdsByMember(String userDetails) {
+        return memberItemRepository.findItemsByMemberId(userDetails);
     }
 
-    public Boolean isItemOwnByMember(Long memberId,Long itemId) {
-        return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
+    /**
+     * 맴버 아이디와 아이템아이디를 통해 아이템 보유여부 확인
+     * @param email 유저 이메일 입력
+     * @param itemId 아이템 아이디 값
+     * @return Boolean
+     */
+    public Boolean isItemOwnByMember(String email,Long itemId) {
+        return memberItemRepository.existsByMemberIdAndItemId(email, itemId);
     }
 }

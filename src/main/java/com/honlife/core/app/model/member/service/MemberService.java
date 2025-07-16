@@ -273,8 +273,13 @@ public class MemberService {
         Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
         return mapper.map(targetMember, MemberDTO.class);
     }
-    // 유저 이메일을 기반으로 Member 정보 조회
-    public Optional<Member> getByEmail(String username) {
-        return memberRepository.findByEmail(username);
+
+    /**
+     * 회원의 이메일을 받아 회원 정보를 리턴하는 메소드
+     * @param userEmail 현재 로그인한 회원의 이메일
+     * @return Memeber 엔티티값을 반환합니다
+     */
+    public Member getMemberByEmail(String userEmail){
+        return memberRepository.findByEmailIgnoreCase(userEmail);
     }
 }

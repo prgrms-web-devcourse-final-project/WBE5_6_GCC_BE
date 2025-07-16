@@ -82,8 +82,13 @@ public class MemberPointService {
     public boolean memberExists(final Long id) {
         return memberPointRepository.existsByMemberId(id);
     }
-    // 유저 Id를 통한 MemberPoint 테이블 접근 및 조회
-    public Optional<MemberPoint> getByMemberId(final Long memberId) {
-        return memberPointRepository.findByMemberId(memberId);
+
+    /**
+     * email 값을 통한 MemberPoint 테이블 정보 반환
+     * @param email UserDetails를 통한 eamil 값
+     * @return Optional<MemberPoint>
+     */
+    public Optional<MemberPoint> getPointByEmail(String email) {
+        return memberPointRepository.findPointByMemberEmail(email);
     }
 }
