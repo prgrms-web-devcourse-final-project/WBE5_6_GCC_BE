@@ -2,10 +2,13 @@ package com.honlife.core.app.controller.auth;
 
 import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
 import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
+import com.honlife.core.app.model.mail.MailService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.ResponseCode;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,7 @@ public class AuthController {
     
     private final AuthService authService;
     private final MemberService memberService;
+    private final MailService mailService;
 
 
     /**
@@ -101,7 +105,11 @@ public class AuthController {
     public ResponseEntity<CommonApiResponse<Void>> sendVerifyCode(
         @RequestBody @Valid VerifyEmailRequest emailRequest
     ){
-        // TODO: 이메일 인증코드 발송
+        try {
+            mailService.sendVerificationEmail(emailRequest.getEmail());
+        } catch (MessagingException | IOException e) {  // 메일 전송에 실패한 경우
+            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        }
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
@@ -110,7 +118,6 @@ public class AuthController {
      * @param emailRequest 인증 검사를 진행할 이메일과 인증 코드를 담은 요청 객체
      * @return 인증 성공시 {@code HttpStatus.OK}를 코드가 일치하지 않으면, {@code HttpStatus.UNAUTHORIZED}를 반환합니다.
      */
-    //TODO: Redis를 활용한 인증 방식 고민해보기. (Redis에 이메일과 인증번호를 저장해 두는 방식. TTL설정이 가능하기에 3분내 입력같은 기능 구현 가능)
     @PostMapping("/email/verify/{code}")
     public ResponseEntity<CommonApiResponse<Void>> verifyEmail(
         @RequestBody @Valid VerifyEmailRequest emailRequest
