@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -70,35 +71,39 @@ public class AuthController {
     }
 
     /**
-     * 회원가입 요청을 처리<br>
-     * 문제없이 처리된 경우 자동으로 이메일 인증 코드 발송
+     * 회원가입 요청을 처리합니다.
+     *
      * @param signupRequest
      * @return 계정이 이미 존재하는 경우 {@code HttpStatus.CONFLICT}를, 그 외의 경우는 {@code HttpStatus.OK}
      */
     @PostMapping("/signup")
-    public ResponseEntity<CommonApiResponse<Void>> signup(
+    public ResponseEntity<CommonApiResponse<ResponseCode>> signup(
         @RequestBody SignupRequest signupRequest
     ) {
         String userEmail = signupRequest.getEmail();
-        if(memberService.isEmailExists(userEmail)) {        // 이미 존재하는 계정정보인지 확인
-            if(memberService.isEmailVerified(userEmail)) {  // 인증이 완료된 계정인지 확인
+        Optional<Boolean> accountStatus = memberService.isActiveAccount(userEmail);
+        // 계정 정보가 존재하는 경우
+        if(accountStatus.isPresent()) {
+            // 활성화된 계정인 경우
+            if(accountStatus.get()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(CommonApiResponse.error(ResponseCode.CONFLICT_EXIST_MEMBER));
             }
-            // 회원가입을 재시도하는 익명사용자의 경우에, 기존에 저장된 정보를 업데이트
+            // 활성화되지 않은 계정인 경우, 이메일 인증으로 넘어감
             memberService.updateNotVerifiedMember(signupRequest);
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        };
-        // 신규 회원의 경우에 새로운 정보 저장
-        memberService.saveNotVerifiedMember(signupRequest);
-
-        // 회원가입 완료된 경우 이메일 인증 코드 자동 발송
-        try {
-            mailService.sendVerificationEmail(signupRequest.getEmail());
-        } catch (MessagingException | IOException e) {  // 메일 전송에 실패한 경우
-            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        } else {
+            // 신규 회원의 경우에 새로운 정보 저장 후 이메일 인증으로 넘어감
+            memberService.saveNotVerifiedMember(signupRequest);
         }
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+
+        try {
+            mailService.sendVerificationEmail(userEmail);
+            return ResponseEntity.ok()
+                .body(CommonApiResponse.success(ResponseCode.CONTINUE));
+        } catch (MessagingException | IOException e) {
+            return ResponseEntity.internalServerError()
+                .body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        }
     }
 
     /**
@@ -117,10 +122,10 @@ public class AuthController {
 
         try {
             mailService.sendVerificationEmail(emailRequest.getEmail());
+            return ResponseEntity.ok(CommonApiResponse.noContent());
         } catch (MessagingException | IOException e) {  // 메일 전송에 실패한 경우
             return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
         }
-        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
     /**
