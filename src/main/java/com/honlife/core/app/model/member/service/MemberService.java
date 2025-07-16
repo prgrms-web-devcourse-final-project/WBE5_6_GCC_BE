@@ -1,12 +1,11 @@
 package com.honlife.core.app.model.member.service;
 
-import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
+import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -227,16 +226,16 @@ public class MemberService {
     /**
      * 회원가입 phase 1 진행시 사용되는 매서드<br>
      * 회원 정보를 입력받아 {@code isActive = false} 인 상태로 테이블에 저장
-     * @param signupBasicRequest 회원가입 단계에서 넘어오는 회원 정보 객체
+     * @param signupRequest 회원가입 단계에서 넘어오는 회원 정보 객체
      */
     @Transactional
-    public void saveNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
+    public void saveNotVerifiedMember(SignupRequest signupRequest) {
         Member member = new Member();
-        modelMapper.map(signupBasicRequest, member);
-        member.setPassword(passwordEncoder.encode(signupBasicRequest.getPassword())); // 암호화된 비밀번호 저장
+        member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
+        modelMapper.map(signupRequest, member);
         member.setIsActive(false);   // 이메일인증까지 완료되야 계정 활성화.
         member.setIsVerified(false);
-        member.setNickname(signupBasicRequest.getName());
+        member.setNickname(signupRequest.getName());
         member.setRole(Role.ROLE_USER);
         memberRepository.save(member);
     }
@@ -259,14 +258,14 @@ public class MemberService {
     /**
      * 회원가입 phase 1 에서 가입을 재시도하거나 정보를 수정 하는 경우에 사용되는 매서드<br>
      * 기존에 회원가입을 눌렀을 경우 해당 회원정보가 DB에 저장되어있으므로, 업데이트 방식을 실행
-     * @param signupBasicRequest 회원가입 단게에서 넘어오는 회원 정보 객체
+     * @param signupRequest 회원가입 단게에서 넘어오는 회원 정보 객체
      */
     @Transactional
-    public void updateNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
+    public void updateNotVerifiedMember(SignupRequest signupRequest) {
         // 회원정보 업데이트
-        Member member = memberRepository.findByEmailIgnoreCase(signupBasicRequest.getEmail());
-        modelMapper.map(signupBasicRequest, member);
-        member.setPassword(passwordEncoder.encode(signupBasicRequest.getPassword())); // 암호화된 비밀번호 저장
+        Member member = memberRepository.findByEmailIgnoreCase(signupRequest.getEmail());
+        modelMapper.map(signupRequest, member);
+        member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
         memberRepository.save(member);
     }
 
