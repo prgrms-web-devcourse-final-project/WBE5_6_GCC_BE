@@ -196,6 +196,26 @@ public class MemberService {
     }
 
     /**
+     * 존재하는 계정인지 확인<br>
+     * 계정이 존재하지 않는다면 null 반환<br>
+     * 만약 계정이 존재하지만, {@code isActive = false} 라면 회원탈퇴 또는 모종의 이유로 비활성화된 계정으로 판단.
+     * @param email 회원 이메일
+     * @return {@code Optional<Boolean>}
+     */
+    public Optional<Boolean> isActiveAccount(final String email) {
+        Optional<Member> member = Optional.ofNullable(
+            memberRepository.findByEmailIgnoreCase(email));
+        if (member.isPresent()) {
+            if(!member.get().getIsActive()){
+                return Optional.of(false);
+            }
+            return Optional.of(true);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * 회원 테이블에 이미 존재하는 닉네임인지 확인
      * @param nickname 검사하고자 하는 닉네임
      * @return {@code Boolean}
