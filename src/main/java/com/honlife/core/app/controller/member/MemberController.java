@@ -78,23 +78,17 @@ public class MemberController {
      * 비밀번호 변경 요청 처리 API
      * @param userDetails 유저 인증 정보
      * @param updatePasswordRequest 현재 비밀번호와 변경할 비밀번호를 담은 객체
-     * @return 변경 처리 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
+     * @return 변경 처리 성공시 {@code 200}을 반환합니다. 이메일 인증이 되지 않은 경우, {@code 401}을 반환합니다.
      */
     @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
-        + "현재 비밀번호와 변경할 비밀번호를 받으며, 내부적으로 비밀번호 비교 후 비밀번호가 일치할 때 변경합니다.<br>"
-        + "비밀번호가 일치하지 않는 경우, 401응답이 반환됩니다.")
+        + "현재 비밀번호와 변경할 비밀번호를 받습니다.<br>"
+        + "사전에 이메일 인증이 되지 않은 회원의 경우, 401응답이 반환됩니다.")
     @PutMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
     ) {
-        String userEmail = userDetails.getUsername();
-        String userPassword = userDetails.getPassword();
-        //TODO: Dev때 Service로 옮기기
-        if(userEmail.equals("user01@test.com") && passwordEncoder.matches("1111", userPassword)){
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
     /**
