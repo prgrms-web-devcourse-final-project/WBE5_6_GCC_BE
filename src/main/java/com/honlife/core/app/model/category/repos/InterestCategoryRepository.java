@@ -7,7 +7,7 @@ import com.honlife.core.app.model.category.domain.InterestCategory;
 import com.honlife.core.app.model.member.domain.Member;
 
 
-public interface InterestCategoryRepository extends JpaRepository<InterestCategory, Long> {
+public interface InterestCategoryRepository extends JpaRepository<InterestCategory, Long>, InterestCategoryRepositoryCustom {
 
     InterestCategory findFirstByCategory(Category category);
 

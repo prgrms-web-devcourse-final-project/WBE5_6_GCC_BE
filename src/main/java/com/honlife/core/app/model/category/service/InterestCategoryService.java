@@ -146,4 +146,13 @@ public class InterestCategoryService {
             interestCategoryRepository.save(newInterestCategory);
         }
     }
+
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 선호 카테고리를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void deleteInterestCategoryByMemberId(Long memberId) {
+        interestCategoryRepository.deleteByMemberId(memberId);
+    }
 }
