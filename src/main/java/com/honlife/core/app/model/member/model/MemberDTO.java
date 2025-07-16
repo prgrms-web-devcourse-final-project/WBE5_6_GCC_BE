@@ -57,4 +57,6 @@ public class MemberDTO {
     @Size(max = 255)
     private String region3Dept;
 
+    private Boolean isVerified;
+
 }
