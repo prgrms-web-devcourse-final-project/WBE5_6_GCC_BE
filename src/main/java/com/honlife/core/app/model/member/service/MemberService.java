@@ -53,6 +53,7 @@ public class MemberService {
     private final LoginLogRepository loginLogRepository;
     private final InterestCategoryRepository interestCategoryRepository;
     private final MemberPointRepository memberPointRepository;
+    private final ModelMapper mapper;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -249,5 +250,16 @@ public class MemberService {
 
         // 관심카테고리 정보 업데이트
         interestCategoryService.updateInterestCategory(member, signupRequest.getInterestedCategoryIds());
+    }
+
+
+    /**
+     * 회원의 이메일을 받아 회원 정보를 리턴하는 메소드
+     * @param userEmail 현재 로그인한 회원의 이메일
+     * @return 회원의 정보가 없다면 null을, 있다면 회원의 정보를 담은 dto를 반환합니다.
+     */
+    public MemberDTO findMemberByEmail(String userEmail){
+        Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
+        return mapper.map(targetMember, MemberDTO.class);
     }
 }
