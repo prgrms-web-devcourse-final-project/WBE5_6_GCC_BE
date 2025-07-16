@@ -3,7 +3,9 @@ package com.honlife.core.app.controller.member;
 import com.honlife.core.app.controller.member.payload.MemberItemEquippedRequest;
 import com.honlife.core.app.controller.member.payload.MemberItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
+import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.service.MemberItemService;
+import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ import java.util.List;
 public class MemberItemController {
 
     private final MemberItemService memberItemService;
+    private final MemberService memberService;
 
     /**
      * 로그인한 회원이 보유한 아이템 조회
@@ -33,7 +37,20 @@ public class MemberItemController {
         @RequestParam(name="type", required = false) ItemType itemType,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-
+        // email 기반 member 조회 (memberId 얻기 위함)
+        // email 기반 member 조회 (memberId 얻기 위함)
+        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+        }
+        // 여기서 memberId 얻을 수 있음
+        Member member = memberOptional.get();
+        // 사용자 ID 꺼내기
+        Long memberId = member.getId();
+        // 보유 아이템 판단
+        List<Long> ownedItemIds = memberItemService.getOwnedItemIdsByMember(memberId);
+        return null;
     }
 
     /**
@@ -44,7 +61,7 @@ public class MemberItemController {
     public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getEquippedItems(
         @AuthenticationPrincipal UserDetails userDetails
     ){
-
+        return null;
     }
 
     /**
