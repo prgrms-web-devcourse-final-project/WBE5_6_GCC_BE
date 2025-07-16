@@ -21,7 +21,7 @@ public abstract class BaseEntity {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column
-    private Boolean isActive = true;
+    private Boolean isActive = false;   // init value
 
     @PrePersist
     protected void onCreate() {
