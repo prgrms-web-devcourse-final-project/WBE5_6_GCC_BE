@@ -225,13 +225,23 @@ public class MemberService {
     }
 
     /**
-     * 회원 테이블에서 이미 존재하는 이메일인지 확인<br>
-     * IgnoreCase - 대소문자 구분 없이 검색
+     * 회원 테이블에서 이미 존재하는 이메일인지 확인
      * @param email 사용자 이메일
      * @return {@code Boolean}
      */
-    public boolean isEmailExists(final String email) {
-        return memberRepository.existsByEmailIgnoreCase(email);
+    public Boolean isEmailExists(final String email) {
+        return memberRepository.existsByEmailIgnoreCaseAndIsActive(email, null);
+    }
+
+    /**
+     * 회원 테이블에서 이미 존재하는 이메일인지 확인<br>
+     * isActive 값을 넣으면 활성화 또는 비활성화 된 계정 정보 중 검색
+     * @param email 사용자 이메일
+     * @param isActive account activation status
+     * @return {@code Boolean}
+     */
+    public Boolean isEmailExists(final String email, final Boolean isActive) {
+        return memberRepository.existsByEmailIgnoreCaseAndIsActive(email, isActive);
     }
 
     /**
