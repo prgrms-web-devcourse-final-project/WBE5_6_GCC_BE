@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.member.service;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -81,4 +82,12 @@ public class MemberPointService {
         return memberPointRepository.existsByMemberId(id);
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 멤버 포인트를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void deleteMemberPointByMemberId(Long memberId) {
+        memberPointRepository.deleteByMemberId(memberId);
+    }
 }
