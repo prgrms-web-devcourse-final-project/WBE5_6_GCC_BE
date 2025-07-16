@@ -4,8 +4,6 @@ import com.honlife.core.app.controller.item.payload.ItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.service.ItemService;
-import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
@@ -42,18 +40,8 @@ public class ItemController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
-        // email 기반 member 조회 (memberId 얻기 위함)
-        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
-        }
-        // 여기서 memberId 얻을 수 있음
-        Member member = memberOptional.get();
-        // 사용자 ID 꺼내기
-        Long memberId = member.getId();
         // 보유 아이템 판단
-        List<Long> ownedItemIds = memberItemService.getOwnedItemIdsByMember(memberId);
+        List<Long> ownedItemIds = memberItemService.getOwnedItemIdsByMember(userDetails.getUsername());
 
         List<Item> items = itemService.getAllItems(itemType);
 
@@ -85,26 +73,11 @@ public class ItemController {
 
         Optional<Item> itemOptional = itemService.getItemByKey(itemKey);
 
-        // email 기반 member 조회 (memberId 얻기 위함)
-        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
-        }
-        // 여기서 memberId 얻을 수 있음
-        Member member = memberOptional.get();
-        // 사용자 ID 꺼내기
-        Long memberId = member.getId();
-
-        // ItemKey 값의 존재 여부 확인
-        if (itemOptional.isEmpty()) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
-
         Item item = itemOptional.get();
 
-        Boolean ownedItemId = memberItemService.isItemOwnByMember(memberId,item.getId());
+        // 해당 key값에 해당하는 아이템 보유 여부 확인
+        Boolean ownedItemId = memberItemService.isItemOwnByMember(userDetails.getUsername(),item.getId());
+
         ItemResponse itemResponse = ItemResponse.builder()
                 .itemId(item.getId())
                 .itemKey(item.getItemKey())
@@ -127,41 +100,20 @@ public class ItemController {
             @PathVariable("key") String itemKey,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
+        // 아이템 키값으로 Item 정보 가져옴
         Optional<Item> itemOptional = itemService.getItemByKey(itemKey);
 
-        // ItemKey 값의 존재 여부 확인
-        if (itemOptional.isEmpty()) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
-
-        // email 기반 member 조회 (memberId 얻기 위함)
-        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
-        }
-
-        // itemKey 값을 통해 구매하고자하는 Item 정보 가지고 있음
         Item item = itemOptional.get();
-        // 여기서 memberId 얻을 수 있음
-        Member member = memberOptional.get();
-        // 사용자 ID 꺼내기
-        Long memberId = member.getId();
+        // 아이템에대한 사용자 보유여부 확인
+        Boolean ownedItemId = memberItemService.isItemOwnByMember(userDetails.getUsername(),item.getId());
 
-        // memberId를 통해 사용자 Point 테이블 정보 가져옴
-        Optional<MemberPoint> pointOptional = memberPointService.getByMemberId(memberId);
-
-        // memberPoint에 point 값이 있는지 없는지 검증로직을 거치지 않아서 표시되는 warning
-        MemberPoint memberPoint = pointOptional.get();
-
-        //  포인트 부족 검사
-        if (memberPoint.getPoint() < item.getPrice()) {
-            return ResponseEntity.status(ResponseCode.BAD_REQUEST.status())
-                    .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+        // 이미 보유 시 이미 보유했다는 응답 반환
+        if(ownedItemId){
+            return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_ITEM.status())
+                    .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_ITEM));
         }
-
-        itemService.purchaseItem(item, member);
+        // 아이템 구매 메서드
+        itemService.purchaseItem(item,userDetails.getUsername());
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }

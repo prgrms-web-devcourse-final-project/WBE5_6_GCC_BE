@@ -9,9 +9,13 @@ import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.app.model.member.service.MemberPointService;
+import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.util.NotFoundException;
 import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.response.ResponseCode;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +30,8 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final MemberPointRepository memberPointRepository;
     private final MemberItemRepository memberItemRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+    private final MemberPointService memberPointService;
 
     /**
      * 아이템 전체 조회 기능
@@ -53,16 +58,21 @@ public class ItemService {
     /**
      * 아이템 구매 기능
      * @param item 컨트롤러에서 key값을 통해 구매하려는 Item 정보를 가지고 있음
-     * @param member 구매하는 사용자 정보를 가지고 있음
+     * @param email 구매하는 사용자 email 값
      */
-    public void purchaseItem(Item item, Member member) {
-        Long memberId = member.getId();
-        Optional<MemberPoint> pointOptional = memberPointRepository.findByMemberId(memberId);
+    public void purchaseItem(Item item,String email) {
 
-        // memberPoint에 point 값이 있는지 없는지 검증로직을 거치지 않아서 표시되는 warning
-        MemberPoint memberPoint = pointOptional.get();
+        Member member = memberService.getMemberByEmail(email);
 
-        memberPoint.setPoint(memberPoint.getPoint()-item.getPrice());
+        // 사용자 email을 활용하여 MemberPoint 정보 가져오는 메서드
+        Optional<MemberPoint> pointOptional = memberPointService.getPointByEmail(email);
+        MemberPoint point = pointOptional.get();
+
+        if (point.getPoint() < item.getPrice()) {
+            throw new CommonException(ResponseCode.NOT_ENOUGH_POINT);
+        }
+        point.setPoint(point.getPoint()-item.getPrice());
+
 
         MemberItem memberItem =MemberItem.builder()
                 .member(member)
@@ -71,7 +81,7 @@ public class ItemService {
                 .build();
 
         // memberPoint 테이블에 Point 변경값 저장
-        memberPointRepository.save(memberPoint);
+        memberPointRepository.save(point);
         // 구매 아이템 정보 저장
         memberItemRepository.save(memberItem);
     }
