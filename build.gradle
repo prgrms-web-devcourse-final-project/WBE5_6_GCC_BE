@@ -50,6 +50,12 @@ repositories {
 }
 
 dependencies {
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.3")
+    testCompileOnly('org.projectlombok:lombok')
+    testAnnotationProcessor('org.projectlombok:lombok')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-validation')
 
@@ -65,9 +71,6 @@ dependencies {
 
     compileOnly('org.projectlombok:lombok')
     annotationProcessor('org.projectlombok:lombok')
-    testCompileOnly('org.projectlombok:lombok')
-    testAnnotationProcessor('org.projectlombok:lombok')
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
     implementation("org.springframework.boot:spring-boot-starter-security:3.4.5")
 
@@ -91,6 +94,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
     implementation("org.modelmapper:modelmapper:3.2.2")
 
+}
+
+test {
+    useJUnitPlatform() // JUnit5 사용을 명시
 }
 
 tasks.withType(Test) {

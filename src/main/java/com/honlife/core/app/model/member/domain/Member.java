@@ -68,4 +68,7 @@ public class Member extends BaseEntity {
     @Column
     private String region3Dept;
 
+    @Column(nullable = false)
+    private Boolean isVerified;
+
 }
