@@ -4,8 +4,6 @@ import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
 import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -28,7 +26,7 @@ import com.honlife.core.app.model.auth.dto.TokenDto;
 import com.honlife.core.infra.auth.jwt.TokenCookieFactory;
 import com.honlife.core.infra.response.CommonApiResponse;
 
-@Tag(name="인증", description = "로그인 및 인증 관련 API입니다.")
+
 @RestController
 @RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -41,9 +39,9 @@ public class AuthController {
 
     /**
      * 로그인 처리 매서드
-     * @param loginRequest
-     * @param response
-     * @return
+     * @param loginRequest 로그인 요청 객체
+     * @param response 응답에 사용할 서블렛 객체
+     * @return AccessToken, RefreshToken 을 담아 반환
      */
     @PostMapping("/signin")
     public ResponseEntity<CommonApiResponse<TokenResponse>> login(
