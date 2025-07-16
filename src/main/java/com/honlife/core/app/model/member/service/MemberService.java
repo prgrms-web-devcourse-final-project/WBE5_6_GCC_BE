@@ -213,6 +213,7 @@ public class MemberService {
         return null;
     }
 
+    // 유저 이메일을 기반으로 Member 정보 조회
     public Optional<Member> getByEmail(String username) {
         return memberRepository.findByEmail(username);
     }

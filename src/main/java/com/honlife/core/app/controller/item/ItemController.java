@@ -52,7 +52,7 @@ public class ItemController {
         Member member = memberOptional.get();
         // 사용자 ID 꺼내기
         Long memberId = member.getId();
-
+        // 보유 아이템 판단
         List<Long> ownedItemIds = memberItemService.getOwnedItemIdsByMember(memberId);
 
         List<Item> items = itemService.getAllItems(itemType);

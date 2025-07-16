@@ -1,30 +1,22 @@
 package com.honlife.core.app.model.item.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.honlife.core.app.controller.item.payload.ItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
-import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.domain.MemberPoint;
-import com.honlife.core.app.model.member.model.MemberPointDTO;
-import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.ResponseCode;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.dto.ItemDTO;
 import com.honlife.core.app.model.item.repos.ItemRepository;
+import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
+import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
+import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.util.NotFoundException;
 import com.honlife.core.infra.util.ReferencedWarning;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -77,14 +69,17 @@ public class ItemService {
                 .item(item)
                 .isEquipped(false) // 기본값
                 .build();
-        memberItem.setCreatedAt(LocalDateTime.now());
-        memberItem.setUpdatedAt(LocalDateTime.now());
-        memberItem.setIsActive(true);
 
+        // memberPoint 테이블에 Point 변경값 저장
         memberPointRepository.save(memberPoint);
+        // 구매 아이템 정보 저장
         memberItemRepository.save(memberItem);
     }
 
+    /**
+     * itemKeyExists,mapToDTO,mapToEntity,get,getReferencedWarning
+     * Item Unique 보장을 위함
+     */
     public boolean itemKeyExists(final String itemKey) {
         return itemRepository.existsByItemKeyIgnoreCase(itemKey);
     }
