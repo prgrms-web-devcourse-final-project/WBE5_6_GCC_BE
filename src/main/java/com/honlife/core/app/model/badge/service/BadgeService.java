@@ -64,23 +64,22 @@ public class BadgeService {
         badgeRepository.deleteById(id);
     }
 
-    // === 새로 추가된 사용자별 조회 메서드들 ===
+    // === 사용자별 조회 메서드들 ===
 
     /**
      * 특정 배지를 사용자 정보와 함께 조회
      * @param badgeKey 배지 키
-     * @param memberId 회원 ID
-     * @return 배지 정보 + 사용자 획득 여부
+     * @param email 사용자 이메일
+     * @return 배지 정보 + 사용자 획득 여부, 배지가 없으면 null 반환
      */
     @Transactional(readOnly = true)
-    public BadgeWithMemberInfoDTO getBadgeWithMemberInfo(String badgeKey, Long memberId) {
-        // 1. 배지 조회
-        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey)
-            .orElseThrow(() -> new NotFoundException("Badge not found with key: " + badgeKey));
+    public BadgeWithMemberInfoDTO getBadgeWithMemberInfo(String badgeKey, String email) {
+        // 1. Badge 조회 (없으면 null 반환)
+        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey).orElse(null);
+        if (badge == null) return null;
 
-        // 2. 사용자 조회
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NotFoundException("Member not found"));
+        // 2. Member 조회 (인증된 사용자이므로 체크 안함)
+        Member member = memberRepository.findByEmail(email).orElse(null);
 
         // 3. 사용자 배지 획득 여부 확인
         MemberBadge memberBadge = memberBadgeRepository.findByMemberAndBadge(member, badge)
@@ -103,17 +102,16 @@ public class BadgeService {
 
     /**
      * 모든 배지를 사용자 정보와 함께 조회
-     * @param memberId 회원 ID
+     * @param email 사용자 이메일
      * @return 모든 배지 정보 + 사용자 획득 여부 리스트
      */
     @Transactional(readOnly = true)
-    public List<BadgeWithMemberInfoDTO> getAllBadgesWithMemberInfo(Long memberId) {
+    public List<BadgeWithMemberInfoDTO> getAllBadgesWithMemberInfo(String email) {
         // 1. 모든 활성 배지 조회
         List<Badge> badges = badgeRepository.findAllByIsActiveTrue();
 
-        // 2. 회원 조회
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NotFoundException("Member not found"));
+        // 2. Member 조회 (인증된 사용자이므로 체크 안함)
+        Member member = memberRepository.findByEmail(email).orElse(null);
 
         // 3. 회원이 획득한 배지들 조회
         List<MemberBadge> memberBadges = memberBadgeRepository.findByMember(member);

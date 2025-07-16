@@ -5,9 +5,7 @@ import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 import com.honlife.core.app.model.badge.code.BadgeTier;
 import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import com.honlife.core.app.model.badge.service.BadgeService;
-import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,26 +84,22 @@ public class BadgeController {
         @PathVariable(name="key") String badgeKey,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        try {
-            // 1. 사용자 이메일 추출
-            String email = userDetails.getUsername();
+        // 1. 사용자 이메일 추출
+        String email = userDetails.getUsername();
 
-            // 2. 이메일로 Member 조회
-            Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Member not found with email: " + email));
+        // 2. Service에서 배지 정보 조회 (Member 패턴: null 반환 방식)
+        BadgeWithMemberInfoDTO dto = badgeService.getBadgeWithMemberInfo(badgeKey, email);
 
-            // 3. Service에서 배지 정보 조회
-            BadgeWithMemberInfoDTO dto = badgeService.getBadgeWithMemberInfo(badgeKey, member.getId());
-
-            // 4. DTO → Response 변환
-            BadgeResponse response = BadgeResponse.from(dto);
-
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-
-        } catch (NotFoundException ex) {
+        // 3. Badge가 없을 때 에러 처리
+        if (dto == null) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
         }
+
+        // 4. DTO → Response 변환
+        BadgeResponse response = BadgeResponse.from(dto);
+
+        return ResponseEntity.ok(CommonApiResponse.success(response));
     }
 
     /**
