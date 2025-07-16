@@ -2,6 +2,16 @@ package com.honlife.core.infra.response;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * 1 - Member<br>
+ * 2 - Badge<br>
+ * 3 - Routine<br>
+ * 4 - Item<br>
+ * 5 - Category<br>
+ * 6 - Quest<br>
+ * 7 - Policy<br>
+ * 8 - Point
+ */
 public enum ResponseCode {
   OK("0000", HttpStatus.OK, "OK"),
   CREATED("2010", HttpStatus.CREATED, "Created"),
