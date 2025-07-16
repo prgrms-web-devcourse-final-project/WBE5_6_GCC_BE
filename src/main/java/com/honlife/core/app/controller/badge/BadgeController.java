@@ -36,7 +36,6 @@ public class BadgeController {
      * 업적 조회 API
      * @return List<BadgePayload> 모든 업적에 대한 정보
      */
-    @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges(
         @AuthenticationPrincipal UserDetails userDetails
