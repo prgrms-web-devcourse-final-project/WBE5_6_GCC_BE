@@ -251,13 +251,20 @@ public class MemberService {
     @Transactional
     public void saveNotVerifiedMember(SignupRequest signupRequest) {
         Member member = new Member();
-        member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
         modelMapper.map(signupRequest, member);
-        member.setIsActive(false);   // 이메일인증까지 완료되야 계정 활성화.
-        member.setIsVerified(false);
+        member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
         member.setNickname(signupRequest.getName());
         member.setRole(Role.ROLE_USER);
         memberRepository.save(member);
+
+        MemberPoint memberPoint = new MemberPoint();
+        memberPoint.setMember(member);
+        memberPoint.setPoint(0);
+        memberPointRepository.save(memberPoint);
+
+        Notification notification = new Notification();
+        notification.setMember(member);
+        notificationRepository.save(notification);
     }
 
     /**
