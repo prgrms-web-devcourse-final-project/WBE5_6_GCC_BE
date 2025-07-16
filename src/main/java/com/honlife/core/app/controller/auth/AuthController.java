@@ -17,10 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.controller.auth.payload.LoginRequest;
 import com.honlife.core.app.controller.auth.payload.TokenResponse;
@@ -145,6 +145,7 @@ public class AuthController {
 
         if(authService.isVerifyCode(emailRequest.getEmail(), emailRequest.getCode())) {
             memberService.updateMemberStatus(emailRequest.getEmail(), true, true);  // 계정 활성화
+            //TODO: 로그인 처리
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
         return ResponseEntity.status(ResponseCode.INVALID_CODE.status())
@@ -152,28 +153,17 @@ public class AuthController {
     }
 
     /**
-     * 중복 확인 처리 API, email 또는 nickname 둘 중 하나는 입력되어야 합니다.
+     * 중복 확인 처리 API
      * @param email 사용자의 이메일
-     * @param nickname 사용자의 닉네임
      * @return {@link CommonApiResponse}의 data에 중복여부를 담아 반환합니다.
      */
-    @PostMapping("/check")
+    @PostMapping("/check/{email}")
     public ResponseEntity<CommonApiResponse<Map<String, Boolean>>> isEmailDuplicated(
-        @RequestParam(name = "email", required = false) final String email,
-        @RequestParam(name = "nickname", required = false) final String nickname
+        @PathVariable() final String email
     ) {
-        if(email != null && nickname == null){  // 이메일 중복 검사
-            if(memberService.isEmailExists(email))
-                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
-            else
-                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
-        } else if (email == null && nickname != null) { // 닉네임 중복검사
-            if(memberService.isNicknameExists(nickname))
-                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
-            else
-                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
-        }
-        return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-
+        if(memberService.isEmailExists(email, true))
+            return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
+        else
+            return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
     }
 }
