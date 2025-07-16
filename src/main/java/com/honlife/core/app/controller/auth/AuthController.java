@@ -128,7 +128,7 @@ public class AuthController {
      * @param emailRequest 인증 검사를 진행할 이메일과 인증 코드를 담은 요청 객체
      * @return 인증 성공시 {@code HttpStatus.OK}를 코드가 일치하지 않으면, {@code HttpStatus.UNAUTHORIZED}를 반환합니다.
      */
-    @PostMapping("/email/verify/code")
+    @PostMapping("/auth/code")
     public ResponseEntity<CommonApiResponse<Void>> verifyEmail(
         @RequestBody @Valid VerifyEmailRequest emailRequest
     ) {
