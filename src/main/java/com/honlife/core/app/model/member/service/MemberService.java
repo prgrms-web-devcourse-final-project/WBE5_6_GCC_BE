@@ -275,7 +275,7 @@ public class MemberService {
      * @param oldPassword 회원이 입력한 기존 비밀 번호
      * @return {@code Boolean}
      */
-    public Boolean isCorrectPassword(String userEmail, @NotBlank String oldPassword) {
+    public Boolean isCorrectPassword(String userEmail, String oldPassword) {
         Optional<Member> user = memberRepository.findByEmailAndIsActive(userEmail,true);
         String savedPassword="";
         if(user.isPresent()){
@@ -291,7 +291,7 @@ public class MemberService {
      * @return
      */
     @Transactional
-    public void updatePassword(String userEmail, @NotBlank String newPassword) {
+    public void updatePassword(String userEmail, String newPassword) {
         Member targetMember = memberRepository
             .findByEmailAndIsActive(userEmail, true).orElseThrow(() -> new CommonException(
                 ResponseCode.NOT_FOUND_MEMBER));
