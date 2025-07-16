@@ -23,6 +23,7 @@ public enum ResponseCode {
   QUEST_CREATED("2016", HttpStatus.CREATED, "Quest created"),
 
   BAD_REQUEST("4000", HttpStatus.BAD_REQUEST, "Bad Request."),
+  NOT_ENOUGH_POINT("4001", HttpStatus.BAD_REQUEST, "Not enough points to complete the purchase."),
 
   UNAUTHORIZED("4010", HttpStatus.UNAUTHORIZED, "Authentication required"),
   BAD_CREDENTIAL("4011", HttpStatus.UNAUTHORIZED, "Wrong credentials."),
