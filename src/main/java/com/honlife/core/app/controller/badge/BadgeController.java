@@ -97,8 +97,8 @@ public class BadgeController {
             // 3. Service에서 배지 정보 조회
             BadgeWithMemberInfoDTO dto = badgeService.getBadgeWithMemberInfo(badgeKey, member.getId());
 
-            // 4. DTO → Payload 변환
-            BadgeResponse response = convertToPayload(dto);
+            // 4. DTO → Response 변환
+            BadgeResponse response = BadgeResponse.from(dto);
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
 
@@ -141,23 +141,5 @@ public class BadgeController {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
         }
-    }
-
-    /**
-     * DTO를 Payload로 변환하는 헬퍼 메서드
-     */
-    private BadgeResponse convertToPayload(BadgeWithMemberInfoDTO dto) {
-        return BadgeResponse.builder()
-            .badgeId(dto.getBadge().getId())
-            .badgeKey(dto.getBadge().getKey())
-            .badgeName(dto.getBadge().getName())
-            .tier(dto.getBadge().getTier())
-            .how(dto.getBadge().getHow())
-            .requirement(dto.getBadge().getRequirement())
-            .info(dto.getBadge().getInfo())
-            .categoryName(dto.getCategoryName())
-            .isReceived(dto.getIsReceived())
-            .receivedDate(dto.getReceivedDate())
-            .build();
     }
 }

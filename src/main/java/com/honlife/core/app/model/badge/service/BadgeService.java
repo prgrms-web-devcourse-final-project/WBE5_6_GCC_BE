@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.badge.domain.Badge;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class BadgeService {
 
     private final BadgeRepository badgeRepository;
@@ -30,15 +32,7 @@ public class BadgeService {
     private final MemberBadgeRepository memberBadgeRepository;
     private final MemberRepository memberRepository;
 
-    public BadgeService(final BadgeRepository badgeRepository,
-        final CategoryRepository categoryRepository,
-        final MemberBadgeRepository memberBadgeRepository,
-        final MemberRepository memberRepository) {
-        this.badgeRepository = badgeRepository;
-        this.categoryRepository = categoryRepository;
-        this.memberBadgeRepository = memberBadgeRepository;
-        this.memberRepository = memberRepository;
-    }
+    // === 기존 CRUD 메서드들 ===
 
     public List<BadgeDTO> findAll() {
         final List<Badge> badges = badgeRepository.findAll(Sort.by("id"));
@@ -70,6 +64,8 @@ public class BadgeService {
         badgeRepository.deleteById(id);
     }
 
+    // === 새로 추가된 사용자별 조회 메서드들 ===
+
     /**
      * 특정 배지를 사용자 정보와 함께 조회
      * @param badgeKey 배지 키
@@ -90,12 +86,15 @@ public class BadgeService {
         MemberBadge memberBadge = memberBadgeRepository.findByMemberAndBadge(member, badge)
             .orElse(null);
 
-        // 4. BadgeDTO 변환
-        BadgeDTO badgeDTO = mapToDTO(badge, new BadgeDTO());
-
-        // 5. BadgeWithMemberInfoDTO 생성
+        // 4. BadgeWithMemberInfoDTO 생성
         return BadgeWithMemberInfoDTO.builder()
-            .badge(badgeDTO)
+            .badgeId(badge.getId())
+            .badgeKey(badge.getKey())
+            .badgeName(badge.getName())
+            .tier(badge.getTier())
+            .how(badge.getHow())
+            .requirement(badge.getRequirement())
+            .info(badge.getInfo())
             .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
             .isReceived(memberBadge != null)
             .receivedDate(memberBadge != null ? memberBadge.getCreatedAt() : null)
@@ -132,11 +131,16 @@ public class BadgeService {
         // 5. DTO 변환
         return badges.stream()
             .map(badge -> {
-                BadgeDTO badgeDTO = mapToDTO(badge, new BadgeDTO());
                 boolean isReceived = receivedBadgeIds.contains(badge.getId());
 
                 return BadgeWithMemberInfoDTO.builder()
-                    .badge(badgeDTO)
+                    .badgeId(badge.getId())
+                    .badgeKey(badge.getKey())
+                    .badgeName(badge.getName())
+                    .tier(badge.getTier())
+                    .how(badge.getHow())
+                    .requirement(badge.getRequirement())
+                    .info(badge.getInfo())
                     .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
                     .isReceived(isReceived)
                     .receivedDate(isReceived ? receivedDateMap.get(badge.getId()) : null)
@@ -144,6 +148,8 @@ public class BadgeService {
             })
             .toList();
     }
+
+    // === 기존 매핑 메서드들 ===
 
     private BadgeDTO mapToDTO(final Badge badge, final BadgeDTO badgeDTO) {
         badgeDTO.setCreatedAt(badge.getCreatedAt());
