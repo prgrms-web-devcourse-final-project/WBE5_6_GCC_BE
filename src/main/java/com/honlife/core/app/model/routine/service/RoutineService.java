@@ -231,6 +231,10 @@ public class RoutineService {
         return response;
     }
 
+  /**
+   * 사용자  루틴 단건 조회 입니다
+   * return void
+   */
     @Transactional
     public void createRoutine(RoutineSaveRequest routineSaveRequest, String userId) {
 
@@ -255,20 +259,21 @@ public class RoutineService {
 
     }
 
+
     @Transactional
-  public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
-    Member member = memberRepository.findByEmail(userId)
-          .orElseThrow(()-> new EntityNotFoundException("멤버 엔티티가 존재하지 않습니다"));
+    public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
+      Member member = memberRepository.findByEmail(userId)
+            .orElseThrow(()-> new EntityNotFoundException("멤버 엔티티가 존재하지 않습니다"));
 
-    Routine routine = routineRepository.findById(routineId)
-        .orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다"));
+      Routine routine = routineRepository.findById(routineId)
+          .orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다"));
 
-    Category category = categoryRepository.findById(request.getCategoryId())
-        .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다"));
+      Category category = categoryRepository.findById(request.getCategoryId())
+          .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다"));
 
-      routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
-          request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(),member);
-  }
+        routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
+            request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(),member);
+    }
 
   public RoutineDetailResponse getDetailRoutine(Long routineId) {
 

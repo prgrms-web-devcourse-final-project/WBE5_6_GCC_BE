@@ -125,6 +125,7 @@ public class RoutineController {
 
         String userId = userDetails.getUsername();
         routineService.createRoutine(routineSaveRequest,userId);
+
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(CommonApiResponse.noContent());
 
