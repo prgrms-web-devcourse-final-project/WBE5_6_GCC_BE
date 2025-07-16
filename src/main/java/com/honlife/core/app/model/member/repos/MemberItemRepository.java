@@ -23,13 +23,13 @@ public interface MemberItemRepository extends JpaRepository<MemberItem, Long> {
     JOIN mi.member m
     WHERE m.email = :email
 """)
-    List<Long> findItemsByMemberId(@Param("email") String emaild);
+    List<Long> findItemsByMemberId(@Param("email") String email);
 
     // memberId와 ItemId를 통해 아이템 보유여부 확인
     @Query("""
     SELECT CASE WHEN COUNT(mi) > 0 THEN true ELSE false END
     FROM MemberItem mi
-    WHERE mi.member.email = :email AND mi.item.id = :itemId
+    WHERE mi.member.id = :memberId AND mi.item.id = :itemId
 """)
-    Boolean existsByMemberIdAndItemId(@Param("email") String email ,@Param("itemId") Long itemId);
+    Boolean existsByMemberIdAndItemId(@Param("memberId") Long memberId, @Param("itemId") Long itemId);
 }

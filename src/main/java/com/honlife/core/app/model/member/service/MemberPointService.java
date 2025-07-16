@@ -84,11 +84,12 @@ public class MemberPointService {
     }
 
     /**
-     * email 값을 통한 MemberPoint 테이블 정보 반환
-     * @param email UserDetails를 통한 eamil 값
+     * memberId를 통해 MemberPoint 정보를 가져옵니다.
+     *
+     * @param memberId 사용자 ID
      * @return Optional<MemberPoint>
      */
-    public Optional<MemberPoint> getPointByEmail(String email) {
-        return memberPointRepository.findPointByMemberEmail(email);
+    public Optional<MemberPoint> getPointByMemberId(Long memberId) {
+        return memberPointRepository.findByMemberId(memberId);
     }
 }

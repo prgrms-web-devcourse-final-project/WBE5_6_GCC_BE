@@ -15,11 +15,11 @@ public interface MemberPointRepository extends JpaRepository<MemberPoint, Long> 
 
     boolean existsByMemberId(Long id);
 
-    // 사용자 email을 통해 MemberPoint 테이블 정보 반환
-    @Query("""
-    SELECT mp
-    FROM MemberPoint mp
-    WHERE mp.member.email = :email
-""")
-    Optional<MemberPoint> findPointByMemberEmail(@Param("email") String email);
+    /**
+     * memberId로 MemberPoint 조회
+     *
+     * @param memberId 사용자 ID
+     * @return Optional<MemberPoint>
+     */
+    Optional<MemberPoint> findByMemberId(Long memberId);
 }

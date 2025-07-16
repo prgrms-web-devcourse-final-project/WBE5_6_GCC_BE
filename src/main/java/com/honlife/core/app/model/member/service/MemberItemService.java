@@ -83,22 +83,14 @@ public class MemberItemService {
         return memberItem;
     }
 
-    /**
-     * user email 값을  통해 보유하고있는 itemId 값 조회
-     * @param userDetails 유저 이메일 입력
-     * @return List<Long>
-     */
-    public List<Long> getOwnedItemIdsByMember(String userDetails) {
-        return memberItemRepository.findItemsByMemberId(userDetails);
-    }
 
     /**
-     * 맴버 아이디와 아이템아이디를 통해 아이템 보유여부 확인
-     * @param email 유저 이메일 입력
-     * @param itemId 아이템 아이디 값
-     * @return Boolean
+     * memberId와 itemId를 통해 해당 아이템을 보유 중인지 여부 반환
+     * @param memberId 사용자 ID
+     * @param itemId   아이템 ID
+     * @return 보유 여부 (true: 보유 중, false: 미보유)
      */
-    public Boolean isItemOwnByMember(String email,Long itemId) {
-        return memberItemRepository.existsByMemberIdAndItemId(email, itemId);
+    public Boolean isItemOwnByMember(Long memberId, Long itemId) {
+        return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
     }
 }
