@@ -233,6 +233,7 @@ public class MemberService {
     public void saveNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
         Member member = new Member();
         modelMapper.map(signupBasicRequest, member);
+        member.setPassword(passwordEncoder.encode(signupBasicRequest.getPassword())); // 암호화된 비밀번호 저장
         member.setIsActive(false);   // 이메일인증까지 완료되야 계정 활성화.
         member.setIsVerified(false);
         member.setNickname(signupBasicRequest.getName());
@@ -265,6 +266,8 @@ public class MemberService {
         // 회원정보 업데이트
         Member member = memberRepository.findByEmailIgnoreCase(signupBasicRequest.getEmail());
         modelMapper.map(signupBasicRequest, member);
+        member.setPassword(passwordEncoder.encode(signupBasicRequest.getPassword())); // 암호화된 비밀번호 저장
+        memberRepository.save(member);
     }
 
 
