@@ -19,6 +19,8 @@ public class ItemResponse {
 
     private String itemName;
 
+    private String itemDescription;
+
     private Integer itemPoint;
 
     private Boolean isOwned;
