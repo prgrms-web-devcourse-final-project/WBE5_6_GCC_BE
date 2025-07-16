@@ -3,13 +3,16 @@ package com.honlife.core.app.model.member.service;
 import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import java.util.Optional;
-
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.domain.InterestCategory;
@@ -56,6 +59,7 @@ public class MemberService {
     private final InterestCategoryRepository interestCategoryRepository;
     private final MemberPointRepository memberPointRepository;
     private final ModelMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -272,6 +276,37 @@ public class MemberService {
     public MemberDTO findMemberByEmail(String userEmail){
         Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
         return mapper.map(targetMember, MemberDTO.class);
+    }
+
+    /**
+     * 사용자가 입력한 oldPassword의 값이 현재 DB에 저장되어 있는 password과 같은지 비교
+     * @param userEmail 회원 이메일
+     * @param oldPassword 회원이 입력한 기존 비밀 번호
+     * @return {@code Boolean}
+     */
+    public Boolean isCorrectPassword(String userEmail, String oldPassword) {
+        Optional<Member> user = memberRepository.findByEmailAndIsActive(userEmail,true);
+        String savedPassword="";
+        if(user.isPresent()){
+            savedPassword = user.get().getPassword();
+        }
+        return passwordEncoder.matches(oldPassword, savedPassword);
+    }
+
+    /**
+     * 비밀번호를 업데이트 합니다.
+     * @param userEmail 유저 이메일
+     * @param newPassword 새로 변경할 비밀번호
+     * @return
+     */
+    @Transactional
+    public void updatePassword(String userEmail, String newPassword) {
+        Member targetMember = memberRepository
+            .findByEmailAndIsActive(userEmail, true).orElseThrow(() -> new CommonException(
+                ResponseCode.NOT_FOUND_MEMBER));
+
+        targetMember.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(targetMember);
     }
 
     /**
