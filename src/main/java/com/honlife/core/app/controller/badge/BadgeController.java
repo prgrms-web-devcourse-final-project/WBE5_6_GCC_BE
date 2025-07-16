@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class BadgeController {
 
     private final BadgeService badgeService;
-    private final MemberRepository memberRepository;
 
     /**
      * 업적 조회 API
@@ -77,7 +76,6 @@ public class BadgeController {
      * 업적 단건 조회 API
      * @return BadgePayload 특정 업적에 대한 정보
      */
-    @Operation(summary = "업적 단건 조회", description = "key에 해당하는 업적에 대해 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
     @GetMapping("/{key}")
     public ResponseEntity<CommonApiResponse<BadgeResponse>> getBadge(
         @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
@@ -87,7 +85,7 @@ public class BadgeController {
         // 1. 사용자 이메일 추출
         String email = userDetails.getUsername();
 
-        // 2. Service에서 배지 정보 조회 (Member 패턴: null 반환 방식)
+        // 2. Service에서 배지 정보 조회
         BadgeWithMemberInfoDTO dto = badgeService.getBadgeWithMemberInfo(badgeKey, email);
 
         // 3. Badge가 없을 때 에러 처리

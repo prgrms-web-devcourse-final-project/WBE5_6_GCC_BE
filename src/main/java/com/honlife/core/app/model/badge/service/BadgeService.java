@@ -1,8 +1,17 @@
 package com.honlife.core.app.model.badge.service;
 
+import com.honlife.core.app.model.badge.domain.Badge;
+import com.honlife.core.app.model.badge.dto.BadgeDTO;
 import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
-import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.app.model.badge.repos.BadgeRepository;
+import com.honlife.core.app.model.category.domain.Category;
+import com.honlife.core.app.model.category.repos.CategoryRepository;
+import com.honlife.core.app.model.member.domain.MemberBadge;
+import com.honlife.core.app.model.member.model.MemberDTO;
+import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
+import com.honlife.core.app.model.member.service.MemberService;
+import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.util.ReferencedWarning;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +20,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import com.honlife.core.app.model.badge.domain.Badge;
-import com.honlife.core.app.model.badge.dto.BadgeDTO;
-import com.honlife.core.app.model.badge.repos.BadgeRepository;
-import com.honlife.core.app.model.category.domain.Category;
-import com.honlife.core.app.model.category.repos.CategoryRepository;
-import com.honlife.core.app.model.member.domain.MemberBadge;
-import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -30,7 +30,7 @@ public class BadgeService {
     private final BadgeRepository badgeRepository;
     private final CategoryRepository categoryRepository;
     private final MemberBadgeRepository memberBadgeRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     // === 기존 CRUD 메서드들 ===
 
@@ -78,11 +78,11 @@ public class BadgeService {
         Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey).orElse(null);
         if (badge == null) return null;
 
-        // 2. Member 조회 (인증된 사용자이므로 체크 안함)
-        Member member = memberRepository.findByEmail(email).orElse(null);
+        // 2. Member 조회
+        MemberDTO memberDTO = memberService.findMemberByEmail(email);
 
         // 3. 사용자 배지 획득 여부 확인
-        MemberBadge memberBadge = memberBadgeRepository.findByMemberAndBadge(member, badge)
+        MemberBadge memberBadge = memberBadgeRepository.findByMemberIdAndBadge(memberDTO.getId(), badge)
             .orElse(null);
 
         // 4. BadgeWithMemberInfoDTO 생성
@@ -110,16 +110,16 @@ public class BadgeService {
         // 1. 모든 활성 배지 조회
         List<Badge> badges = badgeRepository.findAllByIsActiveTrue();
 
-        // 2. Member 조회 (인증된 사용자이므로 체크 안함)
-        Member member = memberRepository.findByEmail(email).orElse(null);
+        // 2. Member 조회
+        MemberDTO memberDTO = memberService.findMemberByEmail(email);
 
         // 3. 회원이 획득한 배지들 조회
-        List<MemberBadge> memberBadges = memberBadgeRepository.findByMember(member);
+        List<MemberBadge> memberBadges = memberBadgeRepository.findByMemberId(memberDTO.getId());
         Set<Long> receivedBadgeIds = memberBadges.stream()
             .map(mb -> mb.getBadge().getId())
             .collect(Collectors.toSet());
 
-        // 4. 획득 일시 맵 생성 (성능 최적화)
+        // 4. 획득 일시 맵 생성
         Map<Long, LocalDateTime> receivedDateMap = memberBadges.stream()
             .collect(Collectors.toMap(
                 mb -> mb.getBadge().getId(),

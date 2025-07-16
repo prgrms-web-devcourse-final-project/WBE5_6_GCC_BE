@@ -17,15 +17,15 @@ public interface MemberBadgeRepository extends JpaRepository<MemberBadge, Long> 
     /**
      * 특정 회원의 특정 배지 획득 정보 조회
      */
-    Optional<MemberBadge> findByMemberAndBadge(Member member, Badge badge);
+    Optional<MemberBadge> findByMemberIdAndBadge(Long memberId, Badge badge);
 
     /**
      * 특정 회원이 획득한 모든 배지 조회
      */
-    List<MemberBadge> findByMember(Member member);
+    List<MemberBadge> findByMemberId(Long memberId);
 
     /**
      * 특정 회원의 특정 배지 획득 여부 확인
      */
-    boolean existsByMemberAndBadge(Member member, Badge badge);
+    boolean existsByMemberIdAndBadge(Long memberId, Badge badge);
 }
