@@ -4,6 +4,7 @@ import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +125,7 @@ public class RoutineService {
      * 지연로딩으로 fetch join사용 했습니다
      * 스케줄러에 들어가지있지 않을경우 값을 넣어주는 로직까지 추가했습니다
      */
-  public RoutinesResponse getUserWeeklyRoutines(String userEmail) {
+  public RoutinesResponse getUserWeeklyRoutines(String userEmail, LocalDate date) {
 
       Member member = memberRepository.findByEmail(userEmail)
           .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
@@ -132,8 +133,9 @@ public class RoutineService {
       List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
       //해당날짜에서 일주일치 계산
-      LocalDate startDate = LocalDate.now();
-      LocalDate endDate = startDate.plusDays(6);
+      LocalDate today = date;
+      LocalDate startDate = today.with(DayOfWeek.MONDAY);
+      LocalDate endDate = today.with(DayOfWeek.SUNDAY);
 
       Map<LocalDate, List<RoutineItemDTO>> groupedByDate = routines.stream()
           .flatMap(routine ->

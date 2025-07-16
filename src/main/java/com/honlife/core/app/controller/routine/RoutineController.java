@@ -13,7 +13,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,11 +50,15 @@ public class RoutineController {
     @Operation(summary = "사용자 루틴 일주일 조회", description = "특정 날짜의 사용자 일주일 루틴 목록을 조회합니다. 현재 날짜의 기준으로 7주일의 루틴 목록을 조회합니다")
     @GetMapping("/weekly")
     public ResponseEntity<CommonApiResponse<RoutinesResponse>> getWeeklyUserRoutines(
-        @AuthenticationPrincipal UserDetails userDetails
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
+        if(date == null){
+            date = LocalDate.now();
+        }
         String userEmail = userDetails.getUsername();
 
-        RoutinesResponse routinesResponses = routineService.getUserWeeklyRoutines(userEmail);
+        RoutinesResponse routinesResponses = routineService.getUserWeeklyRoutines(userEmail, date);
 
         return ResponseEntity.ok(CommonApiResponse.success(routinesResponses));
 
@@ -63,7 +69,7 @@ public class RoutineController {
      * @return RoutinesDailyResponse
      */
     @Operation(summary = "사용자 루틴 목록 오늘 날짜 조회", description = " 사용자 오늘 하루 루틴 목록을 조회합니다. 현재 날짜의 기준입니다")
-    @GetMapping("/daily")
+    @GetMapping("/today")
     public ResponseEntity<CommonApiResponse<RoutinesDailyResponse>> getDailyUserRoutines(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
