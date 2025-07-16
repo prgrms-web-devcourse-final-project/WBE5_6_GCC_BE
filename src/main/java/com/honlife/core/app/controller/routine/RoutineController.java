@@ -86,44 +86,23 @@ public class RoutineController {
     }
 
     /**
-     * 현재 날짜 루틴 조회 API
+     * 현재 날짜 루틴 단건 조회 API
      * @param routineId 조회할 루틴 ID
-     * @param userDetails 로그인된 사용자 정보
-     * @return RoutinePayload
+
+     * @return RoutineDetailResponse
      */
-    @Operation(summary = "사용자 루틴 오늘 날짜 조회", description = "새로운 루틴을 등록합니다. <br>카테고리 ID와 루틴 내용은 필수입니다. <br><br>" +
-        "<strong>RepeatType 설명:</strong><br>" +
-        "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
-        "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
-        "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
-        "• CUSTOM: 사용자 정의 반복 패턴<br>" +
-        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
+
     @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<RoutineDetailResponse>> getRoutine(
-        @PathVariable(name = "id") Long routineId,
-        @AuthenticationPrincipal UserDetails userDetails
+    public ResponseEntity<CommonApiResponse<RoutineDetailResponse>> getDetailRoutine(
+        @PathVariable(name = "id") Long routineId
     ) {
-        String userId = userDetails.getUsername();
-        if (userId.equals("user01@test.com") && routineId == 1L) {
-            RoutineDetailResponse response = RoutineDetailResponse.builder()
-                .routineId(1L)
-                .categoryId(1L)
-                .majorCategory("청소")
-                .subCategory("화장실 청소")
-                .name("변기 청소하기")
-                .triggerTime("09:00")
-                .isImportant(false)
-                .repeatType(RepeatType.WEEKLY)
-                .repeatValue("1,3,5")
-                .build();
+        RoutineDetailResponse response = routineService.getDetailRoutine(routineId);
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
 
-        // 존재하지 않는 루틴
-        return ResponseEntity.status(ResponseCode.NOT_FOUND_ROUTINE.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
-    }
+
+
 
     /**
      * 루틴 등록 API

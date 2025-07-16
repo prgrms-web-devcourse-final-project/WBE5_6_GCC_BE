@@ -1,11 +1,13 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.controller.routine.payload.RoutineDetailResponse;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
 import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.infra.response.CommonApiResponse;
+import com.honlife.core.infra.response.ResponseCode;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -127,10 +129,10 @@ public class RoutineService {
         return null;
     }
     /**
-     * 사용자 루틴 조회 입니다
+     * 사용자 일주일 루틴 조회 입니다
      * return RoutinesResponse
-     * 지연로딩으로 fetch join사용 했습니다
-     * 스케줄러에 들어가지있지 않을경우 값을 넣어주는 로직까지 추가했습니다
+     * 지연로딩으로 routine 들고올때 category와 fetch join사용 했습니다
+     * 스케줄러에 없을시 날짜 계산을 해서 루틴들고오는거를 만들었습니다
      */
   public RoutinesResponse getUserWeeklyRoutines(String userEmail) {
 
@@ -148,6 +150,7 @@ public class RoutineService {
               startDate.datesUntil(endDate.plusDays(1))
                   .filter(currentDate -> routine.getRepeatType().isMatched(currentDate, routine.getRepeatValue()))
                   .map(currentDate -> {
+                    /**부모 카테고리가 null인경우를 검증하여서 null이 아닌경우는 부모 카테고리도 들고오는 로직 */
                       Category parentCategory = null;
                       Long parentId = routine.getCategory().getParentId();
                       if (parentId != null) {
@@ -180,7 +183,12 @@ public class RoutineService {
       return response;
   }
 
-
+  /**
+   * 사용자 당일 루틴 조회 입니다
+   * return RoutinesDailyResponse
+   * 지연로딩으로 routine 들고올때 category와 fetch join사용 했습니다
+   * 스케줄러에 없을시 날짜 계산을 해서 루틴들고오는거를 만들었습니다
+   */
     public RoutinesDailyResponse getDailyRoutines(String userEmail) {
         Member member = memberRepository.findByEmail(userEmail)
             .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
@@ -259,6 +267,34 @@ public class RoutineService {
         .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다"));
 
       routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
-          request.getIsImportant(), request.getRepeatType(), request.getRepeatValue());
+          request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(),member);
+  }
+
+  public RoutineDetailResponse getDetailRoutine(Long routineId) {
+
+    Routine routine = routineRepository.findByIdWithCategory(routineId)
+        .orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다"));
+
+    Category parentCategory = null;
+    Long parentId = routine.getCategory().getParentId();
+    if (parentId != null) {
+      parentCategory = categoryRepository.findById(parentId)
+          .orElse(null);
+    }
+
+
+    RoutineDetailResponse response = RoutineDetailResponse.builder()
+        .routineId(routineId)
+        .categoryId(routine.getCategory().getId())
+        .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
+        .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
+        .name(routine.getContent())
+        .triggerTime(routine.getTriggerTime())
+        .isImportant(routine.getIsImportant())
+        .repeatType(routine.getRepeatType())
+        .repeatValue(routine.getRepeatValue())
+        .build();
+
+    return response;
   }
 }

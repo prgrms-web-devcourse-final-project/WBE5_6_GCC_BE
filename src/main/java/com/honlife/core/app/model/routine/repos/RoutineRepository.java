@@ -1,6 +1,7 @@
 package com.honlife.core.app.model.routine.repos;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.member.domain.Member;
@@ -21,4 +22,8 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> {
     WHERE r.member = :member
 """)
     List<Routine> findAllByMemberWithCategory(@Param("member") Member member);
+
+    @Query("SELECT r FROM Routine r JOIN FETCH r.category WHERE r.id = :id")
+    Optional<Routine> findByIdWithCategory(@Param("id") Long id);
+
 }
