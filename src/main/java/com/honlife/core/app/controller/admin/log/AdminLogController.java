@@ -86,7 +86,7 @@ public class AdminLogController {
                     .memberId(1L)
                     .pointLogType(PointLogType.GET)
                     .point(100)
-                    .reason(PointSourceType.CHALLENGE)
+                    .reason(PointSourceType.BADGE)
                     .time(LocalDateTime.of(2025, 7, 2, 10, 30))
                     .build());
             logs.add(PointLogResponse.builder()
@@ -103,7 +103,7 @@ public class AdminLogController {
                     .memberId(4L)
                     .pointLogType(PointLogType.USE)
                     .point(100)
-                    .reason(PointSourceType.CHALLENGE)
+                    .reason(PointSourceType.BADGE)
                     .time(LocalDateTime.of(2025, 7, 5, 11, 30))
                     .build());
             logs.add(PointLogResponse.builder()
@@ -120,7 +120,7 @@ public class AdminLogController {
                     .memberId(6L)
                     .pointLogType(PointLogType.GET)
                     .point(100)
-                    .reason(PointSourceType.CHALLENGE)
+                    .reason(PointSourceType.BADGE)
                     .time(LocalDateTime.of(2025, 7, 2, 10, 30))
                     .build());
             logs.add(PointLogResponse.builder()

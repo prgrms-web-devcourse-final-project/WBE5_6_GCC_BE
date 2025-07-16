@@ -124,10 +124,12 @@ public class BadgeController {
      * @param badgeKey 업적 key 값
      * @return BadgeRewardPayload 완료한 업적에 대한 정보 및 포인트 획득 내역
      */
-    @Operation(summary = "업적 보상 수령", description = "badge_key 값을 통해 특정 업적의 보상을 획득합니다.")
+    @Operation(summary = "업적 보상 수령", description = "badge_key 값을 통해 특정 업적의 보상을 획득합니다. "
+        + "<br> clean_bronze 입력 시 200 코드가 반환됩니다."
+        + "<br> cook_bronze 입력 시 중복 수령에 대한 에러코드가 반환됩니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<BadgeRewardResponse>> claimBadgeReward(
-        @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
+        @Schema(description="업적의 고유 키 값", example = "clean_bronze")
         @RequestParam String badgeKey){
         // 달성한 적 없는 업적
         if(badgeKey.equals("clean_bronze")){

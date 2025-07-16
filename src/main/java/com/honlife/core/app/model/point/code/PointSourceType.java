@@ -6,6 +6,6 @@ public enum PointSourceType {
     ROUTINE,
     WEEKLY,
     EVENT,
-    CHALLENGE
+    BADGE
 
 }

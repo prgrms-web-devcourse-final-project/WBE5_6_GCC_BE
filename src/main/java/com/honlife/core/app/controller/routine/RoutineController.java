@@ -53,7 +53,7 @@ public class RoutineController {
     @Operation(summary = "사용자 루틴 조회", description = "특정 날짜의 사용자 루틴 목록을 조회합니다. <br>date를 넣지 않으면 오늘 날짜 기준으로 조회됩니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<RoutinesResponse>> getUserRoutines(
-        @Schema(name = "date", description = "조회할 날짜를 적어주세요", example = "2025-01-15")
+        @Schema(name = "date", description = "조회할 날짜를 적어주세요", example = "2025-07-15")
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
@@ -67,26 +67,62 @@ public class RoutineController {
             response.setDate(date);
 
             List<RoutinesResponse.RoutineItem> routines = new ArrayList<>();
-            routines.add(RoutinesResponse.RoutineItem.builder()
-                .scheduleId(1L)
-                .routineId(1L)
-                .majorCategory("청소")
-                .subCategory("화장실 청소")
-                .name("변기 청소하기")
-                .triggerTime("09:00")
-                .isDone(true)
-                .isImportant(false)
-                .build());
-            routines.add(RoutinesResponse.RoutineItem.builder()
-                .scheduleId(2L)
-                .routineId(2L)
-                .majorCategory("건강")
-                .subCategory(null)
-                .name("아침 운동하기")
-                .triggerTime("07:00")
-                .isDone(false)
-                .isImportant(true)
-                .build());
+
+            // 2025-07-16 날짜에만 다른 데이터 제공
+            if (date.equals(LocalDate.of(2025, 7, 16))) {
+                routines.add(RoutinesResponse.RoutineItem.builder()
+                    .scheduleId(3L)
+                    .routineId(3L)
+                    .majorCategory("업무")
+                    .subCategory("회의")
+                    .name("팀 미팅 참석")
+                    .triggerTime("10:00")
+                    .isDone(true)
+                    .isImportant(true)
+                    .build());
+                routines.add(RoutinesResponse.RoutineItem.builder()
+                    .scheduleId(4L)
+                    .routineId(4L)
+                    .majorCategory("학습")
+                    .subCategory("독서")
+                    .name("기술 서적 읽기")
+                    .triggerTime("20:00")
+                    .isDone(false)
+                    .isImportant(false)
+                    .build());
+                routines.add(RoutinesResponse.RoutineItem.builder()
+                    .scheduleId(5L)
+                    .routineId(5L)
+                    .majorCategory("건강")
+                    .subCategory("운동")
+                    .name("저녁 조깅")
+                    .triggerTime("19:00")
+                    .isDone(false)
+                    .isImportant(true)
+                    .build());
+            } else {
+                // 기본 데이터
+                routines.add(RoutinesResponse.RoutineItem.builder()
+                    .scheduleId(1L)
+                    .routineId(1L)
+                    .majorCategory("청소")
+                    .subCategory("화장실 청소")
+                    .name("변기 청소하기")
+                    .triggerTime("09:00")
+                    .isDone(true)
+                    .isImportant(false)
+                    .build());
+                routines.add(RoutinesResponse.RoutineItem.builder()
+                    .scheduleId(2L)
+                    .routineId(2L)
+                    .majorCategory("건강")
+                    .subCategory(null)
+                    .name("아침 운동하기")
+                    .triggerTime("07:00")
+                    .isDone(false)
+                    .isImportant(true)
+                    .build());
+            }
 
             response.setRoutines(routines);
             return ResponseEntity.ok(CommonApiResponse.success(response));
