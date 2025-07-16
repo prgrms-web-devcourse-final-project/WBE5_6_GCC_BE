@@ -11,6 +11,7 @@ import com.honlife.core.app.model.member.model.MemberBadgeDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.util.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -82,4 +83,12 @@ public class MemberBadgeService {
         return memberBadge;
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 멤버 뱃지를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void deleteMemberBadgeByMemberId(Long memberId) {
+        memberBadgeRepository.deleteByMemberId(memberId);
+    }
 }
