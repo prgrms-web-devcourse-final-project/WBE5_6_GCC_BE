@@ -223,6 +223,10 @@ public class RoutineService {
         return response;
     }
 
+  /**
+   * 사용자 루틴 등록 입니다
+   * return void
+   */
     @Transactional
     public void createRoutine(RoutineSaveRequest routineSaveRequest, String userId) {
 
@@ -232,6 +236,7 @@ public class RoutineService {
       Category category = categoryRepository.findById(routineSaveRequest.getCategoryId())
           .orElseThrow(() -> new EntityNotFoundException("카테고리 입력은 필수 입니다"));
 
+      /**간단한 로직이라 DTO없이 바로 Entity에 넣어서 저장하였습니다*/
       Routine routine = Routine.builder()
           .category(category)
           .content(routineSaveRequest.getContent())
@@ -247,18 +252,22 @@ public class RoutineService {
 
     }
 
+  /**
+   * 사용자 루틴 수정 입니다
+   * return void
+   */
     @Transactional
-  public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
-    Member member = memberRepository.findByEmail(userId)
-          .orElseThrow(()-> new EntityNotFoundException("멤버 엔티티가 존재하지 않습니다"));
+    public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
+      Member member = memberRepository.findByEmail(userId)
+            .orElseThrow(()-> new EntityNotFoundException("멤버 엔티티가 존재하지 않습니다"));
 
-    Routine routine = routineRepository.findById(routineId)
-        .orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다"));
+      Routine routine = routineRepository.findById(routineId)
+          .orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다"));
 
-    Category category = categoryRepository.findById(request.getCategoryId())
-        .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다"));
+      Category category = categoryRepository.findById(request.getCategoryId())
+          .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다"));
 
-      routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
-          request.getIsImportant(), request.getRepeatType(), request.getRepeatValue());
-  }
+        routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
+            request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(), member);
+    }
 }
