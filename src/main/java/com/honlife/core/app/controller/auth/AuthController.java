@@ -1,6 +1,6 @@
 package com.honlife.core.app.controller.auth;
 
-import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
+import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
 import com.honlife.core.app.model.mail.MailService;
 import com.honlife.core.app.model.member.service.MemberService;
@@ -70,41 +70,51 @@ public class AuthController {
     }
 
     /**
-     * 회원가입 phase 1 요청을 처리합니다.
-     * @param signupBasicRequest
+     * 회원가입 요청을 처리<br>
+     * 문제없이 처리된 경우 자동으로 이메일 인증 코드 발송
+     * @param signupRequest
      * @return 계정이 이미 존재하는 경우 {@code HttpStatus.CONFLICT}를, 그 외의 경우는 {@code HttpStatus.OK}
      */
     @PostMapping("/signup")
     public ResponseEntity<CommonApiResponse<Void>> signup(
-        @RequestBody SignupBasicRequest signupBasicRequest
+        @RequestBody SignupRequest signupRequest
     ) {
-        String userEmail = signupBasicRequest.getEmail();
+        String userEmail = signupRequest.getEmail();
         if(memberService.isEmailExists(userEmail)) {        // 이미 존재하는 계정정보인지 확인
             if(memberService.isEmailVerified(userEmail)) {  // 인증이 완료된 계정인지 확인
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(CommonApiResponse.error(ResponseCode.CONFLICT_EXIST_MEMBER));
             }
             // 회원가입을 재시도하는 익명사용자의 경우에, 기존에 저장된 정보를 업데이트
-            memberService.updateNotVerifiedMember(signupBasicRequest);
+            memberService.updateNotVerifiedMember(signupRequest);
             return ResponseEntity.ok(CommonApiResponse.noContent());
         };
         // 신규 회원의 경우에 새로운 정보 저장
-        memberService.saveNotVerifiedMember(signupBasicRequest);
-        // 프론트와 상의 후 기본 정보 입력후 넘어갈때 이메일 인증 코드 바로 전송하고, 이메일 인증코드 입력창으로 가도록 할지
-        // 굳이굳이 email 한번 더 쳐서 인증 하도록 할지 결정하기
+        memberService.saveNotVerifiedMember(signupRequest);
+
+        // 회원가입 완료된 경우 이메일 인증 코드 자동 발송
+        try {
+            mailService.sendVerificationEmail(signupRequest.getEmail());
+        } catch (MessagingException | IOException e) {  // 메일 전송에 실패한 경우
+            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        }
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
     /**
      * 이메일 인증 번호 발송 처리
      * @param emailRequest 인증 검사를 진행할 이메일을 담은 요청 객체<br>
-     *                     인증코드는 null 가능
-     * @return {@code HttpStatus.OK}
+     *                     인증코드가 null 이 아닌경우 잘못된 요청으로 간주
+     * @return 정상처리 된 경우 {@code HttpStatus.OK}, 정상처리가 되지 않은 경우 {@code HttpStatus.BAD_REQUEST}
      */
     @PostMapping("/email/verify")
     public ResponseEntity<CommonApiResponse<Void>> sendVerifyCode(
         @RequestBody @Valid VerifyEmailRequest emailRequest
     ){
+        if(emailRequest.getCode()!=null) {
+            return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+        }
+
         try {
             mailService.sendVerificationEmail(emailRequest.getEmail());
         } catch (MessagingException | IOException e) {  // 메일 전송에 실패한 경우
@@ -118,12 +128,15 @@ public class AuthController {
      * @param emailRequest 인증 검사를 진행할 이메일과 인증 코드를 담은 요청 객체
      * @return 인증 성공시 {@code HttpStatus.OK}를 코드가 일치하지 않으면, {@code HttpStatus.UNAUTHORIZED}를 반환합니다.
      */
-    @PostMapping("/email/verify/{code}")
+    @PostMapping("/email/verify/code")
     public ResponseEntity<CommonApiResponse<Void>> verifyEmail(
         @RequestBody @Valid VerifyEmailRequest emailRequest
     ) {
-        // TODO: 실제 비교 로직 수행
-        if(emailRequest.getCode().equals("12345")) {
+        if(emailRequest.getCode()==null) {
+            return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+        }
+
+        if(authService.isVerifyCode(emailRequest.getEmail(), emailRequest.getCode())) {
             memberService.updateMemberStatus(emailRequest.getEmail(), true, true);  // 계정 활성화
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
