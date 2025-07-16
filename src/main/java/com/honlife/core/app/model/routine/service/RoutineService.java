@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
@@ -137,19 +138,19 @@ public class RoutineService {
       List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
       //해당날짜에서 일주일치 계산
-      LocalDate startDate = LocalDate.of(2025,6,8);
+      LocalDate startDate = LocalDate.now();
       LocalDate endDate = startDate.plusDays(6);
 
       Map<LocalDate, List<RoutineItemDTO>> groupedByDate = routines.stream()
           .flatMap(routine ->
               startDate.datesUntil(endDate.plusDays(1))
-                  .filter(currentDate -> isDateMatched(routine, currentDate))
+                  .filter(currentDate -> routine.getRepeatType().isMatched(currentDate, routine.getRepeatValue()))
                   .map(currentDate -> {
                       Category parentCategory = null;
                       Long parentId = routine.getCategory().getParentId();
                       if (parentId != null) {
                           parentCategory = categoryRepository.findById(parentId)
-                              .orElse(null); // orElseThrow 쓰지 않으면 null 허용
+                              .orElse(null);
                       }
 
                       RoutineSchedule routineSchedule = routineScheduleRepository
@@ -158,8 +159,8 @@ public class RoutineService {
                       return RoutineItemDTO.builder()
                           .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
                           .routineId(routine.getId())
-                          .majorCategory(parentCategory != null ? parentCategory.getName() : null)
-                          .subCategory(routine.getCategory().getName())
+                          .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
+                          .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
                           .name(routine.getContent())
                           .triggerTime(routine.getTriggerTime())
                           .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
@@ -176,41 +177,49 @@ public class RoutineService {
 
       return response;
   }
-    private boolean isDateMatched(Routine routine, LocalDate date) {
-        RepeatType type = routine.getRepeatType();
-        String value = routine.getRepeatValue();
 
-        switch (type) {
-            case DAILY:
-                return true;
 
-            case WEEKLY:
-                if (value == null || value.isBlank()) return false;
-                int dayOfWeek = date.getDayOfWeek().getValue();
-                return containsNumber(value, dayOfWeek);
+    public RoutinesDailyResponse getDailyRoutines(String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
 
-            case MONTHLY:
-                if (value == null || value.isBlank()) return false;
-                int dayOfMonth = date.getDayOfMonth();
-                return containsNumber(value, dayOfMonth);
+        List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
-            case CUSTOM:
+        List<RoutineItemDTO> responseRoutines = routines.stream()
 
-                return false;
+            .filter(routine -> routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()))
+            .map(routine -> {
+                Category parentCategory = null;
+                Long parentId = routine.getCategory().getParentId();
+                if (parentId != null) {
+                    parentCategory = categoryRepository.findById(parentId)
+                        .orElseThrow(() -> new RuntimeException("부모 카테고리 없음"));
+                }
 
-            default:
-                return false;
-        }
+                RoutineSchedule routineSchedule = routineScheduleRepository
+                    .findByRoutineIdAndDate(routine.getId(), LocalDate.now());
+
+                /**해당 반복되는 스케줄러는 DB에 넣지 않기로 했으므로 반복되는 값은 스케줄러 ID가 null으로 들어감
+                //하지만 나중에 구현할때는 어짜피 해당 루틴에 만들어질 루틴은 하나만 존재하기 때문에 id로만 조회를 해서 값 찾을 예정
+                //현재 더미데이터가 하나의 루틴에 여러 스케줄을 담고 있기떄문에 오류가 나서 임시로 해뒀습니다 */
+                return RoutineItemDTO.builder()
+                    .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
+                    .routineId(routine.getId())
+                    .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
+                    .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
+                    .name(routine.getContent())
+                    .triggerTime(routine.getTriggerTime())
+                    .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
+                    .isImportant(routine.getIsImportant())
+                    .date(LocalDate.now())
+                    .build();
+            })
+            .toList();
+
+        RoutinesDailyResponse response = new RoutinesDailyResponse();
+        response.setDate(LocalDate.now());
+        response.setRoutines(responseRoutines);
+
+        return response;
     }
-    private boolean containsNumber(String value, int target) {
-        for (String part : value.split(",")) {
-            if (part.trim().equals(String.valueOf(target))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-
 }
