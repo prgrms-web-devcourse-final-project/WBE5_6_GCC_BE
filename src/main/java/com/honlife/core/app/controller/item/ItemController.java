@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "아이템", description = "아이템 관련 api 입니다.")
 @RestController
@@ -42,8 +41,9 @@ public class ItemController {
 
     /**
      * 모든 아이템 또는 Type 일치 아이템 조회 API
+     *
      * @return List<ItemResponse> 모든 아이템에 대한 정보
-     * */
+     */
     @GetMapping
     @Operation(summary = "아이템 조회", description = "전체 아이템 조회 또는 type 값을 통해 특정 아이템만 조회할 수 있습니다.")
     public ResponseEntity<CommonApiResponse<List<ItemResponse>>> getAllItems(
@@ -52,13 +52,14 @@ public class ItemController {
     ) {
 
         List<ItemResponse> items = new ArrayList<>();
-        if(itemType != null) {
-            if(itemType == ItemType.TOP){
+        if (itemType != null) {
+            if (itemType == ItemType.TOP) {
                 items.add(ItemResponse.builder()
                         .itemId(1L)
                         .itemType(ItemType.TOP)
                         .itemKey("top_item_01")
                         .itemName("청소 상의")
+                        .itemDescription("먼지가 달라 붙지 않아요!")
                         .itemPoint(100)
                         .build());
                 items.add(ItemResponse.builder()
@@ -66,16 +67,18 @@ public class ItemController {
                         .itemType(ItemType.TOP)
                         .itemKey("top_item_02")
                         .itemName("요리 상의")
+                        .itemDescription("요리 속도가 +1 증가합니다.")
                         .itemPoint(101)
                         .build());
             }
 
-        } else{
+        } else {
             items.add(ItemResponse.builder()
                     .itemId(1L)
                     .itemType(ItemType.TOP)
                     .itemKey("top_item_01")
                     .itemName("청소 상의")
+                    .itemDescription("먼지가 달라 붙지 않아요!")
                     .itemPoint(100)
                     .build());
             items.add(ItemResponse.builder()
@@ -83,11 +86,13 @@ public class ItemController {
                     .itemType(ItemType.BOTTOM)
                     .itemKey("bottom_item_01")
                     .itemName("러닝 바지")
+                    .itemDescription("달리기 속도가 +1 증가합니다.")
                     .itemPoint(100)
                     .build());
         }
         return ResponseEntity.ok(CommonApiResponse.success(items));
     }
+
     /**
      * 아이템 key값을 통한 단건 조회 API
      *
@@ -105,6 +110,7 @@ public class ItemController {
                 .itemType(ItemType.TOP)
                 .itemKey(itemKey)
                 .itemName("청소 상의")
+                .itemDescription("먼지가 달라 붙지 않아요!")
                 .itemPoint(100)
                 .build();
 
@@ -112,9 +118,9 @@ public class ItemController {
     }
 
 
-
     /**
      * 아이템 구매 API
+     *
      * @param itemId 아이템 고유 아이다
      */
     @Operation(summary = "아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
@@ -125,18 +131,18 @@ public class ItemController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String memberId = userDetails.getUsername();
-        if(!memberId.equals("user01@test.com")) {
+        if (!memberId.equals("user01@test.com")) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-        if(!itemKey.equals("top_item_01") && !itemKey.equals("top_item_02")) {
+        if (!itemKey.equals("top_item_01") && !itemKey.equals("top_item_02")) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
         }
-        if(memberId.equals("user01@test.com") && itemKey.equals("top_item_02")){
+        if (memberId.equals("user01@test.com") && itemKey.equals("top_item_02")) {
             return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_ITEM));
         }
-            return ResponseEntity.ok(CommonApiResponse.noContent());
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
