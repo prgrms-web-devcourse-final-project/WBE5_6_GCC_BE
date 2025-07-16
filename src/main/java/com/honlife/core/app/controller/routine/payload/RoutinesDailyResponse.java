@@ -14,4 +14,8 @@ public class RoutinesDailyResponse {
 
   private LocalDate date;
 
+  public RoutinesDailyResponse(List<RoutineItemDTO> routines, LocalDate date) {
+    this.routines = routines;
+    this.date = date;
+  }
 }

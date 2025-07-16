@@ -5,6 +5,7 @@ import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
 import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
+import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -47,7 +49,6 @@ public class RoutineController {
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinesResponse
      */
-    @Operation(summary = "사용자 루틴 일주일 조회", description = "특정 날짜의 사용자 일주일 루틴 목록을 조회합니다. 현재 날짜의 기준으로 7주일의 루틴 목록을 조회합니다")
     @GetMapping("/weekly")
     public ResponseEntity<CommonApiResponse<RoutinesResponse>> getWeeklyUserRoutines(
         @AuthenticationPrincipal UserDetails userDetails,
@@ -68,16 +69,16 @@ public class RoutineController {
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinesDailyResponse
      */
-    @Operation(summary = "사용자 루틴 목록 오늘 날짜 조회", description = " 사용자 오늘 하루 루틴 목록을 조회합니다. 현재 날짜의 기준입니다")
     @GetMapping("/today")
     public ResponseEntity<CommonApiResponse<RoutinesDailyResponse>> getDailyUserRoutines(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userEmail = userDetails.getUsername();
 
-        RoutinesDailyResponse routinesResponses = routineService.getDailyRoutines(userEmail);
+        List<RoutineItemDTO> routinesResponses = routineService.getDailyRoutines(userEmail);
 
-        return ResponseEntity.ok(CommonApiResponse.success(routinesResponses));
+        RoutinesDailyResponse daily = new RoutinesDailyResponse(routinesResponses, LocalDate.now());
+        return ResponseEntity.ok(CommonApiResponse.success(daily));
 
     }
 
