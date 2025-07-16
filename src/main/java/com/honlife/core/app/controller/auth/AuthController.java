@@ -107,7 +107,7 @@ public class AuthController {
      *                     인증코드가 null 이 아닌경우 잘못된 요청으로 간주
      * @return 정상처리 된 경우 {@code HttpStatus.OK}, 정상처리가 되지 않은 경우 {@code HttpStatus.BAD_REQUEST}
      */
-    @PostMapping("/email/verify")
+    @PostMapping("/auth/email")
     public ResponseEntity<CommonApiResponse<Void>> sendVerifyCode(
         @RequestBody @Valid VerifyEmailRequest emailRequest
     ){
