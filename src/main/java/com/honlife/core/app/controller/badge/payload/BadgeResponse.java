@@ -37,7 +37,7 @@ public class BadgeResponse {
 
     private LocalDateTime receivedDate;
 
-    public static BadgeResponse from(BadgeWithMemberInfoDTO dto) {
+    public static BadgeResponse fromDto(BadgeWithMemberInfoDTO dto) {
         return BadgeResponse.builder()
             .badgeId(dto.getBadgeId())
             .badgeKey(dto.getBadgeKey())

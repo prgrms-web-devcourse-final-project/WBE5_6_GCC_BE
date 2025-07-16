@@ -5,7 +5,6 @@ import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 import com.honlife.core.app.model.badge.code.BadgeTier;
 import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import com.honlife.core.app.model.badge.service.BadgeService;
-import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -95,7 +94,7 @@ public class BadgeController {
         }
 
         // 4. DTO → Response 변환
-        BadgeResponse response = BadgeResponse.from(dto);
+        BadgeResponse response = BadgeResponse.fromDto(dto);
 
         return ResponseEntity.ok(CommonApiResponse.success(response));
     }
