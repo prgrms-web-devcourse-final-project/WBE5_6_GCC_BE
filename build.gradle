@@ -66,6 +66,9 @@ dependencies {
 //    implementation platform('com.google.cloud:spring-cloud-gcp-dependencies:6.2.2')
 //    implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager'
 
+    //mail
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+
     // Swagger
     implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6')
 
