@@ -5,7 +5,7 @@ import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.member.domain.Member;
 
 
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
 
     Category findFirstByMember(Member member);
 

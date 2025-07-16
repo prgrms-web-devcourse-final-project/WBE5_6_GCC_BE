@@ -18,6 +18,7 @@ import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.util.NotFoundException;
 import com.honlife.core.infra.util.ReferencedWarning;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -129,4 +130,12 @@ public class CategoryService {
         return null;
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 카테고리를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void deleteCategoryByMemberId(Long memberId) {
+        categoryRepository.deleteByMemberId(memberId);
+    }
 }
