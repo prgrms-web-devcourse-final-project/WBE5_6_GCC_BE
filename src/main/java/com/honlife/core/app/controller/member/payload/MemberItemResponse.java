@@ -2,11 +2,9 @@ package com.honlife.core.app.controller.member.payload;
 
 import com.honlife.core.app.model.item.code.ItemType;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Builder
 public class MemberItemResponse {
 
