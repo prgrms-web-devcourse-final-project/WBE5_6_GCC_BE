@@ -18,7 +18,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -130,13 +132,6 @@ public class RoutineController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "루틴 등록", description = "새로운 루틴을 등록합니다. <br>카테고리 ID와 루틴 내용은 필수입니다. <br><br>" +
-        "<strong>RepeatType 설명:</strong><br>" +
-        "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
-        "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
-        "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
-        "• CUSTOM: 사용자 정의 반복 패턴<br>" +
-        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createRoutine(
         @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
@@ -150,15 +145,11 @@ public class RoutineController {
         }
 
         String userId = userDetails.getUsername();
-        if (userId.equals("user01@test.com")) {
-            // 실제 구현 시에는 routineSaveRequest를 RoutineDTO로 변환하여 routineService.create() 호출
-            // RepeatType이 NONE인 경우 RoutineSchedule도 함께 생성
-            return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CommonApiResponse.noContent());
-        }
+        routineService.createRoutine(routineSaveRequest,userId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(CommonApiResponse.noContent());
 
-        return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+
     }
 
     /**
@@ -185,20 +176,9 @@ public class RoutineController {
         }
 
         String userId = userDetails.getUsername();
-        if (!userId.equals("user01@test.com")) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
-        }
+        routineService.updateRoutine(routineId, routineSaveRequest, userId);
 
-        // 존재하지 않는 루틴 아이디로 접근
-        if (routineId != 1L && routineId != 2L) {
-            return ResponseEntity
-                .status(ResponseCode.NOT_FOUND_ROUTINE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
-        }
 
-        // 실제 구현 시에는 기존 루틴 타입과 새로운 타입을 비교하여
-        // 스케줄 재생성 또는 기존 스케줄 업데이트 처리
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
@@ -231,4 +211,8 @@ public class RoutineController {
         // 실제 구현 시에는 루틴과 관련된 모든 스케줄도 함께 삭제 처리
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
+
+
+
+
 }

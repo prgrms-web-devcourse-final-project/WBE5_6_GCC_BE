@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
 import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
@@ -27,6 +28,7 @@ import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import com.honlife.core.infra.util.NotFoundException;
 import com.honlife.core.infra.util.ReferencedWarning;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -199,9 +201,7 @@ public class RoutineService {
                 RoutineSchedule routineSchedule = routineScheduleRepository
                     .findByRoutineIdAndDate(routine.getId(), LocalDate.now());
 
-                /**해당 반복되는 스케줄러는 DB에 넣지 않기로 했으므로 반복되는 값은 스케줄러 ID가 null으로 들어감
-                //하지만 나중에 구현할때는 어짜피 해당 루틴에 만들어질 루틴은 하나만 존재하기 때문에 id로만 조회를 해서 값 찾을 예정
-                //현재 더미데이터가 하나의 루틴에 여러 스케줄을 담고 있기떄문에 오류가 나서 임시로 해뒀습니다 */
+
                 return RoutineItemDTO.builder()
                     .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
                     .routineId(routine.getId())
@@ -222,4 +222,43 @@ public class RoutineService {
 
         return response;
     }
+
+    @Transactional
+    public void createRoutine(RoutineSaveRequest routineSaveRequest, String userId) {
+
+      Member member = memberRepository.findByEmail(userId)
+          .orElseThrow(()-> new EntityNotFoundException("멤버 엔티티가 존재하지 않습니다"));
+
+      Category category = categoryRepository.findById(routineSaveRequest.getCategoryId())
+          .orElseThrow(() -> new EntityNotFoundException("카테고리 입력은 필수 입니다"));
+
+      Routine routine = Routine.builder()
+          .category(category)
+          .content(routineSaveRequest.getContent())
+          .triggerTime(routineSaveRequest.getTriggerTime())
+          .isImportant(routineSaveRequest.getIsImportant())
+          .repeatType(routineSaveRequest.getRepeatType())
+          .repeatValue(routineSaveRequest.getRepeatValue())
+          .member(member)
+          .build();
+
+      routineRepository.save(routine);
+
+
+    }
+
+    @Transactional
+  public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
+    Member member = memberRepository.findByEmail(userId)
+          .orElseThrow(()-> new EntityNotFoundException("멤버 엔티티가 존재하지 않습니다"));
+
+    Routine routine = routineRepository.findById(routineId)
+        .orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다"));
+
+    Category category = categoryRepository.findById(request.getCategoryId())
+        .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다"));
+
+      routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
+          request.getIsImportant(), request.getRepeatType(), request.getRepeatValue());
+  }
 }

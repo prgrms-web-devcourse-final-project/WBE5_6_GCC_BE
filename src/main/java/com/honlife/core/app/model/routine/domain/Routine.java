@@ -12,7 +12,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.common.BaseEntity;
@@ -22,6 +25,9 @@ import com.honlife.core.app.model.member.domain.Member;
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Routine extends BaseEntity {
 
     @Id
@@ -62,4 +68,12 @@ public class Routine extends BaseEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    public void updateRoutine(Category category, String content, String triggerTime, Boolean isImportant, RepeatType repeatType, String repeatValue) {
+        this.category = category;
+        this.content = content;
+        this.triggerTime = triggerTime;
+        this.isImportant = isImportant;
+        this.repeatType = repeatType;
+        this.repeatValue = repeatValue;
+    }
 }
