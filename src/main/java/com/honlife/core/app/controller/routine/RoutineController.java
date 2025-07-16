@@ -49,35 +49,19 @@ public class RoutineController {
 
 
     /**
-     * 사용자 루틴 조회 API
-     * @param date 조회할 날짜 (없으면 오늘 날짜)
+     * 사용자 루틴 일주일 조회 API
      * @param userDetails 로그인된 사용자 정보
      * @return UserRoutinesPayload
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<RoutinesResponse>> getUserRoutines(
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+    public ResponseEntity<CommonApiResponse<RoutinesResponse>> getWeeklyUserRoutines(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userName = userDetails.getUsername();
+        String userEmail = userDetails.getUsername();
 
-
-        if (date == null) {
-            date = LocalDate.now();
-        }
-
-        Optional<Member> member = memberRepository.findByEmail(userName);
-
-        if (member.isEmpty()) {
-            return ResponseEntity
-                .status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
-        }
-        RoutinesResponse routinesResponses = routineService.getUserRoutines(userName, date);
+        RoutinesResponse routinesResponses = routineService.getUserWeeklyRoutines(userEmail);
 
         return ResponseEntity.ok(CommonApiResponse.success(routinesResponses));
-
-
 
     }
 

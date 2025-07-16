@@ -10,5 +10,7 @@ public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule
 
     RoutineSchedule findFirstByRoutine(Routine routine);
 
-  RoutineSchedule findByRoutineIdAndDate(Long id, LocalDate date);
+
+
+  RoutineSchedule findByRoutineIdAndDate(Long id, LocalDate currentDate);
 }

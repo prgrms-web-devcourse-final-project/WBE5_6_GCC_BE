@@ -2,12 +2,15 @@ package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
+import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.infra.response.CommonApiResponse;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -126,58 +129,56 @@ public class RoutineService {
      * 지연로딩으로 fetch join사용 했습니다
      * 스케줄러에 들어가지있지 않을경우 값을 넣어주는 로직까지 추가했습니다
      */
-  public RoutinesResponse getUserRoutines(String userName, LocalDate date) {
+  public RoutinesResponse getUserWeeklyRoutines(String userEmail) {
 
-      Member member = memberRepository.findByEmail(userName)
+      Member member = memberRepository.findByEmail(userEmail)
           .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
 
       List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
-      List<RoutinesResponse.RoutineItem> responseRoutines = routines.stream()
-          .map(routine -> {
-              Category parentCategory = null;
-              Long parentId = routine.getCategory().getParentId();
-              if (parentId != null) {
-                  parentCategory = categoryRepository.findById(parentId)
-                      .orElseThrow(() -> new RuntimeException("부모 카테고리 없음"));
-              }
+      //해당날짜에서 일주일치 계산
+      LocalDate startDate = LocalDate.of(2025,6,8);
+      LocalDate endDate = startDate.plusDays(6);
 
-              RoutineSchedule routineSchedule = routineScheduleRepository
-                  .findByRoutineIdAndDate(routine.getId(), date);
+      Map<LocalDate, List<RoutineItemDTO>> groupedByDate = routines.stream()
+          .flatMap(routine ->
+              startDate.datesUntil(endDate.plusDays(1))
+                  .filter(currentDate -> isDateMatched(routine, currentDate))
+                  .map(currentDate -> {
+                      Category parentCategory = null;
+                      Long parentId = routine.getCategory().getParentId();
+                      if (parentId != null) {
+                          parentCategory = categoryRepository.findById(parentId)
+                              .orElse(null); // orElseThrow 쓰지 않으면 null 허용
+                      }
 
+                      RoutineSchedule routineSchedule = routineScheduleRepository
+                          .findByRoutineIdAndDate(routine.getId(), currentDate);
 
-              if (routineSchedule == null && isDateMatched(routine, date)) {
-                  routineSchedule = RoutineSchedule.builder()
-                      .routine(routine)
-                      .date(date)
-                      .isDone(false)
-                      .build();
+                      return RoutineItemDTO.builder()
+                          .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
+                          .routineId(routine.getId())
+                          .majorCategory(parentCategory != null ? parentCategory.getName() : null)
+                          .subCategory(routine.getCategory().getName())
+                          .name(routine.getContent())
+                          .triggerTime(routine.getTriggerTime())
+                          .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
+                          .isImportant(routine.getIsImportant())
+                          .date(currentDate)
+                          .build();
+                  })
+          )
+          .collect(Collectors.groupingBy(RoutineItemDTO::getDate));
 
-                  routineSchedule = routineScheduleRepository.save(routineSchedule);
-              }
-
-              return RoutinesResponse.RoutineItem.builder()
-                  .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
-                  .routineId(routine.getId())
-                  .majorCategory(parentCategory != null ? parentCategory.getName() : null)
-                  .subCategory(routine.getCategory().getName())
-                  .name(routine.getContent())
-                  .triggerTime(routine.getTriggerTime())
-                  .isDone(routineSchedule != null ? routineSchedule.getIsDone() : null)
-                  .isImportant(routine.getIsImportant())
-                  .build();
-          })
-          .toList();
 
       RoutinesResponse response = new RoutinesResponse();
-      response.setDate(date);
-      response.setRoutines(responseRoutines);
+      response.setRoutines(groupedByDate);
 
       return response;
   }
     private boolean isDateMatched(Routine routine, LocalDate date) {
         RepeatType type = routine.getRepeatType();
-        String value = routine.getRepeatValue(); // 예: "1,3,5" 또는 "1,15,30"
+        String value = routine.getRepeatValue();
 
         switch (type) {
             case DAILY:
@@ -185,7 +186,7 @@ public class RoutineService {
 
             case WEEKLY:
                 if (value == null || value.isBlank()) return false;
-                int dayOfWeek = date.getDayOfWeek().getValue(); // 월=1 ~ 일=7
+                int dayOfWeek = date.getDayOfWeek().getValue();
                 return containsNumber(value, dayOfWeek);
 
             case MONTHLY:
