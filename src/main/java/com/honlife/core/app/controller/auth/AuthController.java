@@ -72,7 +72,7 @@ public class AuthController {
      * @param signupBasicRequest
      * @return 계정이 이미 존재하는 경우 {@code HttpStatus.CONFLICT}를, 그 외의 경우는 {@code HttpStatus.OK}
      */
-    @PostMapping("/signup/basic")
+    @PostMapping("/signup")
     public ResponseEntity<CommonApiResponse<Void>> signup(
         @RequestBody SignupBasicRequest signupBasicRequest
     ) {
