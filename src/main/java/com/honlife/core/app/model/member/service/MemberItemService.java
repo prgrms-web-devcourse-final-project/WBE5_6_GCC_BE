@@ -1,7 +1,11 @@
 package com.honlife.core.app.model.member.service;
 
 import java.util.List;
+
+import com.honlife.core.app.model.item.code.ItemType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.repos.ItemRepository;
@@ -14,17 +18,19 @@ import com.honlife.core.infra.util.NotFoundException;
 
 
 @Service
+@RequiredArgsConstructor
 public class MemberItemService {
 
     private final MemberItemRepository memberItemRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
 
-    public MemberItemService(final MemberItemRepository memberItemRepository,
-            final MemberRepository memberRepository, final ItemRepository itemRepository) {
-        this.memberItemRepository = memberItemRepository;
-        this.memberRepository = memberRepository;
-        this.itemRepository = itemRepository;
+    public List<MemberItem> getItemsByMemberAndType(UserDetails userDetails, ItemType itemType) {
+        return memberItemRepository.findByMemberEmailAndItemType(userDetails.getUsername(), itemType);
+    }
+
+    public List<MemberItem> getItemsByMember(UserDetails userDetails) {
+        return memberItemRepository.findByMemberEmail(userDetails.getUsername());
     }
 
     public List<MemberItemDTO> findAll() {
@@ -80,18 +86,5 @@ public class MemberItemService {
                 .orElseThrow(() -> new NotFoundException("item not found"));
         memberItem.setItem(item);
         return memberItem;
-    }
-
-    /**
-     * 맴버 아이디를 통해 아이템을 보유하고있는 회원 조회
-     * @param memberId 유저 Id 입력
-     * @return
-     */
-    public List<Long> getOwnedItemIdsByMember(Long memberId) {
-        return memberItemRepository.findItemsByMemberId(memberId);
-    }
-
-    public Boolean isItemOwnByMember(Long memberId,Long itemId) {
-        return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
     }
 }
