@@ -232,7 +232,7 @@ public class RoutineService {
     }
 
   /**
-   * 사용자  루틴 단건 조회 입니다
+   * 사용자  루틴 등록 입니다
    * return void
    */
     @Transactional
@@ -244,6 +244,7 @@ public class RoutineService {
       Category category = categoryRepository.findById(routineSaveRequest.getCategoryId())
           .orElseThrow(() -> new EntityNotFoundException("카테고리 입력은 필수 입니다"));
 
+      /** 간단한 로직이라 DTO를 사용할 필요 없을거같아 바로 Routine으로 넣어줬습니다*/
       Routine routine = Routine.builder()
           .category(category)
           .content(routineSaveRequest.getContent())
@@ -259,7 +260,11 @@ public class RoutineService {
 
     }
 
-
+  /**
+   * 사용자 루틴 수정 입니다
+   * return void
+   * transaction으로 updateRoutine에 넣어준다
+   */
     @Transactional
     public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
       Member member = memberRepository.findByEmail(userId)
@@ -275,6 +280,11 @@ public class RoutineService {
             request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(),member);
     }
 
+  /**
+   * 사용자 루틴 단건 조회 입니다
+   * return void
+   * transaction으로 updateRoutine에 넣어준다
+   */
   public RoutineDetailResponse getDetailRoutine(Long routineId) {
 
     Routine routine = routineRepository.findByIdWithCategory(routineId)
