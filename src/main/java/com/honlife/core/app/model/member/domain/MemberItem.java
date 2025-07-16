@@ -25,14 +25,14 @@ public class MemberItem extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
+            name = "memberItem_sequence",
+            sequenceName = "memberItem_sequence",
             allocationSize = 1,
             initialValue = 10000
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+            generator = "memberItem_sequence"
     )
     private Long id;
 
