@@ -1,6 +1,12 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
+import com.honlife.core.app.model.auth.code.Role;
+import com.honlife.core.app.model.category.service.InterestCategoryService;
+import jakarta.transaction.Transactional;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
@@ -29,9 +35,12 @@ import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.infra.util.ReferencedWarning;
 import com.honlife.core.infra.util.NotFoundException;
 
-
+@RequiredArgsConstructor
 @Service
 public class MemberService {
+
+    private final ModelMapper modelMapper;
+    private final InterestCategoryService interestCategoryService;
 
     private final MemberRepository memberRepository;
     private final RoutineRepository routineRepository;
@@ -44,29 +53,7 @@ public class MemberService {
     private final LoginLogRepository loginLogRepository;
     private final InterestCategoryRepository interestCategoryRepository;
     private final MemberPointRepository memberPointRepository;
-
-    public MemberService(final MemberRepository memberRepository,
-        final RoutineRepository routineRepository, final CategoryRepository categoryRepository,
-        final MemberItemRepository memberItemRepository,
-        final MemberQuestRepository memberQuestRepository,
-        final PointLogRepository pointLogRepository,
-        final NotificationRepository notificationRepository,
-        final MemberBadgeRepository memberBadgeRepository,
-        final LoginLogRepository loginLogRepository,
-        final InterestCategoryRepository interestCategoryRepository,
-        final MemberPointRepository memberPointRepository) {
-        this.memberRepository = memberRepository;
-        this.routineRepository = routineRepository;
-        this.categoryRepository = categoryRepository;
-        this.memberItemRepository = memberItemRepository;
-        this.memberQuestRepository = memberQuestRepository;
-        this.pointLogRepository = pointLogRepository;
-        this.notificationRepository = notificationRepository;
-        this.memberBadgeRepository = memberBadgeRepository;
-        this.loginLogRepository = loginLogRepository;
-        this.interestCategoryRepository = interestCategoryRepository;
-        this.memberPointRepository = memberPointRepository;
-    }
+    private final ModelMapper mapper;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -129,14 +116,6 @@ public class MemberService {
         member.setRegion2Dept(memberDTO.getRegion2Dept());
         member.setRegion3Dept(memberDTO.getRegion3Dept());
         return member;
-    }
-
-    public boolean emailExists(final String email) {
-        return memberRepository.existsByEmailIgnoreCase(email);
-    }
-
-    public boolean nicknameExists(final String nickname) {
-        return memberRepository.existsByNicknameIgnoreCase(nickname);
     }
 
     /**
@@ -211,5 +190,87 @@ public class MemberService {
         return null;
     }
 
+
+    /**
+     * 회원 테이블에 이미 존재하는 닉네임인지 확인
+     * @param nickname 검사하고자 하는 닉네임
+     * @return {@code Boolean}
+     */
+    public boolean isNicknameExists(final String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
+
+    /**
+     * 회원 테이블에서 이미 존재하는 이메일인지 확인<br>
+     * IgnoreCase - 대소문자 구분 없이 검색
+     * @param email 사용자 이메일
+     * @return {@code Boolean}
+     */
+    public boolean isEmailExists(final String email) {
+        return memberRepository.existsByEmailIgnoreCase(email);
+    }
+
+    /**
+     * 인증된 회원인지 확인
+     * @param email 사용자 이메일
+     * @return {@code Boolean}
+     */
+    public boolean isEmailVerified(final String email) {
+        return memberRepository.isEmailVerified(email);
+    }
+
+    /**
+     * 회원가입 phase 1 진행시 사용되는 매서드<br>
+     * 회원 정보를 입력받아 {@code isActive = false} 인 상태로 테이블에 저장
+     * @param signupBasicRequest 회원가입 단계에서 넘어오는 회원 정보 객체
+     */
+    @Transactional
+    public void saveNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
+        Member member = new Member();
+        modelMapper.map(signupBasicRequest, member);
+        member.setIsActive(false);   // 이메일인증까지 완료되야 계정 활성화.
+        member.setIsVerified(false);
+        member.setNickname(signupBasicRequest.getName());
+        member.setRole(Role.ROLE_USER);
+        memberRepository.save(member);
+    }
+
+    /**
+     * 회원의 계정 상태 정보를 업데이트 합니다.<br>
+     * 인증상태와 계정 활성화 상태에 대한 {@code Boolean} 값을 받아, 계정 정보에 반영합니다.
+     * @param email 회원 이메일
+     * @param isVerified 이메일 인증 여부
+     * @param isActive 계정 활성화 여부
+     */
+    @Transactional
+    public void updateMemberStatus(String email, Boolean isVerified, Boolean isActive) {
+        Member member = memberRepository.findByEmailIgnoreCase(email);
+        member.setIsActive(isActive);
+        member.setIsVerified(isVerified);
+        memberRepository.save(member);
+    }
+
+    /**
+     * 회원가입 phase 1 에서 가입을 재시도하거나 정보를 수정 하는 경우에 사용되는 매서드<br>
+     * 기존에 회원가입을 눌렀을 경우 해당 회원정보가 DB에 저장되어있으므로, 업데이트 방식을 실행
+     * @param signupBasicRequest 회원가입 단게에서 넘어오는 회원 정보 객체
+     */
+    @Transactional
+    public void updateNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
+        // 회원정보 업데이트
+        Member member = memberRepository.findByEmailIgnoreCase(signupBasicRequest.getEmail());
+        modelMapper.map(signupBasicRequest, member);
+    }
+
+
+    /**
+     * 회원의 이메일을 받아 회원 정보를 리턴하는 메소드
+     * @param userEmail 현재 로그인한 회원의 이메일
+     * @return 회원의 정보가 없다면 null을, 있다면 회원의 정보를 담은 dto를 반환합니다.
+     */
+    public MemberDTO findMemberByEmail(String userEmail){
+        Member targetMember = memberRepository.findByEmailAndIsActive(userEmail, true).orElse(null);
+        return mapper.map(targetMember, MemberDTO.class);
+    }
 
 }
