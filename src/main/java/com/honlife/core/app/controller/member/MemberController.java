@@ -81,7 +81,7 @@ public class MemberController {
      * @return 변경 처리 성공시 {@code 200}을 반환합니다. 이메일 인증이 되지 않은 경우, {@code 401}을 반환합니다.
      */
     @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
-        + "현재 비밀번호와 변경할 비밀번호를 받습니다.<br>"
+        + "변경할 비밀번호만 받습니다.<br>"
         + "사전에 이메일 인증이 되지 않은 회원의 경우, 401응답이 반환됩니다.")
     @PutMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
