@@ -9,6 +9,7 @@ import com.honlife.core.app.model.member.model.MemberQuestDTO;
 import com.honlife.core.app.model.member.repos.MemberQuestRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.util.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -78,4 +79,12 @@ public class MemberQuestService {
         return memberQuest;
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 멤버퀘스트를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void deleteMemberQuestByMemberId(Long memberId) {
+        memberQuestRepository.deleteByMemberId(memberId);
+    }
 }
