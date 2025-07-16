@@ -51,18 +51,21 @@ public class MemberItemController {
         MemberItemResponse top = MemberItemResponse.builder()
             .itemKey("top_item_01")
             .itemName("청소 상의")
+                .itemDescription("먼지가 달라 붙지 않아요!")
             .itemtype(ItemType.TOP)
             .isEquipped(true)
             .build();
         MemberItemResponse bottom = MemberItemResponse.builder()
             .itemKey("bottom_item_01")
             .itemName("청바지")
+                .itemDescription("패션 감각 +1.")
             .itemtype(ItemType.BOTTOM)
             .isEquipped(false)
             .build();
         MemberItemResponse accessory = MemberItemResponse.builder()
             .itemKey("accessory_item_01")
             .itemName("요리사 모자")
+                .itemDescription("위생에 한층 더 강력해집니다.")
             .itemtype(ItemType.ACCESSORY)
             .isEquipped(true)
             .build();
