@@ -228,6 +228,7 @@ public class MemberService {
         modelMapper.map(signupBasicRequest, member);
         member.setIsActive(false);   // 이메일인증까지 완료되야 계정 활성화.
         member.setIsVerified(false);
+        member.setNickname(signupBasicRequest.getName());
         member.setRole(Role.ROLE_USER);
         memberRepository.save(member);
     }
