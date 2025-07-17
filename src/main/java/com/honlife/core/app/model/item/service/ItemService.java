@@ -1,13 +1,15 @@
 package com.honlife.core.app.model.item.service;
 
-import com.honlife.core.app.controller.item.payload.ItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
+import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.dto.ItemDTO;
+import com.honlife.core.app.model.item.repos.ItemDslRepository;
 import com.honlife.core.app.model.item.repos.ItemRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
+import com.honlife.core.app.model.member.domain.QMemberItem;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
@@ -16,6 +18,7 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.infra.util.NotFoundException;
 import com.honlife.core.infra.util.ReferencedWarning;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ public class ItemService {
     private final MemberItemRepository memberItemRepository;
     private final MemberService memberService;
     private final MemberPointService memberPointService;
+    private final ItemDslRepository itemDslRepository;
 
     /**
      * 특정 사용자의 아이템 전체 목록을 조회하면서,
@@ -41,18 +45,26 @@ public class ItemService {
      * @param itemType 아이템 타입 (null일 경우 전체 아이템 조회)
      * @return ItemResponse 리스트 (isOwned 필드 포함)
      */
-    public List<ItemResponse> getAllItemsWithOwnership(Long memberId, ItemType itemType) {
-        // 해당 사용자의 memberId와 itemType을 기준으로 아이템 리스트 조회 (isOwned 포함)
-        return itemRepository.findItemsWithOwnership(memberId, itemType);
-    }
+    public List<ItemDTO> getAllItemsWithOwnership(Long memberId, ItemType itemType) {
 
-    /**
-     * itemKey로 단일 아이템 조회
-     * @param itemKey
-     * return Optional<Item></Item>
-     */
-    public Item getItemByKey(String itemKey) {
-        return itemRepository.findByItemKeyAndIsActiveTrue(itemKey);
+        List<Tuple> tuples = itemDslRepository.findItemsWithOwnership(memberId, itemType);
+
+        return tuples.stream()
+                .map(tuple -> {
+                    Item i = tuple.get(QItem.item);
+                    Boolean isOwned = tuple.get(QMemberItem.memberItem.id) != null;
+
+                    return ItemDTO.builder()
+                            .id(i.getId())
+                            .itemKey(i.getItemKey())
+                            .name(i.getName())
+                            .description(i.getDescription())
+                            .type(i.getType())
+                            .price(i.getPrice())
+                            .isOwned(isOwned)
+                            .build();
+                })
+                .toList();
     }
 
     /**
@@ -63,8 +75,34 @@ public class ItemService {
      * @param memberId  현재 로그인한 회원의 ID
      * @return          아이템 정보 및 보유 여부를 담은 ItemResponse
      */
-    public ItemResponse getItemResponseByKey(String itemKey, Long memberId) {
-        return itemRepository.findItemResponseByKey(itemKey, memberId);
+    public ItemDTO getItemResponseByKey(String itemKey, Long memberId) {
+        Tuple tuple = itemDslRepository.findItemWithOwnership(itemKey, memberId);
+        if (tuple == null) {
+            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
+        }
+
+        Item i = tuple.get(QItem.item);
+        Boolean isOwned = tuple.get(QMemberItem.memberItem.id) != null;
+
+        return ItemDTO.builder()
+                .id(i.getId())
+                .itemKey(i.getItemKey())
+                .name(i.getName())
+                .description(i.getDescription())
+                .type(i.getType())
+                .price(i.getPrice())
+                .isOwned(isOwned)
+                .build();
+    }
+
+
+    /**
+     * itemKey로 단일 아이템 조회
+     * @param itemKey
+     * return Optional<Item></Item>
+     */
+    public Item getItemByKey(String itemKey) {
+        return itemRepository.findByItemKeyAndIsActiveTrue(itemKey);
     }
 
     /**
