@@ -1,6 +1,6 @@
 package com.honlife.core.app.model.member.service;
 
-import com.honlife.core.app.controller.auth.payload.SignupRequest;
+import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.service.CategoryService;
@@ -209,37 +209,46 @@ public class MemberService {
     }
 
     /**
-     * 회원가입시 사용되는 매서드<br>
+     * 회원가입 phase 1 진행시 사용되는 매서드<br>
      * 회원 정보를 입력받아 {@code isActive = false} 인 상태로 테이블에 저장
-     * @param signupRequest 회원가입 단계에서 넘어오는 회원 정보 객체
+     * @param signupBasicRequest 회원가입 단계에서 넘어오는 회원 정보 객체
      */
     @Transactional
-    public void saveNotVerifiedMember(SignupRequest signupRequest) {
+    public void saveNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
         Member member = new Member();
-        modelMapper.map(signupRequest, member);
-        member.setIsActive(false);   // 회원가입 완료후 계정 활성화
+        modelMapper.map(signupBasicRequest, member);
+        member.setIsActive(false);   // 이메일인증까지 완료되야 계정 활성화.
         member.setIsVerified(false);
+        member.setNickname(signupBasicRequest.getName());
         member.setRole(Role.ROLE_USER);
         memberRepository.save(member);
-
-        // 관심 카테고리 정보 저장
-        interestCategoryService.saveInterestCategory(member, signupRequest.getInterestedCategoryIds());
     }
 
     /**
-     * 회원가입을 재시도 하는 경우에 사용되는 매서드<br>
-     * 기존에 회원가입을 눌렀을 경우 해당 회원정보가 DB에 저장되어있으므로, 업데이트 방식을 실행<br>
-     * 기존에 저장된 회원 정보를 수정하고, 관심카테고리 항목도 업데이트
-     * @param signupRequest 회원가입 단게에서 넘어오는 회원 정보 객체
+     * 회원의 계정 상태 정보를 업데이트 합니다.<br>
+     * 인증상태와 계정 활성화 상태에 대한 {@code Boolean} 값을 받아, 계정 정보에 반영합니다.
+     * @param email 회원 이메일
+     * @param isVerified 이메일 인증 여부
+     * @param isActive 계정 활성화 여부
      */
     @Transactional
-    public void updateNotVerifiedMember(SignupRequest signupRequest) {
-        // 회원정보 업데이트
-        Member member = memberRepository.findByEmailIgnoreCase(signupRequest.getEmail());
-        modelMapper.map(signupRequest, member);
+    public void updateMemberStatus(String email, Boolean isVerified, Boolean isActive) {
+        Member member = memberRepository.findByEmailIgnoreCase(email);
+        member.setIsActive(isActive);
+        member.setIsVerified(isVerified);
+        memberRepository.save(member);
+    }
 
-        // 관심카테고리 정보 업데이트
-        interestCategoryService.updateInterestCategory(member, signupRequest.getInterestedCategoryIds());
+    /**
+     * 회원가입 phase 1 에서 가입을 재시도하거나 정보를 수정 하는 경우에 사용되는 매서드<br>
+     * 기존에 회원가입을 눌렀을 경우 해당 회원정보가 DB에 저장되어있으므로, 업데이트 방식을 실행
+     * @param signupBasicRequest 회원가입 단게에서 넘어오는 회원 정보 객체
+     */
+    @Transactional
+    public void updateNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
+        // 회원정보 업데이트
+        Member member = memberRepository.findByEmailIgnoreCase(signupBasicRequest.getEmail());
+        modelMapper.map(signupBasicRequest, member);
     }
 
 
@@ -259,7 +268,7 @@ public class MemberService {
      * @param oldPassword 회원이 입력한 기존 비밀 번호
      * @return {@code Boolean}
      */
-    public Boolean isCorrectPassword(String userEmail, @NotBlank String oldPassword) {
+    public Boolean isCorrectPassword(String userEmail, String oldPassword) {
         Optional<Member> user = memberRepository.findByEmailAndIsActive(userEmail,true);
         String savedPassword="";
         if(user.isPresent()){
@@ -275,7 +284,7 @@ public class MemberService {
      * @return
      */
     @Transactional
-    public void updatePassword(String userEmail, @NotBlank String newPassword) {
+    public void updatePassword(String userEmail, String newPassword) {
         Member targetMember = memberRepository
             .findByEmailAndIsActive(userEmail, true).orElseThrow(() -> new CommonException(
                 ResponseCode.NOT_FOUND_MEMBER));

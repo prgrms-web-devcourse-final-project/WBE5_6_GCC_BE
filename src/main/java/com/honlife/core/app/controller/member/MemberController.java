@@ -67,8 +67,8 @@ public class MemberController {
     /**
      * 비밀번호 변경 요청 처리 API
      * @param userDetails 유저 인증 정보
-     * @param updatePasswordRequest 현재 비밀번호와 변경할 비밀번호를 담은 객체
-     * @return 변경 처리 성공시 {@code 200}을 반환합니다. <br>현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.<br>이메일 인증 실패 시 {@code 400}을 반환합니다.
+     * @param updatePasswordRequest 변경할 비밀번호를 담은 객체
+     * @return 변경 처리 성공시 {@code 200}을 반환합니다. <br>이메일 인증이 되어있지 않은 사용자일 경우, {@code 401}을 반환합니다. 비밀 번호 변경 중 문제가 생길 시 {@code 400}을 반환합니다.
      */
     @PatchMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
@@ -77,8 +77,8 @@ public class MemberController {
     ) {
         String userEmail = userDetails.getUsername();
 
-        // DB에 저장된 password 값과 입력한 oldPassword 비교
-        if(!memberService.isCorrectPassword(userEmail, updatePasswordRequest.getOldPassword())){
+        // 이메일 인증 확인
+        if(!memberService.isEmailVerified(userEmail)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
 
