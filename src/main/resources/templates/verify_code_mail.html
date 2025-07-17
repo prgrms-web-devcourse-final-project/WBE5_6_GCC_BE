@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>GrowBit 이메일 인증</title>
+</head>
+<body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f6f6f6;
+    "
+>
+<table
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    style="background-color: #f6f6f6; padding: 40px 0"
+>
+  <tr>
+    <td align="center">
+      <table
+          width="600"
+          cellpadding="0"
+          cellspacing="0"
+          style="background-color: #ffffff; border-radius: 8px"
+      >
+        <tr>
+          <td
+              align="center"
+              style="
+                  background-color: #ffe7bc;
+                  padding: 30px 20px;
+                  color: #333;
+                "
+          >
+            <img
+                src="cid:logo"
+                alt="logo"
+                style="width: 160px; margin-bottom: 10px"
+            />
+            <h2 style="margin: 10px 0; font-size: 20px">
+              인증코드가 발송되었습니다
+            </h2>
+            <p style="color: #666">본인 확인을 위한 보안 코드입니다.</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 20px; border-top: 1px solid #eee">
+            <p
+                style="font-size: 18px; font-weight: 700; margin-bottom: 10px"
+            >
+              이메일 확인 인증 코드
+            </p>
+            <p style="color: #666">
+              아래의 인증코드를 입력하여 본인 확인을 완료해주세요.
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding: 30px 0">
+            <div
+                class="code-display"
+                th:text="${code}"
+                style="
+                    display: inline-block;
+                    padding: 16px 32px;
+                    background-color: #ffb84c;
+                    color: #fff;
+                    border-radius: 10px;
+                    font-size: 20px;
+                    font-weight: bold;
+                    letter-spacing: 6px;
+                  "
+            >
+              123456
+            </div>
+            <p style="margin: 10px 0; color: #999">
+              위 숫자를 복사하여 인증 화면에 입력해주세요
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 30px 30px 0 30px; border-top: 1px solid #eee">
+            <p style="font-size: 16px; font-weight: bold">
+              🔒 보안 주의사항
+            </p>
+            <ul style="color: #555; padding-left: 20px; line-height: 1.6">
+              <li>본인이 요청하지 않은 인증코드라면 즉시 무시해주세요</li>
+              <li>인증코드를 타인과 공유하지 마세요</li>
+              <li>의심스러운 활동이 있다면 즉시 비밀번호를 변경해주세요</li>
+            </ul>
+          </td>
+        </tr>
+
+        <tr>
+          <td
+              align="center"
+              style="font-size: 12px; color: #aaa; padding-top: 30px"
+          >
+            © 2025 GrowBit. All rights reserved.
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

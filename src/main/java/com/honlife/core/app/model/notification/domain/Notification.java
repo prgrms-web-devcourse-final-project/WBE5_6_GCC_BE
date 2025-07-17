@@ -34,13 +34,13 @@ public class Notification {
     private Long id;
 
     @Column
-    private Boolean isEmail;
+    private Boolean isEmail = true; // 초기값
 
     @Column
-    private Boolean isRoutine;
+    private Boolean isRoutine = true;   // 초기값
 
     @Column
-    private Boolean isBadge;
+    private Boolean isBadge = true; // 초기값
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false, unique = true)
