@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
  * 5 - Category<br>
  * 6 - Quest<br>
  * 7 - Policy<br>
- * 8 - Point
+ * 8 - Point<br>
+ * 9 - Notification
  */
 public enum ResponseCode {
   OK("0000", HttpStatus.OK, "OK"),
@@ -39,6 +40,8 @@ public enum ResponseCode {
   NOT_FOUND_CATEGORY("4045", HttpStatus.NOT_FOUND, "Category not found."),
   NOT_FOUND_QUEST("4046", HttpStatus.NOT_FOUND, "Quest not found."),
   NOT_FOUND_POLICY("4047", HttpStatus.NOT_FOUND, "Policy not found."),
+  NOT_FOUND_POINT("4048", HttpStatus.NOT_FOUND, "Point not found"),
+  NOT_FOUND_NOTIFICATION("4048", HttpStatus.NOT_FOUND, "Notification settings not found"),
 
   CONFLICT_EXIST_MEMBER("4091", HttpStatus.CONFLICT, "Member already exists."),
   GRANT_CONFLICT_BADGE("4092", HttpStatus.CONFLICT, "Badge Already granted."),
