@@ -15,19 +15,6 @@ import java.util.Optional;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     /**
-     * IsActiveTrue인 Item 값을 전체 조회합니다.
-     * @return List<Item></Item>
-     */
-    List<Item> findAllByIsActiveTrue();
-
-    /**
-     * ItemType의 정보로 IsActive가 True 인 값을 조회합니다.
-     * @param itemType 아이템 Type
-     * @return List<Item></Item>
-     */
-    List<Item> findByTypeAndIsActiveTrue(ItemType itemType);
-
-    /**
      * ItemKey의 정보로 IsActive가 True 인 값을 조회합니다.
      * @param itemKey item에 대한 key 값
      * @return Optional<Item>
@@ -52,4 +39,23 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "LEFT JOIN MemberItem mi ON i.id = mi.item.id AND mi.member.id = :memberId " +
             "WHERE i.isActive = true AND (:itemType IS NULL OR i.type = :itemType)")
     List<ItemResponse> findItemsWithOwnership(@Param("memberId") Long memberId, @Param("itemType") ItemType itemType);
+
+    /**
+     * 아이템 key와 회원 ID를 기준으로 아이템 정보를 조회합니다.
+     * 이 쿼리는 보유 여부(isOwned)를 함께 판단하여 ItemResponse로 반환합니다.
+     *
+     * @param itemKey   조회할 아이템의 고유 키
+     * @param memberId  회원의 ID (보유 여부 판단용)
+     * @return          보유 여부가 포함된 ItemResponse
+     */
+    @Query("""
+    SELECT new com.honlife.core.app.controller.item.payload.ItemResponse(
+        i.id, i.itemKey, i.name, i.description, i.type, i.price,
+        CASE WHEN mi.id IS NOT NULL THEN true ELSE false END
+    )
+    FROM Item i
+    LEFT JOIN MemberItem mi ON mi.item.id = i.id AND mi.member.id = :memberId
+    WHERE i.itemKey = :itemKey AND i.isActive = true
+""")
+    ItemResponse findItemResponseByKey(@Param("itemKey") String itemKey, @Param("memberId") Long memberId);
 }

@@ -12,16 +12,15 @@ import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
-
+import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.util.ReferencedWarning;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -38,15 +37,13 @@ public class ItemService {
      * 특정 사용자의 아이템 전체 목록을 조회하면서,
      * 해당 사용자가 각 아이템을 보유하고 있는지를 함께 판단하여 응답합니다.
      *
-     * @param username 사용자 이메일 (UserDetails.getUsername())
+     * @param memberId 사용자 이메일 (UserDetails.getUsername())
      * @param itemType 아이템 타입 (null일 경우 전체 아이템 조회)
      * @return ItemResponse 리스트 (isOwned 필드 포함)
      */
-    public List<ItemResponse> getAllItemsWithOwnership(String username, ItemType itemType) {
-        // 이메일로 Member 엔티티 조회
-        Member member = memberService.getMemberByEmail(username);
+    public List<ItemResponse> getAllItemsWithOwnership(Long memberId, ItemType itemType) {
         // 해당 사용자의 memberId와 itemType을 기준으로 아이템 리스트 조회 (isOwned 포함)
-        return itemRepository.findItemsWithOwnership(member.getId(), itemType);
+        return itemRepository.findItemsWithOwnership(memberId, itemType);
     }
 
     /**
@@ -59,10 +56,23 @@ public class ItemService {
     }
 
     /**
+     * 회원 ID와 아이템 key를 기준으로 해당 아이템 정보를 조회하고,
+     * 회원의 보유 여부를 포함한 ItemResponse DTO로 반환합니다.
+     *
+     * @param itemKey   조회할 아이템의 고유 키
+     * @param memberId  현재 로그인한 회원의 ID
+     * @return          아이템 정보 및 보유 여부를 담은 ItemResponse
+     */
+    public ItemResponse getItemResponseByKey(String itemKey, Long memberId) {
+        return itemRepository.findItemResponseByKey(itemKey, memberId);
+    }
+
+    /**
      * 아이템 구매 기능
      * @param item 컨트롤러에서 key값을 통해 구매하려는 Item 정보를 가지고 있음
      * @param member 구매하는 사용자 Member 테이블 값
      */
+    @Transactional
     public void purchaseItem(Item item,Member member) {
 
         MemberPoint point = memberPointService.getPointByMemberId(member.getId())
