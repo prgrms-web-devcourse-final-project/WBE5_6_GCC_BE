@@ -12,7 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
-public class MemberItemDslRepositoryImpl implements MemberItemDslRepository {
+public class MemberItemRepositoryCustomImpl implements MemberItemRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 

@@ -4,9 +4,12 @@ import java.util.List;
 
 import com.honlife.core.app.controller.member.payload.MemberItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
+import com.honlife.core.app.model.item.domain.QItem;
+import com.honlife.core.app.model.member.domain.QMemberItem;
+import com.honlife.core.app.model.member.repos.MemberItemRepositoryCustom;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.repos.ItemRepository;
@@ -25,6 +28,7 @@ public class MemberItemService {
     private final MemberItemRepository memberItemRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
+    private final MemberItemRepositoryCustom memberItemRepositoryCustom;
 
     /**
      * 특정 회원이 보유한 아이템 목록을 조회합니다.
@@ -34,8 +38,20 @@ public class MemberItemService {
      * @param itemType 필터링할 아이템 타입 (null 가능)
      * @return MemberItemResponse 리스트
      */
-    public List<MemberItemResponse> getItemsByMember(Long memberId, ItemType itemType){
-        return memberItemRepository.findItemsByMemberId(memberId, itemType);
+    public List<MemberItemResponse> getItemsByMember(Long memberId, ItemType itemType) {
+        List<Tuple> tuples = memberItemRepositoryCustom.findMemberItems(memberId, itemType);
+
+        return tuples.stream().map(tuple -> {
+            MemberItem mi = tuple.get(QMemberItem.memberItem);
+            Item item = tuple.get(QItem.item);
+            return MemberItemResponse.builder()
+                    .itemKey(item.getItemKey())
+                    .itemName(item.getName())
+                    .itemDescription(item.getDescription())
+                    .itemtype(item.getType())
+                    .isEquipped(mi.getIsEquipped())
+                    .build();
+        }).toList();
     }
 
     /**

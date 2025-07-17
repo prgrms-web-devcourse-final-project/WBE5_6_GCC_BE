@@ -5,7 +5,7 @@ import com.querydsl.core.Tuple;
 
 import java.util.List;
 
-public interface MemberItemDslRepository {
+public interface MemberItemRepositoryCustom {
     List<Tuple> findMemberItems(Long memberId, ItemType itemType);
     List<Tuple> findEquippedMemberItems(Long memberId);
 }
