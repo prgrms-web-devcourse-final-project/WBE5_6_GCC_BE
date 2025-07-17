@@ -29,4 +29,11 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> {
     @Query("SELECT r FROM Routine r WHERE r.id = :id AND r.isActive = true")
     Optional<Routine> findByIdWithMember(@Param("id") Long id);
 
+    @Query("""
+    SELECT r FROM Routine r 
+    JOIN FETCH r.category 
+    WHERE r.member = :member AND r.isActive = :isActive
+""")
+    List<Routine> findAllByMemberAndIsActiveWithCategory(@Param("member") Member member,
+        @Param("isActive") boolean isActive);
 }
