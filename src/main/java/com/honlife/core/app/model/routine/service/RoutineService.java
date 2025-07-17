@@ -2,23 +2,16 @@ package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.controller.routine.payload.RoutineDetailResponse;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
-import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
-import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
-import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
@@ -135,45 +128,44 @@ public class RoutineService {
      * 지연로딩으로 routine 들고올때 category와 fetch join사용 했습니다
      * 스케줄러에 없을시 날짜 계산을 해서 루틴들고오는거를 만들었습니다
      */
-  public RoutinesResponse getUserWeeklyRoutines(String userEmail) {
+    public RoutinesResponse getUserWeeklyRoutines(String userEmail, LocalDate date) {
 
       Member member = memberRepository.findByEmail(userEmail)
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
-    ;
 
       List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
       //해당날짜에서 일주일치 계산
-      LocalDate startDate = LocalDate.now();
-      LocalDate endDate = startDate.plusDays(6);
+      LocalDate today = date;
+      LocalDate startDate = today.with(DayOfWeek.MONDAY);
+      LocalDate endDate = today.with(DayOfWeek.SUNDAY);
 
       Map<LocalDate, List<RoutineItemDTO>> groupedByDate = routines.stream()
           .flatMap(routine ->
               startDate.datesUntil(endDate.plusDays(1))
                   .filter(currentDate -> routine.getRepeatType().isMatched(currentDate, routine.getRepeatValue()))
                   .map(currentDate -> {
-                    /**부모 카테고리가 null인경우를 검증하여서 null이 아닌경우는 부모 카테고리도 들고오는 로직 */
-                      Category parentCategory = null;
-                      Long parentId = routine.getCategory().getParentId();
-                      if (parentId != null) {
-                          parentCategory = categoryRepository.findById(parentId)
-                              .orElse(null);
-                      }
+                    Category parentCategory = null;
+                    Long parentId = routine.getCategory().getParentId();
+                    if (parentId != null) {
+                      parentCategory = categoryRepository.findById(parentId)
+                          .orElse(null);
+                    }
 
-                      RoutineSchedule routineSchedule = routineScheduleRepository
-                          .findByRoutineIdAndDate(routine.getId(), currentDate);
+                    RoutineSchedule routineSchedule = routineScheduleRepository
+                        .findByRoutineAndDate(routine, currentDate);
 
-                      return RoutineItemDTO.builder()
-                          .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
-                          .routineId(routine.getId())
-                          .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
-                          .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
-                          .name(routine.getContent())
-                          .triggerTime(routine.getTriggerTime())
-                          .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
-                          .isImportant(routine.getIsImportant())
-                          .date(currentDate)
-                          .build();
+                    return RoutineItemDTO.builder()
+                        .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
+                        .routineId(routine.getId())
+                        .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
+                        .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
+                        .name(routine.getContent())
+                        .triggerTime(routine.getTriggerTime())
+                        .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
+                        .isImportant(routine.getIsImportant())
+                        .date(currentDate)
+                        .build();
                   })
           )
           .collect(Collectors.groupingBy(RoutineItemDTO::getDate));
@@ -183,55 +175,52 @@ public class RoutineService {
       response.setRoutines(groupedByDate);
 
       return response;
-  }
-
+    }
   /**
    * 사용자 당일 루틴 조회 입니다
    * return RoutinesDailyResponse
    * 지연로딩으로 routine 들고올때 category와 fetch join사용 했습니다
    * 스케줄러에 없을시 날짜 계산을 해서 루틴들고오는거를 만들었습니다
    */
-    public RoutinesDailyResponse getDailyRoutines(String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
+  public List<RoutineItemDTO> getTodayRoutines(String userEmail) {
+    Member member = memberRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));;
 
-        List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
+    List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
-        List<RoutineItemDTO> responseRoutines = routines.stream()
+    List<RoutineItemDTO> responseRoutines = routines.stream()
 
-            .filter(routine -> routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()))
-            .map(routine -> {
-                Category parentCategory = null;
-                Long parentId = routine.getCategory().getParentId();
-                if (parentId != null) {
-                    parentCategory = categoryRepository.findById(parentId)
-                        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
-                }
+        .filter(routine -> routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()))
+        .map(routine -> {
+          Category parentCategory = null;
+          Long parentId = routine.getCategory().getParentId();
+          if (parentId != null) {
+            parentCategory = categoryRepository.findById(parentId)
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
+          }
 
-                RoutineSchedule routineSchedule = routineScheduleRepository
-                    .findByRoutineIdAndDate(routine.getId(), LocalDate.now());
+          RoutineSchedule routineSchedule = routineScheduleRepository
+              .findByRoutineAndDate(routine, LocalDate.now());
+
+          return RoutineItemDTO.builder()
+              .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
+              .routineId(routine.getId())
+              .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
+              .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
+              .name(routine.getContent())
+              .triggerTime(routine.getTriggerTime())
+              .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
+              .isImportant(routine.getIsImportant())
+              .date(LocalDate.now())
+              .build();
+        })
+        .toList();
 
 
-                return RoutineItemDTO.builder()
-                    .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
-                    .routineId(routine.getId())
-                    .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
-                    .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
-                    .name(routine.getContent())
-                    .triggerTime(routine.getTriggerTime())
-                    .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
-                    .isImportant(routine.getIsImportant())
-                    .date(LocalDate.now())
-                    .build();
-            })
-            .toList();
 
-        RoutinesDailyResponse response = new RoutinesDailyResponse();
-        response.setDate(LocalDate.now());
-        response.setRoutines(responseRoutines);
 
-        return response;
-    }
+    return responseRoutines;
+  }
 
   /**
    * 사용자  루틴 등록 입니다
@@ -241,10 +230,10 @@ public class RoutineService {
     public void createRoutine(RoutineSaveRequest routineSaveRequest, String userId) {
 
       Member member = memberRepository.findByEmail(userId)
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));;
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
       Category category = categoryRepository.findById(routineSaveRequest.getCategoryId())
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
       /** 간단한 로직이라 DTO를 사용할 필요 없을거같아 바로 Routine으로 넣어줬습니다*/
       Routine routine = Routine.builder()

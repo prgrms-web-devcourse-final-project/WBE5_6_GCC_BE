@@ -2,6 +2,7 @@ package com.honlife.core.infra.error.exceptions;
 
 import com.honlife.core.infra.response.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 
 @Slf4j
 public class CommonException extends RuntimeException {
@@ -20,4 +21,18 @@ public class CommonException extends RuntimeException {
     public ResponseCode code() {
         return code;
     }
+
+    public String messageFromCode() {
+        return code != null ? code.getMessage() : null;
+    }
+
+    public String statusCode() {
+        return code != null ? code.getCode() : null;
+    }
+
+    public HttpStatus httpStatus() {
+        return code != null ? code.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+
 }

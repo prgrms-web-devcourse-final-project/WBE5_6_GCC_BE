@@ -2,26 +2,17 @@ package com.honlife.core.app.controller.routine;
 
 import com.honlife.core.app.controller.routine.payload.RoutineDetailResponse;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
-import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
-import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.app.model.routine.code.RepeatType;
+import com.honlife.core.app.controller.routine.payload.RoutinesTodayResponse;
+import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -40,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "루틴", description = "루틴 관련 api 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -55,33 +45,35 @@ public class RoutineController {
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinesResponse
      */
-    @Operation(summary = "사용자 루틴 일주일 조회", description = "특정 날짜의 사용자 일주일 루틴 목록을 조회합니다. 현재 날짜의 기준으로 7주일의 루틴 목록을 조회합니다")
     @GetMapping("/weekly")
     public ResponseEntity<CommonApiResponse<RoutinesResponse>> getWeeklyUserRoutines(
-        @AuthenticationPrincipal UserDetails userDetails
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
+        if(date == null){
+            date = LocalDate.now();
+        }
         String userEmail = userDetails.getUsername();
-
-        RoutinesResponse routinesResponses = routineService.getUserWeeklyRoutines(userEmail);
+        RoutinesResponse routinesResponses = routineService.getUserWeeklyRoutines(userEmail, date);
 
         return ResponseEntity.ok(CommonApiResponse.success(routinesResponses));
 
     }
     /**
-     * 사용자 루틴 일주일 조회 API
+     * 사용자 루틴 오늘날짜 조회 API
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinesDailyResponse
      */
-    @Operation(summary = "사용자 루틴 목록 오늘 날짜 조회", description = " 사용자 오늘 하루 루틴 목록을 조회합니다. 현재 날짜의 기준입니다")
-    @GetMapping("/daily")
-    public ResponseEntity<CommonApiResponse<RoutinesDailyResponse>> getDailyUserRoutines(
+    @GetMapping("/today")
+    public ResponseEntity<CommonApiResponse<RoutinesTodayResponse>> getTodayUserRoutines(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userEmail = userDetails.getUsername();
 
-        RoutinesDailyResponse routinesResponses = routineService.getDailyRoutines(userEmail);
+        List<RoutineItemDTO> routinesResponses = routineService.getTodayRoutines(userEmail);
 
-        return ResponseEntity.ok(CommonApiResponse.success(routinesResponses));
+        RoutinesTodayResponse daily = new RoutinesTodayResponse(routinesResponses, LocalDate.now());
+        return ResponseEntity.ok(CommonApiResponse.success(daily));
 
     }
 
@@ -111,6 +103,7 @@ public class RoutineController {
      * @param bindingResult validation
      * @return
      */
+
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createRoutine(
         @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
