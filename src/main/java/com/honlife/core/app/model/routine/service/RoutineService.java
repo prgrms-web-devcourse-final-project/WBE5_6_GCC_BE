@@ -228,9 +228,9 @@ public class RoutineService {
    * return void
    */
     @Transactional
-    public void createRoutine(RoutineSaveRequest routineSaveRequest, String userId) {
+    public void createRoutine(RoutineSaveRequest routineSaveRequest, String userEmail) {
 
-      Member member = memberRepository.findByEmail(userId)
+      Member member = memberRepository.findByEmail(userEmail)
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
       Category category = categoryRepository.findById(routineSaveRequest.getCategoryId())
@@ -258,8 +258,8 @@ public class RoutineService {
    * transaction으로 updateRoutine에 넣어준다
    */
     @Transactional
-    public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
-      Member member = memberRepository.findByEmail(userId)
+    public void updateRoutine(Long routineId, RoutineSaveRequest request, String userEmail) {
+      Member member = memberRepository.findByEmail(userEmail)
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
       Routine routine = routineRepository.findById(routineId)

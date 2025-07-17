@@ -116,8 +116,8 @@ public class RoutineController {
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
-        String userId = userDetails.getUsername();
-        routineService.createRoutine(routineSaveRequest,userId);
+        String userEmail = userDetails.getUsername();
+        routineService.createRoutine(routineSaveRequest,userEmail);
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(CommonApiResponse.noContent());
@@ -146,8 +146,8 @@ public class RoutineController {
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
-        String userId = userDetails.getUsername();
-        routineService.updateRoutine(routineId, routineSaveRequest, userId);
+        String userEmail = userDetails.getUsername();
+        routineService.updateRoutine(routineId, routineSaveRequest, userEmail);
 
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
