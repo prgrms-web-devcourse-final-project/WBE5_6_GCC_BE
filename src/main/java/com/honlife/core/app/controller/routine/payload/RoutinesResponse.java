@@ -1,6 +1,7 @@
 package com.honlife.core.app.controller.routine.payload;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +15,8 @@ public class RoutinesResponse {
 
     @Schema(description = "조회 날짜", example = "2025-01-15")
     private LocalDate date;
-
     @Schema(description = "루틴 목록")
-    private List<RoutineItem> routines;
+    private Map<String, List<RoutineItem>> routines;
 
     @Getter
     @Setter
@@ -47,5 +47,8 @@ public class RoutinesResponse {
 
         @Schema(description = "중요 루틴 여부", example = "false")
         private Boolean isImportant;
+
+        @Schema(description = "해당 날짜", example = "2025-11-12")
+        private LocalDate date;
     }
 }
