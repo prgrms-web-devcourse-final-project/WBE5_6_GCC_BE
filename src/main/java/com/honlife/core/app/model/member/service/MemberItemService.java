@@ -15,8 +15,8 @@ import com.honlife.core.infra.util.NotFoundException;
 
 @Service
 public class MemberItemService {
-
     private final MemberItemRepository memberItemRepository;
+
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
 
@@ -25,6 +25,13 @@ public class MemberItemService {
         this.memberItemRepository = memberItemRepository;
         this.memberRepository = memberRepository;
         this.itemRepository = itemRepository;
+    }
+
+    public void equipItem(Long memberId, Long itemId) {
+        
+    }
+
+    public void unequipItemByItemId(Long memberId, Long ItemId) {
     }
 
     public List<MemberItemDTO> findAll() {
@@ -81,5 +88,4 @@ public class MemberItemService {
         memberItem.setItem(item);
         return memberItem;
     }
-
 }
