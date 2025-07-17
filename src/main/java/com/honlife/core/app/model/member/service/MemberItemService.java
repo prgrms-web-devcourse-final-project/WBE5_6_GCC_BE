@@ -2,6 +2,7 @@ package com.honlife.core.app.model.member.service;
 
 import java.util.List;
 
+import com.honlife.core.app.controller.member.payload.MemberItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -29,9 +30,14 @@ public class MemberItemService {
         return memberItemRepository.findByMemberEmailAndItemType(userDetails.getUsername(), itemType);
     }
 
-    public List<MemberItem> getItemsByMember(UserDetails userDetails) {
-        return memberItemRepository.findByMemberEmail(userDetails.getUsername());
+    public List<MemberItemResponse> getItemsByMember(Long memberId, ItemType itemType){
+
     }
+
+    public List<MemberItemResponse> getEquippedItemsByMember(Long memberId){
+
+    }
+
 
     public List<MemberItemDTO> findAll() {
         final List<MemberItem> memberItems = memberItemRepository.findAll(Sort.by("id"));

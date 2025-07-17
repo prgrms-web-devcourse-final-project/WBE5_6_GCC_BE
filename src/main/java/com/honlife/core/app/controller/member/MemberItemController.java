@@ -30,40 +30,36 @@ public class MemberItemController {
     private final MemberService memberService;
 
     /**
-     * 로그인한 회원이 보유한 아이템 조회
+     * 로그인한 사용자가 보유한 아이템 전체 조회 (타입 필터 가능)
      *
-     * @param itemType 아이템 타입을 받아 타입별로 검색 가능
-     * @return List<MemberItemResponse>
+     * @param itemType 필터링할 아이템 타입 (nullable)
+     * @param userDetails 인증된 사용자 정보
+     * @return CommonApiResponse<List<MemberItemResponse>>
      */
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getMemberItems(
             @RequestParam(name = "type", required = false) ItemType itemType,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        List<MemberItem> items = (itemType != null)
-                ? memberItemService.getItemsByMemberAndType(userDetails, itemType)
-                : memberItemService.getItemsByMember(userDetails);
-
-        List<MemberItemResponse> responseList = items.stream()
-                .map(item -> MemberItemResponse.builder()
-                        .itemKey(item.getItemKey)
-                        .build())
-                .toList();
-
-
-        return null;
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        List<MemberItemResponse> responseList = memberItemService.getItemsByMember(member.getId(), itemType);
+        return ResponseEntity.ok(CommonApiResponse.success(responseList));
     }
 
+
     /**
-     * 현재 장착하고 있는 아이템 조회
+     * 로그인한 사용자가 현재 장착 중인 아이템 조회
      *
-     * @return List<MemberItemResponse>
+     * @param userDetails 인증된 사용자 정보
+     * @return 장착된 아이템 리스트
      */
     @GetMapping("/equipped")
     public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getEquippedItems(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return null;
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        List<MemberItemResponse> responseList = memberItemService.getEquippedItemsByMember(member.getId());
+        return ResponseEntity.ok(CommonApiResponse.success(responseList));
     }
 
     /**
