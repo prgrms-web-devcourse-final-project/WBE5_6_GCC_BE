@@ -6,6 +6,7 @@ import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.persistence.EntityNotFoundException;
@@ -137,7 +138,8 @@ public class RoutineService {
   public RoutinesResponse getUserWeeklyRoutines(String userEmail) {
 
       Member member = memberRepository.findByEmail(userEmail)
-          .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
+    ;
 
       List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
@@ -191,7 +193,7 @@ public class RoutineService {
    */
     public RoutinesDailyResponse getDailyRoutines(String userEmail) {
         Member member = memberRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
         List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
@@ -203,7 +205,7 @@ public class RoutineService {
                 Long parentId = routine.getCategory().getParentId();
                 if (parentId != null) {
                     parentCategory = categoryRepository.findById(parentId)
-                        .orElseThrow(() -> new RuntimeException("부모 카테고리 없음"));
+                        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
                 }
 
                 RoutineSchedule routineSchedule = routineScheduleRepository
@@ -239,10 +241,10 @@ public class RoutineService {
     public void createRoutine(RoutineSaveRequest routineSaveRequest, String userId) {
 
       Member member = memberRepository.findByEmail(userId)
-          .orElseThrow(()-> new EntityNotFoundException("멤버 엔티티가 존재하지 않습니다"));
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));;
 
       Category category = categoryRepository.findById(routineSaveRequest.getCategoryId())
-          .orElseThrow(() -> new EntityNotFoundException("카테고리 입력은 필수 입니다"));
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
 
       /** 간단한 로직이라 DTO를 사용할 필요 없을거같아 바로 Routine으로 넣어줬습니다*/
       Routine routine = Routine.builder()
@@ -268,13 +270,13 @@ public class RoutineService {
     @Transactional
     public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
       Member member = memberRepository.findByEmail(userId)
-            .orElseThrow(()-> new EntityNotFoundException("멤버 엔티티가 존재하지 않습니다"));
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));;
 
       Routine routine = routineRepository.findById(routineId)
-          .orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다"));
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));;
 
       Category category = categoryRepository.findById(request.getCategoryId())
-          .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다"));
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
 
         routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
             request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(),member);
@@ -288,7 +290,7 @@ public class RoutineService {
   public RoutineDetailResponse getDetailRoutine(Long routineId) {
 
     Routine routine = routineRepository.findByIdWithCategory(routineId)
-        .orElseThrow(() -> new EntityNotFoundException("해당 루틴이 존재하지 않습니다"));
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));;
 
     Category parentCategory = null;
     Long parentId = routine.getCategory().getParentId();
