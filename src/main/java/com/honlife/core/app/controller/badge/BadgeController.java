@@ -2,7 +2,6 @@ package com.honlife.core.app.controller.badge;
 
 import com.honlife.core.app.controller.badge.payload.BadgeResponse;
 import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
-import com.honlife.core.app.model.badge.code.BadgeTier;
 import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import com.honlife.core.app.model.badge.service.BadgeService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -11,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -42,33 +40,18 @@ public class BadgeController {
     public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-            List<BadgeResponse> responses = new ArrayList<>();
-            responses.add(BadgeResponse.builder()
-                .badgeId(1L)
-                .badgeKey("clean_bronze")
-                .badgeName("초보 청소부")
-                .tier(BadgeTier.BRONZE)
-                .how("청소 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("이제 청소 좀 한다고 말할 수 있겠네요!")
-                .categoryName("청소")
-                .isReceived(false)
-                .receivedDate(LocalDateTime.now())
-                .build());
-            responses.add(BadgeResponse.builder()
-                .badgeId(2L)
-                .badgeKey("cook_bronze")
-                .badgeName("초보 요리사")
-                .tier(BadgeTier.BRONZE)
-                .how("요리 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("나름 계란 프라이는 할 수 있다구요!")
-                .categoryName("요리")
-                .isReceived(true)
-                .receivedDate(LocalDateTime.now())
-                .build());
+        // 1. 사용자 이메일 추출
+        String email = userDetails.getUsername();
 
-            return ResponseEntity.ok(CommonApiResponse.success(responses));
+        // 2. Service에서 모든 배지 정보 조회
+        List<BadgeWithMemberInfoDTO> dtos = badgeService.getAllBadgesWithMemberInfo(email);
+
+        // 3. DTO → Response 변환
+        List<BadgeResponse> responses = dtos.stream()
+            .map(BadgeResponse::fromDto)
+            .toList();
+
+        return ResponseEntity.ok(CommonApiResponse.success(responses));
     }
 
     /**
