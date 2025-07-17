@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -84,7 +85,7 @@ public class MemberController {
     @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
         + "변경할 비밀번호만 받습니다.<br>"
         + "사전에 이메일 인증이 되지 않은 회원의 경우, 401응답이 반환됩니다.")
-    @PutMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
@@ -101,7 +102,7 @@ public class MemberController {
      */
     @Operation(summary="회원정보 업데이트", description="회원정보를 업데이트 합니다.<br>"
         + "이름, 닉네임은 필수 정보입니다. 나머지 정보는 비어있어도 되지만, 요청에는 포함되어있어야 합니다.")
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<CommonApiResponse<Void>> updateMember(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody @Valid final MemberPayload memberPayload
