@@ -9,4 +9,6 @@ import com.honlife.core.app.model.notification.domain.Notification;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     Optional<Notification> findByMember_Email(String memberEmail);
+
+    boolean existsByMemberId(Long id);
 }

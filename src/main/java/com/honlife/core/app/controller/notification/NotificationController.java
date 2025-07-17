@@ -1,11 +1,10 @@
 package com.honlife.core.app.controller.notification;
 
 import com.honlife.core.app.controller.notification.payload.NotificationPayload;
+import com.honlife.core.app.controller.notification.wrapper.NotificationWrapper;
 import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.notification.service.NotificationService;
 
@@ -33,9 +31,9 @@ public class NotificationController {
      * @return {@code Void}
      */
     @PutMapping
-    public ResponseEntity<CommonApiResponse<Void>> onOffNotification(
+    public ResponseEntity<CommonApiResponse<Void>> updateNotificationSettings(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestBody NotificationPayload notificationPayload
+        @RequestBody @Valid NotificationPayload notificationPayload
     ) {
         String userEmail = userDetails.getUsername();
         notificationService.updateNotification(userEmail, notificationPayload);
@@ -49,19 +47,14 @@ public class NotificationController {
      * @return {@link NotificationPayload}
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<NotificationPayload>> getAllNotifications(
+    public ResponseEntity<CommonApiResponse<NotificationWrapper>> getNotificationSettings(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (userDetails.getUsername().equals("user01@test.com")) {
-            return ResponseEntity.ok(CommonApiResponse.success(
-                NotificationPayload.builder()
-                    .isEmail(true)
-                    .isRoutine(false)
-                    .isBadge(true).build()
-            ));
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(
-            ResponseCode.INTERNAL_SERVER_ERROR));
+        String userEmail = userDetails.getUsername();
+        NotificationPayload notificationPayload = NotificationPayload.fromDTO(
+            notificationService.getNotification(userEmail)
+        );
+        return ResponseEntity.ok().body(CommonApiResponse.success(new NotificationWrapper(notificationPayload)));
     }
 
 }
