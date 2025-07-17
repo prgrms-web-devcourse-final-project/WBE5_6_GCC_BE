@@ -15,7 +15,7 @@ public class MemberQuestRepositoryCustomImpl implements MemberQuestRepositoryCus
 
 
     @Override
-    public void deleteByMemberId(Long memberId) {
+    public void softDropByMemberId(Long memberId) {
         queryFactory
             .update(memberQuest)
             .set(memberQuest.isActive, false)

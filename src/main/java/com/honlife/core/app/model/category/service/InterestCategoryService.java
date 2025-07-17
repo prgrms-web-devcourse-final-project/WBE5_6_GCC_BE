@@ -153,7 +153,7 @@ public class InterestCategoryService {
      */
     @Transactional
     public void softDropInterestCategoryByMemberId(Long memberId) {
-        interestCategoryRepository.deleteByMemberId(memberId);
+        interestCategoryRepository.softDropByMemberId(memberId);
     }
 
     /**

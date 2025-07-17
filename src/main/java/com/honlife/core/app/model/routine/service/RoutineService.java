@@ -116,7 +116,7 @@ public class RoutineService {
      */
     @Transactional
     public void softDropRoutineByMemberId(Long memberId) {
-        routineRepository.deleteByMemberId(memberId);
+        routineRepository.softDropByMemberId(memberId);
     }
 
     /**

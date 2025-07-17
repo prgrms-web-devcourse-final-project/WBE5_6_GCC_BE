@@ -90,7 +90,7 @@ public class MemberItemService {
      */
     @Transactional
     public void softDropMemberItemByMemberId(Long memberId) {
-        memberItemRepository.deleteByMemberId(memberId);
+        memberItemRepository.softDropByMemberId(memberId);
     }
 
     /**

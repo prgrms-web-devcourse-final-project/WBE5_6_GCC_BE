@@ -87,7 +87,7 @@ public class MemberPointService {
      */
     @Transactional
     public void softDropMemberPointByMemberId(Long memberId) {
-        memberPointRepository.deleteByMemberId(memberId);
+        memberPointRepository.softDropByMemberId(memberId);
     }
 
     /**

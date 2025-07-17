@@ -14,7 +14,7 @@ public class RoutineRepositoryCustomImpl implements RoutineRepositoryCustom {
 
     QRoutine routine = QRoutine.routine;
 
-    public void deleteByMemberId(Long memberId){
+    public void softDropByMemberId(Long memberId){
         queryFactory
             .update(routine)
             .set(routine.isActive, false)

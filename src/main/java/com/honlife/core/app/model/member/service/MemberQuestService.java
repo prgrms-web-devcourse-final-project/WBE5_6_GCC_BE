@@ -85,7 +85,7 @@ public class MemberQuestService {
      */
     @Transactional
     public void softDropMemberQuestByMemberId(Long memberId) {
-        memberQuestRepository.deleteByMemberId(memberId);
+        memberQuestRepository.softDropByMemberId(memberId);
     }
 
     /**

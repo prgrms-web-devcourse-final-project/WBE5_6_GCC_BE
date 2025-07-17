@@ -136,7 +136,7 @@ public class CategoryService {
      */
     @Transactional
     public void softDropCategoryByMemberId(Long memberId) {
-        categoryRepository.deleteByMemberId(memberId);
+        categoryRepository.softDropByMemberId(memberId);
     }
 
     /**

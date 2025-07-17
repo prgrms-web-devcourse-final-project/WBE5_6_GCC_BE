@@ -14,7 +14,7 @@ public class InterestCategoryRepositoryCustomImpl implements InterestCategoryRep
     QInterestCategory interestCategory = QInterestCategory.interestCategory;
 
     @Override
-    public void deleteByMemberId(Long memberId) {
+    public void softDropByMemberId(Long memberId) {
         queryFactory
             .update(interestCategory)
             .set(interestCategory.isActive, false)

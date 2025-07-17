@@ -14,7 +14,7 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
     QCategory category = QCategory.category;
 
     @Override
-    public void deleteByMemberId(Long memberId) {
+    public void softDropByMemberId(Long memberId) {
         queryFactory
             .update(category)
             .set(category.isActive, false)

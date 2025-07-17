@@ -89,7 +89,7 @@ public class MemberBadgeService {
      */
     @Transactional
     public void softDropMemberBadgeByMemberId(Long memberId) {
-        memberBadgeRepository.deleteByMemberId(memberId);
+        memberBadgeRepository.softDropByMemberId(memberId);
     }
 
     /**
