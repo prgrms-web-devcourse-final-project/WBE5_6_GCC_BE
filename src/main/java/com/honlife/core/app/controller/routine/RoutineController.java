@@ -53,7 +53,7 @@ public class RoutineController {
     }
     /**
      * 사용자 루틴 오늘 날짜 조회 API
-     * @param userDetails 로그인된 사용자 정보
+
      * @return UserRoutinesPayload
      */
     @Operation(
@@ -62,9 +62,7 @@ public class RoutineController {
     )
     @GetMapping("/today")
     public ResponseEntity<CommonApiResponse<List<RoutineItemDTO>>> getUserRoutines(
-        @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userId = userDetails.getUsername();
 
         List<RoutineItemDTO> routines = new ArrayList<>();
 
