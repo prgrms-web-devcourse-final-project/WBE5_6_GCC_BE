@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.auth;
 
+import com.honlife.core.app.controller.auth.payload.DuplicationCheckRequest;
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import com.honlife.core.app.controller.auth.payload.VerifyCodeRequestTest;
 import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
@@ -149,19 +150,28 @@ public class AuthController {
      * @param nickname 사용자의 닉네임
      * @return {@link CommonApiResponse}의 data에 중복여부를 담아 반환합니다.
      */
-    @PostMapping("/check/{email}")
-    @Operation(summary = "이메일 중복 검사", description = "이메일 중복 여부를 검사합니다.")
+    @PostMapping("/check")
+    @Operation(summary = "중복 검사", description = "중복된 이메일 또는 닉네임이 존재하는지 확인합니다.<br>"
+        + "이미 존재하는 이메일 또는 닉네임인 경우, <code>409(Conflict)</code>를 반환합니다.<br>"
+        + "요청시 이메일 또는 닉네임 둘중 하나만 값이 있어야 하며, 둘다 null이거나 데이터를 가지고 있다면 <code>400(BadRequest)</code>를 반환합니다.")
     public ResponseEntity<CommonApiResponse<Map<String, Boolean>>> isEmailDuplicated(
-        @PathVariable(name = "email", required = false)
-        @Schema(description = "이메일", example = "user01@test.com") final String email
+        @RequestBody DuplicationCheckRequest checkRequest
     ) {
-        if (email.equals("user01@test.com")) {
-            return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
-        } else if (!email.equals("user01@test.com")) {
-            return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
-        } else {
-            return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+        String email = checkRequest.getEmail();
+        String nickname = checkRequest.getNickname();
+        if (email != null && nickname == null) {
+            if(email.equals("user01@test.com")){
+                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
+            } else {
+                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
+            }
+        } else if (email == null && nickname != null) {
+            if(nickname.equals("닉네임1")){
+                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
+            } else {
+                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
+            }
         }
-
+        return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
     }
 }
