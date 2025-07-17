@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.app.model.category.domain.Category;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -86,5 +87,15 @@ public class MemberQuestService {
     @Transactional
     public void deleteMemberQuestByMemberId(Long memberId) {
         memberQuestRepository.deleteByMemberId(memberId);
+    }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 멤버 퀘스트를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link MemberQuest}
+     */
+    public MemberQuest findFirstMemberQuestByMemberAndIsActive(Member member, boolean isActive) {
+        return memberQuestRepository.findFirstByMemberAndIsActive(member, isActive);
     }
 }
