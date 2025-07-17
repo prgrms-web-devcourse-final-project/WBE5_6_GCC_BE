@@ -39,6 +39,9 @@ public class Item extends BaseEntity {
     @Column(length = 50)
     private String name;
 
+    @Column(length = 50)
+    private String description;
+
     @Column
     private Integer price;
 
