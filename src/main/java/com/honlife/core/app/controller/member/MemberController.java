@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.member;
 
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
+import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -121,7 +122,15 @@ public class MemberController {
      */
     @DeleteMapping
     @Operation(summary = "회원 탈퇴", description = "회원탈퇴를 처리합니다.<br>"
-        + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요.")
+        + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요."
+        + "WithdrawType"
+        +"TOO_MUCH_EFFORT<br>"
+        + "ROUTINE_MISMATCH<br>"
+        + "UX_ISSUE<br>"
+        + "MISSING_FEATURE<br>"
+        + "USING_OTHER_APP<br>"
+        + "NO_MOTIVATION<br>"
+        + "ETC<br>")
     public ResponseEntity<CommonApiResponse<Void>> deleteMember(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody @Valid final MemberWithdrawRequest withdrawRequest
@@ -131,10 +140,11 @@ public class MemberController {
 //            throw new ReferencedException(referencedWarning);
 //        }
 //        memberService.delete(id);
-
         // 예시 응답
         String userEmail = userDetails.getUsername();
         if(userEmail.equals("user01@test.com")) {
+            if(withdrawRequest.getWithdrawType()== WithdrawType.ETC && withdrawRequest.getEtcReason().isBlank())
+                return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
         return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
