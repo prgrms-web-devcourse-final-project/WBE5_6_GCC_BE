@@ -43,10 +43,10 @@ public class CategoryController {
      * @param majorName 카테고리 이름이 넘어오지 않으면 소분류 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
      * @return List<CategoryResponse>
      */
-    @Operation(summary = "카테고리 조회", description = "major_name 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, major_name 값이 있다면 해당 카테고리의 소분류 정보를 조회합니다.")
+    @Operation(summary = "카테고리 조회", description = "majorName 값을 넣지 않으면 로그인한 유저가 가지고 있는 대분류, 소분류 카테고리 전체 조회를, majorName 값이 있다면 해당 카테고리의 소분류 정보를 조회합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<CategoryResponse>>> getCategories(
-        @Schema(name="major_name", description="대분류 카테고리 이름을 적어주세요", example = "청소")
+        @Schema(description="대분류 카테고리 이름을 적어주세요", example = "청소 / 정리")
         @RequestParam(required = false) String majorName
     ) {
         if(majorName ==null){
@@ -56,7 +56,7 @@ public class CategoryController {
             response.add(CategoryResponse.builder()
                 .categoryId(1L)
                 .memberId(null)
-                .categoryName("청소")
+                .categoryName("청소 / 정리")
                 .categoryType(CategoryType.MAJOR)
                 .parentId(null)
                 .parentName(null)
@@ -76,7 +76,7 @@ public class CategoryController {
                 .categoryName("화장실 청소")
                 .categoryType(CategoryType.SUB)
                 .parentId(1L)
-                .parentName("청소")
+                .parentName("청소 / 정리")
                 .build());
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
@@ -84,7 +84,7 @@ public class CategoryController {
         // name으로 넘어온 게 있다면 유저의 카테고리 중에서 해당하는 이름 리턴
         switch (majorName) {
             // 소분류 카테고리가 있는 경우
-            case "청소" -> {
+            case "청소 / 정리" -> {
                 List<CategoryResponse> response = new ArrayList<>();
                 response.add(CategoryResponse.builder()
                     .categoryId(3L)
@@ -92,7 +92,7 @@ public class CategoryController {
                     .categoryName("화장실 청소")
                     .categoryType(CategoryType.SUB)
                     .parentId(1L)
-                    .parentName("청소")
+                    .parentName("청소 / 정리")
                     .build());
                 return ResponseEntity.ok(CommonApiResponse.success(response));
             }
@@ -130,7 +130,7 @@ public class CategoryController {
             CategoryResponse response = CategoryResponse.builder()
                 .categoryId(1L)
                 .memberId(null)
-                .categoryName("청소")
+                .categoryName("청소 / 정리")
                 .categoryType(CategoryType.MAJOR)
                 .parentId(null)
                 .parentName(null)
@@ -155,7 +155,7 @@ public class CategoryController {
                 .categoryName("화장실 청소")
                 .categoryType(CategoryType.SUB)
                 .parentId(1L)
-                .parentName("청소")
+                .parentName("청소 / 정리")
                 .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
