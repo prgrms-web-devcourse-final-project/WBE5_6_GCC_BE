@@ -91,4 +91,14 @@ public class MemberBadgeService {
     public void deleteMemberBadgeByMemberId(Long memberId) {
         memberBadgeRepository.deleteByMemberId(memberId);
     }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 멤버 뱃지를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link MemberBadge}
+     */
+    public MemberBadge findFirstMemberBadgeByMemberAndIsActive(Member member, boolean isActive) {
+        return memberBadgeRepository.findFirstByMemberAndIsActive(member, isActive);
+    }
 }

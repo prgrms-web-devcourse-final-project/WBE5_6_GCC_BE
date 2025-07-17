@@ -12,4 +12,11 @@ public interface MemberBadgeRepository extends JpaRepository<MemberBadge, Long>,
 
     MemberBadge findFirstByBadge(Badge badge);
 
+    /**
+     * 해당 멤버와 연관된 첫번째 멤버 뱃지를 조회
+     * @param member
+     * @param isActive
+     * @return {@link MemberBadge}
+     */
+    MemberBadge findFirstByMemberAndIsActive(Member member, Boolean isActive);
 }
