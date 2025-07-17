@@ -155,4 +155,14 @@ public class InterestCategoryService {
     public void deleteInterestCategoryByMemberId(Long memberId) {
         interestCategoryRepository.deleteByMemberId(memberId);
     }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 선호 카테고리를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link InterestCategory}
+     */
+    public InterestCategory findFirstInterestCategoryByMemberAndIsActive(Member member, boolean isActive) {
+        return interestCategoryRepository.findFirstByMemberAndIsActive(member,isActive);
+    }
 }
