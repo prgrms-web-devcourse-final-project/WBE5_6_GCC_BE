@@ -46,8 +46,9 @@ public class ItemController {
 
         // 로그인한 회원의 이메일과 요청 파라미터로 전달된 itemType을 기반으로
         // 해당 회원이 보유한 여부(isOwned)를 포함한 아이템 리스트 조회
-
-        List<ItemResponse> items = itemService.getAllItemsWithOwnership(userDetails.getUsername(), itemType);
+        // 이메일로 Member 엔티티 조회
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        List<ItemResponse> items = itemService.getAllItemsWithOwnership(member.getId(), itemType);
         return ResponseEntity.ok(CommonApiResponse.success(items));
     }
 
@@ -69,29 +70,12 @@ public class ItemController {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
         }
-        try {
-            // 사용자 정보 조회
-            Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        // 사용자 정보 조회
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        ItemResponse itemResponse = itemService.getItemResponseByKey(itemKey, member.getId());
 
-            // 보유 여부 확인
-            boolean isOwned = memberItemService.isItemOwnByMember(member.getId(), item.getId());
+        return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
 
-
-            ItemResponse itemResponse = ItemResponse.builder()
-                    .itemId(item.getId())
-                    .itemKey(item.getItemKey())
-                    .itemName(item.getName())
-                    .itemDescription(item.getDescription())
-                    .itemType(item.getType())
-                    .itemPoint(item.getPrice())
-                    .isOwned(isOwned)
-                    .build();
-
-            return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
-        } catch (CommonException e) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
     }
 
     /**
