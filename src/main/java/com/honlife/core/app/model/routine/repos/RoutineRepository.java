@@ -13,4 +13,12 @@ public interface RoutineRepository extends JpaRepository<Routine, Long>, Routine
     Routine findFirstByMember(Member member);
 
     Routine findFirstByCategory(Category category);
+
+    /**
+     * 해당 멤버와 연관된 첫번째 루틴을 조회
+     * @param member
+     * @param isActive
+     * @return {@link Routine}
+     */
+    Routine findFirstByMemberAndIsActive(Member member, Boolean isActive);
 }

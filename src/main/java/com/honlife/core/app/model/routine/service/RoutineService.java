@@ -118,4 +118,15 @@ public class RoutineService {
     public void deleteRoutineByMemberId(Long memberId) {
         routineRepository.deleteByMemberId(memberId);
     }
+
+    /**
+     * 멤버와 연관된 루틴 중 활성화된 루틴중 가장 첫번째 것을 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link Routine}
+     */
+    public Routine findFirstRoutineByMemberAndIsActive(Member member, boolean isActive) {
+
+        return routineRepository.findFirstByMemberAndIsActive(member, isActive);
+    }
 }
