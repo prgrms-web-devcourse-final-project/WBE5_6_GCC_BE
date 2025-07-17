@@ -196,7 +196,7 @@ public class RoutineService {
           Long parentId = routine.getCategory().getParentId();
           if (parentId != null) {
             parentCategory = categoryRepository.findById(parentId)
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
           }
 
           RoutineSchedule routineSchedule = routineScheduleRepository
@@ -259,13 +259,13 @@ public class RoutineService {
     @Transactional
     public void updateRoutine(Long routineId, RoutineSaveRequest request, String userId) {
       Member member = memberRepository.findByEmail(userId)
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));;
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
       Routine routine = routineRepository.findById(routineId)
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));;
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
       Category category = categoryRepository.findById(request.getCategoryId())
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
         routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
             request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(),member);
@@ -274,7 +274,6 @@ public class RoutineService {
   /**
    * 사용자 루틴 단건 조회 입니다
    * return void
-   * transaction으로 updateRoutine에 넣어준다
    */
   public RoutineDetailResponse getDetailRoutine(Long routineId) {
 
@@ -285,7 +284,7 @@ public class RoutineService {
     Long parentId = routine.getCategory().getParentId();
     if (parentId != null) {
       parentCategory = categoryRepository.findById(parentId)
-          .orElse(null);
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
     }
 
 
