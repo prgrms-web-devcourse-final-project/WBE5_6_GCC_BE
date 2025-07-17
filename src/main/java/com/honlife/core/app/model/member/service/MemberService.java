@@ -5,6 +5,9 @@ import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.service.CategoryService;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.notification.domain.Notification;
+import com.honlife.core.app.model.notification.repos.NotificationRepository;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.app.model.withdraw.dto.WithdrawReasonDTO;
 import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
@@ -50,6 +53,8 @@ public class MemberService {
     private final MemberQuestService memberQuestService;
     private final MemberBadgeService memberBadgeService;
     private final MemberPointService memberPointService;
+    private final MemberPointRepository memberPointRepository;
+    private final NotificationRepository notificationRepository;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -358,7 +363,7 @@ public class MemberService {
      * @param withdrawRequest 회원 탈퇴 이유를 저장하는 dto
      */
     @Transactional
-    public void saveWithdrawReason(@Valid MemberWithdrawRequest withdrawRequest) {
+    public void saveWithdrawReason(MemberWithdrawRequest withdrawRequest) {
 
         WithdrawReasonDTO withdraw = new WithdrawReasonDTO();
 
