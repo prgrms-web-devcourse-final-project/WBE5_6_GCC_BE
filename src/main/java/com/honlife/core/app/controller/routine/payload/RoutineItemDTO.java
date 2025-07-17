@@ -37,7 +37,7 @@ public class RoutineItemDTO {
   @Schema(description = "중요 여부", example = "true")
   private Boolean isImportant;
 
-  @Schema(description = "해당 날짜", example = "true")
-  private Boolean date;
+  @Schema(description = "해당 날짜", example = "2025-07-12")
+  private LocalDate date;
 
 }
