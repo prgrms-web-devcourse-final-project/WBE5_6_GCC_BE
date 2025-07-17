@@ -8,13 +8,13 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class RoutinesDailyResponse {
+public class RoutinesTodayResponse {
 
   private List<RoutineItemDTO> routines;
 
   private LocalDate date;
 
-  public RoutinesDailyResponse(List<RoutineItemDTO> routines, LocalDate date) {
+  public RoutinesTodayResponse(List<RoutineItemDTO> routines, LocalDate date) {
     this.routines = routines;
     this.date = date;
   }

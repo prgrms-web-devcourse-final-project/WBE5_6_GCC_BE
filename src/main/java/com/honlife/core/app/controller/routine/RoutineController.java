@@ -2,8 +2,8 @@ package com.honlife.core.app.controller.routine;
 
 import com.honlife.core.app.controller.routine.payload.RoutineDetailResponse;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
-import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
+import com.honlife.core.app.controller.routine.payload.RoutinesTodayResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.app.model.routine.service.RoutineService;
@@ -58,26 +58,25 @@ public class RoutineController {
             date = LocalDate.now();
         }
         String userEmail = userDetails.getUsername();
-
         RoutinesResponse routinesResponses = routineService.getUserWeeklyRoutines(userEmail, date);
 
         return ResponseEntity.ok(CommonApiResponse.success(routinesResponses));
 
     }
     /**
-     * 사용자 루틴 일주일 조회 API
+     * 사용자 루틴 오늘날짜 조회 API
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinesDailyResponse
      */
     @GetMapping("/today")
-    public ResponseEntity<CommonApiResponse<RoutinesDailyResponse>> getDailyUserRoutines(
+    public ResponseEntity<CommonApiResponse<RoutinesTodayResponse>> getTodayUserRoutines(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userEmail = userDetails.getUsername();
 
-        List<RoutineItemDTO> routinesResponses = routineService.getDailyRoutines(userEmail);
+        List<RoutineItemDTO> routinesResponses = routineService.getTodayRoutines(userEmail);
 
-        RoutinesDailyResponse daily = new RoutinesDailyResponse(routinesResponses, LocalDate.now());
+        RoutinesTodayResponse daily = new RoutinesTodayResponse(routinesResponses, LocalDate.now());
         return ResponseEntity.ok(CommonApiResponse.success(daily));
 
     }
@@ -88,13 +87,6 @@ public class RoutineController {
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinePayload
      */
-    @Operation(summary = "사용자 루틴 오늘 날짜 조회", description = "새로운 루틴을 등록합니다. <br>카테고리 ID와 루틴 내용은 필수입니다. <br><br>" +
-        "<strong>RepeatType 설명:</strong><br>" +
-        "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
-        "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
-        "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
-        "• CUSTOM: 사용자 정의 반복 패턴<br>" +
-        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<RoutineDetailResponse>> getRoutine(
         @PathVariable(name = "id") Long routineId,
@@ -129,13 +121,7 @@ public class RoutineController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "루틴 등록", description = "새로운 루틴을 등록합니다. <br>카테고리 ID와 루틴 내용은 필수입니다. <br><br>" +
-        "<strong>RepeatType 설명:</strong><br>" +
-        "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
-        "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
-        "• MONTHLY: 매월 특정 일 반복 (repeatValue 예시: '1,15,30' = 매월 1일,15일,30일)<br>" +
-        "• CUSTOM: 사용자 정의 반복 패턴<br>" +
-        "요일 번호: 1=월요일~7=일요일<br><br>*실제 DB에 반영되지 않음*")
+
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createRoutine(
         @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
@@ -208,7 +194,6 @@ public class RoutineController {
      * @return
      */
     @DeleteMapping("/{id}")
-
     public ResponseEntity<CommonApiResponse<Void>> deleteRoutine(
         @PathVariable(name = "id")
         @Schema(description = "루틴 ID", example = "1") final Long routineId,

@@ -120,7 +120,7 @@ public class RoutineService {
         return null;
     }
     /**
-     * 사용자 루틴 조회 입니다
+     * 사용자 루틴 일주일 조회 입니다
      * return RoutinesResponse
      * 지연로딩으로 fetch join사용 했습니다
      * 스케줄러에 들어가지있지 않을경우 값을 넣어주는 로직까지 추가했습니다
@@ -150,7 +150,7 @@ public class RoutineService {
                       }
 
                       RoutineSchedule routineSchedule = routineScheduleRepository
-                          .findByRoutineIdAndDate(routine.getId(), currentDate);
+                          .findByRoutineAndDate(routine, currentDate);
 
                       return RoutineItemDTO.builder()
                           .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
@@ -175,7 +175,7 @@ public class RoutineService {
   }
 
 
-    public List<RoutineItemDTO> getDailyRoutines(String userEmail) {
+    public List<RoutineItemDTO> getTodayRoutines(String userEmail) {
         Member member = memberRepository.findByEmail(userEmail)
             .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
 
@@ -193,7 +193,7 @@ public class RoutineService {
                 }
 
                 RoutineSchedule routineSchedule = routineScheduleRepository
-                    .findByRoutineIdAndDate(routine.getId(), LocalDate.now());
+                    .findByRoutineAndDate(routine, LocalDate.now());
 
                 return RoutineItemDTO.builder()
                     .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
