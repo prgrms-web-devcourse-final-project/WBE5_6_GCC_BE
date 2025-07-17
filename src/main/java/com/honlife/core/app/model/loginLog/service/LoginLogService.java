@@ -1,7 +1,6 @@
 package com.honlife.core.app.model.loginLog.service;
 
-import com.honlife.core.app.model.member.service.MemberService;
-import java.time.LocalDateTime;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -72,6 +71,7 @@ public class LoginLogService {
      * @param email userEmail
      */
     @Async
+    @Transactional
     public void newLog(String email) {
         Member member = memberRepository.findByEmailIgnoreCase(email);
         LoginLog loginLog = LoginLog.builder()
