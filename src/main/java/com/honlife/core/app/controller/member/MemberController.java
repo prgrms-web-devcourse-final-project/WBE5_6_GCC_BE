@@ -4,8 +4,8 @@ import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordReques
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import com.honlife.core.infra.error.exceptions.CommonException;
-import com.honlife.core.infra.util.ReferencedException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.ReferencedException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

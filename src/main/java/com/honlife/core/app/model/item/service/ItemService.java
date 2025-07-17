@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.item.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -8,8 +9,8 @@ import com.honlife.core.app.model.item.dto.ItemDTO;
 import com.honlife.core.app.model.item.repos.ItemRepository;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 
 
 @Service
@@ -34,7 +35,7 @@ public class ItemService {
     public ItemDTO get(final Long id) {
         return itemRepository.findById(id)
             .map(item -> mapToDTO(item, new ItemDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ITEM));
     }
 
     public Long create(final ItemDTO itemDTO) {
@@ -45,7 +46,7 @@ public class ItemService {
 
     public void update(final Long id, final ItemDTO itemDTO) {
         final Item item = itemRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ITEM));
         mapToEntity(itemDTO, item);
         itemRepository.save(item);
     }
@@ -84,7 +85,7 @@ public class ItemService {
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Item item = itemRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ITEM));
         final MemberItem itemMemberItem = memberItemRepository.findFirstByItem(item);
         if (itemMemberItem != null) {
             referencedWarning.setKey("item.memberItem.item.referenced");
