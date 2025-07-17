@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.auth;
 
 import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
 import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
+import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,6 +36,7 @@ public class AuthController {
     
     private final AuthService authService;
     private final MemberService memberService;
+    private final LoginLogService loginLogService;
 
 
     /**
@@ -49,6 +51,7 @@ public class AuthController {
         HttpServletResponse response
     ) {
         TokenDto tokenDto = authService.signin(loginRequest);
+        loginLogService.newLog(loginRequest.getEmail());
         
         ResponseCookie accessToken = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
             tokenDto.getAccessToken(), tokenDto.getExpiresIn());
