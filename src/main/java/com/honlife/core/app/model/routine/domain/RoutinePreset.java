@@ -23,14 +23,14 @@ public class RoutinePreset extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "routinePreset_sequence",
-            sequenceName = "routinePreset_sequence",
+            name = "routine_preset_sequence",
+            sequenceName = "routine_preset_sequence",
             allocationSize = 1,
             initialValue = 10000
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "routinePreset_sequence"
+            generator = "routine_preset_sequence"
     )
     private Long id;
 
