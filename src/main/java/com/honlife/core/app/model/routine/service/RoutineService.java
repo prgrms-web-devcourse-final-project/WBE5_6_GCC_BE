@@ -279,7 +279,7 @@ public class RoutineService {
   public RoutineDetailResponse getDetailRoutine(Long routineId) {
 
     Routine routine = routineRepository.findByIdWithCategory(routineId)
-        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));;
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
     Category parentCategory = null;
     Long parentId = routine.getCategory().getParentId();
@@ -310,7 +310,7 @@ public class RoutineService {
   @Transactional
   public void deleteRoutine(Long routineId) {
     Routine routine = routineRepository.findByIdWithMember(routineId)
-        .orElseThrow(() -> new EntityNotFoundException("루틴이 존재하지 않습니다"));
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
 
     routine.setIsActive(false);
