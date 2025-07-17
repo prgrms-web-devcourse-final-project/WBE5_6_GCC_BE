@@ -36,7 +36,6 @@ public class AuthController {
     
     private final AuthService authService;
     private final MemberService memberService;
-    private final LoginLogService loginLogService;
 
 
     /**
@@ -51,7 +50,6 @@ public class AuthController {
         HttpServletResponse response
     ) {
         TokenDto tokenDto = authService.signin(loginRequest);
-        loginLogService.newLog(loginRequest.getEmail());
         
         ResponseCookie accessToken = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
             tokenDto.getAccessToken(), tokenDto.getExpiresIn());

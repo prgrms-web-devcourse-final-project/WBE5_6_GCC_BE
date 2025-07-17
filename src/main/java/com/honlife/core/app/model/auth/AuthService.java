@@ -1,5 +1,7 @@
 package com.honlife.core.app.model.auth;
 
+import com.honlife.core.app.model.loginLog.repos.LoginLogRepository;
+import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +29,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final UserBlackListRepository userBlackListRepository;
+    private final LoginLogService loginLogService;
     
     public TokenDto signin(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -45,6 +48,9 @@ public class AuthService {
     public TokenDto processTokenSignin(String email, String roles) {
         // black list 에 있다면 해제
         userBlackListRepository.deleteById(email);
+
+        // 로그인시 자동으로 로그인 기록 저장
+        loginLogService.newLog(email);
         
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         AccessTokenDto accessToken = jwtTokenProvider.generateAccessToken(email, roles);
