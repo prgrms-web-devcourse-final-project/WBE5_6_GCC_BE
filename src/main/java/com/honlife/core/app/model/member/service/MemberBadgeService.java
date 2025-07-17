@@ -5,6 +5,7 @@ import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.model.MemberBadgeDTO;
+import com.honlife.core.app.model.member.model.MemberBadgeDetailDTO;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
@@ -52,22 +53,37 @@ public class MemberBadgeService {
     }
 
     /**
-     * 특정 사용자가 보유한 모든 배지 조회 (이메일로) - 새로 추가
+     * 특정 사용자가 보유한 모든 배지의 상세 정보 조회 (이메일로)
      * @param email 사용자 이메일
-     * @return 사용자가 보유한 배지 DTO 리스트
+     * @return 사용자가 보유한 배지 상세 정보 리스트
      */
     @Transactional(readOnly = true)
-    public List<MemberBadgeDTO> getMemberBadgesByEmail(String email) {
+    public List<MemberBadgeDetailDTO> getMemberBadgeDetails(String email) {
         // 1. MemberService를 통해 사용자 조회
         MemberDTO memberDTO = memberService.findMemberByEmail(email);
 
         // 2. 사용자가 보유한 배지들 조회
         List<MemberBadge> memberBadges = memberBadgeRepository.findByMemberId(memberDTO.getId());
 
-        // 3. DTO로 변환 및 활성화된 것만 필터링
+        // 3. 활성화된 배지만 필터링하고 상세 정보 DTO로 변환
         return memberBadges.stream()
             .filter(mb -> mb.getIsActive())
-            .map(mb -> mapToDTO(mb, new MemberBadgeDTO()))
+            .map(memberBadge -> {
+                Badge badge = memberBadge.getBadge();
+
+                return MemberBadgeDetailDTO.builder()
+                    // MemberBadge 정보
+                    .memberBadgeId(memberBadge.getId())
+                    .receivedDate(memberBadge.getCreatedAt())
+
+                    // Badge 정보
+                    .badgeId(badge.getId())
+                    .badgeKey(badge.getKey())
+                    .badgeName(badge.getName())
+                    .badgeTier(badge.getTier())
+                    .badgeInfo(badge.getInfo())
+                    .build();
+            })
             .toList();
     }
 
