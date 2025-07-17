@@ -30,7 +30,8 @@ public class MemberBadgeController {
     }
 
     /**
-     * 현재 로그인한 회원이 보유하는 모든 업적을 조회하는 API - 최종 구현
+     * 현재 로그인한 회원이 보유하는 모든 업적을 조회하는 API
+     * @return List<MemberBadgeResponse> 로그인한 사용자가 보유한 모든 업적에 대한 정보
      */
     @Operation(summary = "로그인 한 회원이 보유한 업적 조회", description = "로그인된 사용자가 보유한 업적를 조회합니다.")
     @GetMapping

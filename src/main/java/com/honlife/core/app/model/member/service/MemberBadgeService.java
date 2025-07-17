@@ -67,7 +67,7 @@ public class MemberBadgeService {
 
         // 3. 활성화된 배지만 필터링하고 상세 정보 DTO로 변환
         return memberBadges.stream()
-            .filter(mb -> mb.getIsActive())
+            .filter(mb -> mb.getIsActive() && mb.getBadge() != null && mb.getBadge().getIsActive())
             .map(memberBadge -> {
                 Badge badge = memberBadge.getBadge();
 
