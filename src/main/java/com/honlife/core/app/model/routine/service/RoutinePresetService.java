@@ -1,5 +1,7 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse.PresetItem;
+import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -76,4 +78,20 @@ public class RoutinePresetService {
         return routinePreset;
     }
 
+    /**
+     * 카테고리 아이디를 통해 조회하여 레포지토리에서 가져온 루틴 프리셋을 dto에 담아 반환합니다.
+     * @param categoryId 조회 기준이 되는 카테고리 아이디
+     * @return {@link PresetItem} 의 리스트
+     */
+    public List<PresetItem> getRoutinePresets(Long categoryId) {
+        List<RoutinePreset> routinePresets = routinePresetRepository.getRoutinePresetByCategoryId(categoryId);
+
+        // RoutinePreset 엔티티를 PresetItem로 변환해 리스트로 반환
+        return routinePresets.stream().map(
+            routinePreset -> PresetItem.builder()
+                .presetId(routinePreset.getId())
+                .categoryId(categoryId)
+                .content(routinePreset.getContent())
+                .build()).toList();
+    }
 }
