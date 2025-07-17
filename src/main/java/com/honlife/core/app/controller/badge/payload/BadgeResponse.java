@@ -1,6 +1,7 @@
 package com.honlife.core.app.controller.badge.payload;
 
 import com.honlife.core.app.model.badge.code.BadgeTier;
+import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,4 +37,18 @@ public class BadgeResponse {
 
     private LocalDateTime receivedDate;
 
+    public static BadgeResponse fromDto(BadgeWithMemberInfoDTO dto) {
+        return BadgeResponse.builder()
+            .badgeId(dto.getBadgeId())
+            .badgeKey(dto.getBadgeKey())
+            .badgeName(dto.getBadgeName())
+            .tier(dto.getTier())
+            .how(dto.getHow())
+            .requirement(dto.getRequirement())
+            .info(dto.getInfo())
+            .categoryName(dto.getCategoryName())
+            .isReceived(dto.getIsReceived())
+            .receivedDate(dto.getReceivedDate())
+            .build();
+    }
 }

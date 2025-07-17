@@ -3,11 +3,19 @@ package com.honlife.core.app.model.member.service;
 import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
+import com.honlife.core.app.controller.member.payload.MemberPayload;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import java.util.Optional;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.domain.InterestCategory;
@@ -54,6 +62,7 @@ public class MemberService {
     private final InterestCategoryRepository interestCategoryRepository;
     private final MemberPointRepository memberPointRepository;
     private final ModelMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -190,7 +199,6 @@ public class MemberService {
         return null;
     }
 
-
     /**
      * 회원 테이블에 이미 존재하는 닉네임인지 확인
      * @param nickname 검사하고자 하는 닉네임
@@ -273,4 +281,65 @@ public class MemberService {
         return mapper.map(targetMember, MemberDTO.class);
     }
 
+    /**
+     * 사용자가 입력한 oldPassword의 값이 현재 DB에 저장되어 있는 password과 같은지 비교
+     * @param userEmail 회원 이메일
+     * @param oldPassword 회원이 입력한 기존 비밀 번호
+     * @return {@code Boolean}
+     */
+    public Boolean isCorrectPassword(String userEmail, String oldPassword) {
+        Optional<Member> user = memberRepository.findByEmailAndIsActive(userEmail,true);
+        String savedPassword="";
+        if(user.isPresent()){
+            savedPassword = user.get().getPassword();
+        }
+        return passwordEncoder.matches(oldPassword, savedPassword);
+    }
+
+    /**
+     * 비밀번호를 업데이트 합니다.
+     * @param userEmail 유저 이메일
+     * @param newPassword 새로 변경할 비밀번호
+     * @return
+     */
+    @Transactional
+    public void updatePassword(String userEmail, String newPassword) {
+        Member targetMember = memberRepository
+            .findByEmailAndIsActive(userEmail, true).orElseThrow(() -> new CommonException(
+                ResponseCode.NOT_FOUND_MEMBER));
+
+        targetMember.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(targetMember);
+    }
+
+    /**
+     * 멤버 정보를 update 합니다. 관련 정보가 null로 넘어온 경우 기존의 데이터를 유지합니다.
+     * @param userEmail 유저 이메일
+     * @param updatedMemberDTO 유저의 새로운 정보가 담긴 DTO
+     */
+    @Transactional
+    public void updateMember(String userEmail, MemberDTO updatedMemberDTO) {
+        Member targetMember = memberRepository
+            .findByEmailAndIsActive(userEmail, true).orElseThrow(() -> new CommonException(
+                ResponseCode.NOT_FOUND_MEMBER));
+
+        // 요청에 반드시 포함되는 필드
+        targetMember.setName(updatedMemberDTO.getName());
+        targetMember.setNickname(updatedMemberDTO.getNickname());
+
+        // 관련 정보가 null로 넘어온 경우 기존의 데이터 유지
+        if(updatedMemberDTO.getResidenceExperience()!=null){
+            targetMember.setResidenceExperience(updatedMemberDTO.getResidenceExperience());
+        }
+        if(updatedMemberDTO.getRegion1Dept()!=null&&!updatedMemberDTO.getRegion1Dept().isBlank()){
+            targetMember.setRegion1Dept(updatedMemberDTO.getRegion1Dept());
+        }
+        if(updatedMemberDTO.getRegion2Dept()!=null&&!updatedMemberDTO.getRegion2Dept().isBlank()){
+            targetMember.setRegion2Dept(updatedMemberDTO.getRegion2Dept());
+        }
+        if(updatedMemberDTO.getRegion3Dept()!=null&&!updatedMemberDTO.getRegion3Dept().isBlank()){
+            targetMember.setRegion3Dept(updatedMemberDTO.getRegion3Dept());
+        }
+        memberRepository.save(targetMember);
+    }
 }
