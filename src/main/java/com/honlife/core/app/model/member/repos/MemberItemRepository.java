@@ -14,4 +14,6 @@ public interface MemberItemRepository extends JpaRepository<MemberItem, Long>, M
     MemberItem findFirstByItem(Item item);
 
     List<MemberItem> member(Member member);
+
+    MemberItem findFirstByMemberAndIsActive(Member member, Boolean isActive);
 }

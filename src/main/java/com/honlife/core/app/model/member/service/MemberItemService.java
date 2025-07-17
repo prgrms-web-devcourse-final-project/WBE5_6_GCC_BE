@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.app.model.category.domain.Category;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -90,5 +91,16 @@ public class MemberItemService {
     @Transactional
     public void deleteMemberItemByMemberId(Long memberId) {
         memberItemRepository.deleteByMemberId(memberId);
+    }
+
+    /**
+     * 멤버와 연관된 활성화된 첫 번째 멤버 아이템을 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link Category}
+     */
+    public MemberItem findFirstMemberItemByMemberAndIsActive(Member member, boolean isActive) {
+        return memberItemRepository.findFirstByMemberAndIsActive(member, isActive);
+
     }
 }
