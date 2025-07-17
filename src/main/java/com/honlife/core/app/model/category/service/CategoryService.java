@@ -138,4 +138,15 @@ public class CategoryService {
     public void deleteCategoryByMemberId(Long memberId) {
         categoryRepository.deleteByMemberId(memberId);
     }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 카테고리를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link Category}
+     */
+    public Category findFirstCategoryByMemberAndIsActive(Member member, boolean isActive) {
+
+        return categoryRepository.findFirstByMemberAndIsActive(member, isActive);
+    }
 }

@@ -9,4 +9,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
 
     Category findFirstByMember(Member member);
 
+    /**
+     * 해당 멤버와 연관된 첫번째 루틴을 조회
+     * @param member
+     * @param isActive
+     * @return
+     */
+    Category findFirstByMemberAndIsActive(Member member, Boolean isActive);
 }
