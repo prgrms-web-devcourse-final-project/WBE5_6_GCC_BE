@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse.PresetItem;
 import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import java.util.List;
@@ -10,7 +11,7 @@ import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.dto.RoutinePresetDTO;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -35,7 +36,7 @@ public class RoutinePresetService {
     public RoutinePresetDTO get(final Long id) {
         return routinePresetRepository.findById(id)
                 .map(routinePreset -> mapToDTO(routinePreset, new RoutinePresetDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
     }
 
     public Long create(final RoutinePresetDTO routinePresetDTO) {
@@ -46,7 +47,7 @@ public class RoutinePresetService {
 
     public void update(final Long id, final RoutinePresetDTO routinePresetDTO) {
         final RoutinePreset routinePreset = routinePresetRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
         mapToEntity(routinePresetDTO, routinePreset);
         routinePresetRepository.save(routinePreset);
     }
@@ -73,7 +74,7 @@ public class RoutinePresetService {
         routinePreset.setIsActive(routinePresetDTO.getIsActive());
         routinePreset.setContent(routinePresetDTO.getContent());
         final Category category = routinePresetDTO.getCategory() == null ? null : categoryRepository.findById(routinePresetDTO.getCategory())
-                .orElseThrow(() -> new NotFoundException("category not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
         routinePreset.setCategory(category);
         return routinePreset;
     }

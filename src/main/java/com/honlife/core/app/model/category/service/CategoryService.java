@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.category.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,8 @@ import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -54,7 +55,7 @@ public class CategoryService {
     public CategoryDTO get(final Long id) {
         return categoryRepository.findById(id)
             .map(category -> mapToDTO(category, new CategoryDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
     }
 
     public Long create(final CategoryDTO categoryDTO) {
@@ -65,7 +66,7 @@ public class CategoryService {
 
     public void update(final Long id, final CategoryDTO categoryDTO) {
         final Category category = categoryRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         mapToEntity(categoryDTO, category);
         categoryRepository.save(category);
     }
@@ -94,7 +95,7 @@ public class CategoryService {
         category.setName(categoryDTO.getName());
         category.setType(categoryDTO.getType());
         final Member member = categoryDTO.getMember() == null ? null : memberRepository.findById(categoryDTO.getMember())
-            .orElseThrow(() -> new NotFoundException("member not found"));
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         category.setMember(member);
         return category;
     }
@@ -102,7 +103,7 @@ public class CategoryService {
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Category category = categoryRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         final Routine categoryRoutine = routineRepository.findFirstByCategory(category);
         if (categoryRoutine != null) {
             referencedWarning.setKey("category.routine.category.referenced");

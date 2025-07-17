@@ -32,8 +32,8 @@ import com.honlife.core.app.model.member.domain.MemberQuest;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
-import com.honlife.core.infra.util.ReferencedWarning;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 @RequiredArgsConstructor
 @Service
@@ -66,7 +66,7 @@ public class MemberService {
     public MemberDTO get(final Long id) {
         return memberRepository.findById(id)
             .map(member -> mapToDTO(member, new MemberDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
     }
 
     public Long create(final MemberDTO memberDTO) {
@@ -77,7 +77,7 @@ public class MemberService {
 
     public void update(final Long id, final MemberDTO memberDTO) {
         final Member member = memberRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         mapToEntity(memberDTO, member);
         memberRepository.save(member);
     }
@@ -127,7 +127,7 @@ public class MemberService {
     public ReferencedWarning getReferencedWarning(final String userEmail) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Member member = memberRepository.findByEmailAndIsActive(userEmail,true)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         final Routine memberRoutine = routineService.findFirstRoutineByMemberAndIsActive(member,true);
         if (memberRoutine != null) {
             referencedWarning.setKey("member.routine.member.referenced");

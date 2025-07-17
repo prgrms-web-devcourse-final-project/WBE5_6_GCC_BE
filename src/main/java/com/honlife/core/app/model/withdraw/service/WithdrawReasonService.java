@@ -1,12 +1,13 @@
 package com.honlife.core.app.model.withdraw.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.withdraw.domain.WithdrawReason;
 import com.honlife.core.app.model.withdraw.dto.WithdrawReasonDTO;
 import com.honlife.core.app.model.withdraw.repos.WithdrawReasonRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -28,7 +29,7 @@ public class WithdrawReasonService {
     public WithdrawReasonDTO get(final Long id) {
         return withdrawReasonRepository.findById(id)
                 .map(withdrawReason -> mapToDTO(withdrawReason, new WithdrawReasonDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND));
     }
 
     public Long create(final WithdrawReasonDTO withdrawReasonDTO) {
@@ -39,7 +40,7 @@ public class WithdrawReasonService {
 
     public void update(final Long id, final WithdrawReasonDTO withdrawReasonDTO) {
         final WithdrawReason withdrawReason = withdrawReasonRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND));
         mapToEntity(withdrawReasonDTO, withdrawReason);
         withdrawReasonRepository.save(withdrawReason);
     }

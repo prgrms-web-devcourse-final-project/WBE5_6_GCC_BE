@@ -1,16 +1,14 @@
 package com.honlife.core.app.controller.item;
 
 import com.honlife.core.app.model.item.code.ItemType;
-import com.honlife.core.app.model.item.domain.Item;
-import com.honlife.core.app.model.item.dto.ItemDTO;
 import com.honlife.core.app.model.item.service.ItemService;
-import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberService;
-import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,7 +29,6 @@ public class ItemController {
 
     /**
      * 모든 아이템 또는 Type 일치 아이템 조회 API
-     *
      * @return List<ItemResponse> 모든 아이템에 대한 정보
      */
     @GetMapping
