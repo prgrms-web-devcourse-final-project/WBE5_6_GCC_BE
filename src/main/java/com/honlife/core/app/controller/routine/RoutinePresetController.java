@@ -4,10 +4,6 @@ import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse;
 import com.honlife.core.app.model.routine.service.RoutinePresetService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.MediaType;
@@ -20,10 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "루틴 프리셋", description = "추천 루틴 관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/routines/presets", produces = MediaType.APPLICATION_JSON_VALUE)
-@SecurityRequirement(name = "bearerAuth")
 public class RoutinePresetController {
 
     private final RoutinePresetService routinePresetService;
@@ -38,25 +32,9 @@ public class RoutinePresetController {
      * @param userDetails 로그인된 사용자 정보
      * @return RoutinePresetsResponse
      */
-    @Operation(
-        summary = "추천 루틴 불러오기",
-        description = "사용자에게 추천할 루틴 프리셋 목록을 조회합니다.<br><br>" +
-            "<strong>사용 시나리오:</strong><br>" +
-            "• 루틴 생성 시 카테고리 선택 후 해당 카테고리의 추천 루틴 표시<br>" +
-            "• 루틴 입력란 밑에 참고할 수 있는 프리셋 예시 제공<br>" +
-            "• 사용자가 프리셋을 선택하여 개인 루틴으로 추가 가능<br><br>" +
-            "<strong>파라미터:</strong><br>" +
-            "• categoryId: 선택한 카테고리의 프리셋만 반환<br><br>" +
-            "<strong>응답 데이터:</strong><br>" +
-            "• 활성화된 프리셋만 반환<br>" +
-            "• 카테고리별 필터링 지원<br>" +
-            "• 관련성 높은 추천 제공<br><br>" +
-            "*실제 DB에 반영되지 않음*"
-    )
     @GetMapping
     public ResponseEntity<CommonApiResponse<RoutinePresetsResponse>> getRoutinePresets(
-        @RequestParam
-        @Schema(description = "카테고리 ID", example = "1") Long categoryId,
+        @RequestParam Long categoryId,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
