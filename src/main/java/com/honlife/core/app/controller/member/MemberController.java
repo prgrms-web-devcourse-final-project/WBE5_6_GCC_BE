@@ -175,4 +175,19 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
     }
 
+    /**
+     * 닉네임 중복 확인 요청 처리 API
+     * @return 중복이 아닐 시 {@code 200}을 반환합니다. 닉네임이 중복될 경우 {@code 409} 를 반환합니다.
+     */
+    @PostMapping("/nickname")
+    public ResponseEntity<CommonApiResponse<Void>> checkDuplicatedNickname(
+        @RequestParam String nickname
+    ) {
+        if(!memberService.isNicknameExists(nickname)){
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        }
+        return ResponseEntity.status(ResponseCode.CONFLICT_EXIST_MEMBER.status()).body(CommonApiResponse.error(ResponseCode.CONFLICT_EXIST_MEMBER));
+    }
+
+
 }
