@@ -54,20 +54,8 @@ public class AuthController {
         HttpServletResponse response
     ) {
         TokenDto tokenDto = authService.signin(loginRequest);
-        
-        ResponseCookie accessToken = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
-            tokenDto.getAccessToken(), tokenDto.getExpiresIn());
-        ResponseCookie refreshToken = TokenCookieFactory.create(AuthToken.REFRESH_TOKEN.name(),
-            tokenDto.getRefreshToken(), tokenDto.getExpiresIn());
-        
-        response.addHeader("Set-Cookie", accessToken.toString());
-        response.addHeader("Set-Cookie", refreshToken.toString());
-        
-        return ResponseEntity.ok(CommonApiResponse.success(TokenResponse.builder().
-                                                         accessToken(tokenDto.getAccessToken())
-                                                         .grantType(tokenDto.getGrantType())
-                                                         .expiresIn(tokenDto.getExpiresIn())
-                                                         .build()));
+
+        return ResponseEntity.ok(CommonApiResponse.success(TokenResponse.getTokenResponse(tokenDto, response)));
     }
 
     /**
@@ -136,17 +124,19 @@ public class AuthController {
      * @return 인증 성공시 {@code HttpStatus.OK}를 코드가 일치하지 않으면, {@code HttpStatus.UNAUTHORIZED}를 반환합니다.
      */
     @PostMapping("/auth/code")
-    public ResponseEntity<CommonApiResponse<Void>> verifyEmail(
-        @RequestBody @Valid VerifyEmailRequest emailRequest
+    public ResponseEntity<CommonApiResponse<?>> verifyEmail(
+        @RequestBody @Valid VerifyEmailRequest emailRequest,
+        HttpServletResponse response
     ) {
         if(emailRequest.getCode()==null) {
             return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
-        if(authService.isVerifyCode(emailRequest.getEmail(), emailRequest.getCode())) {
-            memberService.updateMemberStatus(emailRequest.getEmail(), true, true);  // 계정 활성화
-            //TODO: 로그인 처리
-            return ResponseEntity.ok(CommonApiResponse.noContent());
+        String userEmail = emailRequest.getEmail();
+        if(authService.isVerifyCode(userEmail, emailRequest.getCode())) {
+            memberService.updateMemberStatus(userEmail, true, true);  // 계정 활성화
+            TokenDto tokenDto = authService.autoSignin(userEmail);  // 자동 로그인 처리(토큰 발급)
+            return ResponseEntity.ok(CommonApiResponse.success(TokenResponse.getTokenResponse(tokenDto, response)));
         }
         return ResponseEntity.status(ResponseCode.INVALID_CODE.status())
             .body(CommonApiResponse.error(ResponseCode.INVALID_CODE));
