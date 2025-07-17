@@ -39,5 +39,5 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
      * @param isActive account activation status
      * @return {@code Boolean}
      */
-    Boolean existsByEmailIgnoreCaseAndIsActive(String email, Object isActive);
+    Boolean existsByEmailIgnoreCaseAndIsActive(String email, Boolean isActive);
 }
