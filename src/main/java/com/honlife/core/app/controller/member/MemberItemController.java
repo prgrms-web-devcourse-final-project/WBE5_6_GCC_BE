@@ -32,9 +32,9 @@ public class MemberItemController {
     /**
      * 로그인한 사용자가 보유한 아이템 전체 조회 (타입 필터 가능)
      *
-     * @param itemType 필터링할 아이템 타입 (nullable)
+     * @param itemType    필터링할 아이템 타입 (nullable)
      * @param userDetails 인증된 사용자 정보
-     * @return CommonApiResponse<List<MemberItemResponse>>
+     * @return CommonApiResponse<List < MemberItemResponse>>
      */
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getMemberItems(
