@@ -1,9 +1,9 @@
 package com.honlife.core.app.model.routine.service;
 
-import com.honlife.core.app.controller.routine.payload.RoutinesDailyResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
-import jakarta.persistence.EntityNotFoundException;
+import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.response.ResponseCode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
@@ -128,7 +128,7 @@ public class RoutineService {
   public RoutinesResponse getUserWeeklyRoutines(String userEmail, LocalDate date) {
 
       Member member = memberRepository.findByEmail(userEmail)
-          .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));;
 
       List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
@@ -177,7 +177,7 @@ public class RoutineService {
 
     public List<RoutineItemDTO> getTodayRoutines(String userEmail) {
         Member member = memberRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new EntityNotFoundException("해당 아이디가 존재하지 않습니다"));
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));;
 
         List<Routine> routines = routineRepository.findAllByMemberWithCategory(member);
 
@@ -189,7 +189,7 @@ public class RoutineService {
                 Long parentId = routine.getCategory().getParentId();
                 if (parentId != null) {
                     parentCategory = categoryRepository.findById(parentId)
-                        .orElseThrow(() -> new RuntimeException("부모 카테고리 없음"));
+                        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));;
                 }
 
                 RoutineSchedule routineSchedule = routineScheduleRepository
