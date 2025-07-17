@@ -30,4 +30,15 @@ public class MemberPayload {
         memberPayload.regionDept3 = memberDTO.getRegion3Dept();
         return memberPayload;
     }
+
+    public MemberDTO toDTO() {
+        return MemberDTO.builder()
+            .name(this.name)
+            .nickname(this.nickname)
+            .residenceExperience(this.residenceExperience)
+            .region1Dept(this.regionDept1)
+            .region2Dept(this.regionDept2)
+            .region3Dept(this.regionDept3)
+            .build();
+    }
 }
