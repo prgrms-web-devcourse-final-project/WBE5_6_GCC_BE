@@ -72,8 +72,8 @@ public class RoutineController {
 
         List<RoutineItemDTO> routinesResponses = routineService.getTodayRoutines(userEmail);
 
-        RoutinesTodayResponse daily = new RoutinesTodayResponse(routinesResponses, LocalDate.now());
-        return ResponseEntity.ok(CommonApiResponse.success(daily));
+        RoutinesTodayResponse today = new RoutinesTodayResponse(routinesResponses, LocalDate.now());
+        return ResponseEntity.ok(CommonApiResponse.success(today));
 
     }
 
@@ -122,7 +122,6 @@ public class RoutineController {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(CommonApiResponse.noContent());
 
-
     }
 
     /**
@@ -136,8 +135,7 @@ public class RoutineController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateRoutine(
-        @PathVariable(name = "id")
-        @Schema(description = "루틴 ID", example = "1") final Long routineId,
+        @PathVariable(name = "id") final Long routineId,
         @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
         @AuthenticationPrincipal UserDetails userDetails,
         BindingResult bindingResult
@@ -148,9 +146,9 @@ public class RoutineController {
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
-        String userEmail = userDetails.getUsername();
+        String userId = userDetails.getUsername();
+        routineService.updateRoutine(routineId, routineSaveRequest, userId);
 
-        routineService.updateRoutine(routineId, routineSaveRequest, userEmail);
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
@@ -158,34 +156,16 @@ public class RoutineController {
     /**
      * 루틴 삭제 API
      * @param routineId 삭제할 루틴 ID
-     * @param userDetails 로그인된 사용자 정보
      * @return
      */
     @DeleteMapping("/{id}")
-
     public ResponseEntity<CommonApiResponse<Void>> deleteRoutine(
-        @PathVariable(name = "id")
-        @Schema(description = "루틴 ID", example = "1") final Long routineId,
-        @AuthenticationPrincipal UserDetails userDetails
+        @PathVariable(name = "id") final Long routineId
     ) {
-        String userId = userDetails.getUsername();
-        if (!userId.equals("user01@test.com")) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
-        }
+        routineService.deleteRoutine(routineId);
 
-        // 존재하지 않는 루틴 아이디로 접근
-        if (routineId != 1L && routineId != 2L) {
-            return ResponseEntity
-                .status(ResponseCode.NOT_FOUND_ROUTINE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
-        }
-
-        // 실제 구현 시에는 루틴과 관련된 모든 스케줄도 함께 삭제 처리
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
-
-
 
 
 }

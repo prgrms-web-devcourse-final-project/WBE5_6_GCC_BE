@@ -6,6 +6,7 @@ import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
@@ -268,7 +269,7 @@ public class RoutineService {
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
         routine.updateRoutine(category, request.getContent(), request.getTriggerTime(),
-            request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(),member);
+            request.getIsImportant(), request.getRepeatType(), request.getRepeatValue(), member);
     }
 
   /**
@@ -302,4 +303,23 @@ public class RoutineService {
 
     return response;
   }
+  /**
+   * 사용자 루틴 삭제 입니다
+   * return void
+   */
+  @Transactional
+  public void deleteRoutine(Long routineId) {
+    Routine routine = routineRepository.findByIdWithMember(routineId)
+        .orElseThrow(() -> new EntityNotFoundException("루틴이 존재하지 않습니다"));
+
+
+    routine.setIsActive(false);
+    List<RoutineSchedule> routineSchedules = routineScheduleRepository.findByRoutine(routine);
+
+    for (RoutineSchedule schedule : routineSchedules) {
+      routineScheduleRepository.deleteById(schedule.getId());
+    }
+
+  }
+
 }
