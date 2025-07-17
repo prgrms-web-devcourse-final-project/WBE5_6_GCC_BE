@@ -26,16 +26,12 @@ public class MemberItemService {
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
 
-    public List<MemberItem> getItemsByMemberAndType(UserDetails userDetails, ItemType itemType) {
-        return memberItemRepository.findByMemberEmailAndItemType(userDetails.getUsername(), itemType);
-    }
-
     public List<MemberItemResponse> getItemsByMember(Long memberId, ItemType itemType){
-
+        return memberItemRepository.findItemsByMemberId(memberId, itemType);
     }
 
     public List<MemberItemResponse> getEquippedItemsByMember(Long memberId){
-
+        return memberItemRepository.findEquippedItemsByMemberId(memberId);
     }
 
 
