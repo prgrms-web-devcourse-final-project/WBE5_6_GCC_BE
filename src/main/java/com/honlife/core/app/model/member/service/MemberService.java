@@ -1,12 +1,16 @@
 package com.honlife.core.app.model.member.service;
 
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
+import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import com.honlife.core.app.model.auth.code.Role;
+import com.honlife.core.app.model.category.service.CategoryService;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.app.model.routine.service.RoutineService;
+import com.honlife.core.app.model.withdraw.dto.WithdrawReasonDTO;
+import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
-import com.honlife.core.app.controller.member.payload.MemberPayload;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
@@ -21,7 +25,6 @@ import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.domain.InterestCategory;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
-import com.honlife.core.app.model.loginLog.domain.LoginLog;
 import com.honlife.core.app.model.loginLog.repos.LoginLogRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
@@ -34,9 +37,7 @@ import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.repos.MemberQuestRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
-import com.honlife.core.app.model.point.domain.PointLog;
 import com.honlife.core.app.model.point.repos.PointLogRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
@@ -52,18 +53,15 @@ public class MemberService {
     private final InterestCategoryService interestCategoryService;
 
     private final MemberRepository memberRepository;
-    private final RoutineRepository routineRepository;
-    private final CategoryRepository categoryRepository;
-    private final MemberItemRepository memberItemRepository;
-    private final MemberQuestRepository memberQuestRepository;
-    private final PointLogRepository pointLogRepository;
-    private final NotificationRepository notificationRepository;
-    private final MemberBadgeRepository memberBadgeRepository;
-    private final LoginLogRepository loginLogRepository;
-    private final InterestCategoryRepository interestCategoryRepository;
-    private final MemberPointRepository memberPointRepository;
     private final ModelMapper mapper;
     private final PasswordEncoder passwordEncoder;
+    private final WithdrawReasonService withdrawReasonService;
+    private final RoutineService routineService;
+    private final CategoryService categoryService;
+    private final MemberItemService memberItemService;
+    private final MemberQuestService memberQuestService;
+    private final MemberBadgeService memberBadgeService;
+    private final MemberPointService memberPointService;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -130,68 +128,50 @@ public class MemberService {
 
     /**
      * 참조 무결성을 점검하고, 경고 메시지를 제공하는 사전 검증용 로직
-     * @param id
+     * @param userEmail
      * @return
      */
-    public ReferencedWarning getReferencedWarning(final Long id) {
+    public ReferencedWarning getReferencedWarning(final String userEmail) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final Member member = memberRepository.findById(id)
+        final Member member = memberRepository.findByEmailAndIsActive(userEmail,true)
             .orElseThrow(NotFoundException::new);
-        final Routine memberRoutine = routineRepository.findFirstByMember(member);
+        final Routine memberRoutine = routineService.findFirstRoutineByMemberAndIsActive(member,true);
         if (memberRoutine != null) {
             referencedWarning.setKey("member.routine.member.referenced");
             referencedWarning.addParam(memberRoutine.getId());
             return referencedWarning;
         }
-        final Category memberCategory = categoryRepository.findFirstByMember(member);
+        final Category memberCategory = categoryService.findFirstCategoryByMemberAndIsActive(member,true);
         if (memberCategory != null) {
             referencedWarning.setKey("member.category.member.referenced");
             referencedWarning.addParam(memberCategory.getId());
             return referencedWarning;
         }
-        final MemberItem memberMemberItem = memberItemRepository.findFirstByMember(member);
+        final MemberItem memberMemberItem = memberItemService.findFirstMemberItemByMemberAndIsActive(member,true);
         if (memberMemberItem != null) {
             referencedWarning.setKey("member.memberItem.member.referenced");
             referencedWarning.addParam(memberMemberItem.getId());
             return referencedWarning;
         }
-        final MemberQuest memberMemberQuest = memberQuestRepository.findFirstByMember(member);
+        final MemberQuest memberMemberQuest = memberQuestService.findFirstMemberQuestByMemberAndIsActive(member, true);
         if (memberMemberQuest != null) {
             referencedWarning.setKey("member.memberQuest.member.referenced");
             referencedWarning.addParam(memberMemberQuest.getId());
             return referencedWarning;
         }
-        final PointLog memberPointLog = pointLogRepository.findFirstByMember(member);
-        if (memberPointLog != null) {
-            referencedWarning.setKey("member.pointLog.member.referenced");
-            referencedWarning.addParam(memberPointLog.getId());
-            return referencedWarning;
-        }
-        final Notification memberNotification = notificationRepository.findFirstByMember(member);
-        if (memberNotification != null) {
-            referencedWarning.setKey("member.notification.member.referenced");
-            referencedWarning.addParam(memberNotification.getId());
-            return referencedWarning;
-        }
-        final MemberBadge memberMemberBadge = memberBadgeRepository.findFirstByMember(member);
+        final MemberBadge memberMemberBadge = memberBadgeService.findFirstMemberBadgeByMemberAndIsActive(member, true);
         if (memberMemberBadge != null) {
             referencedWarning.setKey("member.memberBadge.member.referenced");
             referencedWarning.addParam(memberMemberBadge.getId());
             return referencedWarning;
         }
-        final LoginLog memberLoginLog = loginLogRepository.findFirstByMember(member);
-        if (memberLoginLog != null) {
-            referencedWarning.setKey("member.loginLog.member.referenced");
-            referencedWarning.addParam(memberLoginLog.getId());
-            return referencedWarning;
-        }
-        final InterestCategory memberInterestCategory = interestCategoryRepository.findFirstByMember(member);
+        final InterestCategory memberInterestCategory = interestCategoryService.findFirstInterestCategoryByMemberAndIsActive(member, true);
         if (memberInterestCategory != null) {
             referencedWarning.setKey("member.interestCategory.member.referenced");
             referencedWarning.addParam(memberInterestCategory.getId());
             return referencedWarning;
         }
-        final MemberPoint memberMemberPoint = memberPointRepository.findFirstByMember(member);
+        final MemberPoint memberMemberPoint = memberPointService.findFirstMemberPointByMemberAndIsActive(member, true);
         if (memberMemberPoint != null) {
             referencedWarning.setKey("member.memberPoint.member.referenced");
             referencedWarning.addParam(memberMemberPoint.getId());
@@ -333,5 +313,51 @@ public class MemberService {
             targetMember.setRegion3Dept(updatedMemberDTO.getRegion3Dept());
         }
         memberRepository.save(targetMember);
+    }
+
+
+    /**
+     * 회원 탈퇴 시 탈퇴 이유를 저장하는 메소드
+     * @param withdrawRequest 회원 탈퇴 이유를 저장하는 dto
+     */
+    @Transactional
+    public void saveWithdrawReason(@Valid MemberWithdrawRequest withdrawRequest) {
+
+        WithdrawReasonDTO withdraw = new WithdrawReasonDTO();
+
+        withdraw.setType(withdrawRequest.getWithdrawType());
+        withdraw.setReason(withdrawRequest.getEtcReason());
+
+        withdrawReasonService.create(withdraw);
+
+    }
+
+    public void deleteRelatedToMember(String userEmail) {
+
+        Long memberId = memberRepository.findByEmailAndIsActive(userEmail,true).get().getId();
+
+        // 루틴 is_active = false
+        routineService.deleteRoutineByMemberId(memberId);
+        // 카테고리 is_active = false
+        categoryService.deleteCategoryByMemberId(memberId);
+        // 멤버 아이템 is_active = false
+        memberItemService.deleteMemberItemByMemberId(memberId);
+        // 멤버 퀘스트 is active = false
+        memberQuestService.deleteMemberQuestByMemberId(memberId);
+        // 멤버 업적 is_active = false
+        memberBadgeService.deleteMemberBadgeByMemberId(memberId);
+        // 선호 카테고리 is_active = false
+        interestCategoryService.deleteInterestCategoryByMemberId(memberId);
+        // 멤버 포인트 is_active = false
+        memberPointService.deleteMemberPointByMemberId(memberId);
+    }
+
+    /**
+     * 멤버를 삭제합니다.
+     * @param userEmail 멤버 이메일
+     */
+    @Transactional
+    public void deleteMember(String userEmail) {
+        memberRepository.deleteMember(userEmail);
     }
 }

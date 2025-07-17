@@ -21,4 +21,13 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
             .where(member.email.equalsIgnoreCase(email))
             .fetchOne());
     }
+
+    @Override
+    public void deleteMember(String userEmail) {
+        queryFactory
+            .update(member)
+            .set(member.isActive, false)
+            .where(member.email.eq(userEmail))
+            .execute();
+    }
 }
