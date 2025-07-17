@@ -2,7 +2,6 @@ package com.honlife.core.app.controller.auth;
 
 import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
 import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
-import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.servlet.http.HttpServletResponse;
