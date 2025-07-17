@@ -1,18 +1,16 @@
 package com.honlife.core.infra.error.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.honlife.core.infra.response.ResponseCode;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+public class NotFoundException extends CommonException {
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class NotFoundException extends RuntimeException {
+    public NotFoundException(ResponseCode code) {super(code);}
 
-    public NotFoundException() {
-        super();
-    }
-
-    public NotFoundException(final String message) {
-        super(message);
+    public NotFoundException(ResponseCode code, Exception e) {
+        super(code, e);
+        log.error(e.getMessage(), e);
     }
 
 }
