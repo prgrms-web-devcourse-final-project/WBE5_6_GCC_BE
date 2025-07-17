@@ -54,7 +54,7 @@ public class ItemService {
      * @param itemKey
      * return Optional<Item></Item>
      */
-    public Optional<Item> getItemByKey(String itemKey) {
+    public Item getItemByKey(String itemKey) {
         return itemRepository.findByItemKeyAndIsActiveTrue(itemKey);
     }
 

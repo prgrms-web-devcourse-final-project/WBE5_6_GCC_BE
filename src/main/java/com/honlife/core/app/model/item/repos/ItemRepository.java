@@ -32,7 +32,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @param itemKey item에 대한 key 값
      * @return Optional<Item>
      */
-    Optional<Item> findByItemKeyAndIsActiveTrue(String itemKey);
+    Item findByItemKeyAndIsActiveTrue(String itemKey);
 
     // ItemKey 값의 Unique함을 보장하기 위함
     boolean existsByItemKeyIgnoreCase(String itemKey);

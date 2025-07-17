@@ -12,6 +12,7 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,9 +46,8 @@ public class ItemController {
 
         // 로그인한 회원의 이메일과 요청 파라미터로 전달된 itemType을 기반으로
         // 해당 회원이 보유한 여부(isOwned)를 포함한 아이템 리스트 조회
+
         List<ItemResponse> items = itemService.getAllItemsWithOwnership(userDetails.getUsername(), itemType);
-
-
         return ResponseEntity.ok(CommonApiResponse.success(items));
     }
 
@@ -63,27 +63,35 @@ public class ItemController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         // 아이템 조회
-        Item item = itemService.getItemByKey(itemKey)
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
 
-        // 사용자 정보 조회
-        Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        Item item = itemService.getItemByKey(itemKey);
+        if (item == null) {
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
+        }
+        try {
+            // 사용자 정보 조회
+            Member member = memberService.getMemberByEmail(userDetails.getUsername());
 
-        // 보유 여부 확인
-        boolean isOwned = memberItemService.isItemOwnByMember(member.getId(), item.getId());
+            // 보유 여부 확인
+            boolean isOwned = memberItemService.isItemOwnByMember(member.getId(), item.getId());
 
 
-        ItemResponse itemResponse = ItemResponse.builder()
-                .itemId(item.getId())
-                .itemKey(item.getItemKey())
-                .itemName(item.getName())
-                .itemDescription(item.getDescription())
-                .itemType(item.getType())
-                .itemPoint(item.getPrice())
-                .isOwned(isOwned)
-                .build();
+            ItemResponse itemResponse = ItemResponse.builder()
+                    .itemId(item.getId())
+                    .itemKey(item.getItemKey())
+                    .itemName(item.getName())
+                    .itemDescription(item.getDescription())
+                    .itemType(item.getType())
+                    .itemPoint(item.getPrice())
+                    .isOwned(isOwned)
+                    .build();
 
-        return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
+            return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
+        } catch (CommonException e) {
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
+        }
     }
 
     /**
@@ -97,17 +105,24 @@ public class ItemController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         // 아이템 키값으로 Item 정보 가져옴
-        Item item = itemService.getItemByKey(itemKey)
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
-
+        Item item = itemService.getItemByKey(itemKey);
+        if (item == null) {
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
+        }
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
 
         if (memberItemService.isItemOwnByMember(member.getId(), item.getId())) {
             return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_ITEM));
         }
+        try {
+            itemService.purchaseItem(item, member);
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        } catch (CommonException e) {
+            return ResponseEntity.status(ResponseCode.NOT_ENOUGH_POINT.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_ENOUGH_POINT));
+        }
 
-        itemService.purchaseItem(item, member);
-        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }

@@ -29,7 +29,7 @@ public enum ResponseCode {
   INVALID_CODE("4012", HttpStatus.UNAUTHORIZED, "Invalid verification code"),
   NOT_EXIST_PRE_AUTH_CREDENTIAL("4013", HttpStatus.OK, "No authentication credentials were found in the request."),
 
-  NOT_ENOUGH_POINT("4030", HttpStatus.FORBIDDEN, "Not enough points."),
+  NOT_ENOUGH_POINT("4038", HttpStatus.FORBIDDEN, "Not enough points."),
 
   NOT_FOUND("4040", HttpStatus.NOT_FOUND, "Not found."),
   NOT_FOUND_MEMBER("4041", HttpStatus.NOT_FOUND, "Member not found."),
