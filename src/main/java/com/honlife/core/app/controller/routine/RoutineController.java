@@ -58,14 +58,7 @@ public class RoutineController {
      */
     @Operation(
         summary = "사용자 오늘 루틴 조회",
-        description = "사용자의 오늘 날짜 기준 루틴 목록을 조회합니다.",
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "성공",
-                content = @Content(array = @ArraySchema(schema = @Schema(implementation = RoutineItemDTO.class)))
-            )
-        }
+        description = "사용자의 오늘 날짜 기준 루틴 목록을 조회합니다."
     )
     @GetMapping("/today")
     public ResponseEntity<CommonApiResponse<List<RoutineItemDTO>>> getUserRoutines(
