@@ -1,6 +1,5 @@
 package com.honlife.core.app.model.member.service;
 
-import com.honlife.core.app.model.category.domain.Category;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -85,8 +84,8 @@ public class MemberQuestService {
      * @param memberId 멤버 식별아이디
      */
     @Transactional
-    public void deleteMemberQuestByMemberId(Long memberId) {
-        memberQuestRepository.deleteByMemberId(memberId);
+    public void softDropMemberQuestByMemberId(Long memberId) {
+        memberQuestRepository.softDropByMemberId(memberId);
     }
 
     /**

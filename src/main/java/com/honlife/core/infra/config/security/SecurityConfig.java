@@ -43,8 +43,8 @@ public class SecurityConfig {
                 (requests) -> requests
                     .requestMatchers("/favicon.ico", "/img/**", "/js/**", "/css/**").permitAll()
                     .requestMatchers("/", "/error", "/api/v1/check/**", "/api/v1/signin",
-                        "/auth/v1/signup").permitAll()
-                    .requestMatchers("/api/v1/email/**").permitAll()
+                        "/api/v1/signup").permitAll()
+                    .requestMatchers("/api/v1/auth/**").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().permitAll()
             )

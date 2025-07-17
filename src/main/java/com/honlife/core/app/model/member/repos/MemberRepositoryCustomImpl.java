@@ -23,7 +23,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public void deleteMember(String userEmail) {
+    public void softDropMember(String userEmail) {
         queryFactory
             .update(member)
             .set(member.isActive, false)

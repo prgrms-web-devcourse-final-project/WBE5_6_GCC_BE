@@ -135,7 +135,7 @@ public class MemberController {
             return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
         // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
-        memberService.deleteRelatedToMember(userEmail);
+        memberService.softDropRelatedToMember(userEmail);
 
         try{
             // 제대로 처리 됐는지 검증
@@ -149,7 +149,7 @@ public class MemberController {
             return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
         }
 
-        memberService.deleteMember(userEmail);
+        memberService.softDropMember(userEmail);
         // 탈퇴 사유 저장
         memberService.saveWithdrawReason(withdrawRequest);
 

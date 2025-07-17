@@ -14,7 +14,7 @@ public class MemberItemRepositoryCustomImpl implements MemberItemRepositoryCusto
     QMemberItem memberItem = QMemberItem.memberItem;
 
     @Override
-    public void deleteByMemberId(Long memberId) {
+    public void softDropByMemberId(Long memberId) {
 
         queryFactory
             .update(memberItem)

@@ -13,5 +13,5 @@ public interface MemberRepositoryCustom {
      * 멤버 소프트 드랍
      * @param userEmail 유저 이메일
      */
-    void deleteMember(String userEmail);
+    void softDropMember(String userEmail);
 }

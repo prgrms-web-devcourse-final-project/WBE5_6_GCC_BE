@@ -14,7 +14,7 @@ public class MemberBadgeRepositoryCustomImpl implements MemberBadgeRepositoryCus
     QMemberBadge memberBadge = QMemberBadge.memberBadge;
 
     @Override
-    public void deleteByMemberId(Long memberId) {
+    public void softDropByMemberId(Long memberId) {
         queryFactory
             .update(memberBadge)
             .set(memberBadge.isActive, false)

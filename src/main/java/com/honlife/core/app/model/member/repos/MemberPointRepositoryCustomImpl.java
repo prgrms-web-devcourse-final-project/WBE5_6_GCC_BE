@@ -14,7 +14,7 @@ public class MemberPointRepositoryCustomImpl implements MemberPointRepositoryCus
     QMemberPoint memberPoint = QMemberPoint.memberPoint;
 
     @Override
-    public void deleteByMemberId(Long memberId) {
+    public void softDropByMemberId(Long memberId) {
         queryFactory
             .update(memberPoint)
             .set(memberPoint.isActive, false)

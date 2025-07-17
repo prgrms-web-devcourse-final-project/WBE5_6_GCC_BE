@@ -1,18 +1,19 @@
 package com.honlife.core.app.model.member.service;
 
-import com.honlife.core.app.controller.auth.payload.SignupBasicRequest;
+import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.service.CategoryService;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.notification.domain.Notification;
+import com.honlife.core.app.model.notification.repos.NotificationRepository;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.app.model.withdraw.dto.WithdrawReasonDTO;
 import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,24 +24,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.domain.InterestCategory;
-import com.honlife.core.app.model.category.repos.CategoryRepository;
-import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
-import com.honlife.core.app.model.loginLog.repos.LoginLogRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.domain.MemberQuest;
 import com.honlife.core.app.model.member.model.MemberDTO;
-import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
-import com.honlife.core.app.model.member.repos.MemberItemRepository;
-import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.member.repos.MemberQuestRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.app.model.notification.repos.NotificationRepository;
-import com.honlife.core.app.model.point.repos.PointLogRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
-import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.infra.util.ReferencedWarning;
 import com.honlife.core.infra.util.NotFoundException;
 
@@ -62,6 +53,8 @@ public class MemberService {
     private final MemberQuestService memberQuestService;
     private final MemberBadgeService memberBadgeService;
     private final MemberPointService memberPointService;
+    private final MemberPointRepository memberPointRepository;
+    private final NotificationRepository notificationRepository;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -181,6 +174,26 @@ public class MemberService {
     }
 
     /**
+     * 존재하는 계정인지 확인<br>
+     * 계정이 존재하지 않는다면 null 반환<br>
+     * 만약 계정이 존재하지만, {@code isActive = false} 라면 회원탈퇴 또는 모종의 이유로 비활성화된 계정으로 판단.
+     * @param email 회원 이메일
+     * @return {@code Optional<Boolean>}
+     */
+    public Optional<Boolean> isActiveAccount(final String email) {
+        Optional<Member> member = Optional.ofNullable(
+            memberRepository.findByEmailIgnoreCase(email));
+        if (member.isPresent()) {
+            if(!member.get().getIsActive()){
+                return Optional.of(false);
+            }
+            return Optional.of(true);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * 회원 테이블에 이미 존재하는 닉네임인지 확인
      * @param nickname 검사하고자 하는 닉네임
      * @return {@code Boolean}
@@ -190,13 +203,23 @@ public class MemberService {
     }
 
     /**
-     * 회원 테이블에서 이미 존재하는 이메일인지 확인<br>
-     * IgnoreCase - 대소문자 구분 없이 검색
+     * 회원 테이블에서 이미 존재하는 이메일인지 확인
      * @param email 사용자 이메일
      * @return {@code Boolean}
      */
-    public boolean isEmailExists(final String email) {
-        return memberRepository.existsByEmailIgnoreCase(email);
+    public Boolean isEmailExists(final String email) {
+        return memberRepository.existsByEmailIgnoreCaseAndIsActive(email, null);
+    }
+
+    /**
+     * 회원 테이블에서 이미 존재하는 이메일인지 확인<br>
+     * isActive 값을 넣으면 활성화 또는 비활성화 된 계정 정보 중 검색
+     * @param email 사용자 이메일
+     * @param isActive account activation status
+     * @return {@code Boolean}
+     */
+    public Boolean isEmailExists(final String email, final Boolean isActive) {
+        return memberRepository.existsByEmailIgnoreCaseAndIsActive(email, isActive);
     }
 
     /**
@@ -211,17 +234,25 @@ public class MemberService {
     /**
      * 회원가입 phase 1 진행시 사용되는 매서드<br>
      * 회원 정보를 입력받아 {@code isActive = false} 인 상태로 테이블에 저장
-     * @param signupBasicRequest 회원가입 단계에서 넘어오는 회원 정보 객체
+     * @param signupRequest 회원가입 단계에서 넘어오는 회원 정보 객체
      */
     @Transactional
-    public void saveNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
+    public void saveNotVerifiedMember(SignupRequest signupRequest) {
         Member member = new Member();
-        modelMapper.map(signupBasicRequest, member);
-        member.setIsActive(false);   // 이메일인증까지 완료되야 계정 활성화.
-        member.setIsVerified(false);
-        member.setNickname(signupBasicRequest.getName());
+        modelMapper.map(signupRequest, member);
+        member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
+        member.setNickname(signupRequest.getName());
         member.setRole(Role.ROLE_USER);
         memberRepository.save(member);
+
+        MemberPoint memberPoint = new MemberPoint();
+        memberPoint.setMember(member);
+        memberPoint.setPoint(0);
+        memberPointRepository.save(memberPoint);
+
+        Notification notification = new Notification();
+        notification.setMember(member);
+        notificationRepository.save(notification);
     }
 
     /**
@@ -242,13 +273,15 @@ public class MemberService {
     /**
      * 회원가입 phase 1 에서 가입을 재시도하거나 정보를 수정 하는 경우에 사용되는 매서드<br>
      * 기존에 회원가입을 눌렀을 경우 해당 회원정보가 DB에 저장되어있으므로, 업데이트 방식을 실행
-     * @param signupBasicRequest 회원가입 단게에서 넘어오는 회원 정보 객체
+     * @param signupRequest 회원가입 단게에서 넘어오는 회원 정보 객체
      */
     @Transactional
-    public void updateNotVerifiedMember(SignupBasicRequest signupBasicRequest) {
+    public void updateNotVerifiedMember(SignupRequest signupRequest) {
         // 회원정보 업데이트
-        Member member = memberRepository.findByEmailIgnoreCase(signupBasicRequest.getEmail());
-        modelMapper.map(signupBasicRequest, member);
+        Member member = memberRepository.findByEmailIgnoreCase(signupRequest.getEmail());
+        modelMapper.map(signupRequest, member);
+        member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
+        memberRepository.save(member);
     }
 
 
@@ -330,7 +363,7 @@ public class MemberService {
      * @param withdrawRequest 회원 탈퇴 이유를 저장하는 dto
      */
     @Transactional
-    public void saveWithdrawReason(@Valid MemberWithdrawRequest withdrawRequest) {
+    public void saveWithdrawReason(MemberWithdrawRequest withdrawRequest) {
 
         WithdrawReasonDTO withdraw = new WithdrawReasonDTO();
 
@@ -341,24 +374,24 @@ public class MemberService {
 
     }
 
-    public void deleteRelatedToMember(String userEmail) {
+    public void softDropRelatedToMember(String userEmail) {
 
         Long memberId = memberRepository.findByEmailAndIsActive(userEmail,true).get().getId();
 
         // 루틴 is_active = false
-        routineService.deleteRoutineByMemberId(memberId);
+        routineService.softDropRoutineByMemberId(memberId);
         // 카테고리 is_active = false
-        categoryService.deleteCategoryByMemberId(memberId);
+        categoryService.softDropCategoryByMemberId(memberId);
         // 멤버 아이템 is_active = false
-        memberItemService.deleteMemberItemByMemberId(memberId);
+        memberItemService.softDropMemberItemByMemberId(memberId);
         // 멤버 퀘스트 is active = false
-        memberQuestService.deleteMemberQuestByMemberId(memberId);
+        memberQuestService.softDropMemberQuestByMemberId(memberId);
         // 멤버 업적 is_active = false
-        memberBadgeService.deleteMemberBadgeByMemberId(memberId);
+        memberBadgeService.softDropMemberBadgeByMemberId(memberId);
         // 선호 카테고리 is_active = false
-        interestCategoryService.deleteInterestCategoryByMemberId(memberId);
+        interestCategoryService.softDropInterestCategoryByMemberId(memberId);
         // 멤버 포인트 is_active = false
-        memberPointService.deleteMemberPointByMemberId(memberId);
+        memberPointService.softDropMemberPointByMemberId(memberId);
     }
 
     /**
@@ -366,7 +399,7 @@ public class MemberService {
      * @param userEmail 멤버 이메일
      */
     @Transactional
-    public void deleteMember(String userEmail) {
-        memberRepository.deleteMember(userEmail);
+    public void softDropMember(String userEmail) {
+        memberRepository.softDropMember(userEmail);
     }
 }
