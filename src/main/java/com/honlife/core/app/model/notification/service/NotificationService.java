@@ -42,7 +42,7 @@ public class NotificationService {
 
     /**
      * 회원의 알림 설정 업데이트<br>
-     * {@code @Transactional}로 인해 modelMapper만 사용해도 로직이 끝나는 시점에서 업데이트 됩니다.
+     * {@code @Transactional}로 인해 로직이 끝나는 시점에서 업데이트 됩니다.
      * @param userEmail           회원 이메일
      * @param notificationPayload 설정 값 정보
      */
@@ -50,7 +50,9 @@ public class NotificationService {
     public void updateNotification(String userEmail, NotificationPayload notificationPayload) {
         Notification notification = notificationRepository.findByMember_Email(userEmail)
             .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
-        modelMapper.map(notificationPayload, notification);
+        notification.setIsEmail(notificationPayload.getIsEmail());
+        notification.setIsRoutine(notificationPayload.getIsRoutine());
+        notification.setIsBadge(notificationPayload.getIsBadge());
     }
 
     /**
