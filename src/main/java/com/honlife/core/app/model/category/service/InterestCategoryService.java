@@ -152,7 +152,7 @@ public class InterestCategoryService {
      * @param memberId 멤버 식별아이디
      */
     @Transactional
-    public void deleteInterestCategoryByMemberId(Long memberId) {
+    public void softDropInterestCategoryByMemberId(Long memberId) {
         interestCategoryRepository.deleteByMemberId(memberId);
     }
 

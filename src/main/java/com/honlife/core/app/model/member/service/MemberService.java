@@ -12,7 +12,6 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,24 +22,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.domain.InterestCategory;
-import com.honlife.core.app.model.category.repos.CategoryRepository;
-import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
-import com.honlife.core.app.model.loginLog.repos.LoginLogRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.domain.MemberQuest;
 import com.honlife.core.app.model.member.model.MemberDTO;
-import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
-import com.honlife.core.app.model.member.repos.MemberItemRepository;
-import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.member.repos.MemberQuestRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.app.model.notification.repos.NotificationRepository;
-import com.honlife.core.app.model.point.repos.PointLogRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
-import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.infra.util.ReferencedWarning;
 import com.honlife.core.infra.util.NotFoundException;
 
@@ -341,24 +330,24 @@ public class MemberService {
 
     }
 
-    public void deleteRelatedToMember(String userEmail) {
+    public void softDropRelatedToMember(String userEmail) {
 
         Long memberId = memberRepository.findByEmailAndIsActive(userEmail,true).get().getId();
 
         // 루틴 is_active = false
-        routineService.deleteRoutineByMemberId(memberId);
+        routineService.softDropRoutineByMemberId(memberId);
         // 카테고리 is_active = false
-        categoryService.deleteCategoryByMemberId(memberId);
+        categoryService.softDropCategoryByMemberId(memberId);
         // 멤버 아이템 is_active = false
-        memberItemService.deleteMemberItemByMemberId(memberId);
+        memberItemService.softDropMemberItemByMemberId(memberId);
         // 멤버 퀘스트 is active = false
-        memberQuestService.deleteMemberQuestByMemberId(memberId);
+        memberQuestService.softDropMemberQuestByMemberId(memberId);
         // 멤버 업적 is_active = false
-        memberBadgeService.deleteMemberBadgeByMemberId(memberId);
+        memberBadgeService.softDropMemberBadgeByMemberId(memberId);
         // 선호 카테고리 is_active = false
-        interestCategoryService.deleteInterestCategoryByMemberId(memberId);
+        interestCategoryService.softDropInterestCategoryByMemberId(memberId);
         // 멤버 포인트 is_active = false
-        memberPointService.deleteMemberPointByMemberId(memberId);
+        memberPointService.softDropMemberPointByMemberId(memberId);
     }
 
     /**
@@ -366,7 +355,7 @@ public class MemberService {
      * @param userEmail 멤버 이메일
      */
     @Transactional
-    public void deleteMember(String userEmail) {
-        memberRepository.deleteMember(userEmail);
+    public void softDropMember(String userEmail) {
+        memberRepository.softDropMember(userEmail);
     }
 }

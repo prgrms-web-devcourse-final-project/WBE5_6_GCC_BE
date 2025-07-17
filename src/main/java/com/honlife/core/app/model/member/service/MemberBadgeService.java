@@ -88,7 +88,7 @@ public class MemberBadgeService {
      * @param memberId 멤버 식별아이디
      */
     @Transactional
-    public void deleteMemberBadgeByMemberId(Long memberId) {
+    public void softDropMemberBadgeByMemberId(Long memberId) {
         memberBadgeRepository.deleteByMemberId(memberId);
     }
 

@@ -10,7 +10,6 @@ import com.honlife.core.app.model.member.model.MemberPointDTO;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
 
 
 @Service
@@ -87,7 +86,7 @@ public class MemberPointService {
      * @param memberId 멤버 식별아이디
      */
     @Transactional
-    public void deleteMemberPointByMemberId(Long memberId) {
+    public void softDropMemberPointByMemberId(Long memberId) {
         memberPointRepository.deleteByMemberId(memberId);
     }
 

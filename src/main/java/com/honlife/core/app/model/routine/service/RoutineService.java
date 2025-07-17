@@ -115,7 +115,7 @@ public class RoutineService {
      * @param memberId 멤버 식별아이디
      */
     @Transactional
-    public void deleteRoutineByMemberId(Long memberId) {
+    public void softDropRoutineByMemberId(Long memberId) {
         routineRepository.deleteByMemberId(memberId);
     }
 

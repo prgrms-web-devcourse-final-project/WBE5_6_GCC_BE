@@ -89,7 +89,7 @@ public class MemberItemService {
      * @param memberId 멤버 식별아이디
      */
     @Transactional
-    public void deleteMemberItemByMemberId(Long memberId) {
+    public void softDropMemberItemByMemberId(Long memberId) {
         memberItemRepository.deleteByMemberId(memberId);
     }
 

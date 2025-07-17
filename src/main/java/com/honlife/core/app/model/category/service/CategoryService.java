@@ -135,7 +135,7 @@ public class CategoryService {
      * @param memberId 멤버 식별아이디
      */
     @Transactional
-    public void deleteCategoryByMemberId(Long memberId) {
+    public void softDropCategoryByMemberId(Long memberId) {
         categoryRepository.deleteByMemberId(memberId);
     }
 
