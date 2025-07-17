@@ -90,4 +90,14 @@ public class MemberPointService {
     public void deleteMemberPointByMemberId(Long memberId) {
         memberPointRepository.deleteByMemberId(memberId);
     }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 멤버 포인트를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link MemberPoint}
+     */
+    public MemberPoint findFirstMemberPointByMemberAndIsActive(Member member, boolean isActive) {
+        return memberPointRepository.findFirstByMemberAndIsActive(member,isActive);
+    }
 }

@@ -11,4 +11,11 @@ public interface MemberPointRepository extends JpaRepository<MemberPoint, Long>,
 
     boolean existsByMemberId(Long id);
 
+    /**
+     * 해당 멤버와 연관된 첫번째 멤버 포인트를 조회
+     * @param member
+     * @param isActive
+     * @return {@link MemberPoint}
+     */
+    MemberPoint findFirstByMemberAndIsActive(Member member, Boolean isActive);
 }
