@@ -42,6 +42,7 @@ public class MemberItemController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        // 회원이 보유한 아이템 리스트 반환, itemType 값이 존재 시 해당 Type에 대한 리스트만 반환
         List<MemberItemResponse> responseList = memberItemService.getItemsByMember(member.getId(), itemType);
         return ResponseEntity.ok(CommonApiResponse.success(responseList));
     }
@@ -58,6 +59,7 @@ public class MemberItemController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        // 회원에 대한 장착된 보유 아이템 반환
         List<MemberItemResponse> responseList = memberItemService.getEquippedItemsByMember(member.getId());
         return ResponseEntity.ok(CommonApiResponse.success(responseList));
     }

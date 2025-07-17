@@ -26,10 +26,24 @@ public class MemberItemService {
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
 
+    /**
+     * 특정 회원이 보유한 아이템 목록을 조회합니다.
+     * 아이템 타입이 지정된 경우 해당 타입에 해당하는 아이템만 필터링하여 반환합니다.
+     *
+     * @param memberId 조회할 회원의 ID
+     * @param itemType 필터링할 아이템 타입 (null 가능)
+     * @return MemberItemResponse 리스트
+     */
     public List<MemberItemResponse> getItemsByMember(Long memberId, ItemType itemType){
         return memberItemRepository.findItemsByMemberId(memberId, itemType);
     }
 
+    /**
+     * 특정 회원이 현재 장착 중인 아이템 목록을 조회합니다.
+     *
+     * @param memberId 조회할 회원의 ID
+     * @return 장착된 MemberItemResponse 리스트
+     */
     public List<MemberItemResponse> getEquippedItemsByMember(Long memberId){
         return memberItemRepository.findEquippedItemsByMemberId(memberId);
     }
