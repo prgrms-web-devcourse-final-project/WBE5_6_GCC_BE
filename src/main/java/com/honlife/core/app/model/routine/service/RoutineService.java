@@ -150,7 +150,7 @@ public class RoutineService {
                     Long parentId = routine.getCategory().getParentId();
                     if (parentId != null) {
                       parentCategory = categoryRepository.findById(parentId)
-                          .orElse(null);
+                          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
                     }
 
                     RoutineSchedule routineSchedule = routineScheduleRepository
