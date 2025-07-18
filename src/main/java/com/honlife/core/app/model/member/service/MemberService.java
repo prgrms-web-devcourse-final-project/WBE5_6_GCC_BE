@@ -401,4 +401,13 @@ public class MemberService {
     public void softDropMember(String userEmail) {
         memberRepository.softDropMember(userEmail);
     }
+
+    /**
+     * 회원의 이메일을 받아 회원 정보를 리턴하는 메소드
+     * @param userEmail 현재 로그인한 회원의 이메일
+     * @return Memeber 엔티티값을 반환합니다
+     */
+    public Member getMemberByEmail(String userEmail){
+        return memberRepository.findByEmailIgnoreCase(userEmail);
+    }
 }

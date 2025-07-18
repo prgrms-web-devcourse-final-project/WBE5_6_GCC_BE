@@ -3,6 +3,7 @@ package com.honlife.core.app.model.member.service;
 import com.honlife.core.app.model.category.domain.Category;
 import java.util.List;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.repos.ItemRepository;
@@ -102,5 +103,15 @@ public class MemberItemService {
     public MemberItem findFirstMemberItemByMemberAndIsActive(Member member, boolean isActive) {
         return memberItemRepository.findFirstByMemberAndIsActive(member, isActive);
 
+    }
+
+    /**
+     * memberId와 itemId를 통해 해당 아이템을 보유 중인지 여부 반환
+     * @param memberId 사용자 ID
+     * @param itemId   아이템 ID
+     * @return 보유 여부 (true: 보유 중, false: 미보유)
+     */
+    public Boolean isItemOwnByMember(Long memberId, Long itemId) {
+        return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
     }
 }

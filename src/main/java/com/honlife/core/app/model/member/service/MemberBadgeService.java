@@ -1,32 +1,30 @@
 package com.honlife.core.app.model.member.service;
 
-import java.util.List;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.model.MemberBadgeDTO;
+import com.honlife.core.app.model.member.model.MemberBadgeDetailDTO;
+import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.util.NotFoundException;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class MemberBadgeService {
 
     private final MemberBadgeRepository memberBadgeRepository;
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final BadgeRepository badgeRepository;
-
-    public MemberBadgeService(final MemberBadgeRepository memberBadgeRepository,
-            final MemberRepository memberRepository, final BadgeRepository badgeRepository) {
-        this.memberBadgeRepository = memberBadgeRepository;
-        this.memberRepository = memberRepository;
-        this.badgeRepository = badgeRepository;
-    }
 
     public List<MemberBadgeDTO> findAll() {
         final List<MemberBadge> memberBadges = memberBadgeRepository.findAll(Sort.by("id"));
@@ -52,6 +50,41 @@ public class MemberBadgeService {
                 .orElseThrow(NotFoundException::new);
         mapToEntity(memberBadgeDTO, memberBadge);
         memberBadgeRepository.save(memberBadge);
+    }
+
+    /**
+     * 특정 사용자가 보유한 모든 배지의 상세 정보 조회 (이메일로)
+     * @param email 사용자 이메일
+     * @return 사용자가 보유한 배지 상세 정보 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<MemberBadgeDetailDTO> getMemberBadgeDetails(String email) {
+        // 1. MemberService를 통해 사용자 조회
+        MemberDTO memberDTO = memberService.findMemberByEmail(email);
+
+        // 2. 사용자가 보유한 배지들 조회
+        List<MemberBadge> memberBadges = memberBadgeRepository.findByMemberId(memberDTO.getId());
+
+        // 3. 활성화된 배지만 필터링하고 상세 정보 DTO로 변환
+        return memberBadges.stream()
+            .filter(mb -> mb.getIsActive() && mb.getBadge() != null && mb.getBadge().getIsActive())
+            .map(memberBadge -> {
+                Badge badge = memberBadge.getBadge();
+
+                return MemberBadgeDetailDTO.builder()
+                    // MemberBadge 정보
+                    .memberBadgeId(memberBadge.getId())
+                    .receivedDate(memberBadge.getCreatedAt())
+
+                    // Badge 정보
+                    .badgeId(badge.getId())
+                    .badgeKey(badge.getKey())
+                    .badgeName(badge.getName())
+                    .badgeTier(badge.getTier())
+                    .badgeInfo(badge.getInfo())
+                    .build();
+            })
+            .toList();
     }
 
     public void delete(final Long id) {
