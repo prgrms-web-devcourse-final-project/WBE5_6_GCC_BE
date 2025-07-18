@@ -11,7 +11,6 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
 
 
