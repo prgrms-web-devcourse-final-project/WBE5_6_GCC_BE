@@ -156,11 +156,9 @@ public class MemberController {
         if(withdrawRequest.getWithdrawType()==WithdrawType.ETC&&withdrawRequest.getEtcReason()==null){
             return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
-        // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
-//        memberService.softDropRelatedToMember(userEmail);
-
         Long memberId = memberService.findMemberByEmail(userEmail).getId();
 
+        // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
         // 루틴 is_active = false
         routineService.softDropRoutineByMemberId(memberId);
         // 카테고리 is_active = false
