@@ -57,24 +57,24 @@ public enum ResponseCode {
 
 
   private final String code;
-    private final HttpStatus status;
-    private final String message;
-    
-    ResponseCode(String code, HttpStatus status, String message) {
-        this.code = code;
-        this.status = status;
-        this.message = message;
-    }
-    
-    public String code() {
-        return code;
-    }
-    
-    public HttpStatus status() {
-        return status;
-    }
-    
-    public String message() {
-        return message;
-    }
+  private final HttpStatus status;
+  private final String message;
+
+  ResponseCode(String code, HttpStatus status, String message) {
+    this.code = code;
+    this.status = status;
+    this.message = message;
+  }
+
+  public String code() {
+    return code;
+  }
+
+  public HttpStatus status() {
+    return status;
+  }
+
+  public String message() {
+    return message;
+  }
 }

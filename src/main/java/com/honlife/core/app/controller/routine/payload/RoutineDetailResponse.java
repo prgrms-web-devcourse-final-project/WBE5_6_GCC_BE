@@ -1,8 +1,11 @@
 package com.honlife.core.app.controller.routine.payload;
 
+import com.honlife.core.app.model.routine.dto.RoutineDetailDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.honlife.core.app.model.routine.code.RepeatType;
 
@@ -10,6 +13,8 @@ import com.honlife.core.app.model.routine.code.RepeatType;
 @Setter
 @Builder
 @Schema(description = "특정 루틴 조회 응답")
+@AllArgsConstructor
+@NoArgsConstructor
 public class RoutineDetailResponse {
 
     @Schema(description = "루틴 ID", example = "1")
@@ -38,4 +43,20 @@ public class RoutineDetailResponse {
 
     @Schema(description = "반복 값", example = "1,3,5")
     private String repeatValue;
+
+
+    public static RoutineDetailResponse toDto(RoutineDetailDTO dto) {
+
+        return RoutineDetailResponse.builder()
+            .routineId(dto.getRoutineId())
+            .categoryId(dto.getCategoryId())
+            .majorCategory(dto.getMajorCategory())
+            .subCategory(dto.getSubCategory())
+            .name(dto.getName())
+            .triggerTime(dto.getTriggerTime())
+            .isImportant(dto.getIsImportant())
+            .repeatType(dto.getRepeatType())
+            .repeatValue(dto.getRepeatValue())
+            .build();
+    }
 }
