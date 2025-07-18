@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface MemberItemRepositoryCustom {
     List<Tuple> findMemberItems(Long memberId, ItemType itemType);
-    List<Tuple> findEquippedMemberItems(Long memberId);
 }

@@ -31,17 +31,4 @@ public class MemberItemRepositoryCustomImpl implements MemberItemRepositoryCusto
             )
             .fetch();
     }
-
-    @Override
-    public List<Tuple> findEquippedMemberItems(Long memberId) {
-        return queryFactory
-            .select(memberItem, item)
-            .from(memberItem)
-            .join(item).on(memberItem.item.id.eq(item.id))
-            .where(
-                memberItem.member.id.eq(memberId),
-                memberItem.isEquipped.isTrue()
-            )
-            .fetch();
-    }
 }
