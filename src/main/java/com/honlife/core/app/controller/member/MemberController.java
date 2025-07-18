@@ -38,7 +38,7 @@ import com.honlife.core.infra.response.ResponseCode;
 
 
 @Slf4j
-@Tag(name = "회원", description = "회원관련 API 입니다.")
+@Tag(name = "✅ 회원", description = "회원관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -126,9 +126,9 @@ public class MemberController {
      */
     @DeleteMapping
     @Operation(summary = "회원 탈퇴", description = "회원탈퇴를 처리합니다.<br>"
-        + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요."
-        + "WithdrawType"
-        +"TOO_MUCH_EFFORT<br>"
+        + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요.<br>"
+        + "~ WithdrawType ~<br>"
+        + "TOO_MUCH_EFFORT<br>"
         + "ROUTINE_MISMATCH<br>"
         + "UX_ISSUE<br>"
         + "MISSING_FEATURE<br>"
