@@ -34,7 +34,6 @@ public class MemberItemService {
     private final MemberItemRepository memberItemRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
-    private final MemberItemRepositoryCustom memberItemRepositoryCustom;
 
     /**
      * 특정 회원이 보유한 아이템 목록을 조회합니다.
@@ -45,7 +44,7 @@ public class MemberItemService {
      * @return MemberItemResponse 리스트
      */
     public List<MemberItemDTOCustom> getItemsByMember(Long memberId, ItemType itemType) {
-        List<Tuple> tuples = memberItemRepositoryCustom.findMemberItems(memberId, itemType);
+        List<Tuple> tuples = memberItemRepository.findMemberItems(memberId, itemType);
 
         return tuples.stream().map(tuple -> {
             MemberItem mi = tuple.get(QMemberItem.memberItem);
