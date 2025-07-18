@@ -8,4 +8,10 @@ public interface MemberRepositoryCustom {
      * @return {@code Boolean}
      */
     boolean isEmailVerified(String email);
+
+    /**
+     * 멤버 소프트 드랍
+     * @param userEmail 유저 이메일
+     */
+    void softDropMember(String userEmail);
 }

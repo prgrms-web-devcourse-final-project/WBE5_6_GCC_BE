@@ -10,6 +10,7 @@ import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.util.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -116,4 +117,22 @@ public class MemberBadgeService {
         return memberBadge;
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 멤버 뱃지를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropMemberBadgeByMemberId(Long memberId) {
+        memberBadgeRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 멤버 뱃지를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link MemberBadge}
+     */
+    public MemberBadge findFirstMemberBadgeByMemberAndIsActive(Member member, boolean isActive) {
+        return memberBadgeRepository.findFirstByMemberAndIsActive(member, isActive);
+    }
 }
