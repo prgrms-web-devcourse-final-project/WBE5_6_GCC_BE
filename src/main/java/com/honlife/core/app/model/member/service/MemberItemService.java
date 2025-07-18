@@ -1,12 +1,7 @@
 package com.honlife.core.app.model.member.service;
 
-import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.category.domain.Category;
-import com.honlife.core.infra.response.ResponseCode;
-import java.util.List;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
+import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.repos.ItemRepository;
@@ -16,17 +11,16 @@ import com.honlife.core.app.model.member.domain.QMemberItem;
 import com.honlife.core.app.model.member.model.MemberItemDTO;
 import com.honlife.core.app.model.member.model.MemberItemDTOCustom;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
-import com.honlife.core.app.model.member.repos.MemberItemRepositoryCustom;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.response.ResponseCode;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
