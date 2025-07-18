@@ -6,6 +6,7 @@ import com.honlife.core.app.controller.member.payload.MemberPayload;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
+import com.honlife.core.app.model.member.model.MemberItemDTOCustom;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -43,24 +44,7 @@ public class MemberItemController {
     ) {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
         // 회원이 보유한 아이템 리스트 반환, itemType 값이 존재 시 해당 Type에 대한 리스트만 반환
-        List<MemberItemResponse> responseList = memberItemService.getItemsByMember(member.getId(), itemType);
-        return ResponseEntity.ok(CommonApiResponse.success(responseList));
-    }
-
-
-    /**
-     * 로그인한 사용자가 현재 장착 중인 아이템 조회
-     *
-     * @param userDetails 인증된 사용자 정보
-     * @return 장착된 아이템 리스트
-     */
-    @GetMapping("/equipped")
-    public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getEquippedItems(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        Member member = memberService.getMemberByEmail(userDetails.getUsername());
-        // 회원에 대한 장착된 보유 아이템 반환
-        List<MemberItemResponse> responseList = memberItemService.getEquippedItemsByMember(member.getId());
+        List<MemberItemResponse> responseList = MemberItemResponse.fromDTOList(memberItemService.getItemsByMember(member.getId(), itemType));
         return ResponseEntity.ok(CommonApiResponse.success(responseList));
     }
 
