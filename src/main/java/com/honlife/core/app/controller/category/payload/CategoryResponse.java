@@ -20,6 +20,8 @@ public class CategoryResponse {
 
     private CategoryType categoryType;
 
+    private String emoji;
+
     private Long memberId;
 
 }
