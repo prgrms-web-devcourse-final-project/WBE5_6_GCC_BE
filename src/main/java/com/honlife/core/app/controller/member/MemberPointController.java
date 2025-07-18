@@ -38,8 +38,7 @@ public class MemberPointController {
         // 유저 데이터를 가져와 nickname과 포인트 조회
         MemberPointResponse memberPointPayload
             = MemberPointResponse.builder()
-            .nickname("자취쌉고수")
-            .currentPoint(10000L)
+            .points(500)
             .build();
 
         return ResponseEntity.ok(CommonApiResponse.success(memberPointPayload));
