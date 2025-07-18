@@ -1,6 +1,6 @@
 package com.honlife.core.app.model.auth;
 
-import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +35,8 @@ public class AuthService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserDetailsService userDetailsService;
 
+    private final LoginLogService loginLogService;
+
     public TokenDto signin(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
@@ -44,7 +46,7 @@ public class AuthService {
         // 인증 실패 시: AuthenticationException 발생
         Authentication authentication = authenticationManagerBuilder.getObject()
             .authenticate(authenticationToken);
-        
+
         return processSignin(authentication);
     }
 
@@ -79,7 +81,10 @@ public class AuthService {
     public TokenDto processTokenSignin(String email, String roles) {
         // black list 에 있다면 해제
         userBlackListRepository.deleteById(email);
-        
+
+        // 로그인시 자동으로 로그인 기록 저장
+        loginLogService.newLog(email);
+
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         AccessTokenDto accessToken = jwtTokenProvider.generateAccessToken(email, roles);
         RefreshToken refreshToken = refreshTokenService.saveWithAtId(accessToken.getJti());

@@ -9,8 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import com.honlife.core.app.model.common.BaseEntity;
 import com.honlife.core.app.model.item.domain.Item;
 
@@ -18,6 +17,9 @@ import com.honlife.core.app.model.item.domain.Item;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MemberItem extends BaseEntity {
 
     @Id

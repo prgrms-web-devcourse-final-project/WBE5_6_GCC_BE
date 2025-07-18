@@ -3,12 +3,15 @@ package com.honlife.core.app.model.member.service;
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import com.honlife.core.app.model.auth.code.Role;
-import com.honlife.core.app.model.category.service.CategoryService;
-import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.app.model.category.repos.CategoryRepository;
+import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
+import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
+import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.member.repos.MemberQuestRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
-import com.honlife.core.app.model.routine.service.RoutineService;
+import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.withdraw.dto.WithdrawReasonDTO;
 import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -32,8 +35,8 @@ import com.honlife.core.app.model.member.domain.MemberQuest;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
-import com.honlife.core.infra.util.ReferencedWarning;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 @RequiredArgsConstructor
 @Service
@@ -41,20 +44,19 @@ import com.honlife.core.infra.util.NotFoundException;
 public class MemberService {
 
     private final ModelMapper modelMapper;
-    private final InterestCategoryService interestCategoryService;
 
     private final MemberRepository memberRepository;
     private final ModelMapper mapper;
     private final PasswordEncoder passwordEncoder;
     private final WithdrawReasonService withdrawReasonService;
-    private final RoutineService routineService;
-    private final CategoryService categoryService;
-    private final MemberItemService memberItemService;
-    private final MemberQuestService memberQuestService;
-    private final MemberBadgeService memberBadgeService;
-    private final MemberPointService memberPointService;
     private final MemberPointRepository memberPointRepository;
     private final NotificationRepository notificationRepository;
+    private final RoutineRepository routineRepository;
+    private final CategoryRepository categoryRepository;
+    private final MemberItemRepository memberItemRepository;
+    private final MemberQuestRepository memberQuestRepository;
+    private final MemberBadgeRepository memberBadgeRepository;
+    private final InterestCategoryRepository interestCategoryRepository;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -66,7 +68,7 @@ public class MemberService {
     public MemberDTO get(final Long id) {
         return memberRepository.findById(id)
             .map(member -> mapToDTO(member, new MemberDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
     }
 
     public Long create(final MemberDTO memberDTO) {
@@ -77,7 +79,7 @@ public class MemberService {
 
     public void update(final Long id, final MemberDTO memberDTO) {
         final Member member = memberRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         mapToEntity(memberDTO, member);
         memberRepository.save(member);
     }
@@ -127,44 +129,44 @@ public class MemberService {
     public ReferencedWarning getReferencedWarning(final String userEmail) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Member member = memberRepository.findByEmailAndIsActive(userEmail,true)
-            .orElseThrow(NotFoundException::new);
-        final Routine memberRoutine = routineService.findFirstRoutineByMemberAndIsActive(member,true);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
+        final Routine memberRoutine = routineRepository.findFirstByMemberAndIsActive(member,true);
         if (memberRoutine != null) {
             referencedWarning.setKey("member.routine.member.referenced");
             referencedWarning.addParam(memberRoutine.getId());
             return referencedWarning;
         }
-        final Category memberCategory = categoryService.findFirstCategoryByMemberAndIsActive(member,true);
+        final Category memberCategory = categoryRepository.findFirstByMemberAndIsActive(member,true);
         if (memberCategory != null) {
             referencedWarning.setKey("member.category.member.referenced");
             referencedWarning.addParam(memberCategory.getId());
             return referencedWarning;
         }
-        final MemberItem memberMemberItem = memberItemService.findFirstMemberItemByMemberAndIsActive(member,true);
+        final MemberItem memberMemberItem = memberItemRepository.findFirstByMemberAndIsActive(member,true);
         if (memberMemberItem != null) {
             referencedWarning.setKey("member.memberItem.member.referenced");
             referencedWarning.addParam(memberMemberItem.getId());
             return referencedWarning;
         }
-        final MemberQuest memberMemberQuest = memberQuestService.findFirstMemberQuestByMemberAndIsActive(member, true);
+        final MemberQuest memberMemberQuest = memberQuestRepository.findFirstByMemberAndIsActive(member, true);
         if (memberMemberQuest != null) {
             referencedWarning.setKey("member.memberQuest.member.referenced");
             referencedWarning.addParam(memberMemberQuest.getId());
             return referencedWarning;
         }
-        final MemberBadge memberMemberBadge = memberBadgeService.findFirstMemberBadgeByMemberAndIsActive(member, true);
+        final MemberBadge memberMemberBadge = memberBadgeRepository.findFirstByMemberAndIsActive(member, true);
         if (memberMemberBadge != null) {
             referencedWarning.setKey("member.memberBadge.member.referenced");
             referencedWarning.addParam(memberMemberBadge.getId());
             return referencedWarning;
         }
-        final InterestCategory memberInterestCategory = interestCategoryService.findFirstInterestCategoryByMemberAndIsActive(member, true);
+        final InterestCategory memberInterestCategory = interestCategoryRepository.findFirstByMemberAndIsActive(member, true);
         if (memberInterestCategory != null) {
             referencedWarning.setKey("member.interestCategory.member.referenced");
             referencedWarning.addParam(memberInterestCategory.getId());
             return referencedWarning;
         }
-        final MemberPoint memberMemberPoint = memberPointService.findFirstMemberPointByMemberAndIsActive(member, true);
+        final MemberPoint memberMemberPoint = memberPointRepository.findFirstByMemberAndIsActive(member, true);
         if (memberMemberPoint != null) {
             referencedWarning.setKey("member.memberPoint.member.referenced");
             referencedWarning.addParam(memberMemberPoint.getId());
@@ -374,26 +376,6 @@ public class MemberService {
 
     }
 
-    public void softDropRelatedToMember(String userEmail) {
-
-        Long memberId = memberRepository.findByEmailAndIsActive(userEmail,true).get().getId();
-
-        // 루틴 is_active = false
-        routineService.softDropRoutineByMemberId(memberId);
-        // 카테고리 is_active = false
-        categoryService.softDropCategoryByMemberId(memberId);
-        // 멤버 아이템 is_active = false
-        memberItemService.softDropMemberItemByMemberId(memberId);
-        // 멤버 퀘스트 is active = false
-        memberQuestService.softDropMemberQuestByMemberId(memberId);
-        // 멤버 업적 is_active = false
-        memberBadgeService.softDropMemberBadgeByMemberId(memberId);
-        // 선호 카테고리 is_active = false
-        interestCategoryService.softDropInterestCategoryByMemberId(memberId);
-        // 멤버 포인트 is_active = false
-        memberPointService.softDropMemberPointByMemberId(memberId);
-    }
-
     /**
      * 멤버를 삭제합니다.
      * @param userEmail 멤버 이메일
@@ -401,5 +383,14 @@ public class MemberService {
     @Transactional
     public void softDropMember(String userEmail) {
         memberRepository.softDropMember(userEmail);
+    }
+
+    /**
+     * 회원의 이메일을 받아 회원 정보를 리턴하는 메소드
+     * @param userEmail 현재 로그인한 회원의 이메일
+     * @return Memeber 엔티티값을 반환합니다
+     */
+    public Member getMemberByEmail(String userEmail){
+        return memberRepository.findByEmailIgnoreCase(userEmail);
     }
 }

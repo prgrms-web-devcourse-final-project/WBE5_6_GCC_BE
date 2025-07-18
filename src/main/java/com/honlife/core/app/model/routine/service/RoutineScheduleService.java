@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,7 @@ import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import com.honlife.core.app.model.routine.dto.RoutineScheduleDTO;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -33,7 +34,7 @@ public class RoutineScheduleService {
     public RoutineScheduleDTO get(final Long id) {
         return routineScheduleRepository.findById(id)
                 .map(routineSchedule -> mapToDTO(routineSchedule, new RoutineScheduleDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
     }
 
     public Long create(final RoutineScheduleDTO routineScheduleDTO) {
@@ -44,7 +45,7 @@ public class RoutineScheduleService {
 
     public void update(final Long id, final RoutineScheduleDTO routineScheduleDTO) {
         final RoutineSchedule routineSchedule = routineScheduleRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
         mapToEntity(routineScheduleDTO, routineSchedule);
         routineScheduleRepository.save(routineSchedule);
     }
@@ -69,7 +70,7 @@ public class RoutineScheduleService {
         routineSchedule.setIsDone(routineScheduleDTO.getIsDone());
         routineSchedule.setCreatedAt(routineScheduleDTO.getCreatedAt());
         final Routine routine = routineScheduleDTO.getRoutine() == null ? null : routineRepository.findById(routineScheduleDTO.getRoutine())
-                .orElseThrow(() -> new NotFoundException("routine not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
         routineSchedule.setRoutine(routine);
         return routineSchedule;
     }

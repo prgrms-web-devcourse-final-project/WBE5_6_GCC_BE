@@ -1,6 +1,12 @@
 package com.honlife.core.app.model.notification.service;
 
 import com.honlife.core.app.controller.notification.payload.NotificationPayload;
+import com.honlife.core.infra.response.ResponseCode;
+import java.util.List;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import com.honlife.core.app.model.member.domain.Member;
+import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.dto.NotificationDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -11,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @RequiredArgsConstructor
@@ -34,6 +41,17 @@ public class NotificationService {
         notificationDTO.setIsBadge(notification.getIsBadge());
         notificationDTO.setMember(notification.getMember() == null ? null : notification.getMember().getId());
         return notificationDTO;
+    }
+
+    private Notification mapToEntity(final NotificationDTO notificationDTO,
+        final Notification notification) {
+        notification.setIsEmail(notificationDTO.getIsEmail());
+        notification.setIsRoutine(notificationDTO.getIsRoutine());
+        notification.setIsBadge(notificationDTO.getIsBadge());
+        final Member member = notificationDTO.getMember() == null ? null : memberRepository.findById(notificationDTO.getMember())
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
+        notification.setMember(member);
+        return notification;
     }
 
     public boolean memberExists(final Long id) {
