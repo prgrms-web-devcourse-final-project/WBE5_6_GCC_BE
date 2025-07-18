@@ -126,37 +126,38 @@ public class MemberItemController {
         return ResponseEntity.ok(CommonApiResponse.success(response));
     }
 
-
+    /**
+     * 로그인된 사용자가 특정 아이템을 장착하는 API
+     * 기존 동일 타입의 아이템이 장착되어 있다면 자동으로 해제됨
+     *
+     * @param itemKey 장착할 아이템의 고유 키값
+     * @param userDetails 로그인된 사용자 정보
+     * @return 성공 시 204 No Content
+     */
     @PatchMapping("/equip")
     public ResponseEntity<CommonApiResponse<Void>> equipItem(
             @RequestParam String itemKey,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 아이템 키값으로 Item 정보 가져옴
-        Item item = itemService.getItemByKey(itemKey);
-        if (item == null) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
-        memberItemService.equipItem(member.getId(),item.getId());
-
+        memberItemService.equipItem(member.getId(),itemKey);
         return null;
     }
 
+    /**
+     * 로그인된 사용자가 특정 아이템을 해제하는 API
+     *
+     * @param itemKey 해제할 아이템의 고유 키값
+     * @param userDetails 로그인된 사용자 정보
+     * @return 성공 시 204 No Content
+     */
     @PatchMapping("/unequip")
     public ResponseEntity<CommonApiResponse<Void>> unequipItem(
             @RequestParam String itemKey,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 아이템 키값으로 Item 정보 가져옴
-        Item item = itemService.getItemByKey(itemKey);
-        if (item == null) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
-        memberItemService.unequipItemByItemId(member.getId(),item.getId());
+        memberItemService.unequipItemByItemId(member.getId(),itemKey);
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
