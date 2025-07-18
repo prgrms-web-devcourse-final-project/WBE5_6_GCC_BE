@@ -37,7 +37,7 @@ public class LogoutFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         Claims claims  = jwtTokenProvider.getClaims(accessToken);
         
-        if(path.equals("/auth/v1/logout")){
+        if(path.equals("/api/v1/logout")){
             refreshTokenService.deleteByAccessTokenId(claims.getId());
             SecurityContextHolder.clearContext();
             ResponseCookie expiredAccessToken = TokenCookieFactory.createExpiredToken(AuthToken.ACCESS_TOKEN.name());

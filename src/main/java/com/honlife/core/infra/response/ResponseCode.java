@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 public enum ResponseCode {
   OK("0000", HttpStatus.OK, "OK"),
 
+  CONTINUE("1000", HttpStatus.CONTINUE, "Continue"),
+
   CREATED("2010", HttpStatus.CREATED, "Created"),
   BADGE_CREATED("2012", HttpStatus.CREATED, "Badge created"),
   ROUTINE_CREATED("2013", HttpStatus.CREATED, "Routine created"),

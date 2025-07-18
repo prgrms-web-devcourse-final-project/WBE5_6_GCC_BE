@@ -14,6 +14,7 @@ import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import com.honlife.core.infra.util.NotFoundException;
 import com.honlife.core.infra.util.ReferencedWarning;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -109,4 +110,23 @@ public class RoutineService {
         return null;
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 루틴을 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropRoutineByMemberId(Long memberId) {
+        routineRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 멤버와 연관된 루틴 중 활성화된 루틴중 가장 첫번째 것을 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link Routine}
+     */
+    public Routine findFirstRoutineByMemberAndIsActive(Member member, boolean isActive) {
+
+        return routineRepository.findFirstByMemberAndIsActive(member, isActive);
+    }
 }
