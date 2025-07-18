@@ -10,7 +10,6 @@ import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.util.NotFoundException;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
