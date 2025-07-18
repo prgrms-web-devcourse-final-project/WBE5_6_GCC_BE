@@ -130,7 +130,7 @@ public class RoutineController {
                 List<RoutinesResponse.RoutineItem> items = new ArrayList<>();
 
                 items.add(RoutinesResponse.RoutineItem.builder()
-                    .scheduleId(null)
+                    .scheduleId((long) i + 1)
                     .routineId((long) i + 1)
                     .majorCategory("건강")
                     .subCategory(null)
