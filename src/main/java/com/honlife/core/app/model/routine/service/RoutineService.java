@@ -3,6 +3,7 @@ package com.honlife.core.app.model.routine.service;
 import com.honlife.core.app.controller.routine.payload.RoutineDetailResponse;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
+import com.honlife.core.app.model.routine.dto.RoutineDetailDTO;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
@@ -129,7 +130,7 @@ public class RoutineService {
      * 지연로딩으로 routine 들고올때 category와 fetch join사용 했습니다
      * 스케줄러에 없을시 날짜 계산을 해서 루틴들고오는거를 만들었습니다
      */
-    public RoutinesResponse getUserWeeklyRoutines(String userEmail, LocalDate date) {
+    public Map<LocalDate, List<RoutineItemDTO>> getUserWeeklyRoutines(String userEmail, LocalDate date) {
 
       Member member = memberRepository.findByEmail(userEmail)
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
@@ -144,7 +145,8 @@ public class RoutineService {
       Map<LocalDate, List<RoutineItemDTO>> groupedByDate = routines.stream()
           .flatMap(routine ->
               startDate.datesUntil(endDate.plusDays(1))
-                  .filter(currentDate -> routine.getRepeatType().isMatched(currentDate, routine.getRepeatValue()))
+                  .filter(currentDate -> routine.getRepeatType()
+                      .isMatched(currentDate, routine.getRepeatValue()))
                   .map(currentDate -> {
                     Category parentCategory = null;
                     Long parentId = routine.getCategory().getParentId();
@@ -159,8 +161,10 @@ public class RoutineService {
                     return RoutineItemDTO.builder()
                         .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
                         .routineId(routine.getId())
-                        .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
-                        .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
+                        .majorCategory(parentCategory != null ? parentCategory.getName()
+                            : routine.getCategory().getName())
+                        .subCategory(
+                            parentCategory != null ? routine.getCategory().getName() : null)
                         .name(routine.getContent())
                         .triggerTime(routine.getTriggerTime())
                         .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
@@ -171,12 +175,9 @@ public class RoutineService {
           )
           .collect(Collectors.groupingBy(RoutineItemDTO::getDate));
 
-
-      RoutinesResponse response = new RoutinesResponse();
-      response.setRoutines(groupedByDate);
-
-      return response;
+      return groupedByDate;
     }
+
   /**
    * 사용자 당일 루틴 조회 입니다
    * return RoutinesDailyResponse
@@ -216,8 +217,6 @@ public class RoutineService {
               .build();
         })
         .toList();
-
-
 
 
     return responseRoutines;
@@ -274,9 +273,9 @@ public class RoutineService {
 
   /**
    * 사용자 루틴 단건 조회 입니다
-   * return void
+   * return RoutineDetailDTO
    */
-  public RoutineDetailResponse getDetailRoutine(Long routineId) {
+  public RoutineDetailDTO getDetailRoutine(Long routineId) {
 
     Routine routine = routineRepository.findByIdWithCategory(routineId)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
@@ -289,7 +288,7 @@ public class RoutineService {
     }
 
 
-    RoutineDetailResponse response = RoutineDetailResponse.builder()
+    RoutineDetailDTO response = RoutineDetailDTO.builder()
         .routineId(routineId)
         .categoryId(routine.getCategory().getId())
         .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
@@ -303,6 +302,7 @@ public class RoutineService {
 
     return response;
   }
+
   /**
    * 사용자 루틴 삭제 입니다
    * return void
