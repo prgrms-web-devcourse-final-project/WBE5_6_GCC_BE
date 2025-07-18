@@ -141,7 +141,7 @@ public class MemberItemController {
     ) {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
         memberItemService.equipItem(member.getId(),itemKey);
-        return null;
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
     /**
