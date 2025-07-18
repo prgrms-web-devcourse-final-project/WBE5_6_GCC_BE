@@ -10,8 +10,9 @@ import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.service.MemberService;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
+import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class BadgeService {
     public BadgeDTO get(final Long id) {
         return badgeRepository.findById(id)
             .map(badge -> mapToDTO(badge, new BadgeDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
     }
 
     public Long create(final BadgeDTO badgeDTO) {
@@ -55,7 +56,7 @@ public class BadgeService {
 
     public void update(final Long id, final BadgeDTO badgeDTO) {
         final Badge badge = badgeRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
         mapToEntity(badgeDTO, badge);
         badgeRepository.save(badge);
     }
@@ -175,7 +176,7 @@ public class BadgeService {
         badge.setRequirement(badgeDTO.getRequirement());
         badge.setInfo(badgeDTO.getInfo());
         final Category category = badgeDTO.getCategory() == null ? null : categoryRepository.findById(badgeDTO.getCategory())
-            .orElseThrow(() -> new NotFoundException("category not found"));
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
         badge.setCategory(category);
         return badge;
     }
@@ -183,7 +184,7 @@ public class BadgeService {
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Badge badge = badgeRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
         final MemberBadge badgeMemberBadge = memberBadgeRepository.findFirstByBadge(badge);
         if (badgeMemberBadge != null) {
             referencedWarning.setKey("badge.memberBadge.badge.referenced");

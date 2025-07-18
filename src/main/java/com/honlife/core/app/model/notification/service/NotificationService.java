@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.notification.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,7 @@ import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.dto.NotificationDTO;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -33,7 +34,7 @@ public class NotificationService {
     public NotificationDTO get(final Long id) {
         return notificationRepository.findById(id)
             .map(notification -> mapToDTO(notification, new NotificationDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_NOTIFICATION));
     }
 
     public Long create(final NotificationDTO notificationDTO) {
@@ -44,7 +45,7 @@ public class NotificationService {
 
     public void update(final Long id, final NotificationDTO notificationDTO) {
         final Notification notification = notificationRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_NOTIFICATION));
         mapToEntity(notificationDTO, notification);
         notificationRepository.save(notification);
     }
@@ -69,7 +70,7 @@ public class NotificationService {
         notification.setIsRoutine(notificationDTO.getIsRoutine());
         notification.setIsBadge(notificationDTO.getIsBadge());
         final Member member = notificationDTO.getMember() == null ? null : memberRepository.findById(notificationDTO.getMember())
-            .orElseThrow(() -> new NotFoundException("member not found"));
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         notification.setMember(member);
         return notification;
     }
