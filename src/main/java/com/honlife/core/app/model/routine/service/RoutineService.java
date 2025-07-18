@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,9 @@ import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import com.honlife.core.app.model.routine.dto.RoutineDTO;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -43,7 +45,7 @@ public class RoutineService {
     public RoutineDTO get(final Long id) {
         return routineRepository.findById(id)
                 .map(routine -> mapToDTO(routine, new RoutineDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
     }
 
     public Long create(final RoutineDTO routineDTO) {
@@ -54,7 +56,7 @@ public class RoutineService {
 
     public void update(final Long id, final RoutineDTO routineDTO) {
         final Routine routine = routineRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
         mapToEntity(routineDTO, routine);
         routineRepository.save(routine);
     }
@@ -88,10 +90,10 @@ public class RoutineService {
         routine.setRepeatType(routineDTO.getRepeatType());
         routine.setRepeatValue(routineDTO.getRepeatValue());
         final Member member = routineDTO.getMember() == null ? null : memberRepository.findById(routineDTO.getMember())
-                .orElseThrow(() -> new NotFoundException("member not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         routine.setMember(member);
         final Category category = routineDTO.getCategory() == null ? null : categoryRepository.findById(routineDTO.getCategory())
-                .orElseThrow(() -> new NotFoundException("category not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
         routine.setCategory(category);
         return routine;
     }
@@ -99,7 +101,7 @@ public class RoutineService {
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Routine routine = routineRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
         final RoutineSchedule routineRoutineSchedule = routineScheduleRepository.findFirstByRoutine(routine);
         if (routineRoutineSchedule != null) {
             referencedWarning.setKey("routine.routineSchedule.routine.referenced");
@@ -109,4 +111,23 @@ public class RoutineService {
         return null;
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 루틴을 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropRoutineByMemberId(Long memberId) {
+        routineRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 멤버와 연관된 루틴 중 활성화된 루틴중 가장 첫번째 것을 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link Routine}
+     */
+    public Routine findFirstRoutineByMemberAndIsActive(Member member, boolean isActive) {
+
+        return routineRepository.findFirstByMemberAndIsActive(member, isActive);
+    }
 }

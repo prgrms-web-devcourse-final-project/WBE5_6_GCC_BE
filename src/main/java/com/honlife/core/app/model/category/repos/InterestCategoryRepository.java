@@ -7,7 +7,7 @@ import com.honlife.core.app.model.category.domain.InterestCategory;
 import com.honlife.core.app.model.member.domain.Member;
 
 
-public interface InterestCategoryRepository extends JpaRepository<InterestCategory, Long> {
+public interface InterestCategoryRepository extends JpaRepository<InterestCategory, Long>, InterestCategoryRepositoryCustom {
 
     InterestCategory findFirstByCategory(Category category);
 
@@ -19,4 +19,12 @@ public interface InterestCategoryRepository extends JpaRepository<InterestCatego
      * @return {@code List<}{@link InterestCategory}{@code >}
      */
     List<InterestCategory> findAllByMember(Member member);
+
+    /**
+     * 해당 멤버와 연관된 첫번째 선호 카테고리를 조회
+     * @param member
+     * @param isActive
+     * @return {@link InterestCategory}
+     */
+    InterestCategory findFirstByMemberAndIsActive(Member member, Boolean isActive);
 }

@@ -25,4 +25,19 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
      * @return {@link Member}
      */
     Member findByEmailIgnoreCase(String email);
+    /**
+     * email과 isActive를 사용하여 기존의 회원정보를 검색하고 반환합니다.
+     * @param email member의 email
+     * @param isActive 활성화 상태
+     * @return {@code Optianl<Member>}
+     */
+    Optional<Member> findByEmailAndIsActive(String email, Boolean isActive);
+
+    /**
+     * 계정 활성화 여부와 함께, 중복된 이메일이 있는지 확인
+     * @param email email of member
+     * @param isActive account activation status
+     * @return {@code Boolean}
+     */
+    Boolean existsByEmailIgnoreCaseAndIsActive(String email, Boolean isActive);
 }

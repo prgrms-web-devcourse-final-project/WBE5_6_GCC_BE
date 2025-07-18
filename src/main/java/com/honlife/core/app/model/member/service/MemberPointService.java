@@ -1,6 +1,10 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.infra.response.ResponseCode;
+import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
@@ -8,8 +12,7 @@ import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.model.MemberPointDTO;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -34,7 +37,7 @@ public class MemberPointService {
     public MemberPointDTO get(final Long id) {
         return memberPointRepository.findById(id)
             .map(memberPoint -> mapToDTO(memberPoint, new MemberPointDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
     }
 
     public Long create(final MemberPointDTO memberPointDTO) {
@@ -45,7 +48,7 @@ public class MemberPointService {
 
     public void update(final Long id, final MemberPointDTO memberPointDTO) {
         final MemberPoint memberPoint = memberPointRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
         mapToEntity(memberPointDTO, memberPoint);
         memberPointRepository.save(memberPoint);
     }
@@ -72,7 +75,7 @@ public class MemberPointService {
         memberPoint.setIsActive(memberPointDTO.getIsActive());
         memberPoint.setPoint(memberPointDTO.getPoint());
         final Member member = memberPointDTO.getMember() == null ? null : memberRepository.findById(memberPointDTO.getMember())
-            .orElseThrow(() -> new NotFoundException("member not found"));
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         memberPoint.setMember(member);
         return memberPoint;
     }
@@ -81,4 +84,31 @@ public class MemberPointService {
         return memberPointRepository.existsByMemberId(id);
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 멤버 포인트를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropMemberPointByMemberId(Long memberId) {
+        memberPointRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 멤버 포인트를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link MemberPoint}
+     */
+    public MemberPoint findFirstMemberPointByMemberAndIsActive(Member member, boolean isActive) {
+        return memberPointRepository.findFirstByMemberAndIsActive(member,isActive);
+    }
+    /**
+     * memberId를 통해 MemberPoint 정보를 가져옵니다.
+     *
+     * @param memberId 사용자 ID
+     * @return Optional<MemberPoint>
+     */
+    public Optional<MemberPoint> getPointByMemberId(Long memberId) {
+        return memberPointRepository.findByMemberId(memberId);
+    }
 }

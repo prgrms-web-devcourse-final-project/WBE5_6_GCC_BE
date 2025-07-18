@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,8 @@ import com.honlife.core.app.model.member.domain.MemberQuest;
 import com.honlife.core.app.model.member.model.MemberQuestDTO;
 import com.honlife.core.app.model.member.repos.MemberQuestRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -33,7 +35,7 @@ public class MemberQuestService {
     public MemberQuestDTO get(final Long id) {
         return memberQuestRepository.findById(id)
                 .map(memberQuest -> mapToDTO(memberQuest, new MemberQuestDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_QUEST));
     }
 
     public Long create(final MemberQuestDTO memberQuestDTO) {
@@ -44,7 +46,7 @@ public class MemberQuestService {
 
     public void update(final Long id, final MemberQuestDTO memberQuestDTO) {
         final MemberQuest memberQuest = memberQuestRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_QUEST));
         mapToEntity(memberQuestDTO, memberQuest);
         memberQuestRepository.save(memberQuest);
     }
@@ -73,9 +75,27 @@ public class MemberQuestService {
         memberQuest.setReferenceKey(memberQuestDTO.getReferenceKey());
         memberQuest.setIsDone(memberQuestDTO.getIdDone());
         final Member member = memberQuestDTO.getMember() == null ? null : memberRepository.findById(memberQuestDTO.getMember())
-                .orElseThrow(() -> new NotFoundException("member not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         memberQuest.setMember(member);
         return memberQuest;
     }
 
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 멤버퀘스트를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropMemberQuestByMemberId(Long memberId) {
+        memberQuestRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 멤버 퀘스트를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link MemberQuest}
+     */
+    public MemberQuest findFirstMemberQuestByMemberAndIsActive(Member member, boolean isActive) {
+        return memberQuestRepository.findFirstByMemberAndIsActive(member, isActive);
+    }
 }

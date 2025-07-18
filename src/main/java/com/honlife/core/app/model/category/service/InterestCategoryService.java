@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.category.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +15,7 @@ import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -41,7 +42,7 @@ public class InterestCategoryService {
     public InterestCategoryDTO get(final Long id) {
         return interestCategoryRepository.findById(id)
                 .map(interestCategory -> mapToDTO(interestCategory, new InterestCategoryDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
     }
 
     public Long create(final InterestCategoryDTO interestCategoryDTO) {
@@ -52,7 +53,7 @@ public class InterestCategoryService {
 
     public void update(final Long id, final InterestCategoryDTO interestCategoryDTO) {
         final InterestCategory interestCategory = interestCategoryRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
         mapToEntity(interestCategoryDTO, interestCategory);
         interestCategoryRepository.save(interestCategory);
     }
@@ -78,10 +79,10 @@ public class InterestCategoryService {
         interestCategory.setUpdatedAt(interestCategoryDTO.getUpdatedAt());
         interestCategory.setIsActive(interestCategoryDTO.getIsActive());
         final Category category = interestCategoryDTO.getCategory() == null ? null : categoryRepository.findById(interestCategoryDTO.getCategory())
-                .orElseThrow(() -> new NotFoundException("category not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
         interestCategory.setCategory(category);
         final Member member = interestCategoryDTO.getMember() == null ? null : memberRepository.findById(interestCategoryDTO.getMember())
-                .orElseThrow(() -> new NotFoundException("member not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         interestCategory.setMember(member);
         return interestCategory;
     }
@@ -145,5 +146,24 @@ public class InterestCategoryService {
             newInterestCategory.setIsActive(true);
             interestCategoryRepository.save(newInterestCategory);
         }
+    }
+
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 선호 카테고리를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropInterestCategoryByMemberId(Long memberId) {
+        interestCategoryRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 선호 카테고리를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link InterestCategory}
+     */
+    public InterestCategory findFirstInterestCategoryByMemberAndIsActive(Member member, boolean isActive) {
+        return interestCategoryRepository.findFirstByMemberAndIsActive(member,isActive);
     }
 }

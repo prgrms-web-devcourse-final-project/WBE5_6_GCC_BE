@@ -43,10 +43,9 @@ public class SecurityConfig {
                 (requests) -> requests
                     .requestMatchers("/favicon.ico", "/img/**", "/js/**", "/css/**").permitAll()
                     .requestMatchers("/", "/error", "/api/v1/check/**", "/api/v1/signin",
-                        "/auth/v1/signup").permitAll()
-                    .requestMatchers("/api/v1/email/**").permitAll()
+                        "/api/v1/signup", "api/v1/auth/**").permitAll()
                     .requestMatchers("/api/**").authenticated()
-                    .anyRequest().permitAll()
+                    .anyRequest().authenticated()
             )
             // jwtAuthenticationEntryPoint 는 oauth 인증을 사용할 경우 제거
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))

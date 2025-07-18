@@ -4,20 +4,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.common.BaseEntity;
 import com.honlife.core.app.model.member.code.ResidenceExperience;
-import com.honlife.core.app.model.notification.domain.Notification;
-import lombok.ToString;
 
 
 @Entity
@@ -28,14 +23,14 @@ public class Member extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "member_sequence",
+        sequenceName = "member_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "member_sequence"
     )
     private Long id;
 
@@ -69,6 +64,6 @@ public class Member extends BaseEntity {
     private String region3Dept;
 
     @Column(nullable = false)
-    private Boolean isVerified;
+    private Boolean isVerified = false; // init value
 
 }
