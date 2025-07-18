@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "루틴 스케줄", description = "루틴 스케줄 관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/routines/schedules", produces = MediaType.APPLICATION_JSON_VALUE)
-@SecurityRequirement(name = "bearerAuth")
 public class RoutineScheduleController {
 
     private final RoutineScheduleService routineScheduleService;
