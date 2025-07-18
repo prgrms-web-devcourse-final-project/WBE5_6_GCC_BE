@@ -22,19 +22,19 @@ public class MemberPoint extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "member_point_sequence",
+        sequenceName = "member_point_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "member_point_sequence"
     )
     private Long id;
 
     @Column
-    private Integer point;
+    private Integer point = 0; // 초기값
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false, unique = true)

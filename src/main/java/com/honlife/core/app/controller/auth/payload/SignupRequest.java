@@ -7,7 +7,7 @@ import lombok.Getter;
  * 회원가입 Phase 1 에서 사용됩니다.
  */
 @Getter
-public class SignupBasicRequest {
+public class SignupRequest {
 
     @NotBlank
     private String email;

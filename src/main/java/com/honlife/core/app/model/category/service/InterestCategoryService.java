@@ -146,4 +146,23 @@ public class InterestCategoryService {
             interestCategoryRepository.save(newInterestCategory);
         }
     }
+
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 선호 카테고리를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropInterestCategoryByMemberId(Long memberId) {
+        interestCategoryRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 선호 카테고리를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link InterestCategory}
+     */
+    public InterestCategory findFirstInterestCategoryByMemberAndIsActive(Member member, boolean isActive) {
+        return interestCategoryRepository.findFirstByMemberAndIsActive(member,isActive);
+    }
 }
