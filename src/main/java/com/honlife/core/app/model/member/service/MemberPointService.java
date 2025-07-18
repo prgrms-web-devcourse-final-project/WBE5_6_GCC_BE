@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,7 @@ import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.model.MemberPointDTO;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -36,7 +37,7 @@ public class MemberPointService {
     public MemberPointDTO get(final Long id) {
         return memberPointRepository.findById(id)
             .map(memberPoint -> mapToDTO(memberPoint, new MemberPointDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
     }
 
     public Long create(final MemberPointDTO memberPointDTO) {
@@ -47,7 +48,7 @@ public class MemberPointService {
 
     public void update(final Long id, final MemberPointDTO memberPointDTO) {
         final MemberPoint memberPoint = memberPointRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
         mapToEntity(memberPointDTO, memberPoint);
         memberPointRepository.save(memberPoint);
     }
@@ -74,7 +75,7 @@ public class MemberPointService {
         memberPoint.setIsActive(memberPointDTO.getIsActive());
         memberPoint.setPoint(memberPointDTO.getPoint());
         final Member member = memberPointDTO.getMember() == null ? null : memberRepository.findById(memberPointDTO.getMember())
-            .orElseThrow(() -> new NotFoundException("member not found"));
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         memberPoint.setMember(member);
         return memberPoint;
     }

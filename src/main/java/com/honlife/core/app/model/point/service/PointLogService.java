@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.point.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,7 @@ import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.point.domain.PointLog;
 import com.honlife.core.app.model.point.dto.PointLogDTO;
 import com.honlife.core.app.model.point.repos.PointLogRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -33,7 +34,7 @@ public class PointLogService {
     public PointLogDTO get(final Long id) {
         return pointLogRepository.findById(id)
                 .map(pointLog -> mapToDTO(pointLog, new PointLogDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND));
     }
 
     public Long create(final PointLogDTO pointLogDTO) {
@@ -44,7 +45,7 @@ public class PointLogService {
 
     public void update(final Long id, final PointLogDTO pointLogDTO) {
         final PointLog pointLog = pointLogRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND));
         mapToEntity(pointLogDTO, pointLog);
         pointLogRepository.save(pointLog);
     }
@@ -69,7 +70,7 @@ public class PointLogService {
         pointLog.setReason(pointLogDTO.getReason());
         pointLog.setTime(pointLogDTO.getTime());
         final Member member = pointLogDTO.getMember() == null ? null : memberRepository.findById(pointLogDTO.getMember())
-                .orElseThrow(() -> new NotFoundException("member not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         pointLog.setMember(member);
         return pointLog;
     }

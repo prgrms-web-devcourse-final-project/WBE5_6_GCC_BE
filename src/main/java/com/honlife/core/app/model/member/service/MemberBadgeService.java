@@ -1,5 +1,9 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.infra.response.ResponseCode;
+import java.util.List;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.member.domain.Member;
@@ -9,7 +13,7 @@ import com.honlife.core.app.model.member.model.MemberBadgeDetailDTO;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -36,7 +40,7 @@ public class MemberBadgeService {
     public MemberBadgeDTO get(final Long id) {
         return memberBadgeRepository.findById(id)
                 .map(memberBadge -> mapToDTO(memberBadge, new MemberBadgeDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
     }
 
     public Long create(final MemberBadgeDTO memberBadgeDTO) {
@@ -47,7 +51,7 @@ public class MemberBadgeService {
 
     public void update(final Long id, final MemberBadgeDTO memberBadgeDTO) {
         final MemberBadge memberBadge = memberBadgeRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
         mapToEntity(memberBadgeDTO, memberBadge);
         memberBadgeRepository.save(memberBadge);
     }
@@ -108,10 +112,10 @@ public class MemberBadgeService {
         memberBadge.setUpdatedAt(memberBadgeDTO.getUpdatedAt());
         memberBadge.setIsActive(memberBadgeDTO.getIsActive());
         final Member member = memberBadgeDTO.getMember() == null ? null : memberRepository.findById(memberBadgeDTO.getMember())
-                .orElseThrow(() -> new NotFoundException("member not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         memberBadge.setMember(member);
         final Badge badge = memberBadgeDTO.getBadge() == null ? null : badgeRepository.findById(memberBadgeDTO.getBadge())
-                .orElseThrow(() -> new NotFoundException("badge not found"));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
         memberBadge.setBadge(badge);
         return memberBadge;
     }

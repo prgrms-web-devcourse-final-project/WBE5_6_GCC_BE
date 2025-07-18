@@ -1,12 +1,13 @@
 package com.honlife.core.app.model.point.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.point.domain.PointPolicy;
 import com.honlife.core.app.model.point.dto.PointPolicyDTO;
 import com.honlife.core.app.model.point.repos.PointPolicyRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -28,7 +29,7 @@ public class PointPolicyService {
     public PointPolicyDTO get(final Long id) {
         return pointPolicyRepository.findById(id)
                 .map(pointPolicy -> mapToDTO(pointPolicy, new PointPolicyDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POLICY));
     }
 
     public Long create(final PointPolicyDTO pointPolicyDTO) {
@@ -39,7 +40,7 @@ public class PointPolicyService {
 
     public void update(final Long id, final PointPolicyDTO pointPolicyDTO) {
         final PointPolicy pointPolicy = pointPolicyRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POLICY));
         mapToEntity(pointPolicyDTO, pointPolicy);
         pointPolicyRepository.save(pointPolicy);
     }
