@@ -1,7 +1,10 @@
 package com.honlife.core.app.model.loginLog.service;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.loginLog.domain.LoginLog;
 import com.honlife.core.app.model.loginLog.dto.LoginLogDTO;
@@ -12,16 +15,11 @@ import com.honlife.core.infra.util.NotFoundException;
 
 
 @Service
+@RequiredArgsConstructor
 public class LoginLogService {
 
     private final LoginLogRepository loginLogRepository;
     private final MemberRepository memberRepository;
-
-    public LoginLogService(final LoginLogRepository loginLogRepository,
-        final MemberRepository memberRepository) {
-        this.loginLogRepository = loginLogRepository;
-        this.memberRepository = memberRepository;
-    }
 
     public List<LoginLogDTO> findAll() {
         final List<LoginLog> loginLogs = loginLogRepository.findAll(Sort.by("id"));
@@ -67,5 +65,20 @@ public class LoginLogService {
         loginLog.setMember(member);
         return loginLog;
     }
+
+    /**
+     * Save new login log when user login
+     * @param email userEmail
+     */
+    @Async
+    @Transactional
+    public void newLog(String email) {
+        Member member = memberRepository.findByEmailIgnoreCase(email);
+        LoginLog loginLog = LoginLog.builder()
+            .member(member)
+            .build();
+        loginLogRepository.save(loginLog);
+    }
+
 
 }
