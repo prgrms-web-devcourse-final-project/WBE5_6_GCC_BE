@@ -1,23 +1,18 @@
 package com.honlife.core.app.model.notification.service;
 
 import com.honlife.core.app.controller.notification.payload.NotificationPayload;
+import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.response.ResponseCode;
-import java.util.List;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.dto.NotificationDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
-import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
-import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @RequiredArgsConstructor
@@ -25,12 +20,13 @@ import com.honlife.core.infra.error.exceptions.NotFoundException;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
 
     public NotificationDTO get(final Long id) {
         return notificationRepository.findById(id)
             .map(notification -> mapToDTO(notification, new NotificationDTO()))
-            .orElseThrow(() -> new NotFoundException("NOT_FOUND"));
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_NOTIFICATION));
     }
 
     private NotificationDTO mapToDTO(final Notification notification,
