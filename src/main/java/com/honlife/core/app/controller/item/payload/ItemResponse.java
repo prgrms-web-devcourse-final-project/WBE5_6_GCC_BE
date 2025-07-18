@@ -17,6 +17,7 @@ public class ItemResponse {
             allowableValues = {"TOP", "BOTTOM", "ACCESSORY"})
     private ItemType itemType;
 
+    private String itemDescription;
 
     private String itemKey;
 

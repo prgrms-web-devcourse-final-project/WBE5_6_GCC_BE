@@ -1,15 +1,20 @@
 package com.honlife.core.app.controller.auth;
 
+import com.honlife.core.app.controller.auth.payload.DuplicationCheckRequest;
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
+import com.honlife.core.app.controller.auth.payload.VerifyCodeRequestTest;
+import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.controller.auth.payload.LoginRequest;
 import com.honlife.core.app.controller.auth.payload.TokenResponse;
@@ -27,7 +31,7 @@ import com.honlife.core.app.model.auth.dto.TokenDto;
 import com.honlife.core.infra.auth.jwt.TokenCookieFactory;
 import com.honlife.core.infra.response.CommonApiResponse;
 
-@Tag(name="인증", description = "로그인 및 인증 관련 API입니다.")
+@Tag(name="✅ 인증", description = "로그인 및 인증 관련 API입니다.")
 @RestController
 @RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -44,7 +48,8 @@ public class AuthController {
      * @return
      */
     @PostMapping("/signin")
-    @Operation(summary = "로그인", description = "로그인 요청을 처리합니다. JSON Request 필요.")
+    @Operation(summary = "로그인", description = "로그인 요청을 처리합니다.<br>"
+        + "로그인에 성공한 경우, 비동기로 로그인 로그에 로그인 기록을 저장합니다.")
     public ResponseEntity<CommonApiResponse<TokenResponse>> login(
         @RequestBody LoginRequest loginRequest,
         HttpServletResponse response
@@ -68,16 +73,22 @@ public class AuthController {
 
     /**
      * 회원가입 처리 API
+     *
      * @param signupRequest
      * @return
      */
     @PostMapping("/signup")
-    @Operation(summary = "회원가입", description = "회원가입 요청을 처리합니다. 요청시 이메일로 인증번호를 전송합니다.<br>JSON Request 필요.")
-    public ResponseEntity<CommonApiResponse<Void>> signup(
+    @Operation(summary = "회원가입", description = "회원가입 요청을 처리합니다. <br>"
+        + "이미 존재하거나, 이메일이 있지만 계정이 비활성화 상태인 경우, <code>HttpsStatus.CONFLICT</code>를,<br>"
+        + "그 외의 경우는 <code>HttpStatus.OK</code>를 반환합니다.<br>"
+        + "요청시 이메일로 인증번호를 전송합니다.<br>"
+        + "인증번호의 유효시간은 3분입니다.")
+    public ResponseEntity<CommonApiResponse<ResponseCode>> signup(
         @RequestBody SignupRequest signupRequest
     ) {
         //TODO: API 요청시 이메일로 인증번호 보내는 로직 추가 필요
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+        return ResponseEntity.status(HttpStatus.CONTINUE)
+            .body(CommonApiResponse.success(ResponseCode.CONTINUE));
     }
 
     /**
@@ -88,23 +99,49 @@ public class AuthController {
     @PostMapping("/logout")
     public void logout() {}
 
-    /**
-     * 이메일 인증 처리 API
-     * @param verifyCode 이메일로 전송된 인증 코드입니다.
-     * @return
-     */
-    //TODO: Session 처리 필요한지 고민해보기, 인증로직 이메일 + 코드로 할건지 다른 방법으로 인증하고 코드만으로 비교할건지 고민해보기
-    @PostMapping("/email/verify/{code}")
-    @Operation(summary = "이메일 인증", description = "이메일 인증 요청을 처리합니다. 이메일로 전송된 코드가 올바른지 검사합니다.<br>*로직이 정해지지 않았습니다. 추후 변동 가능이 있습니다.*")
-    public ResponseEntity<CommonApiResponse<Void>> verifyEmail(
-        @PathVariable(name = "code")
-        @Schema(description = "인증 코드", example = "12345") final String verifyCode
+    @PostMapping("/auth/email")
+    @Operation(summary = "인증번호 발송", description = "입력받은 이메일로 인증코드를 발송합니다.<br>"
+        + "<code>RequestBody</code>의 <code>code</code>가 <code>null</code>이 아닌경우, <code>BAD_REQUEST</code>를 응답합니다. ")
+    public ResponseEntity<CommonApiResponse<Void>> sendVerifyCode(
+        @RequestBody @Valid VerifyEmailRequest emailRequest
     ) {
-        if(verifyCode.equals("12345")) {
+        if(emailRequest.getEmail().equals("user01@test.com") && emailRequest.getCode() == null) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
-        return ResponseEntity.status(ResponseCode.INVALID_CODE.status())
-            .body(CommonApiResponse.error(ResponseCode.INVALID_CODE));
+        return ResponseEntity.badRequest()
+            .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+    }
+
+
+    @PostMapping("/auth/code")
+    @Operation(summary = "인증번호 검증", description = "사용자가 입력한 인증코드가 올바른지 확인합니다.<br>"
+        + "올바르게 인증 된 경우, 사용자가 로그인된 것으로 간주하고, 토큰을 반환합니다.")
+    public ResponseEntity<CommonApiResponse<TokenResponse>> verifyEmail(
+        @RequestBody @Valid VerifyCodeRequestTest emailRequest,
+        HttpServletResponse response
+    ) {
+        if(emailRequest.getEmail().equals("user01@test.com") && emailRequest.getCode().equals("12345")) {
+            LoginRequest loginRequest = new LoginRequest("user01@test.com", "1111");
+            TokenDto tokenDto = authService.signin(loginRequest);
+
+            ResponseCookie accessToken = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
+                tokenDto.getAccessToken(), tokenDto.getExpiresIn());
+            ResponseCookie refreshToken = TokenCookieFactory.create(AuthToken.REFRESH_TOKEN.name(),
+                tokenDto.getRefreshToken(), tokenDto.getExpiresIn());
+
+            response.addHeader("Set-Cookie", accessToken.toString());
+            response.addHeader("Set-Cookie", refreshToken.toString());
+
+            return ResponseEntity.ok(CommonApiResponse.success(TokenResponse.builder().
+                accessToken(tokenDto.getAccessToken())
+                .grantType(tokenDto.getGrantType())
+                .expiresIn(tokenDto.getExpiresIn())
+                .build()));
+        } else if (!emailRequest.getCode().equals("12345")){
+            return ResponseEntity.status(ResponseCode.INVALID_CODE.status()).body(CommonApiResponse.error(ResponseCode.INVALID_CODE));
+        }
+        return ResponseEntity.badRequest()
+            .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
     }
 
     /**
@@ -114,23 +151,27 @@ public class AuthController {
      * @return {@link CommonApiResponse}의 data에 중복여부를 담아 반환합니다.
      */
     @PostMapping("/check")
-    @Operation(summary = "중복 검사", description = "이메일 또는 닉네임의 중복 여부를 검사합니다.<br>이메일 또는 닉네임만 param으로 받습니다. 둘 모두가 들어오거나 둘 모두 없는 경우 Bad Request를 응답합니다.")
+    @Operation(summary = "중복 검사", description = "중복된 이메일 또는 닉네임이 존재하는지 확인합니다.<br>"
+        + "이미 존재하는 이메일 또는 닉네임인 경우, <code>409(Conflict)</code>를 반환합니다.<br>"
+        + "요청시 이메일 또는 닉네임 둘중 하나만 값이 있어야 하며, 둘다 null이거나 데이터를 가지고 있다면 <code>400(BadRequest)</code>를 반환합니다.")
     public ResponseEntity<CommonApiResponse<Map<String, Boolean>>> isEmailDuplicated(
-        @RequestParam(name = "email", required = false)
-        @Schema(description = "이메일", example = "user01@test.com") final String email,
-        @RequestParam(name = "nickname", required = false)
-        @Schema(description = "닉네임", example = "닉네임1") final String nickname
+        @RequestBody DuplicationCheckRequest checkRequest
     ) {
-        if(email != null && nickname == null){
-            if(email.equals("user01@test.com")) {
+        String email = checkRequest.getEmail();
+        String nickname = checkRequest.getNickname();
+        if (email != null && nickname == null) {
+            if(email.equals("user01@test.com")){
                 return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
-            } else return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
+            } else {
+                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
+            }
         } else if (email == null && nickname != null) {
             if(nickname.equals("닉네임1")){
                 return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
-            } else return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
+            } else {
+                return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
+            }
         }
         return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-
     }
 }

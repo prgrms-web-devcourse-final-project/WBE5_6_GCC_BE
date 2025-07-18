@@ -12,6 +12,7 @@ public class MemberItemResponse {
 
     private String itemKey;
     private String itemName;
+    private String itemDescription;
     private ItemType itemtype;
     private Boolean isEquipped;
 
