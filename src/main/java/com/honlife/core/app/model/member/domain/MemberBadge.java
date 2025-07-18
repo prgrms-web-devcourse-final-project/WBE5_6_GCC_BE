@@ -23,14 +23,14 @@ public class MemberBadge extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
+            name = "member_badge_sequence",
+            sequenceName = "member_badge_sequence",
             allocationSize = 1,
             initialValue = 10000
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+            generator = "member_badge_sequence"
     )
     private Long id;
 
