@@ -33,7 +33,7 @@ public class Category extends BaseEntity {
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "category_sequence"
     )
     private Long id;
 
