@@ -16,7 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "com.honlife.core.app.controller.api")
+@RestControllerAdvice(basePackages = "com.honlife.core.app.controller")
 @Slf4j
 public class RestApiExceptionAdvice {
     
