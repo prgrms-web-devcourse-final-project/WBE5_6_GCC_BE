@@ -2,6 +2,8 @@ package com.honlife.core.app.model.member.service;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
@@ -98,5 +100,14 @@ public class MemberPointService {
      */
     public MemberPoint findFirstMemberPointByMemberAndIsActive(Member member, boolean isActive) {
         return memberPointRepository.findFirstByMemberAndIsActive(member,isActive);
+    }
+    /**
+     * memberId를 통해 MemberPoint 정보를 가져옵니다.
+     *
+     * @param memberId 사용자 ID
+     * @return Optional<MemberPoint>
+     */
+    public Optional<MemberPoint> getPointByMemberId(Long memberId) {
+        return memberPointRepository.findByMemberId(memberId);
     }
 }
