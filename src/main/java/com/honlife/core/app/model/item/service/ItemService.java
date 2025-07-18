@@ -1,5 +1,9 @@
 package com.honlife.core.app.model.item.service;
 
+import com.honlife.core.infra.response.ResponseCode;
+import java.util.List;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.domain.QItem;
@@ -11,13 +15,13 @@ import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.domain.QMemberItem;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -150,6 +154,7 @@ public class ItemService {
         itemDTO.setType(item.getType());
         return itemDTO;
     }
+
     private Item mapToEntity(final ItemDTO itemDTO, final Item item) {
         item.setCreatedAt(itemDTO.getCreatedAt());
         item.setUpdatedAt(itemDTO.getUpdatedAt());
@@ -164,13 +169,13 @@ public class ItemService {
     public ItemDTO get(final Long id) {
         return itemRepository.findById(id)
                 .map(item -> mapToDTO(item, new ItemDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ITEM));
     }
 
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Item item = itemRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ITEM));
         final MemberItem itemMemberItem = memberItemRepository.findFirstByItem(item);
         if (itemMemberItem != null) {
             referencedWarning.setKey("item.memberItem.item.referenced");

@@ -1,12 +1,13 @@
 package com.honlife.core.app.model.quest.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.quest.domain.EventQuest;
 import com.honlife.core.app.model.quest.dto.EventQuestDTO;
 import com.honlife.core.app.model.quest.repos.EventQuestRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -28,7 +29,7 @@ public class EventQuestService {
     public EventQuestDTO get(final Long id) {
         return eventQuestRepository.findById(id)
             .map(eventQuest -> mapToDTO(eventQuest, new EventQuestDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_QUEST));
     }
 
     public Long create(final EventQuestDTO eventQuestDTO) {
@@ -39,7 +40,7 @@ public class EventQuestService {
 
     public void update(final Long id, final EventQuestDTO eventQuestDTO) {
         final EventQuest eventQuest = eventQuestRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_QUEST));
         mapToEntity(eventQuestDTO, eventQuest);
         eventQuestRepository.save(eventQuest);
     }
