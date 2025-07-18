@@ -1,8 +1,13 @@
 package com.honlife.core.app.model.member.service;
 
 import com.honlife.core.app.model.category.domain.Category;
+import com.honlife.core.app.model.item.code.ItemType;
+import com.honlife.core.app.model.item.service.ItemService;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,23 +23,66 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class MemberItemService {
     private final MemberItemRepository memberItemRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
+    private final ItemService itemService;
 
-    public MemberItemService(final MemberItemRepository memberItemRepository,
-            final MemberRepository memberRepository, final ItemRepository itemRepository) {
-        this.memberItemRepository = memberItemRepository;
-        this.memberRepository = memberRepository;
-        this.itemRepository = itemRepository;
+    /**
+     * 사용자의 아이템 장착 처리
+     * - 해당 타입의 기존 장착 아이템은 모두 해제됨
+     * - 요청한 아이템은 장착 상태로 변경됨
+     *
+     * @param memberId 사용자 ID
+     * @param itemKey 장착할 아이템 고유 키
+     */
+    @Transactional
+    public void equipItem(Long memberId, String itemKey) {
+
+        Item item = itemService.getItemByKey(itemKey);
+
+        if(item == null) {
+            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
+        }
+
+        // 해당 멤버의 같은 타입 아이템들 정보 가져오기
+        List<MemberItem> equippedItems = memberItemRepository
+                .findByMemberIdAndItemTypeAndIsEquippedTrue(memberId, item.getType());
+
+        // isEquipped = true인 것들 해제
+        for (MemberItem equippedItem : equippedItems) {
+            equippedItem.setIsEquipped(false);
+        }
+
+
+        // 새 아이템 장착
+        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
+                // 회원이 해당 아이템을 보유하지 않았을 때
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+        target.setIsEquipped(true);
     }
 
-    public void equipItem(Long memberId, Long itemId) {
 
-    }
+    /**
+     * 사용자의 아이템 해제 처리
+     *
+     * @param memberId 사용자 ID
+     * @param itemKey 해제할 아이템 고유 키
+     */
+    @Transactional
+    public void unequipItemByItemId(Long memberId, String itemKey) {
+        Item item = itemService.getItemByKey(itemKey);
 
-    public void unequipItemByItemId(Long memberId, Long ItemId) {
+        if(item == null) {
+            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
+        }
+
+        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
+                // 회원이 해당 아이템을 보유하지 않았을 때
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+        target.setIsEquipped(false);
     }
 
     public List<MemberItemDTO> findAll() {
