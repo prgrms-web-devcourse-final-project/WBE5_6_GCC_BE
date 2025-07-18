@@ -2,6 +2,13 @@ package com.honlife.core.app.controller.member;
 
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
+import com.honlife.core.app.model.category.service.CategoryService;
+import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.app.model.member.service.MemberBadgeService;
+import com.honlife.core.app.model.member.service.MemberItemService;
+import com.honlife.core.app.model.member.service.MemberPointService;
+import com.honlife.core.app.model.member.service.MemberQuestService;
+import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.ReferencedException;
@@ -36,9 +43,26 @@ import com.honlife.core.infra.response.ResponseCode;
 public class MemberController {
 
     private final MemberService memberService;
+    private final RoutineService routineService;
+    private final CategoryService categoryService;
+    private final MemberItemService memberItemService;
+    private final MemberQuestService memberQuestService;
+    private final MemberBadgeService memberBadgeService;
+    private final InterestCategoryService interestCategoryService;
+    private final MemberPointService memberPointService;
 
-    public MemberController(final MemberService memberService) {
+    public MemberController(final MemberService memberService, RoutineService routineService,
+        CategoryService categoryService, MemberItemService memberItemService,
+        MemberQuestService memberQuestService, MemberBadgeService memberBadgeService,
+        InterestCategoryService interestCategoryService, MemberPointService memberPointService) {
         this.memberService = memberService;
+        this.routineService = routineService;
+        this.categoryService = categoryService;
+        this.memberItemService = memberItemService;
+        this.memberQuestService = memberQuestService;
+        this.memberBadgeService = memberBadgeService;
+        this.interestCategoryService = interestCategoryService;
+        this.memberPointService = memberPointService;
     }
 
     /**
@@ -132,8 +156,24 @@ public class MemberController {
         if(withdrawRequest.getWithdrawType()==WithdrawType.ETC&&withdrawRequest.getEtcReason()==null){
             return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
+        Long memberId = memberService.findMemberByEmail(userEmail).getId();
+
         // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
-        memberService.softDropRelatedToMember(userEmail);
+        // 루틴 is_active = false
+        routineService.softDropRoutineByMemberId(memberId);
+        // 카테고리 is_active = false
+        categoryService.softDropCategoryByMemberId(memberId);
+        // 멤버 아이템 is_active = false
+        memberItemService.softDropMemberItemByMemberId(memberId);
+        // 멤버 퀘스트 is active = false
+        memberQuestService.softDropMemberQuestByMemberId(memberId);
+        // 멤버 업적 is_active = false
+        memberBadgeService.softDropMemberBadgeByMemberId(memberId);
+        // 선호 카테고리 is_active = false
+        interestCategoryService.softDropInterestCategoryByMemberId(memberId);
+        // 멤버 포인트 is_active = false
+        memberPointService.softDropMemberPointByMemberId(memberId);
+
 
         try{
             // 제대로 처리 됐는지 검증
