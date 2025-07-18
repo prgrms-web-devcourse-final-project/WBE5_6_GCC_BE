@@ -8,9 +8,11 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.routine.domain.Routine;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 
-public interface RoutineRepository extends JpaRepository<Routine, Long> {
+public interface RoutineRepository extends JpaRepository<Routine, Long>, RoutineRepositoryCustom {
 
     Routine findFirstByMember(Member member);
 
@@ -29,4 +31,12 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> {
     @Query("SELECT r FROM Routine r WHERE r.id = :id AND r.isActive = true")
     Optional<Routine> findByIdWithMember(@Param("id") Long id);
 
+
+    /**
+     * 해당 멤버와 연관된 첫번째 루틴을 조회
+     * @param member
+     * @param isActive
+     * @return {@link Routine}
+     */
+    Routine findFirstByMemberAndIsActive(Member member, Boolean isActive);
 }

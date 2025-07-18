@@ -32,4 +32,12 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
      * @return {@code Optianl<Member>}
      */
     Optional<Member> findByEmailAndIsActive(String email, Boolean isActive);
+
+    /**
+     * 계정 활성화 여부와 함께, 중복된 이메일이 있는지 확인
+     * @param email email of member
+     * @param isActive account activation status
+     * @return {@code Boolean}
+     */
+    Boolean existsByEmailIgnoreCaseAndIsActive(String email, Boolean isActive);
 }

@@ -1,12 +1,13 @@
 package com.honlife.core.app.model.quest.service;
 
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.quest.domain.WeeklyQuest;
 import com.honlife.core.app.model.quest.dto.WeeklyQuestDTO;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
@@ -28,7 +29,7 @@ public class WeeklyQuestService {
     public WeeklyQuestDTO get(final Long id) {
         return weeklyQuestRepository.findById(id)
             .map(weeklyQuest -> mapToDTO(weeklyQuest, new WeeklyQuestDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_QUEST));
     }
 
     public Long create(final WeeklyQuestDTO weeklyQuestDTO) {
@@ -39,7 +40,7 @@ public class WeeklyQuestService {
 
     public void update(final Long id, final WeeklyQuestDTO weeklyQuestDTO) {
         final WeeklyQuest weeklyQuest = weeklyQuestRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_QUEST));
         mapToEntity(weeklyQuestDTO, weeklyQuest);
         weeklyQuestRepository.save(weeklyQuest);
     }

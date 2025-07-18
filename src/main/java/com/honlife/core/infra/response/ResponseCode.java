@@ -10,10 +10,13 @@ import org.springframework.http.HttpStatus;
  * 5 - Category<br>
  * 6 - Quest<br>
  * 7 - Policy<br>
- * 8 - Point
+ * 8 - Point<br>
+ * 9 - Notification
  */
 public enum ResponseCode {
   OK("0000", HttpStatus.OK, "OK"),
+
+  CONTINUE("1000", HttpStatus.CONTINUE, "Continue"),
 
   CREATED("2010", HttpStatus.CREATED, "Created"),
   BADGE_CREATED("2012", HttpStatus.CREATED, "Badge created"),
@@ -29,6 +32,8 @@ public enum ResponseCode {
   INVALID_CODE("4012", HttpStatus.UNAUTHORIZED, "Invalid verification code"),
   NOT_EXIST_PRE_AUTH_CREDENTIAL("4013", HttpStatus.OK, "No authentication credentials were found in the request."),
 
+  NOT_ENOUGH_POINT("4038", HttpStatus.FORBIDDEN, "Not enough points."),
+
   NOT_FOUND("4040", HttpStatus.NOT_FOUND, "Not found."),
   NOT_FOUND_MEMBER("4041", HttpStatus.NOT_FOUND, "Member not found."),
   NOT_FOUND_BADGE("4042", HttpStatus.NOT_FOUND, "Badge not found."),
@@ -37,6 +42,8 @@ public enum ResponseCode {
   NOT_FOUND_CATEGORY("4045", HttpStatus.NOT_FOUND, "Category not found."),
   NOT_FOUND_QUEST("4046", HttpStatus.NOT_FOUND, "Quest not found."),
   NOT_FOUND_POLICY("4047", HttpStatus.NOT_FOUND, "Policy not found."),
+  NOT_FOUND_POINT("4048", HttpStatus.NOT_FOUND, "Point not found"),
+  NOT_FOUND_NOTIFICATION("4048", HttpStatus.NOT_FOUND, "Notification settings not found"),
 
   CONFLICT_EXIST_MEMBER("4091", HttpStatus.CONFLICT, "Member already exists."),
   GRANT_CONFLICT_BADGE("4092", HttpStatus.CONFLICT, "Badge Already granted."),

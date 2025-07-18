@@ -1,27 +1,26 @@
 package com.honlife.core.app.model.loginLog.service;
 
+import com.honlife.core.infra.response.ResponseCode;
+import jakarta.transaction.Transactional;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.loginLog.domain.LoginLog;
 import com.honlife.core.app.model.loginLog.dto.LoginLogDTO;
 import com.honlife.core.app.model.loginLog.repos.LoginLogRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.infra.util.NotFoundException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
+@RequiredArgsConstructor
 public class LoginLogService {
 
     private final LoginLogRepository loginLogRepository;
     private final MemberRepository memberRepository;
-
-    public LoginLogService(final LoginLogRepository loginLogRepository,
-        final MemberRepository memberRepository) {
-        this.loginLogRepository = loginLogRepository;
-        this.memberRepository = memberRepository;
-    }
 
     public List<LoginLogDTO> findAll() {
         final List<LoginLog> loginLogs = loginLogRepository.findAll(Sort.by("id"));
@@ -33,7 +32,7 @@ public class LoginLogService {
     public LoginLogDTO get(final Long id) {
         return loginLogRepository.findById(id)
             .map(loginLog -> mapToDTO(loginLog, new LoginLogDTO()))
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND));
     }
 
     public Long create(final LoginLogDTO loginLogDTO) {
@@ -44,7 +43,7 @@ public class LoginLogService {
 
     public void update(final Long id, final LoginLogDTO loginLogDTO) {
         final LoginLog loginLog = loginLogRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND));
         mapToEntity(loginLogDTO, loginLog);
         loginLogRepository.save(loginLog);
     }
@@ -63,9 +62,24 @@ public class LoginLogService {
     private LoginLog mapToEntity(final LoginLogDTO loginLogDTO, final LoginLog loginLog) {
         loginLog.setTime(loginLogDTO.getTime());
         final Member member = loginLogDTO.getMember() == null ? null : memberRepository.findById(loginLogDTO.getMember())
-            .orElseThrow(() -> new NotFoundException("member not found"));
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
         loginLog.setMember(member);
         return loginLog;
     }
+
+    /**
+     * Save new login log when user login
+     * @param email userEmail
+     */
+    @Async
+    @Transactional
+    public void newLog(String email) {
+        Member member = memberRepository.findByEmailIgnoreCase(email);
+        LoginLog loginLog = LoginLog.builder()
+            .member(member)
+            .build();
+        loginLogRepository.save(loginLog);
+    }
+
 
 }

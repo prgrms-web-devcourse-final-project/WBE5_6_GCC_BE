@@ -2,8 +2,17 @@ package com.honlife.core.app.controller.member;
 
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
+import com.honlife.core.app.model.category.service.CategoryService;
+import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.app.model.member.service.MemberBadgeService;
+import com.honlife.core.app.model.member.service.MemberItemService;
+import com.honlife.core.app.model.member.service.MemberPointService;
+import com.honlife.core.app.model.member.service.MemberQuestService;
+import com.honlife.core.app.model.routine.service.RoutineService;
+import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import com.honlife.core.infra.error.exceptions.CommonException;
-import io.swagger.v3.oas.annotations.Operation;
+import com.honlife.core.infra.error.exceptions.ReferencedException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,8 +25,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.controller.member.payload.MemberPayload;
 import com.honlife.core.app.model.member.model.MemberDTO;
@@ -34,9 +45,26 @@ import com.honlife.core.infra.response.ResponseCode;
 public class MemberController {
 
     private final MemberService memberService;
+    private final RoutineService routineService;
+    private final CategoryService categoryService;
+    private final MemberItemService memberItemService;
+    private final MemberQuestService memberQuestService;
+    private final MemberBadgeService memberBadgeService;
+    private final InterestCategoryService interestCategoryService;
+    private final MemberPointService memberPointService;
 
-    public MemberController(final MemberService memberService) {
+    public MemberController(final MemberService memberService, RoutineService routineService,
+        CategoryService categoryService, MemberItemService memberItemService,
+        MemberQuestService memberQuestService, MemberBadgeService memberBadgeService,
+        InterestCategoryService interestCategoryService, MemberPointService memberPointService) {
         this.memberService = memberService;
+        this.routineService = routineService;
+        this.categoryService = categoryService;
+        this.memberItemService = memberItemService;
+        this.memberQuestService = memberQuestService;
+        this.memberBadgeService = memberBadgeService;
+        this.interestCategoryService = interestCategoryService;
+        this.memberPointService = memberPointService;
     }
 
     /**
@@ -120,24 +148,71 @@ public class MemberController {
      * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
     @DeleteMapping
-    @Operation(summary = "회원 탈퇴", description = "회원탈퇴를 처리합니다.<br>"
-        + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요.")
     public ResponseEntity<CommonApiResponse<Void>> deleteMember(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody @Valid final MemberWithdrawRequest withdrawRequest
     ) {
-//        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
-//        if (referencedWarning != null) {
-//            throw new ReferencedException(referencedWarning);
-//        }
-//        memberService.delete(id);
-
-        // 예시 응답
         String userEmail = userDetails.getUsername();
-        if(userEmail.equals("user01@test.com")) {
+
+        // 직적 입력이나 이유가 넘어오지 않을 때
+        if(withdrawRequest.getWithdrawType()==WithdrawType.ETC&&withdrawRequest.getEtcReason()==null){
+            return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+        }
+        Long memberId = memberService.findMemberByEmail(userEmail).getId();
+
+        // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
+        // 루틴 is_active = false
+        routineService.softDropRoutineByMemberId(memberId);
+        // 카테고리 is_active = false
+        categoryService.softDropCategoryByMemberId(memberId);
+        // 멤버 아이템 is_active = false
+        memberItemService.softDropMemberItemByMemberId(memberId);
+        // 멤버 퀘스트 is active = false
+        memberQuestService.softDropMemberQuestByMemberId(memberId);
+        // 멤버 업적 is_active = false
+        memberBadgeService.softDropMemberBadgeByMemberId(memberId);
+        // 선호 카테고리 is_active = false
+        interestCategoryService.softDropInterestCategoryByMemberId(memberId);
+        // 멤버 포인트 is_active = false
+        memberPointService.softDropMemberPointByMemberId(memberId);
+
+
+        try{
+            // 제대로 처리 됐는지 검증
+            final ReferencedWarning referencedWarning = memberService.getReferencedWarning(userEmail);
+            if (referencedWarning != null) {
+                throw new ReferencedException(referencedWarning);
+            }
+        } catch (Exception e) {
+            // 제대로 삭제가 안 됐을 때
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        }
+
+        memberService.softDropMember(userEmail);
+        // 탈퇴 사유 저장
+        memberService.saveWithdrawReason(withdrawRequest);
+
+        return ResponseEntity.ok(CommonApiResponse.noContent());
+
+    }
+
+    /**
+     * 비밀번호 확인 요청 처리 API
+     * @param userDetails 유저 인증 정보
+     * @return 확인 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
+     */
+    @PostMapping("/password")
+    public ResponseEntity<CommonApiResponse<Void>> checkPassword(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestParam String password
+    ) {
+        String userEmail = userDetails.getUsername();
+
+        if(memberService.isCorrectPassword(userEmail, password)){
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
-        return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
     }
 
 }
