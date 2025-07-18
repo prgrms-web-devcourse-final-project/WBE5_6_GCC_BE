@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.member.service.MemberPointService;
 
-@Tag(name="회원 보유 포인트", description = "현재 로그인한 회원이 보유하고 있는 포인트 관련 API 입니다.")
+@Tag(name="✅ [회원] 포인트", description = "회원이 보유한 포인트 관련 API들")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping(value = "/api/v1/members/point", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members/points", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberPointController {
 
     private final MemberPointService memberPointService;
