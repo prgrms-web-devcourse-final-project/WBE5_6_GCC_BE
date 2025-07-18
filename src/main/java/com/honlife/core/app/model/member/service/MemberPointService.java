@@ -103,6 +103,11 @@ public class MemberPointService {
         return memberPointRepository.findByMemberId(memberId);
     }
 
+    /**
+     * find MemberPoint via member's email and map to MemberPointDTO
+     * @param email member's email
+     * @return {@link MemberPointDTO}
+     */
     public MemberPointDTO getMemberPoint(String email) {
         MemberPoint memberPoint = memberPointRepository.findByMember_Email(email)
             .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
