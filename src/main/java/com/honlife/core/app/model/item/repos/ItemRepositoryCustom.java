@@ -4,7 +4,7 @@ import com.honlife.core.app.model.item.code.ItemType;
 import com.querydsl.core.Tuple;
 import java.util.List;
 
-public interface ItemDslRepository {
+public interface ItemRepositoryCustom {
     List<Tuple> findItemsWithOwnership(Long memberId, ItemType itemType);
     Tuple findItemWithOwnership(String itemKey, Long memberId);
 }

@@ -4,7 +4,7 @@ import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.dto.ItemDTO;
-import com.honlife.core.app.model.item.repos.ItemDslRepository;
+import com.honlife.core.app.model.item.repos.ItemRepositoryCustom;
 import com.honlife.core.app.model.item.repos.ItemRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
@@ -35,7 +35,7 @@ public class ItemService {
     private final MemberItemRepository memberItemRepository;
     private final MemberService memberService;
     private final MemberPointService memberPointService;
-    private final ItemDslRepository itemDslRepository;
+    private final ItemRepositoryCustom itemRepositoryCustom;
 
     /**
      * 특정 사용자의 아이템 전체 목록을 조회하면서,
@@ -47,7 +47,7 @@ public class ItemService {
      */
     public List<ItemDTO> getAllItemsWithOwnership(Long memberId, ItemType itemType) {
 
-        List<Tuple> tuples = itemDslRepository.findItemsWithOwnership(memberId, itemType);
+        List<Tuple> tuples = itemRepositoryCustom.findItemsWithOwnership(memberId, itemType);
 
         return tuples.stream()
                 .map(tuple -> {
@@ -76,7 +76,7 @@ public class ItemService {
      * @return          아이템 정보 및 보유 여부를 담은 ItemResponse
      */
     public ItemDTO getItemResponseByKey(String itemKey, Long memberId) {
-        Tuple tuple = itemDslRepository.findItemWithOwnership(itemKey, memberId);
+        Tuple tuple = itemRepositoryCustom.findItemWithOwnership(itemKey, memberId);
         if (tuple == null) {
             throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
         }
