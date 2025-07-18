@@ -21,7 +21,6 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final MemberRepository memberRepository;
-    private final ModelMapper modelMapper;
 
     public NotificationDTO get(final Long id) {
         return notificationRepository.findById(id)
