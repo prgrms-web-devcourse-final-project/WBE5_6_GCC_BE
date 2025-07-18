@@ -18,6 +18,8 @@ public class CategoryResponse {
 
     private String categoryName;
 
+    private String emoji;
+
     private CategoryType categoryType;
 
     private Long memberId;
