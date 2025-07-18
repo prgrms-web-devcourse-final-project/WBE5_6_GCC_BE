@@ -81,7 +81,7 @@ public class MemberItemService {
 
         MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
                 // 회원이 해당 아이템을 보유하지 않았을 때
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
         target.setIsEquipped(false);
     }
 
