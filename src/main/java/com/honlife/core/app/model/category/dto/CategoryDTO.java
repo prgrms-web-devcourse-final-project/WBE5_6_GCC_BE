@@ -32,4 +32,6 @@ public class CategoryDTO {
     @NotNull
     private Long member;
 
+    private String emoji;
+
 }
