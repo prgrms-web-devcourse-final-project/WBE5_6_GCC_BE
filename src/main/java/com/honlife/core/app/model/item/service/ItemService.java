@@ -169,7 +169,7 @@ public class ItemService {
     public ItemDTO get(final Long id) {
         return itemRepository.findById(id)
                 .map(item -> mapToDTO(item, new ItemDTO()))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ITEM));
     }
 
     public ReferencedWarning getReferencedWarning(final Long id) {
