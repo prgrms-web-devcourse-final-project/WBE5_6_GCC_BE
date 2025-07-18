@@ -38,7 +38,7 @@ import com.honlife.core.infra.response.ResponseCode;
 
 
 @Slf4j
-@Tag(name = "✅ 회원", description = "회원관련 API 입니다.")
+@Tag(name = "✅ [회원] 회원 정보 및 관리", description = "회원관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
