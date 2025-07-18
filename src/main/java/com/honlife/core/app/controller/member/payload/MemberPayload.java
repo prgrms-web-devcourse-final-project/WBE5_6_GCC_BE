@@ -22,11 +22,23 @@ public class MemberPayload {
     //TODO: 개발시 활용
     public static MemberPayload fromDTO(MemberDTO memberDTO) {
         MemberPayload memberPayload = new MemberPayload();
+        memberPayload.name = memberDTO.getName();
         memberPayload.nickname = memberDTO.getNickname();
         memberPayload.residenceExperience = memberDTO.getResidenceExperience();
         memberPayload.regionDept1 = memberDTO.getRegion1Dept();
         memberPayload.regionDept2 = memberDTO.getRegion2Dept();
         memberPayload.regionDept3 = memberDTO.getRegion3Dept();
         return memberPayload;
+    }
+
+    public MemberDTO toDTO() {
+        return MemberDTO.builder()
+            .name(this.name)
+            .nickname(this.nickname)
+            .residenceExperience(this.residenceExperience)
+            .region1Dept(this.regionDept1)
+            .region2Dept(this.regionDept2)
+            .region3Dept(this.regionDept3)
+            .build();
     }
 }

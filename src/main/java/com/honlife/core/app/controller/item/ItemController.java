@@ -1,14 +1,13 @@
 package com.honlife.core.app.controller.item;
 
-import com.honlife.core.app.controller.item.payload.ItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
+import com.honlife.core.app.model.item.dto.ItemDTO;
 import com.honlife.core.app.model.item.service.ItemService;
 import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.service.MemberItemService;
-import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -29,46 +27,24 @@ public class ItemController {
 
     private final ItemService itemService;
     private final MemberService memberService;
-    private final MemberPointService memberPointService;
     private final MemberItemService memberItemService;
+
     /**
      * 모든 아이템 또는 Type 일치 아이템 조회 API
      *
      * @return List<ItemResponse> 모든 아이템에 대한 정보
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<List<ItemResponse>>> getAllItems(
+    public ResponseEntity<CommonApiResponse<List<ItemDTO>>> getAllItems(
             @RequestParam(value = "type", required = false) ItemType itemType,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-
-        // email 기반 member 조회 (memberId 얻기 위함)
-        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
-        }
-        // 여기서 memberId 얻을 수 있음
-        Member member = memberOptional.get();
-        // 사용자 ID 꺼내기
-        Long memberId = member.getId();
-        // 보유 아이템 판단
-        List<Long> ownedItemIds = memberItemService.getOwnedItemIdsByMember(memberId);
-
-        List<Item> items = itemService.getAllItems(itemType);
-
-        List<ItemResponse> responseList =  items.stream()
-                .map(item -> ItemResponse.builder()
-                        .itemId(item.getId())
-                        .itemKey(item.getItemKey())
-                        .itemName(item.getName())
-                        .itemType(item.getType())
-                        .itemPoint(item.getPrice())
-                        .isOwned(ownedItemIds.contains(item.getId()))
-                        .build())
-                .toList();
-
-        return ResponseEntity.ok(CommonApiResponse.success(responseList));
+        // 이메일로 Member 엔티티 조회
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        // 로그인한 회원의 이메일과 요청 파라미터로 전달된 itemType을 기반으로
+        // 해당 회원이 보유한 여부(isOwned)를 포함한 아이템 리스트 조회
+        List<ItemDTO> items = itemService.getAllItemsWithOwnership(member.getId(), itemType);
+        return ResponseEntity.ok(CommonApiResponse.success(items));
     }
 
     /**
@@ -78,46 +54,28 @@ public class ItemController {
      * @return ItemResponse itemKey 값과 일치하는 아이템 정보 반환
      */
     @GetMapping("/{key}")
-    public ResponseEntity<CommonApiResponse<ItemResponse>> getItemByKey(
+    public ResponseEntity<CommonApiResponse<ItemDTO>> getItemByKey(
             @PathVariable("key") String itemKey,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Optional<Item> itemOptional = itemService.getItemByKey(itemKey);
-
-        // email 기반 member 조회 (memberId 얻기 위함)
-        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
-        }
-        // 여기서 memberId 얻을 수 있음
-        Member member = memberOptional.get();
-        // 사용자 ID 꺼내기
-        Long memberId = member.getId();
-
-        // ItemKey 값의 존재 여부 확인
-        if (itemOptional.isEmpty()) {
+        // 아이템 조회
+        Item item = itemService.getItemByKey(itemKey);
+        if (item == null) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
         }
-
-        Item item = itemOptional.get();
-
-        Boolean ownedItemId = memberItemService.isItemOwnByMember(memberId,item.getId());
-        ItemResponse itemResponse = ItemResponse.builder()
-                .itemId(item.getId())
-                .itemKey(item.getItemKey())
-                .itemName(item.getName())
-                .itemType(item.getType())
-                .itemPoint(item.getPrice())
-                .isOwned(ownedItemId)
-                .build();
+        // 사용자 정보 조회
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
+        // itemKey값을 통한 해당 item 정보 조회
+        ItemDTO itemResponse = itemService.getItemResponseByKey(itemKey, member.getId());
 
         return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
+
     }
 
     /**
      * 아이템 구매 API
+     *
      * @param itemKey 아이템 고유 아이다
      **/
     @PostMapping("/{key}")
@@ -125,41 +83,27 @@ public class ItemController {
             @PathVariable("key") String itemKey,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Optional<Item> itemOptional = itemService.getItemByKey(itemKey);
-
-        // ItemKey 값의 존재 여부 확인
-        if (itemOptional.isEmpty()) {
+        // 아이템 키값으로 Item 정보 가져옴
+        Item item = itemService.getItemByKey(itemKey);
+        if (item == null) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
         }
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
 
-        // email 기반 member 조회 (memberId 얻기 위함)
-        Optional<Member> memberOptional = memberService.getByEmail(userDetails.getUsername());
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+        // 회원이 이미 보유한 아이템인지 확인
+        if (memberItemService.isItemOwnByMember(member.getId(), item.getId())) {
+            return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_ITEM.status())
+                    .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_ITEM));
+        }
+        try {
+            // 해당 item 구매 메서드
+            itemService.purchaseItem(item, member);
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        } catch (CommonException e) {
+            return ResponseEntity.status(ResponseCode.NOT_ENOUGH_POINT.status())
+                    .body(CommonApiResponse.error(ResponseCode.NOT_ENOUGH_POINT));
         }
 
-        // itemKey 값을 통해 구매하고자하는 Item 정보 가지고 있음
-        Item item = itemOptional.get();
-        // 여기서 memberId 얻을 수 있음
-        Member member = memberOptional.get();
-        // 사용자 ID 꺼내기
-        Long memberId = member.getId();
-
-        // memberId를 통해 사용자 Point 테이블 정보 가져옴
-        Optional<MemberPoint> pointOptional = memberPointService.getByMemberId(memberId);
-
-        // memberPoint에 point 값이 있는지 없는지 검증로직을 거치지 않아서 표시되는 warning
-        MemberPoint memberPoint = pointOptional.get();
-
-        //  포인트 부족 검사
-        if (memberPoint.getPoint() < item.getPrice()) {
-            return ResponseEntity.status(ResponseCode.BAD_REQUEST.status())
-                    .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-        }
-
-        itemService.purchaseItem(item, member);
-        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }

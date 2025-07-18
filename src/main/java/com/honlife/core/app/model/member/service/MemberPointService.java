@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.member.service;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +12,6 @@ import com.honlife.core.app.model.member.model.MemberPointDTO;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
 
 
 @Service
@@ -82,8 +82,32 @@ public class MemberPointService {
     public boolean memberExists(final Long id) {
         return memberPointRepository.existsByMemberId(id);
     }
-    // 유저 Id를 통한 MemberPoint 테이블 접근 및 조회
-    public Optional<MemberPoint> getByMemberId(final Long memberId) {
+
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 멤버 포인트를 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropMemberPointByMemberId(Long memberId) {
+        memberPointRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 해당 멤버와 연관된 활성화된 첫번째 멤버 포인트를 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link MemberPoint}
+     */
+    public MemberPoint findFirstMemberPointByMemberAndIsActive(Member member, boolean isActive) {
+        return memberPointRepository.findFirstByMemberAndIsActive(member,isActive);
+    }
+    /**
+     * memberId를 통해 MemberPoint 정보를 가져옵니다.
+     *
+     * @param memberId 사용자 ID
+     * @return Optional<MemberPoint>
+     */
+    public Optional<MemberPoint> getPointByMemberId(Long memberId) {
         return memberPointRepository.findByMemberId(memberId);
     }
 }

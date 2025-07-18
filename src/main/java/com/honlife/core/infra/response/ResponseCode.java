@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 public enum ResponseCode {
   OK("0000", HttpStatus.OK, "OK"),
 
+  CONTINUE("1000", HttpStatus.CONTINUE, "Continue"),
+
   CREATED("2010", HttpStatus.CREATED, "Created"),
   BADGE_CREATED("2012", HttpStatus.CREATED, "Badge created"),
   ROUTINE_CREATED("2013", HttpStatus.CREATED, "Routine created"),
@@ -28,6 +30,8 @@ public enum ResponseCode {
   BAD_CREDENTIAL("4011", HttpStatus.UNAUTHORIZED, "Wrong credentials."),
   INVALID_CODE("4012", HttpStatus.UNAUTHORIZED, "Invalid verification code"),
   NOT_EXIST_PRE_AUTH_CREDENTIAL("4013", HttpStatus.OK, "No authentication credentials were found in the request."),
+
+  NOT_ENOUGH_POINT("4038", HttpStatus.FORBIDDEN, "Not enough points."),
 
   NOT_FOUND("4040", HttpStatus.NOT_FOUND, "Not found."),
   NOT_FOUND_MEMBER("4041", HttpStatus.NOT_FOUND, "Member not found."),

@@ -1,6 +1,11 @@
 package com.honlife.core.app.model.member.service;
 
 import com.honlife.core.app.model.item.code.ItemType;
+import com.honlife.core.app.model.category.domain.Category;
+import java.util.List;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.repos.ItemRepository;
@@ -19,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -107,5 +113,35 @@ public class MemberItemService {
                 .orElseThrow(() -> new NotFoundException("item not found"));
         memberItem.setItem(item);
         return memberItem;
+    }
+
+    /**
+     * 멤버 아이디를 통해 조회하여 연관된 모든 멤버 아이템을 삭제합니다.
+     * @param memberId 멤버 식별아이디
+     */
+    @Transactional
+    public void softDropMemberItemByMemberId(Long memberId) {
+        memberItemRepository.softDropByMemberId(memberId);
+    }
+
+    /**
+     * 멤버와 연관된 활성화된 첫 번째 멤버 아이템을 조회합니다.
+     * @param member 멤버
+     * @param isActive 활성화 상태
+     * @return {@link Category}
+     */
+    public MemberItem findFirstMemberItemByMemberAndIsActive(Member member, boolean isActive) {
+        return memberItemRepository.findFirstByMemberAndIsActive(member, isActive);
+
+    }
+
+    /**
+     * memberId와 itemId를 통해 해당 아이템을 보유 중인지 여부 반환
+     * @param memberId 사용자 ID
+     * @param itemId   아이템 ID
+     * @return 보유 여부 (true: 보유 중, false: 미보유)
+     */
+    public Boolean isItemOwnByMember(Long memberId, Long itemId) {
+        return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
     }
 }

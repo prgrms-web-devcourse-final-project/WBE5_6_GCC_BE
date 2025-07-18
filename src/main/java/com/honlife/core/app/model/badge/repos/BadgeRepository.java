@@ -1,5 +1,7 @@
 package com.honlife.core.app.model.badge.repos;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.category.domain.Category;
@@ -9,4 +11,18 @@ public interface BadgeRepository extends JpaRepository<Badge, Long> {
 
     Badge findFirstByCategory(Category category);
 
+    /**
+     * 배지 키로 배지 조회
+     */
+    Optional<Badge> findByKey(String key);
+
+    /**
+     * 활성화된 모든 배지 조회
+     */
+    List<Badge> findAllByIsActiveTrue();
+
+    /**
+     * 키로 활성화된 배지 조회
+     */
+    Optional<Badge> findByKeyAndIsActiveTrue(String key);
 }

@@ -20,6 +20,14 @@ public class MemberItemRepositoryCustomImpl implements MemberItemRepositoryCusto
     QItem item = QItem.item;
 
     @Override
+    public void softDropByMemberId(Long memberId) {
+
+        queryFactory
+            .update(memberItem)
+            .set(memberItem.isActive, false)
+            .where(memberItem.member.id.eq(memberId))
+            .execute();
+
     public List<Tuple> findMemberItems(Long memberId, ItemType itemType) {
         return queryFactory
             .select(memberItem, item)
