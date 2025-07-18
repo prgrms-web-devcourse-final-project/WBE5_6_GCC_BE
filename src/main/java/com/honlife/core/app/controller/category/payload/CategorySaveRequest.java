@@ -21,6 +21,9 @@ public class CategorySaveRequest {
     @NotNull
     private CategoryType categoryType;
 
+    @Schema(description = "카테고리 이모지", example = "uD83DuDEBD")
+    private String emoji;
+
     @Schema(description = "대분류 카테고리 정보, 만약 type이 MAJOR이라면 null", example = "청소")
     private String parentName;
 
