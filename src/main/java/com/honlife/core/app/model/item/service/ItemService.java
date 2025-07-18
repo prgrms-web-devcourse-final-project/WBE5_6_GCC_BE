@@ -154,6 +154,7 @@ public class ItemService {
         itemDTO.setType(item.getType());
         return itemDTO;
     }
+
     private Item mapToEntity(final ItemDTO itemDTO, final Item item) {
         item.setCreatedAt(itemDTO.getCreatedAt());
         item.setUpdatedAt(itemDTO.getUpdatedAt());
