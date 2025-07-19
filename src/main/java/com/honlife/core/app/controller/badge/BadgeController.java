@@ -28,7 +28,7 @@ import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 
 
 @RequiredArgsConstructor
-@Tag(name="업적", description = "업적 관련 API 입니다.")
+@Tag(name="[일반] 업적", description = "업적 관련 API 입니다.")
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping(value = "/api/v1/badges", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +40,7 @@ public class BadgeController {
      * 업적 조회 API
      * @return List<BadgePayload> 모든 업적에 대한 정보
      */
-    @Operation(summary = "[일반] 업적 조회", description = "모든 업적의 정보를 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
+    @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges(
         @AuthenticationPrincipal UserDetails userDetails
