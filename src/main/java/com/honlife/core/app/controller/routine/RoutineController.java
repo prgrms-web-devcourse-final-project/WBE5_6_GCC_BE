@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "루틴", description = "루틴 관련 api 입니다.")
+@Tag(name = "[회원] 루틴", description = "루틴 관련 api 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")

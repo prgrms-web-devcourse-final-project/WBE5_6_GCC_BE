@@ -144,12 +144,7 @@ public class AuthController {
             .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
     }
 
-    /**
-     * 중복 확인 처리 API, email 또는 nickname 둘 중 하나는 입력되어야 합니다.
-     * @param email 사용자의 이메일
-     * @param nickname 사용자의 닉네임
-     * @return {@link CommonApiResponse}의 data에 중복여부를 담아 반환합니다.
-     */
+
     @PostMapping("/check")
     @Operation(summary = "중복 검사", description = "중복된 이메일 또는 닉네임이 존재하는지 확인합니다.<br>"
         + "이미 존재하는 이메일 또는 닉네임인 경우, <code>409(Conflict)</code>를 반환합니다.<br>"

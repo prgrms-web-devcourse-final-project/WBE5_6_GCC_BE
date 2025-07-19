@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.member.service.MemberBadgeService;
 
-@Tag(name="회원 보유 업적", description = "현재 로그인한 회원이 보유하고 있는 업적 관련 API 입니다.")
+@Tag(name="[회원] 업적", description = "현재 로그인한 회원이 보유하고 있는 업적 관련 API 입니다.")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping(value = "/api/v1/members/badges", produces = MediaType.APPLICATION_JSON_VALUE)
