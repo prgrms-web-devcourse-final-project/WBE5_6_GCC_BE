@@ -37,6 +37,7 @@ public class AdminCategoryController {
         response.add(AdminCategoryResponse.builder()
             .categoryId(1L)
             .categoryName("청소")
+            .emoji("🧹")
             .categoryType(CategoryType.MAJOR)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
@@ -44,6 +45,7 @@ public class AdminCategoryController {
         response.add(AdminCategoryResponse.builder()
             .categoryId(2L)
             .categoryName("요리")
+            .emoji("\uD83C\uDF73")
             .categoryType(CategoryType.MAJOR)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
@@ -103,6 +105,25 @@ public class AdminCategoryController {
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
         }
         return ResponseEntity.ok(CommonApiResponse.noContent());
+    }
+
+    @Operation(summary = "카테고리 단건 상세 조회", description = "특정 카테고리에 대한 상세 정보를 조회합니다.")
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonApiResponse<AdminCategoryResponse>> getCategory(
+        @PathVariable(name = "id") @Schema(description = "카테고리 id", example = "1") final Long categoryId
+    ) {
+        AdminCategoryResponse response = null;
+        if(categoryId == 1L) {
+            response = AdminCategoryResponse.builder()
+                .categoryId(1L)
+                .categoryName("청소")
+                .emoji("🧹")
+                .categoryType(CategoryType.MAJOR)
+                .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
+                .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+                .build();
+        }
+        return ResponseEntity.ok().body(CommonApiResponse.success(response));
     }
 
 }
