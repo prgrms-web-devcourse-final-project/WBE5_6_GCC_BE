@@ -76,7 +76,7 @@ public class AdminCategoryController {
      * @return
      */
     @Operation(summary = "카테고리 수정", description = "카테고리 이름 또는 타입을 수정합니다. id는 1,2,3 중 하나만 가능합니다.")
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
         @Schema(description = "카테고리 id", example = "3") final Long categoryId,
