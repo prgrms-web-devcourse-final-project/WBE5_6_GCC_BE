@@ -31,7 +31,7 @@ import com.honlife.core.app.model.auth.dto.TokenDto;
 import com.honlife.core.infra.auth.jwt.TokenCookieFactory;
 import com.honlife.core.infra.response.CommonApiResponse;
 
-@Tag(name="✅ 인증", description = "로그인 및 인증 관련 API입니다.")
+@Tag(name="✅ [일반] 인증", description = "로그인 및 인증 관련 API입니다.")
 @RestController
 @RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
