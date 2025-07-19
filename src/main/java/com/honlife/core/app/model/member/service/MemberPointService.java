@@ -94,15 +94,6 @@ public class MemberPointService {
     }
 
     /**
-     * 해당 멤버와 연관된 활성화된 첫번째 멤버 포인트를 조회합니다.
-     * @param member 멤버
-     * @param isActive 활성화 상태
-     * @return {@link MemberPoint}
-     */
-    public MemberPoint findFirstMemberPointByMemberAndIsActive(Member member, boolean isActive) {
-        return memberPointRepository.findFirstByMemberAndIsActive(member,isActive);
-    }
-    /**
      * memberId를 통해 MemberPoint 정보를 가져옵니다.
      *
      * @param memberId 사용자 ID
@@ -110,5 +101,19 @@ public class MemberPointService {
      */
     public Optional<MemberPoint> getPointByMemberId(Long memberId) {
         return memberPointRepository.findByMemberId(memberId);
+    }
+
+    /**
+     * find MemberPoint via member's email and map to MemberPointDTO
+     * @param email member's email
+     * @return {@link MemberPointDTO}
+     */
+    public MemberPointDTO getMemberPoint(String email) {
+        MemberPoint memberPoint = memberPointRepository.findByMember_Email(email)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
+        return MemberPointDTO.builder()
+            .id(memberPoint.getId())
+            .point(memberPoint.getPoint())
+            .build();
     }
 }
