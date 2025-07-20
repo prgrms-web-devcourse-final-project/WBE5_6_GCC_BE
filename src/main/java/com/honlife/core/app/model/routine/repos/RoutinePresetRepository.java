@@ -1,6 +1,7 @@
 package com.honlife.core.app.model.routine.repos;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
@@ -25,5 +26,8 @@ public interface RoutinePresetRepository extends JpaRepository<RoutinePreset, Lo
 
     @Query("SELECT rp FROM RoutinePreset rp JOIN FETCH rp.category")
     List<RoutinePreset> findAllWithCategory();
+
+    @Query("SELECT rp FROM RoutinePreset rp JOIN FETCH rp.category WHERE rp.id = :id")
+    Optional<RoutinePreset> findWithCategoryById(@Param("id") Long id);
 
 }
