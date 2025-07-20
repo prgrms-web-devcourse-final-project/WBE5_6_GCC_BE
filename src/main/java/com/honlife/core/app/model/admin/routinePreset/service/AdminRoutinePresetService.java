@@ -1,15 +1,19 @@
 package com.honlife.core.app.model.admin.routinePreset.service;
 
+import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetDetailResponse;
 import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
+import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -54,4 +58,22 @@ public class AdminRoutinePresetService {
         .collect(Collectors.toList());
   }
 
+  public RoutinePresetViewDTO getRoutinePreset(Long presetId) {
+
+    RoutinePreset routinePreset = routinePresetRepository.findWithCategoryById(presetId)
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+
+    RoutinePresetViewDTO dto = RoutinePresetViewDTO.builder()
+        .presetId(routinePreset.getId())
+        .categoryId(routinePreset.getCategory().getId())
+        .categoryName(routinePreset.getCategory().getName())
+        .content(routinePreset.getContent())
+        .isActive(routinePreset.getIsActive())
+        .createdAt(routinePreset.getCreatedAt())
+        .updatedAt(routinePreset.getUpdatedAt())
+        .build();
+
+    return dto;
+
+  }
 }
