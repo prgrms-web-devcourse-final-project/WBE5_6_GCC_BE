@@ -74,6 +74,7 @@ public class AdminRoutinePresetController {
     return ResponseEntity.ok(CommonApiResponse.success(response));
   }
 
+
   /**
    * 추천 루틴 프리셋 생성 API
    * @param request 프리셋 생성 요청 정보

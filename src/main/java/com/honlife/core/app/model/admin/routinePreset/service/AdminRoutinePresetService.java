@@ -58,11 +58,16 @@ public class AdminRoutinePresetService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 추천 루틴 프리셋 단건 조회 조회 service
+   * @return RoutinePresetViewDTO
+   */
   public RoutinePresetViewDTO getRoutinePreset(Long presetId) {
 
     RoutinePreset routinePreset = routinePresetRepository.findWithCategoryById(presetId)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
 
+    //DTO 변환하여 반환
     RoutinePresetViewDTO dto = RoutinePresetViewDTO.builder()
         .presetId(routinePreset.getId())
         .categoryId(routinePreset.getCategory().getId())

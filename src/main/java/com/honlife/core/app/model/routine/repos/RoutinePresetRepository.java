@@ -27,6 +27,7 @@ public interface RoutinePresetRepository extends JpaRepository<RoutinePreset, Lo
     @Query("SELECT rp FROM RoutinePreset rp JOIN FETCH rp.category")
     List<RoutinePreset> findAllWithCategory();
 
+    /** 단건 조회로 fetch join 사용 transaction은 n+1이 생길수 있으므로 fetch join을 사용하였습니다 **/
     @Query("SELECT rp FROM RoutinePreset rp JOIN FETCH rp.category WHERE rp.id = :id")
     Optional<RoutinePreset> findWithCategoryById(@Param("id") Long id);
 
