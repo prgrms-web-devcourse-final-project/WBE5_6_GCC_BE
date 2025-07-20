@@ -66,22 +66,10 @@ public class AdminRoutinePresetController {
   public ResponseEntity<CommonApiResponse<AdminRoutinePresetDetailResponse>> getRoutinePreset(
       @PathVariable(name = "id") final Long presetId
   ) {
-    // 존재하지 않는 프리셋 ID로 접근
-    if (presetId != 1L && presetId != 2L && presetId != 3L) {
-      return ResponseEntity.status(ResponseCode.NOT_FOUND.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND));
-    }
 
-    // 모킹 데이터 생성
-    AdminRoutinePresetDetailResponse response = AdminRoutinePresetDetailResponse.builder()
-        .presetId(presetId)
-        .categoryId(1L)
-        .categoryName("청소")
-        .content("화장실 청소하기")
-        .isActive(true)
-        .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
-        .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
-        .build();
+    RoutinePresetViewDTO routineDetailDTO = adminRoutinePresetService.getRoutinePreset(presetId);
+
+    AdminRoutinePresetDetailResponse response = AdminRoutinePresetDetailResponse.from(routineDetailDTO);
 
     return ResponseEntity.ok(CommonApiResponse.success(response));
   }
