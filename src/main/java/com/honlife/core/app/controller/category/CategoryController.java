@@ -85,20 +85,26 @@ public class CategoryController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<CommonApiResponse<Void>> createCategory(@RequestBody @Valid final CategorySaveRequest categorySaveRequest,
+    public ResponseEntity<CommonApiResponse<Void>> createCategory(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody @Valid final CategorySaveRequest categorySaveRequest,
         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
-        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && categorySaveRequest.getParentName() == null){
+        // SUB 카테고리지만 부모 카테고리 정보가 없는 경우
+        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && (categorySaveRequest.getParentName() == null|| categorySaveRequest.getParentName().isEmpty())) {
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+        String userEmail = userDetails.getUsername();
+        categoryService.createCategory(categorySaveRequest, userEmail);
+
+        return ResponseEntity.ok(CommonApiResponse.success(ResponseCode.CATEGORY_CREATED));
     }
 
     /**
@@ -142,7 +148,7 @@ public class CategoryController {
 //        if (referencedWarning != null) {
 //            throw new ReferencedException(referencedWarning);
 //        }
-        categoryService.delete(categoryId);
+//        categoryService.delete(categoryId);
         // 존재하지 않는 카테고리 아이디로 접근
         if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
             return ResponseEntity

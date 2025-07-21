@@ -28,4 +28,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      */
     Optional<Category> findCategoryByNameAndMember_Email(String name, String memberEmail);
 
+    /**
+     * 활성화된 카테고리 중 해당하는 이름을 가진 카테고리가 있는지 확인합니다.
+     * @param name 카테고리 이름
+     * @param isActive 활성화 여부
+     * @return Boolean
+     */
+    boolean existsCategoriesByNameAndIsActive(String name, Boolean isActive);
 }
