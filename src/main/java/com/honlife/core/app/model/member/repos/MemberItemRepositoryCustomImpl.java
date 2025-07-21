@@ -34,6 +34,7 @@ public class MemberItemRepositoryCustomImpl implements MemberItemRepositoryCusto
             .join(item).on(memberItem.item.id.eq(item.id))
             .where(
                 memberItem.member.id.eq(memberId),
+                item.isActive.isTrue(),
                 itemType != null ? item.type.eq(itemType) : null
             )
             .fetch();

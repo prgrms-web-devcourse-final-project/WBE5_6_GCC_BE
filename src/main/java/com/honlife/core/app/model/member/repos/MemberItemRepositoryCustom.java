@@ -15,7 +15,8 @@ public interface MemberItemRepositoryCustom {
 
     /**
      * 맴버 아이디를 통해 맴버가 보유하고 있는 아이템정보를 찾는 메소드
-     * Type 값이 있다면 그 Type에 해당하는 보유아이템 정보 가져온다.
+     * Soft delete 처리된 아이템(isActive = false)은 제외되며,
+     * itemType이 지정된 경우 해당 타입에 해당하는 아이템만 조회합니다.
      * @param memberId 맴버 식별 아이디
      * @param itemType itemType 식별
      * @return
