@@ -37,8 +37,9 @@ public class Category extends BaseEntity {
     )
     private Long id;
 
-    @Column
-    private Long parentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Category parent;
 
     @Column(length = 25)
     private String name;

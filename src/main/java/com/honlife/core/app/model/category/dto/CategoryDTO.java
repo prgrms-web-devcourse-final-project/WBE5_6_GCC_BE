@@ -22,7 +22,7 @@ public class CategoryDTO {
     @JsonProperty("isActive")
     private Boolean isActive;
 
-    private Long parentId;
+    private Long parent;
 
     @Size(max = 25)
     private String name;
