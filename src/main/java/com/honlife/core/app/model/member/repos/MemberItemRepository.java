@@ -27,4 +27,13 @@ public interface MemberItemRepository extends JpaRepository<MemberItem, Long>, M
     List<MemberItem> member(Member member);
 
     MemberItem findFirstByMemberAndIsActive(Member member, Boolean isActive);
+
+    /**
+     * 특정 아이템을 보유한 모든 회원의 MemberItem 리스트를 조회합니다.
+     * 일반적으로 soft delete된 아이템을 비활성화할 때 사용됩니다.
+     *
+     * @param item 보유 여부를 확인할 대상 아이템
+     * @return 해당 아이템을 보유한 모든 MemberItem 리스트
+     */
+    List<MemberItem> findAllByItem(Item item);
 }
