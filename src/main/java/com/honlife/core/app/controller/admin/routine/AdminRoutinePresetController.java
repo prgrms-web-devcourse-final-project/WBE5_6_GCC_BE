@@ -3,6 +3,8 @@ package com.honlife.core.app.controller.admin.routine;
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetDetailResponse;
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetSaveRequest;
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetsResponse;
+import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.service.RoutinePresetService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -11,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -66,47 +68,130 @@ public class AdminRoutinePresetController {
     AdminRoutinePresetsResponse response = new AdminRoutinePresetsResponse();
     List<AdminRoutinePresetsResponse.PresetItem> presets = new ArrayList<>();
 
-    if (categoryId == null) {
-      // 전체 카테고리 프리셋 반환
+    if (categoryId == 1L) {
+      // 청소 카테고리 프리셋
       presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
           .presetId(1L)
           .categoryId(1L)
-          .categoryName("청소")
-          .content("화장실 청소하기")
-          .isActive(true)
-          .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
-          .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
+          .majorCategory("청소")
+          .subCategory("화장실 청소")
+          .name("화장실 청소하기")
+          .content("욕실 변기, 세면대 등 청소")
+          .triggerTime("23:00")
+          .isDone(false)
+          .isImportant(true)
+          .startRoutineDate(LocalDate.of(2025, 7, 22))
+          .updatedAt(LocalDate.of(2025, 8, 1).atStartOfDay())
+          .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
           .build());
+
       presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
           .presetId(2L)
-          .categoryId(2L)
-          .categoryName("건강")
-          .content("자기 전 명상 10분")
-          .isActive(true)
-          .createdAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-          .updatedAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-          .build());
-    } else if (categoryId == 1L) {
-      // 청소 카테고리 프리셋만
-      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-          .presetId(1L)
           .categoryId(1L)
-          .categoryName("청소")
-          .content("화장실 청소하기")
-          .isActive(true)
-          .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
-          .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
+          .majorCategory("청소")
+          .subCategory("거실 청소")
+          .name("청소기 돌리기")
+          .content("거실 바닥 청소기 돌리기")
+          .triggerTime("21:00")
+          .isDone(false)
+          .isImportant(true)
+          .startRoutineDate(LocalDate.of(2025, 7, 22))
+          .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
+          .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
           .build());
+
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(3L)
+          .categoryId(1L)
+          .majorCategory("청소")
+          .subCategory("주방 정리")
+          .name("식탁 닦기")
+          .content("식사 후 식탁 정리")
+          .triggerTime("20:00")
+          .isDone(false)
+          .isImportant(false)
+          .startRoutineDate(LocalDate.of(2025, 7, 22))
+          .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
+          .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .build());
+
     } else if (categoryId == 2L) {
-      // 건강 카테고리 프리셋만
+      // 건강 카테고리 프리셋
       presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-          .presetId(2L)
+          .presetId(4L)
           .categoryId(2L)
-          .categoryName("건강")
+          .majorCategory("건강")
+          .subCategory("명상")
+          .name("명상하기")
           .content("자기 전 명상 10분")
-          .isActive(true)
-          .createdAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-          .updatedAt(LocalDateTime.of(2025, 1, 11, 10, 15))
+          .triggerTime("22:00")
+          .isDone(false)
+          .isImportant(true)
+          .startRoutineDate(LocalDate.of(2025, 7, 22))
+          .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
+          .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .build());
+
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(5L)
+          .categoryId(2L)
+          .majorCategory("건강")
+          .subCategory("수분 보충")
+          .name("물 마시기")
+          .content("아침 기상 후 물 한잔 마시기")
+          .triggerTime("08:00")
+          .isDone(false)
+          .isImportant(true)
+          .startRoutineDate(LocalDate.of(2025, 7, 22))
+          .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
+          .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .build());
+
+    } else if (categoryId == 4L) {
+      // 운동 카테고리 프리셋
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(6L)
+          .categoryId(4L)
+          .majorCategory("운동")
+          .subCategory("스트레칭")
+          .name("아침 스트레칭")
+          .content("기상 후 5분 스트레칭")
+          .triggerTime("07:30")
+          .isDone(false)
+          .isImportant(true)
+          .startRoutineDate(LocalDate.of(2025, 7, 22))
+          .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
+          .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .build());
+
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(7L)
+          .categoryId(4L)
+          .majorCategory("운동")
+          .subCategory("코어운동")
+          .name("플랭크")
+          .content("1분간 플랭크 유지")
+          .triggerTime("18:00")
+          .isDone(false)
+          .isImportant(false)
+          .startRoutineDate(LocalDate.of(2025, 7, 22))
+          .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
+          .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .build());
+
+      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
+          .presetId(8L)
+          .categoryId(4L)
+          .majorCategory("운동")
+          .subCategory("유산소")
+          .name("계단 오르기")
+          .content("엘리베이터 대신 계단 사용하기")
+          .triggerTime("출근시간")
+          .isDone(false)
+          .isImportant(false)
+          .startRoutineDate(LocalDate.of(2025, 7, 22))
+          .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
+          .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
           .build());
     }
 
@@ -146,13 +231,20 @@ public class AdminRoutinePresetController {
 
     // 모킹 데이터 생성
     AdminRoutinePresetDetailResponse response = AdminRoutinePresetDetailResponse.builder()
-        .presetId(presetId)
+        .presetId(1L)
         .categoryId(1L)
-        .categoryName("청소")
-        .content("화장실 청소하기")
-        .isActive(true)
-        .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
-        .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
+        .majorCategory("청소")
+        .subCategory("화장실 청소")
+        .name("변기 청소하기")
+        .triggerTime("09:00")
+        .content("주 3회 정기적으로 욕실 위생 관리")
+        .isDone(false)
+        .isImportant(false)
+        .startRoutineDate(LocalDate.of(2025, 7, 22))
+        .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
+        .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+        .repeatType(RepeatType.WEEKLY)
+        .repeatValue("1,3,5")
         .build();
 
     return ResponseEntity.ok(CommonApiResponse.success(response));
