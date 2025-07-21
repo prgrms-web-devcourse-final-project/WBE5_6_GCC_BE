@@ -17,11 +17,6 @@ public class AdminItemRequest {
 
   @NotBlank
   @Size(max = 50)
-  @Schema(description = "아이템 키 (고유값)", example = "item_clean_001")
-  private String itemKey;
-
-  @NotBlank
-  @Size(max = 50)
   @Schema(description = "아이템 이름", example = "깔끔 청소 도우미")
   private String itemName;
 

@@ -15,6 +15,8 @@ import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 관리자 아이템 컨트롤러입니다. 관리자 페이지에서 아이템 조회, 추가, 수정 및 삭제에 사용되는 API 들을 정의합니다.
- */
 @RestController
-@SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "[관리자] 아이템 관리", description = "관리자 아이템 관련 API 입니다.")
+@RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/admin/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminItemController {
 
@@ -144,34 +141,9 @@ public class AdminItemController {
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
-    /**
-     * 아이템 수정 처리 API
-     * @param id 아이템 식별 id
-     * @param request 아이템 정보 객체
-     * @return 성공시 {@code 200}을 반환합니다.
-     */
-    @Operation(
-        summary = "아이템 수정",
-        description = "아이템을 수정합니다.",
-        parameters = {
-            @Parameter(
-                name = "id",
-                description = "수정할 아이템의 ID",
-                required = true,
-                example = "10"
-            )
-        },
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = AdminItemRequest.class)
-            )
-        )
-    )
-    @PatchMapping("/{id}")
+    @PatchMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> updateItem(
-        @PathVariable Long id,
+        @PathVariable("key") String itemKey,
         @RequestBody @Valid AdminItemRequest request
     ) {
         if (id == 10L) {
