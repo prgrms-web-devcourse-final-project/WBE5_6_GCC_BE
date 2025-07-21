@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,24 @@ public class RoutineSaveRequest {
     @NotNull(message = "카테고리는 필수입니다")
     @Schema(description = "카테고리 ID (대분류 선택시 대분류 ID, 소분류 선택시 소분류 ID)", example = "1", required = true)
     private Long categoryId;
+
+
+    @NotBlank(message = "루틴 이름은 필수입니다")
+    @Schema(description = "루틴 이름", example = "변기 청소하기", required = true)
+    private String name;
+
+    @Schema(description = "소분류 카테고리", example = "화장실 청소")
+    private String subCategory;
+
+
+    @NotNull(message = "반복 유형은 필수입니다")
+    @Schema(description = "반복 유형", example = "WEEKLY")
+    private RepeatType repeatType;
+
+
+    @NotNull(message = "루틴 시작 날짜는 필수입니다")
+    @Schema(description = "루틴 시작 날짜", example = "2025-07-01")
+    private LocalDate startRoutineDate;
 
     @NotBlank(message = "루틴 내용은 필수입니다")
     @Size(max = 255, message = "루틴 내용은 255자를 초과할 수 없습니다")
@@ -29,11 +48,12 @@ public class RoutineSaveRequest {
     @Schema(description = "중요 루틴 여부", example = "true")
     private Boolean isImportant = false;
 
-    @Schema(description = "반복 타입", example = "WEEKLY",
-        allowableValues = {"DAILY", "WEEKLY", "MONTHLY", "CUSTOM", "NONE"})
-    private RepeatType repeatType = RepeatType.DAILY;
+    @Schema(description = "활성화 여부", example = "true")
+    private Boolean isActive = true;
 
     @Size(max = 100, message = "반복 값은 100자를 초과할 수 없습니다")
     @Schema(description = "반복 값 (예: WEEKLY의 경우 '1,3,5' = 월,수,금)", example = "1,3,5")
     private String repeatValue;
+
+
 }
