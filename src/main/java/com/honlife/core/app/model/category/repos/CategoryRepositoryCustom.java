@@ -4,6 +4,7 @@ import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface CategoryRepositoryCustom {
 
@@ -28,4 +29,11 @@ public interface CategoryRepositoryCustom {
      * @return {@link CategoryDTO}를 리스트로 반환
      */
     List<Category> findCategoriesByEmailAndIsActive(String email, boolean isActive);
+
+    /**
+     * 카테고리 아이디를 통해 카테고리를 검색합니다.
+     * @param categoryId 카테고리 아이디
+     * @return {@link Category}
+     */
+    Optional<Category> findCategoryById(Long categoryId);
 }

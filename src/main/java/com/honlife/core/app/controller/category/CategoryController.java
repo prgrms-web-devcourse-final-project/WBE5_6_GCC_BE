@@ -74,48 +74,9 @@ public class CategoryController {
         @PathVariable(name="id")
         final Long categoryId
     ) {
-        if(categoryId ==1L){
-            CategoryResponse response = CategoryResponse.builder()
-                .categoryId(1L)
-                .memberId(null)
-                .categoryName("청소 / 정리")
-                .emoji("")
-                .categoryType(CategoryType.MAJOR)
-                .parentId(null)
-                .parentName(null)
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        if(categoryId ==2L){
-            CategoryResponse response = CategoryResponse.builder()
-                .categoryId(2L)
-                .memberId(null)
-                .categoryName("요리")
-                .emoji("\uD83C\uDF73")
-                .categoryType(CategoryType.MAJOR)
-                .parentId(null)
-                .parentName(null)
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        if(categoryId ==3L){
-            CategoryResponse response = CategoryResponse.builder()
-                .categoryId(3L)
-                .memberId(1L)
-                .categoryName("화장실 청소")
-                .emoji("\uD83D\uDEBD")
-                .categoryType(CategoryType.SUB)
-                .parentId(1L)
-                .parentName("청소 / 정리")
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        // 해당하는 카테고리가 없을 경우
-        else{
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
-        }
+        CategoryUserViewDTO categoryUserViewDTO =  categoryService.findCategoryById(categoryId);
 
+        return ResponseEntity.ok(CommonApiResponse.success(CategoryResponse.fromDTO(categoryUserViewDTO)));
     }
 
     /**

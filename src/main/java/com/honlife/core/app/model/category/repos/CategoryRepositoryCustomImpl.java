@@ -4,6 +4,7 @@ import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.domain.QCategory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -42,5 +43,16 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
             .leftJoin(category.parent).fetchJoin()
             .where((category.member.email.eq(email)).and(category.isActive.eq(isActive)))
             .fetch();
+    }
+
+    @Override
+    public Optional<Category> findCategoryById(Long categoryId) {
+        return Optional.ofNullable(
+            queryFactory
+            .select(category)
+            .from(category)
+            .leftJoin(category.parent).fetchJoin()
+            .where(category.id.eq(categoryId))
+            .fetchOne());
     }
 }

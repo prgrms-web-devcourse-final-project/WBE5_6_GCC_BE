@@ -2,9 +2,11 @@ package com.honlife.core.app.model.category.service;
 
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -184,5 +186,21 @@ public class CategoryService {
 
         return categories.stream().map(
             CategoryUserViewDTO::fromEntity).toList();
+    }
+
+
+    /**
+     * id를 통해 카테고리를 조회합니다.
+     * @param categoryId 카테고리 아이디
+     * @return {@link CategoryUserViewDTO}
+     */
+    public CategoryUserViewDTO findCategoryById(Long categoryId) {
+
+        Category category = categoryRepository.findCategoryById(categoryId).orElseThrow(
+            ()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY)
+        );
+
+        return CategoryUserViewDTO.fromEntity(category);
+
     }
 }
