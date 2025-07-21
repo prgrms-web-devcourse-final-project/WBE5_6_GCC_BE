@@ -16,7 +16,6 @@ public class MemberItemResponse {
     private ItemType itemtype;
     private String itemDescription;
     private Boolean isEquipped;
-    private Boolean isActive;
 
     public static MemberItemResponse fromDTO(MemberItemDTOCustom dto) {
         return MemberItemResponse.builder()
@@ -25,7 +24,6 @@ public class MemberItemResponse {
                 .itemtype(dto.getItemtype())
                 .itemDescription(dto.getItemDescription())
                 .isEquipped(dto.getIsEquipped())
-                .isActive(dto.getIsActive())
                 .build();
     }
     public static List<MemberItemResponse> fromDTOList(List<MemberItemDTOCustom> dtos) {

@@ -51,7 +51,6 @@ public class MemberItemService {
                     .itemDescription(item.getDescription())
                     .itemtype(item.getType())
                     .isEquipped(mi.getIsEquipped())
-                    .isActive(mi.getIsActive())
                     .build();
         }).toList();
     }

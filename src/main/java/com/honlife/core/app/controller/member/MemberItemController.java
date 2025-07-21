@@ -2,11 +2,8 @@ package com.honlife.core.app.controller.member;
 
 import com.honlife.core.app.controller.member.payload.MemberItemEquippedRequest;
 import com.honlife.core.app.controller.member.payload.MemberItemResponse;
-import com.honlife.core.app.controller.member.payload.MemberPayload;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.domain.MemberItem;
-import com.honlife.core.app.model.member.model.MemberItemDTOCustom;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.CommonApiResponse;
@@ -20,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
