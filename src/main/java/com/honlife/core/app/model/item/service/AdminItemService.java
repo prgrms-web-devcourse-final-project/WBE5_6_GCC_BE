@@ -1,7 +1,6 @@
-package com.honlife.core.app.model.admin.item.service;
+package com.honlife.core.app.model.item.service;
 
 import com.honlife.core.app.model.item.domain.Item;
-import com.honlife.core.app.model.item.service.ItemService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import lombok.RequiredArgsConstructor;

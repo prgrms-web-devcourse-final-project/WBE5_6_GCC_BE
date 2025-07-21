@@ -1,6 +1,6 @@
 package com.honlife.core.app.controller.admin.item;
 
-import com.honlife.core.app.model.admin.item.service.AdminItemService;
+import com.honlife.core.app.model.item.service.AdminItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
