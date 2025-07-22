@@ -13,11 +13,7 @@ import lombok.Setter;
 @Setter
 @Schema(description = "루틴 저장 요청")
 public class RoutineSaveRequest {
-
-    @NotNull(message = "카테고리는 필수입니다")
-    @Schema(description = "카테고리 ID (대분류 선택시 대분류 ID, 소분류 선택시 소분류 ID)", example = "1", required = true)
-    private Long categoryId;
-
+    
 
     @NotBlank(message = "루틴 이름은 필수입니다")
     @Schema(description = "루틴 이름", example = "변기 청소하기", required = true)
