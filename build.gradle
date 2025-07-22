@@ -66,6 +66,11 @@ dependencies {
 //    implementation platform('com.google.cloud:spring-cloud-gcp-dependencies:6.2.2')
 //    implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager'
 
+    // aws-secret-manager
+    // https://mvnrepository.com/artifact/io.awspring.cloud/spring-cloud-aws-starter-secrets-manager
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.0")
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-secrets-manager")
+
     //mail
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
