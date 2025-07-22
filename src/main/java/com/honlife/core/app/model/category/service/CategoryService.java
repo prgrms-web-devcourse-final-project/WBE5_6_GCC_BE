@@ -298,7 +298,7 @@ public class CategoryService {
      * @return Boolean
      */
     private boolean isExistsCategory(String categoryName, String userEmail) {
-
-        return categoryRepository.existsCategoriesByNameAndIsActiveAndMember_Email(categoryName,true, userEmail);
+        return categoryRepository.existsCategoriesByNameAndIsActiveAndMember_Email(categoryName,true, userEmail)
+            || categoryRepository.existsCategoryByTypeAndName(CategoryType.DEFAULT, categoryName);
     }
 }

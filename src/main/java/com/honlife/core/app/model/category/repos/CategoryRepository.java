@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.category.repos;
 
+import com.honlife.core.app.model.category.code.CategoryType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -36,4 +37,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @return Boolean
      */
     boolean existsCategoriesByNameAndIsActiveAndMember_Email(String name, Boolean isActive, String memberEmail);
+
+    /**
+     * 선택한 타입의 카테고리와 이름이 겹치는 카테고리가 있는지 확인합니다.
+     * @param type 카테고리 타입
+     * @param name 카테고리 이름
+     * @return Boolean
+     */
+    boolean existsCategoryByTypeAndName(CategoryType type, String name);
 }
