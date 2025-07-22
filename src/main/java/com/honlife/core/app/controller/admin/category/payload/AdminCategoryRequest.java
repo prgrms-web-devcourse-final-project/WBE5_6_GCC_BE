@@ -16,6 +16,6 @@ public class AdminCategoryRequest {
     @Schema(description = "카테고리 이름", example = "청소")
     public String categoryName;
 
-    @Schema(description = "카테고리 타입", example = "MAJOR")
+    @Schema(description = "카테고리 이모지", example = "🧹")
     public CategoryType categoryType;
 }
