@@ -6,5 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminItemListedRequest {
+    // 관리자 지정 활성화 여부
     private Boolean isListed;
 }

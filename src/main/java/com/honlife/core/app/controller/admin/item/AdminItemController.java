@@ -32,6 +32,15 @@ public class AdminItemController {
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
+    /**
+     * 특정 아이템의 노출 상태(isListed)를 수정하는 API입니다.
+     * - 관리자가 아이템의 노출 여부를 변경할 때 사용됩니다.
+     * - 예: 아이템을 상점에서 숨기거나 다시 보이게 할 때
+     *
+     * @param itemKey  변경할 아이템의 고유 키
+     * @param request  isListed 값을 포함한 요청 본문
+     * @return 성공 시 No Content
+     */
     @PatchMapping("/{itemKey}/listed")
     public ResponseEntity<CommonApiResponse<Void>> updateItemListingStatus(
             @PathVariable String itemKey,
