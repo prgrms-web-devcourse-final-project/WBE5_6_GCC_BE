@@ -6,7 +6,9 @@ import com.honlife.core.app.controller.category.payload.CategoryWithParentRespon
 import com.honlife.core.app.controller.category.wrapper.CategoryWrapper;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
-import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
+import com.honlife.core.app.model.routine.service.RoutineService;
+import com.honlife.core.infra.error.exceptions.ReferencedException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,9 +35,11 @@ import com.honlife.core.app.model.category.service.CategoryService;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final RoutineService routineService;
 
-    public CategoryController(final CategoryService categoryService) {
+    public CategoryController(final CategoryService categoryService, RoutineService routineService) {
         this.categoryService = categoryService;
+        this.routineService = routineService;
     }
 
     /**
@@ -157,17 +160,21 @@ public class CategoryController {
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
         @PathVariable(name="id")
         final Long categoryId){
-//        final ReferencedWarning referencedWarning = categoryService.getReferencedWarning(id);
-//        if (referencedWarning != null) {
-//            throw new ReferencedException(referencedWarning);
-//        }
-//        categoryService.delete(categoryId);
-        // 존재하지 않는 카테고리 아이디로 접근
-        if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
+
+        // 사용자는 기본 카테고리 삭제가 불가능
+        if(categoryService.isDefault(categoryId))
             return ResponseEntity
-                .status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
+                .status(ResponseCode.BAD_REQUEST.status())
+                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+
+        // 해당 카테고리를 참조하는 루틴 전부 null을 참조하도록 함.
+        routineService.removeCategoryReference(categoryId);
+
+        final ReferencedWarning referencedWarning = categoryService.getReferencedWarning(categoryId);
+        if (referencedWarning != null) {
+            throw new ReferencedException(referencedWarning);
         }
+        categoryService.softDrop(categoryId);
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }

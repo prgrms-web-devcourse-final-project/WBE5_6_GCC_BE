@@ -2,12 +2,10 @@ package com.honlife.core.app.model.category.service;
 
 import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
-import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.category.domain.Category;
-import com.honlife.core.app.model.category.domain.InterestCategory;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
@@ -27,7 +23,6 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
-import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.error.exceptions.ReferencedWarning;
@@ -104,6 +99,11 @@ public class CategoryService {
         return category;
     }
 
+    /**
+     * 참조 무결성을 점검하고, 경고 메시지를 제공하는 사전 검증용 로직
+     * @param id 카테고리 아이디
+     * @return {@link ReferencedWarning}
+     */
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Category category = categoryRepository.findById(id)
@@ -114,24 +114,25 @@ public class CategoryService {
             referencedWarning.addParam(categoryRoutine.getId());
             return referencedWarning;
         }
-        final RoutinePreset categoryRoutinePreset = routinePresetRepository.findFirstByCategory(category);
-        if (categoryRoutinePreset != null) {
-            referencedWarning.setKey("category.routinePreset.category.referenced");
-            referencedWarning.addParam(categoryRoutinePreset.getId());
-            return referencedWarning;
-        }
-        final Badge categoryBadge = badgeRepository.findFirstByCategory(category);
-        if (categoryBadge != null) {
-            referencedWarning.setKey("category.badge.category.referenced");
-            referencedWarning.addParam(categoryBadge.getId());
-            return referencedWarning;
-        }
-        final InterestCategory categoryInterestCategory = interestCategoryRepository.findFirstByCategory(category);
-        if (categoryInterestCategory != null) {
-            referencedWarning.setKey("category.interestCategory.category.referenced");
-            referencedWarning.addParam(categoryInterestCategory.getId());
-            return referencedWarning;
-        }
+        // 사용자 카테고리만 삭제하기에 아래는 확인하지 않아도 괜찮음
+//        final RoutinePreset categoryRoutinePreset = routinePresetRepository.findFirstByCategory(category);
+//        if (categoryRoutinePreset != null) {
+//            referencedWarning.setKey("category.routinePreset.category.referenced");
+//            referencedWarning.addParam(categoryRoutinePreset.getId());
+//            return referencedWarning;
+//        }
+//        final Badge categoryBadge = badgeRepository.findFirstByCategory(category);
+//        if (categoryBadge != null) {
+//            referencedWarning.setKey("category.badge.category.referenced");
+//            referencedWarning.addParam(categoryBadge.getId());
+//            return referencedWarning;
+//        }
+//        final InterestCategory categoryInterestCategory = interestCategoryRepository.findFirstByCategory(category);
+//        if (categoryInterestCategory != null) {
+//            referencedWarning.setKey("category.interestCategory.category.referenced");
+//            referencedWarning.addParam(categoryInterestCategory.getId());
+//            return referencedWarning;
+//        }
         return null;
     }
 
@@ -336,5 +337,29 @@ public class CategoryService {
         }
         categoryRepository.save(targetCategory);
 
+    }
+
+    /**
+     * 해당 카테고리가 기본 카테고리인지 확인합니다.
+     * @param categoryId 해당 카테고리 아이디
+     * @return boolean
+     */
+    public boolean isDefault(Long categoryId) {
+        Category targetCategory = categoryRepository.findCategoryById(categoryId).orElseThrow(()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        return targetCategory.getType()==CategoryType.DEFAULT;
+
+    }
+
+    /**
+     * 아이디를 통해 카테고리를 소프트 드랍합니다.
+     * @param categoryId 해당 카테고리 아이디
+     */
+    @Transactional
+    public void softDrop(Long categoryId) {
+        Category targetCategory = categoryRepository.findCategoryById(categoryId).orElseThrow(()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        targetCategory.setIsActive(false);
+        categoryRepository.save(targetCategory);
     }
 }
