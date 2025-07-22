@@ -50,6 +50,6 @@ public class Item extends BaseEntity {
     private ItemType type;
 
     @Column
-    private Boolean IsListed;
+    private Boolean isListed;
 
 }
