@@ -3,7 +3,7 @@ package com.honlife.core.app.model.category.service;
 import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
-import com.honlife.core.app.model.member.service.MemberService;
+import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
@@ -35,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 public class CategoryService {
-
-    public static final String ADMIN_EMAIL = "admin@test.com";
 
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
@@ -145,22 +143,59 @@ public class CategoryService {
     }
 
     /**
+     * 사용자 이메일을 받아 기본 카테고리와 하위 카테고리를 반환합니다. 이 때 하위 카테고리는 사용자의 카테고리만 반환됩니다.
+     * @param userEmail 사용자 이메일
+     * @return {@link CategoryDTO} 를 리스트로 반환합니다.
+     */
+    public List<CategoryDTO> getDefaultCategories(String userEmail) {
+        return new ArrayList<>(
+            categoryRepository.findDefaultCategory(userEmail).stream().map(
+                category -> CategoryDTO.builder()
+                    .id(category.getId())
+                    .children(category.getChildren().stream().map(
+                        ChildCategoryDTO::fromEntity
+                    ).toList())
+                    .name(category.getName())
+                    .type(category.getType())
+                    .member(category.getMember().getId())
+                    .emoji(category.getEmoji())
+                    .build()
+            ).toList());
+    }
+
+    /**
+     * 사용자 이메일을 받아 사용자 카테고리와 사용자 하위 카테고리를 반환합니다.
+     * @param userEmail 사용자 이메일
+     * @return {@link CategoryDTO} 를 리스트로 반환합니다.
+     */
+    public List<CategoryDTO> getCustomCategories(String userEmail) {
+        return new ArrayList<>(
+            categoryRepository.findCustomCategory(userEmail).stream().map(
+                category -> CategoryDTO.builder()
+                    .id(category.getId())
+                    .children(category.getChildren().stream().map(
+                        ChildCategoryDTO::fromEntity
+                    ).toList())
+                    .name(category.getName())
+                    .type(category.getType())
+                    .member(category.getMember().getId())
+                    .emoji(category.getEmoji())
+                    .build()
+            ).toList());
+    }
+
+    /**
      * 사용자 아이디를 받아 기본 카테고리와 커스텀 카테고리 모두를 반환합니다.
      * @param userEmail 사용자 이메일
      * @return List<CategoryDTO>
      */
-    public List<CategoryUserViewDTO> getCategories(String userEmail) {
+    public List<CategoryDTO> getCategories(String userEmail) {
 
         // 기본 카테고리
-        List<CategoryUserViewDTO> categories = new ArrayList<>(
-            categoryRepository.findCategoriesByEmailAndIsActive(ADMIN_EMAIL,true).stream().map(
-                CategoryUserViewDTO::fromEntity
-            ).toList());
+        List<CategoryDTO> categories = getDefaultCategories(userEmail);
 
         // 커스텀 카테고리
-        List<CategoryUserViewDTO> customCategories = categoryRepository.findCategoriesByEmailAndIsActive(userEmail, true).stream().map(
-            CategoryUserViewDTO::fromEntity
-        ).toList();
+        List<CategoryDTO> customCategories = getCustomCategories(userEmail);
 
         categories.addAll(customCategories);
 
@@ -174,21 +209,51 @@ public class CategoryService {
      * @param majorName 하위 카테고리를 조회할 major 카테고리의 이름
      * @return
      */
-    public List<CategoryUserViewDTO> getSubCategories(String userEmail, String majorName) {
+    public List<CategoryDTO> getSubCategories(String userEmail, String majorName) {
 
         // 커스텀 카테고리에서 찾지 못하면 기본 카테고리에서 찾음
-        Category majorCategory = categoryRepository.findCategoryByNameAndMember_Email(majorName, userEmail)
-            .orElseGet(()->categoryRepository.findCategoryByNameAndMember_Email(majorName, ADMIN_EMAIL)
+        Category majorCategory = categoryRepository.findCustomCategoryByName(majorName, userEmail)
+            .orElseGet(()->categoryRepository.findDefaultCategoryByName(majorName, userEmail)
                 .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY)));
 
-        // 하위 카테고리일 경우 빠른 리턴
-        if(majorCategory.getType()== CategoryType.SUB)
-            return List.of();
+        return List.of(
+            CategoryDTO.builder()
+                    .id(majorCategory.getId())
+                    .children(majorCategory.getChildren().stream().map(
+                        ChildCategoryDTO::fromEntity
+                    ).toList())
+                    .name(majorCategory.getName())
+                    .type(majorCategory.getType())
+                    .member(majorCategory.getMember().getId())
+                    .emoji(majorCategory.getEmoji())
+                    .build()
+            );
+    }
 
-        List<Category> categories = categoryRepository.findSubCategory(userEmail, majorCategory);
+    /**
+     * id를 통해 카테고리 정보를 검색합니다.
+     * @param categoryId 카테고리 아이디
+     * @param userEmail 유저 이메일
+     * @return {@link CategoryDTO}
+     */
+    public CategoryDTO findCategoryById(Long categoryId, String userEmail) {
 
-        return categories.stream().map(
-            CategoryUserViewDTO::fromEntity).toList();
+        Category category = categoryRepository.findCategoryById(categoryId, userEmail)
+            .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        return CategoryDTO.builder()
+            .id(category.getId())
+            .children(category.getChildren().stream().map(
+                ChildCategoryDTO::fromEntity
+            ).toList())
+            .name(category.getName())
+            .type(category.getType())
+            .parent(category.getType()==CategoryType.SUB? category.getParent().getId() : null)
+            .member(category.getMember().getId())
+            .emoji(category.getEmoji())
+            .build();
+
+
     }
 
 

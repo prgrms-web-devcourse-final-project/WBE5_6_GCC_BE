@@ -2,7 +2,10 @@ package com.honlife.core.app.controller.category;
 
 import com.honlife.core.app.controller.category.payload.CategoryResponse;
 import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
+import com.honlife.core.app.controller.category.payload.CategoryWithParentResponse;
+import com.honlife.core.app.controller.category.wrapper.CategoryWrapper;
 import com.honlife.core.app.model.category.code.CategoryType;
+import com.honlife.core.app.model.category.dto.CategoryDTO;
 import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -41,13 +44,13 @@ public class CategoryController {
      * @return List<CategoryResponse>
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<List<CategoryResponse>>> getCategories(
+    public ResponseEntity<CommonApiResponse<CategoryWrapper>> getCategories(
         @RequestParam(required = false) String majorName,
         @AuthenticationPrincipal UserDetails userDetails
 
     ) {
         String userEmail = userDetails.getUsername();
-        List<CategoryUserViewDTO> categories = new ArrayList<>();
+        List<CategoryDTO> categories = new ArrayList<>();
 
         if(majorName == null) {
             // 전체 카테고리 찾기
@@ -57,10 +60,11 @@ public class CategoryController {
             categories = categoryService.getSubCategories(userEmail, majorName);
         }
 
-        List<CategoryResponse> response = categories.stream().map(
+        List<CategoryResponse> categoryResponses = categories.stream().map(
             CategoryResponse::fromDTO
         ).toList();
-        return ResponseEntity.ok(CommonApiResponse.success(response));
+
+        return ResponseEntity.ok(CommonApiResponse.success(new CategoryWrapper(categoryResponses)));
     }
 
 
@@ -70,13 +74,16 @@ public class CategoryController {
      * @return CategoryResponse
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<CategoryResponse>> getCategory(
+    public ResponseEntity<CommonApiResponse<CategoryWithParentResponse>> getCategory(
         @PathVariable(name="id")
-        final Long categoryId
+        final Long categoryId,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
-        CategoryUserViewDTO categoryUserViewDTO =  categoryService.findCategoryById(categoryId);
+        String userEmail = userDetails.getUsername();
+        CategoryDTO category = categoryService.findCategoryById(categoryId, userEmail);
 
-        return ResponseEntity.ok(CommonApiResponse.success(CategoryResponse.fromDTO(categoryUserViewDTO)));
+        return ResponseEntity.ok(CommonApiResponse.success(CategoryWithParentResponse.fromDTO(category)));
+
     }
 
     /**
