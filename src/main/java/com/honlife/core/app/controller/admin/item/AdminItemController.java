@@ -1,15 +1,13 @@
 package com.honlife.core.app.controller.admin.item;
 
+import com.honlife.core.app.controller.admin.item.payload.AdminItemListedRequest;
 import com.honlife.core.app.model.item.service.AdminItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
@@ -31,6 +29,15 @@ public class AdminItemController {
             @PathVariable("key") String itemKey
     ) {
         adminItemService.softDeleteItem(itemKey);
+        return ResponseEntity.ok(CommonApiResponse.noContent());
+    }
+
+    @PatchMapping("/{itemKey}/listed")
+    public ResponseEntity<CommonApiResponse<Void>> updateItemListingStatus(
+            @PathVariable String itemKey,
+            @RequestBody AdminItemListedRequest request
+    ) {
+        adminItemService.updateListedStatus(itemKey, request.getIsListed());
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }

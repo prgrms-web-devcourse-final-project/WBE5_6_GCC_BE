@@ -28,14 +28,21 @@ public class AdminItemService {
     public void softDeleteItem(String itemKey) {
 
         Item item = itemService.getItemByKey(itemKey);
-        if(item == null || item.getIsActive() == false) {
-            // 해당 예외는 서버에 요청한 리소스가 존재하지 않는다”*는 의미 입니다!
-            // 따라서 NOT_FOUND 를 사용 하였습니다.
+        if(item == null) {
             throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
         }
         item.setIsActive(false);
 
         List<MemberItem> memberItems = memberItemService.findAllByItem(item);
         memberItems.forEach((memberItem) -> {memberItem.setIsActive(false);});
+    }
+
+    @Transactional
+    public void updateListedStatus(String itemKey, Boolean isListed) {
+        Item item = itemService.getItemByKey(itemKey);
+        if(item == null) {
+            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
+        }
+        item.setIsListed(isListed);
     }
 }
