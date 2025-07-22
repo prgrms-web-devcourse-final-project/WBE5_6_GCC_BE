@@ -29,6 +29,7 @@ public class ChildCategoryPayload {
                     .categoryName(child.getCategoryName())
                     .categoryType(child.getCategoryType())
                     .emoji(child.getEmoji())
+                    .parentId(child.getParentId())
                     .build();
             }).toList();
     }
