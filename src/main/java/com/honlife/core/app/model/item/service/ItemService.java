@@ -66,6 +66,7 @@ public class ItemService {
                             .type(i.getType())
                             .price(i.getPrice())
                             .isOwned(isOwned)
+                            .isListed(i.getIsListed())
                             .build();
                 })
                 .toList();
@@ -96,6 +97,7 @@ public class ItemService {
                 .type(i.getType())
                 .price(i.getPrice())
                 .isOwned(isOwned)
+                .isListed(i.getIsListed())
                 .build();
     }
 

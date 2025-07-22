@@ -49,4 +49,7 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemType type;
 
+    @Column
+    private Boolean IsListed;
+
 }
