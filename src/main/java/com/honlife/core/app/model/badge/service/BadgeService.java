@@ -92,7 +92,7 @@ public class BadgeService {
             .badgeKey(badge.getKey())
             .badgeName(badge.getName())
             .tier(badge.getTier())
-            .how(badge.getHow())
+            .message(badge.getMessage())
             .requirement(badge.getRequirement())
             .info(badge.getInfo())
             .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
@@ -137,7 +137,7 @@ public class BadgeService {
                     .badgeKey(badge.getKey())
                     .badgeName(badge.getName())
                     .tier(badge.getTier())
-                    .how(badge.getHow())
+                    .message(badge.getMessage())
                     .requirement(badge.getRequirement())
                     .info(badge.getInfo())
                     .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
@@ -158,7 +158,7 @@ public class BadgeService {
         badgeDTO.setKey(badge.getKey());
         badgeDTO.setName(badge.getName());
         badgeDTO.setTier(badge.getTier());
-        badgeDTO.setHow(badge.getHow());
+        badgeDTO.setMessage(badge.getMessage());
         badgeDTO.setRequirement(badge.getRequirement());
         badgeDTO.setInfo(badge.getInfo());
         badgeDTO.setCategory(badge.getCategory() == null ? null : badge.getCategory().getId());
@@ -172,7 +172,7 @@ public class BadgeService {
         badge.setKey(badgeDTO.getKey());
         badge.setName(badgeDTO.getName());
         badge.setTier(badgeDTO.getTier());
-        badge.setHow(badgeDTO.getHow());
+        badge.setMessage(badgeDTO.getMessage());
         badge.setRequirement(badgeDTO.getRequirement());
         badge.setInfo(badgeDTO.getInfo());
         final Category category = badgeDTO.getCategory() == null ? null : categoryRepository.findById(badgeDTO.getCategory())

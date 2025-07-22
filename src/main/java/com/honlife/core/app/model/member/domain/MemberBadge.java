@@ -42,4 +42,6 @@ public class MemberBadge extends BaseEntity {
     @JoinColumn(name = "badge_id", nullable = false)
     private Badge badge;
 
+    @Column
+    private Boolean isEquipped = false;
 }

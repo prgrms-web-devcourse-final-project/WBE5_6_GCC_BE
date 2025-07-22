@@ -30,7 +30,7 @@ public class BadgeDTO {
     private BadgeTier tier;
 
     @Size(max = 100)
-    private String how;
+    private String message;
 
     private Integer requirement;
 
