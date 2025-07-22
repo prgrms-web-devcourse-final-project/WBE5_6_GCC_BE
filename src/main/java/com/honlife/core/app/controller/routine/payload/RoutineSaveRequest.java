@@ -39,10 +39,6 @@ public class RoutineSaveRequest {
     @Schema(description = "루틴 시작 날짜", example = "2025-07-01")
     private LocalDate startRoutineDate;
 
-    @NotBlank(message = "루틴 내용은 필수입니다")
-    @Size(max = 255, message = "루틴 내용은 255자를 초과할 수 없습니다")
-    @Schema(description = "루틴 내용", example = "아침 운동하기", required = true)
-    private String content;
 
     @Size(max = 255, message = "트리거 시간은 255자를 초과할 수 없습니다")
     @Schema(description = "트리거 시간대", example = "07:00")
