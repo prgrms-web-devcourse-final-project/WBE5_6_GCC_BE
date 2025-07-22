@@ -26,9 +26,6 @@ public class AdminRoutinePresetDetailResponse {
     @Schema(description = "카테고리 이름", example = "청소")
     private String categoryName;
 
-    @Schema(description = "루틴 내용", example = "아침 스트레칭 하기")
-    private String content;
-
     @Schema(description = "소분류 카테고리", example = "화장실 청소")
     private String subCategory;
 
@@ -47,14 +44,6 @@ public class AdminRoutinePresetDetailResponse {
     @Schema(description = "반복 값", example = "1,3,5")
     private String repeatValue;
 
-    @Schema(description = "루틴 시작 날짜", example = "2025-11-10")
-    private LocalDate startRoutineDate;
-
-    @Schema(description = "활성화 여부", example = "true")
-    private Boolean isActive;
-
-    @Schema(description = "활성화 여부", example = "true")
-    private Boolean isDone;
 
     @Schema(description = "생성일시", example = "2025-01-15T10:30:00")
     private LocalDateTime createdAt;

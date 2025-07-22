@@ -46,7 +46,5 @@ public class RoutinePresetsResponse {
         @Schema(description = "중요 루틴 여부", example = "false")
         private Boolean isImportant;
 
-        @Schema(description = "루틴 내용", example = "아침 스트레칭 하기")
-        private String content;
     }
 }
