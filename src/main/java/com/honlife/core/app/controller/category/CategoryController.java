@@ -2,7 +2,9 @@ package com.honlife.core.app.controller.category;
 
 import com.honlife.core.app.controller.category.payload.CategoryResponse;
 import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
+import com.honlife.core.app.controller.category.wrapper.CategoryWrapper;
 import com.honlife.core.app.model.category.code.CategoryType;
+import com.honlife.core.app.model.category.dto.CategoryDTO;
 import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -41,13 +43,13 @@ public class CategoryController {
      * @return List<CategoryResponse>
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<List<CategoryResponse>>> getCategories(
+    public ResponseEntity<CommonApiResponse<CategoryWrapper>> getCategories(
         @RequestParam(required = false) String majorName,
         @AuthenticationPrincipal UserDetails userDetails
 
     ) {
         String userEmail = userDetails.getUsername();
-        List<CategoryUserViewDTO> categories = new ArrayList<>();
+        List<CategoryDTO> categories = new ArrayList<>();
 
         if(majorName == null) {
             // 전체 카테고리 찾기
@@ -57,10 +59,11 @@ public class CategoryController {
             categories = categoryService.getSubCategories(userEmail, majorName);
         }
 
-        List<CategoryResponse> response = categories.stream().map(
+        List<CategoryResponse> categoryResponses = categories.stream().map(
             CategoryResponse::fromDTO
         ).toList();
-        return ResponseEntity.ok(CommonApiResponse.success(response));
+
+        return ResponseEntity.ok(CommonApiResponse.success(new CategoryWrapper(categoryResponses)));
     }
 
 
@@ -74,47 +77,47 @@ public class CategoryController {
         @PathVariable(name="id")
         final Long categoryId
     ) {
-        if(categoryId ==1L){
-            CategoryResponse response = CategoryResponse.builder()
-                .categoryId(1L)
-                .memberId(null)
-                .categoryName("청소 / 정리")
-                .emoji("")
-                .categoryType(CategoryType.MAJOR)
-                .parentId(null)
-                .parentName(null)
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        if(categoryId ==2L){
-            CategoryResponse response = CategoryResponse.builder()
-                .categoryId(2L)
-                .memberId(null)
-                .categoryName("요리")
-                .emoji("\uD83C\uDF73")
-                .categoryType(CategoryType.MAJOR)
-                .parentId(null)
-                .parentName(null)
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        if(categoryId ==3L){
-            CategoryResponse response = CategoryResponse.builder()
-                .categoryId(3L)
-                .memberId(1L)
-                .categoryName("화장실 청소")
-                .emoji("\uD83D\uDEBD")
-                .categoryType(CategoryType.SUB)
-                .parentId(1L)
-                .parentName("청소 / 정리")
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        // 해당하는 카테고리가 없을 경우
-        else{
+//        if(categoryId ==1L){
+//            CategoryResponse response = CategoryResponse.builder()
+//                .categoryId(1L)
+//                .memberId(null)
+//                .categoryName("청소 / 정리")
+//                .emoji("")
+//                .categoryType(CategoryType.MAJOR)
+//                .parentId(null)
+//                .parentName(null)
+//                .build();
+//            return ResponseEntity.ok(CommonApiResponse.success(response));
+//        }
+//        if(categoryId ==2L){
+//            CategoryResponse response = CategoryResponse.builder()
+//                .categoryId(2L)
+//                .memberId(null)
+//                .categoryName("요리")
+//                .emoji("\uD83C\uDF73")
+//                .categoryType(CategoryType.MAJOR)
+//                .parentId(null)
+//                .parentName(null)
+//                .build();
+//            return ResponseEntity.ok(CommonApiResponse.success(response));
+//        }
+//        if(categoryId ==3L){
+//            CategoryResponse response = CategoryResponse.builder()
+//                .categoryId(3L)
+//                .memberId(1L)
+//                .categoryName("화장실 청소")
+//                .emoji("\uD83D\uDEBD")
+//                .categoryType(CategoryType.SUB)
+//                .parentId(1L)
+//                .parentName("청소 / 정리")
+//                .build();
+//            return ResponseEntity.ok(CommonApiResponse.success(response));
+//        }
+//        // 해당하는 카테고리가 없을 경우
+//        else{
             return ResponseEntity.status(ResponseCode.NOT_FOUND_CATEGORY.status())
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
-        }
+//        }
 
     }
 
