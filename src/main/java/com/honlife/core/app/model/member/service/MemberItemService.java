@@ -1,34 +1,58 @@
 package com.honlife.core.app.model.member.service;
 
 import com.honlife.core.app.model.category.domain.Category;
-import com.honlife.core.infra.response.ResponseCode;
-import java.util.List;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
+import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
+import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.repos.ItemRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
+import com.honlife.core.app.model.member.domain.QMemberItem;
 import com.honlife.core.app.model.member.model.MemberItemDTO;
+import com.honlife.core.app.model.member.model.MemberItemDTOCustom;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.response.ResponseCode;
+import com.querydsl.core.Tuple;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class MemberItemService {
 
     private final MemberItemRepository memberItemRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
 
-    public MemberItemService(final MemberItemRepository memberItemRepository,
-            final MemberRepository memberRepository, final ItemRepository itemRepository) {
-        this.memberItemRepository = memberItemRepository;
-        this.memberRepository = memberRepository;
-        this.itemRepository = itemRepository;
+    /**
+     * 특정 회원이 보유한 아이템 목록을 조회합니다.
+     * 아이템 타입이 지정된 경우 해당 타입에 해당하는 아이템만 필터링하여 반환합니다.
+     *
+     * @param memberId 조회할 회원의 ID
+     * @param itemType 필터링할 아이템 타입 (null 가능)
+     * @return MemberItemResponse 리스트
+     */
+    public List<MemberItemDTOCustom> getItemsByMember(Long memberId, ItemType itemType) {
+        List<Tuple> tuples = memberItemRepository.findMemberItems(memberId, itemType);
+
+        return tuples.stream().map(tuple -> {
+            MemberItem mi = tuple.get(QMemberItem.memberItem);
+            Item item = tuple.get(QItem.item);
+            return MemberItemDTOCustom.builder()
+                    .itemKey(item.getItemKey())
+                    .itemName(item.getName())
+                    .itemDescription(item.getDescription())
+                    .itemtype(item.getType())
+                    .isEquipped(mi.getIsEquipped())
+                    .build();
+        }).toList();
     }
 
     public List<MemberItemDTO> findAll() {
