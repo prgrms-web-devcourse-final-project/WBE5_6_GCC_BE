@@ -140,7 +140,6 @@ public class RoutineController {
                     .subCategory(null)
                     .name(i % 2 == 0 ? "물 마시기" : "일찍 자기")
                     .triggerTime(i % 2 == 0 ? "눈 뜨자마자" : "23:00")
-                    .content("아침 물 마시기")
                     .isDone(false)
                     .isImportant(true)
                     .date(targetDate)
