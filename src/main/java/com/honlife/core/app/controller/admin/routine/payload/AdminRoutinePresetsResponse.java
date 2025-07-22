@@ -41,14 +41,8 @@ public class AdminRoutinePresetsResponse {
     @Schema(description = "트리거 시간", example = "09:00")
     private String triggerTime;
 
-    @Schema(description = "완료 여부", example = "true")
-    private Boolean isDone;
-
     @Schema(description = "중요 루틴 여부", example = "false")
     private Boolean isImportant;
-
-    @Schema(description = "루틴 내용", example = "아침 스트레칭 하기")
-    private String content;
 
     @Schema(description = "생성일시", example = "2025-01-15T10:30:00")
     private LocalDateTime createdAt;
@@ -56,7 +50,5 @@ public class AdminRoutinePresetsResponse {
     @Schema(description = "수정일시", example = "2025-01-15T14:20:00")
     private LocalDateTime updatedAt;
 
-    @Schema(description = "루틴 시작 날짜", example = "2025-11-10")
-    private LocalDate startRoutineDate;
   }
 }

@@ -18,6 +18,9 @@ public class AdminRoutinePresetSaveRequest {
   @Schema(description = "카테고리 ID", example = "1", required = true)
   private Long categoryId;
 
+  @Schema(description = "대분류 카테고리", example = "청소")
+  private String majorCategory;
+
   @Schema(description = "소분류 카테고리", example = "화장실 청소")
   private String subCategory;
 
@@ -41,9 +44,8 @@ public class AdminRoutinePresetSaveRequest {
   @NotBlank(message = "루틴 내용은 필수입니다")
   @Size(max = 50, message = "루틴 내용은 50자를 초과할 수 없습니다")
   @Schema(description = "루틴 내용", example = "아침 스트레칭 하기", required = true)
-  private String content;
+  private String name;
 
-  @Schema(description = "활성화 여부", example = "true")
-  private Boolean isActive = true;
+
 
 }

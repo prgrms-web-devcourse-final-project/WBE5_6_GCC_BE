@@ -39,8 +39,6 @@ public class RoutinesResponse {
         @Schema(description = "루틴 이름", example = "변기 청소하기")
         private String name;
 
-        @Schema(description = "루틴 내용", example = "아침 스트레칭 하기")
-        private String content;
 
         @Schema(description = "트리거 시간", example = "09:00")
         private String triggerTime;
