@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.member;
 
+import com.honlife.core.app.controller.member.payload.MemberItemEquippedRequest;
 import com.honlife.core.app.controller.member.payload.MemberItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
@@ -18,11 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.honlife.core.app.model.member.service.MemberItemService;
 
 
@@ -93,71 +90,20 @@ public class MemberItemController {
         }
     }
 
-    /**
-     * 현재 장착하고 있는 아이템 조회
-     *
-     * @return List<MemberItemResponse>
-     */
-    @GetMapping("/equipped")
-    @Operation(summary = "로그인된 회원의 현재 장착 아이템 조회", description = "로그인된 사용자의 현재 장착 아이템을 조회합니다.")
-    public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getEquippedItems(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        // 임시 데이터
-        MemberItemResponse top = MemberItemResponse.builder()
-                .itemKey("top_item_01")
-                .itemName("청소 상의")
-                .itemtype(ItemType.TOP)
-                .isEquipped(true)
-                .build();
-        MemberItemResponse accessory = MemberItemResponse.builder()
-                .itemKey("accessory_item_01")
-                .itemName("요리사 모자")
-                .itemtype(ItemType.ACCESSORY)
-                .isEquipped(true)
-                .build();
-
-        String userId = userDetails.getUsername();
-        if (!userId.equals("user01@test.com")) {
-            return ResponseEntity.status(ResponseCode.UNAUTHORIZED.status())
-                    .body(CommonApiResponse.error(ResponseCode.UNAUTHORIZED));
-        }
-        List<MemberItemResponse> response = List.of(top, accessory);
-        return ResponseEntity.ok(CommonApiResponse.success(response));
-    }
 
     /**
-     * 로그인된 사용자가 특정 아이템을 장착하는 API
-     * 기존 동일 타입의 아이템이 장착되어 있다면 자동으로 해제됨
-     *
-     * @param itemKey 장착할 아이템의 고유 키값
-     * @param userDetails 로그인된 사용자 정보
-     * @return 성공 시 204 No Content
+     * 로그인된 사용자가 아이템 장착 상태 변경 API
+     * @param itemKey       장착 또는 해제하려는 아이템의 고유 키
+     * @param userDetails   로그인된 사용자 정보
      */
     @PatchMapping("/equip")
-    public ResponseEntity<CommonApiResponse<Void>> equipItem(
+    public ResponseEntity<CommonApiResponse<Void>> SwitchEquipItem(
             @RequestParam String itemKey,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
-        memberItemService.equipItem(member.getId(),itemKey);
+        memberItemService.switchItemEquip(member.getId(),itemKey);
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
-    /**
-     * 로그인된 사용자가 특정 아이템을 해제하는 API
-     *
-     * @param itemKey 해제할 아이템의 고유 키값
-     * @param userDetails 로그인된 사용자 정보
-     * @return 성공 시 204 No Content
-     */
-    @PatchMapping("/unequip")
-    public ResponseEntity<CommonApiResponse<Void>> unequipItem(
-            @RequestParam String itemKey,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        Member member = memberService.getMemberByEmail(userDetails.getUsername());
-        memberItemService.unequipItemByItemId(member.getId(),itemKey);
-        return ResponseEntity.ok(CommonApiResponse.noContent());
-    }
 }

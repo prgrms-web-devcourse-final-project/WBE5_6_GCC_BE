@@ -31,15 +31,17 @@ public class MemberItemService {
     private final ItemService itemService;
 
     /**
-     * 사용자의 아이템 장착 처리
-     * - 해당 타입의 기존 장착 아이템은 모두 해제됨
-     * - 요청한 아이템은 장착 상태로 변경됨
+     * 사용자의 아이템 장착 상태를 전환합니다.
+     *
+     * - 같은 타입의 아이템 중 이미 장착된 것이 있으면 모두 해제합니다.
+     * - 클릭한 아이템이 이미 장착 중이면 해제만 수행하고 종료합니다.
+     * - 그렇지 않으면 해당 아이템을 장착 처리합니다.
      *
      * @param memberId 사용자 ID
-     * @param itemKey 장착할 아이템 고유 키
+     * @param itemKey  장착 또는 해제할 아이템의 고유 키
      */
     @Transactional
-    public void equipItem(Long memberId, String itemKey) {
+    public void switchItemEquip(Long memberId, String itemKey) {
 
         Item item = itemService.getItemByKey(itemKey);
 
@@ -47,7 +49,18 @@ public class MemberItemService {
             throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
         }
 
-        // 해당 멤버의 같은 타입 아이템들 정보 가져오기
+        // 해당 itemId과 일치하는 회원 보유 아이템 정보 가져옴
+        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
+                // 회원이 해당 아이템을 보유하지 않았을 때
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+
+        // 해당 아이템이 장착되어있었다면
+        // 즉, 아이템 해제하기 클릭 시 해제
+        if (target.getIsEquipped()) {
+            target.setIsEquipped(false);
+            return;
+        }
+        // 해당 멤버의 같은 '타입' 아이템들 정보 가져오기
         List<MemberItem> equippedItems = memberItemRepository
                 .findByMemberIdAndItemTypeAndIsEquippedTrue(memberId, item.getType());
 
@@ -55,34 +68,8 @@ public class MemberItemService {
         for (MemberItem equippedItem : equippedItems) {
             equippedItem.setIsEquipped(false);
         }
-
-
-        // 새 아이템 장착
-        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
-                // 회원이 해당 아이템을 보유하지 않았을 때
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+        
         target.setIsEquipped(true);
-    }
-
-
-    /**
-     * 사용자의 아이템 해제 처리
-     *
-     * @param memberId 사용자 ID
-     * @param itemKey 해제할 아이템 고유 키
-     */
-    @Transactional
-    public void unequipItemByItemId(Long memberId, String itemKey) {
-        Item item = itemService.getItemByKey(itemKey);
-
-        if(item == null) {
-            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
-        }
-
-        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
-                // 회원이 해당 아이템을 보유하지 않았을 때
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
-        target.setIsEquipped(false);
     }
 
     public List<MemberItemDTO> findAll() {
