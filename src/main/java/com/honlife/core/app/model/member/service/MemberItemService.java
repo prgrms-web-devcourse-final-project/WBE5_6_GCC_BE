@@ -5,6 +5,7 @@ import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.repos.ItemRepository;
+import com.honlife.core.app.model.item.service.ItemService;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.QMemberItem;
@@ -12,6 +13,7 @@ import com.honlife.core.app.model.member.model.MemberItemDTO;
 import com.honlife.core.app.model.member.model.MemberItemDTOCustom;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.response.ResponseCode;
 import com.querydsl.core.Tuple;
@@ -30,6 +32,47 @@ public class MemberItemService {
     private final MemberItemRepository memberItemRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
+    private final ItemService itemService;
+
+     /** 사용자의 아이템 장착 상태를 전환합니다.
+      - 같은 타입의 아이템 중 이미 장착된 것이 있으면 모두 해제합니다.
+      - 클릭한 아이템이 이미 장착 중이면 해제만 수행하고 종료합니다.
+      - 그렇지 않으면 해당 아이템을 장착 처리합니다.
+
+      @param memberId 사용자 ID
+     * @param itemKey  장착 또는 해제할 아이템의 고유 키
+     */
+    @Transactional
+    public void switchItemEquip(Long memberId, String itemKey) {
+
+        Item item = itemService.getItemByKey(itemKey);
+
+        if (item == null) {
+            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
+        }
+
+        // 해당 itemId과 일치하는 회원 보유 아이템 정보 가져옴
+        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
+                // 회원이 해당 아이템을 보유하지 않았을 때
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+
+        // 해당 아이템이 장착되어있었다면
+        // 즉, 아이템 해제하기 클릭 시 해제
+        if (target.getIsEquipped()) {
+            target.setIsEquipped(false);
+            return;
+        }
+        // 해당 멤버의 같은 '타입' 아이템들 정보 가져오기
+        List<MemberItem> equippedItems = memberItemRepository
+                .findByMemberIdAndItemTypeAndIsEquippedTrue(memberId, item.getType());
+
+        // isEquipped = true인 것들 해제
+        for (MemberItem equippedItem : equippedItems) {
+            equippedItem.setIsEquipped(false);
+        }
+
+        target.setIsEquipped(true);
+    }
 
     /**
      * 특정 회원이 보유한 아이템 목록을 조회합니다.
