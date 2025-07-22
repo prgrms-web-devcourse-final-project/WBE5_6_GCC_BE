@@ -86,7 +86,7 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
             .from(category)
             .leftJoin(category.children, children).fetchJoin()
             .leftJoin(children.member, member).fetchJoin()
-            .where(category.type.ne(CategoryType.DEFAULT)
+            .where(category.type.eq(CategoryType.MAJOR)
                 .and(category.member.email.eq(userEmail))
                 .and(category.isActive))
             .fetch();
