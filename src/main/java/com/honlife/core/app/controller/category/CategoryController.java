@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -120,24 +121,29 @@ public class CategoryController {
      * @param bindingResult validation
      * @return
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
         final Long categoryId,
         @RequestBody @Valid final CategorySaveRequest categorySaveRequest,
-        BindingResult bindingResult
+        BindingResult bindingResult,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
-        // 존재하지 않는 카테고리 아이디로 접근
-        if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
+
+        // SUB 카테고리지만 부모 카테고리 정보가 없는 경우
+        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && (categorySaveRequest.getParentName() == null|| categorySaveRequest.getParentName().isEmpty())) {
             return ResponseEntity
-                .status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
+                .status(ResponseCode.BAD_REQUEST.status())
+                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
+
+        String userEmail = userDetails.getUsername();
+        categoryService.updateCategory(categoryId, userEmail,categorySaveRequest);
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }

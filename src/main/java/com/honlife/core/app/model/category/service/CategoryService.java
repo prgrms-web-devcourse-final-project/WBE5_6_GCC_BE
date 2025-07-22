@@ -7,6 +7,7 @@ import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -264,7 +265,6 @@ public class CategoryService {
      */
     @Transactional
     public void createCategory(@Valid CategorySaveRequest categorySaveRequest, String userEmail) {
-
         // 이미 같은 이름으로 생성된 카테고리가 있는지 확인
         if(isExistsCategory(categorySaveRequest.getCategoryName(), userEmail))
             throw new CommonException(ResponseCode.CONFLICT_EXIST_CATEGORY);
@@ -300,5 +300,41 @@ public class CategoryService {
     private boolean isExistsCategory(String categoryName, String userEmail) {
         return categoryRepository.existsCategoriesByNameAndIsActiveAndMember_Email(categoryName,true, userEmail)
             || categoryRepository.existsCategoryByTypeAndName(CategoryType.DEFAULT, categoryName);
+    }
+
+    /**
+     * 카테고리를 업데이트 합니다.
+     * @param categoryId 업데이트할 카테고리
+     * @param userEmail 유저 이메일
+     * @param categorySaveRequest 업데이트할 카테고리 정보
+     */
+    @Transactional
+    public void updateCategory(Long categoryId, String userEmail, CategorySaveRequest categorySaveRequest) {
+        // 이미 같은 이름으로 생성된 카테고리가 있는지 확인
+        if(isExistsCategory(categorySaveRequest.getCategoryName(), userEmail))
+            throw new CommonException(ResponseCode.CONFLICT_EXIST_CATEGORY);
+
+        // 부모 카테고리 정보 가져오기
+        Category majorCategory = null;
+
+        if(categorySaveRequest.getCategoryType()==CategoryType.SUB && categorySaveRequest.getParentName() != null){
+            // 커스텀 카테고리에서 찾지 못하면 기본 카테고리에서 찾음
+            majorCategory = categoryRepository.findCustomCategoryByName(categorySaveRequest.getParentName(), userEmail)
+                .orElseGet(()->categoryRepository.findDefaultCategoryByName(categorySaveRequest.getParentName(), userEmail)
+                    .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY)));
+        }
+
+        Category targetCategory = categoryRepository.findCategoryById(categoryId, userEmail)
+            .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        targetCategory.setName(categorySaveRequest.getCategoryName());
+        targetCategory.setType(categorySaveRequest.getCategoryType());
+        targetCategory.setParent(majorCategory);
+
+        if(categorySaveRequest.getEmoji() != null && !categorySaveRequest.getEmoji().isBlank()){
+            targetCategory.setEmoji(categorySaveRequest.getEmoji());
+        }
+        categoryRepository.save(targetCategory);
+
     }
 }
