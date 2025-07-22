@@ -144,15 +144,4 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
 
         return Optional.ofNullable(result);
     }
-
-    @Override
-    public Optional<Category> findCategoryById(Long categoryId) {
-        return Optional.ofNullable(
-            queryFactory
-            .select(category)
-            .from(category)
-            .leftJoin(category.parent).fetchJoin()
-            .where(category.id.eq(categoryId))
-            .fetchOne());
-    }
 }

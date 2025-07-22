@@ -4,6 +4,7 @@ import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
+import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
@@ -256,22 +257,6 @@ public class CategoryService {
 
     }
 
-
-    /**
-     * id를 통해 카테고리를 조회합니다.
-     * @param categoryId 카테고리 아이디
-     * @return {@link CategoryUserViewDTO}
-     */
-    public CategoryUserViewDTO findCategoryById(Long categoryId) {
-
-        Category category = categoryRepository.findCategoryById(categoryId).orElseThrow(
-            ()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY)
-        );
-
-        return CategoryUserViewDTO.fromEntity(category);
-
-    }
-
     /**
      * 카테고리를 생성합니다.
      * @param categorySaveRequest 카테고리 생성 시 필요한 정보
@@ -281,15 +266,16 @@ public class CategoryService {
     public void createCategory(@Valid CategorySaveRequest categorySaveRequest, String userEmail) {
 
         // 이미 같은 이름으로 생성된 카테고리가 있는지 확인
-        if(isExistsCategory(categorySaveRequest.getCategoryName()))
+        if(isExistsCategory(categorySaveRequest.getCategoryName(), userEmail))
             throw new CommonException(ResponseCode.CONFLICT_EXIST_CATEGORY);
 
         // 부모 카테고리 정보 가져오기
         Category majorCategory = null;
 
         if(categorySaveRequest.getParentName() != null){
-            majorCategory = categoryRepository.findCategoryByNameAndMember_Email(categorySaveRequest.getParentName(), userEmail)
-                .orElseGet(()->categoryRepository.findCategoryByNameAndMember_Email(categorySaveRequest.getParentName(), ADMIN_EMAIL)
+            // 커스텀 카테고리에서 찾지 못하면 기본 카테고리에서 찾음
+            majorCategory = categoryRepository.findCustomCategoryByName(categorySaveRequest.getParentName(), userEmail)
+                .orElseGet(()->categoryRepository.findDefaultCategoryByName(categorySaveRequest.getParentName(), userEmail)
                     .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY)));
         }
 
@@ -311,8 +297,8 @@ public class CategoryService {
      * @param categoryName 카테고리 이름
      * @return Boolean
      */
-    private boolean isExistsCategory(String categoryName) {
+    private boolean isExistsCategory(String categoryName, String userEmail) {
 
-        return categoryRepository.existsCategoriesByNameAndIsActive(categoryName,true);
+        return categoryRepository.existsCategoriesByNameAndIsActiveAndMember_Email(categoryName,true, userEmail);
     }
 }
