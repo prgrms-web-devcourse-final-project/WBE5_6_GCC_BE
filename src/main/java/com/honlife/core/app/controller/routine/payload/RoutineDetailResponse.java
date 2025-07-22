@@ -1,6 +1,7 @@
 package com.honlife.core.app.controller.routine.payload;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,4 +39,7 @@ public class RoutineDetailResponse {
 
     @Schema(description = "반복 값", example = "1,3,5")
     private String repeatValue;
+
+    @Schema(description = "루틴 시작 날짜", example = "2025-11-10")
+    private LocalDate startRoutineDate;
 }
