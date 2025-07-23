@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.dto;
 
+import com.honlife.core.app.model.routine.code.RepeatType;
 import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,5 +30,9 @@ public class RoutineTodayItemDTO {
 
 
   private Boolean isImportant;
+
+  private RepeatType repeatType;
+
+  private String repeatValue;
 
 }
