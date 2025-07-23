@@ -83,16 +83,15 @@ public class AdminCategoryController {
      * @param request    생성할 카테고리의 정보
      * @return
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
         final Long categoryId,
         @RequestBody @Valid final AdminCategoryRequest request
     ) {
-        if (categoryId != 1L && categoryId != 2L && categoryId != 3L) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
-        }
+
+        adminCategoryService.updateDefaultCategory(categoryId, request);
+
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 

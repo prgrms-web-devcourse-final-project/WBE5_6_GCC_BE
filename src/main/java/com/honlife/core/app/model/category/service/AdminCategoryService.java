@@ -83,4 +83,14 @@ public class AdminCategoryService {
 
         categoryRepository.save(newDefaultCategory);
     }
+
+    public void updateDefaultCategory(Long categoryId, AdminCategoryRequest request) {
+        Category targetCategory = categoryRepository.findByIdAndTypeAndIsActive(categoryId, CategoryType.DEFAULT, true).orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        targetCategory.setName(request.getCategoryName());
+        targetCategory.setEmoji(request.getEmoji());
+
+        categoryRepository.save(targetCategory);
+
+    }
 }
