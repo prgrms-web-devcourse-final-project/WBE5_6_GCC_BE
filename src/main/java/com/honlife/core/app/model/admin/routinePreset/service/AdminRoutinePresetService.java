@@ -1,25 +1,25 @@
 package com.honlife.core.app.model.admin.routinePreset.service;
 
-import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetDetailResponse;
 import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
+import com.honlife.core.app.model.category.code.CategoryType;
+import com.honlife.core.app.model.category.domain.Category;
+import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
-import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AdminRoutinePresetService {
 
   private final RoutinePresetRepository routinePresetRepository;
+  private final CategoryRepository categoryRepository;
 
   /**
    * 추천 루틴 프리셋 목록 조회 service
@@ -44,18 +44,39 @@ public class AdminRoutinePresetService {
     //DTO 변환하여 반환
     return routinePresetList.stream()
         .sorted(Comparator.comparing(RoutinePreset::getCreatedAt))
-        .map(routinePreset ->
-            RoutinePresetViewDTO.builder()
-                .presetId(routinePreset.getId())
-                .categoryId(routinePreset.getCategory().getId())
-                .categoryName(routinePreset.getCategory().getName())
-                .content(routinePreset.getContent())
-                .isActive(routinePreset.getIsActive())
-                .createdAt(routinePreset.getCreatedAt())
-                .updatedAt(routinePreset.getUpdatedAt())
-                .build()
-        )
+        .map(routinePreset -> {
+          Category parentCategory ;
+          Category childCategory ;
+          CategoryType type = routinePreset.getCategory().getType();
+          if (type == CategoryType.MAJOR) {
+            parentCategory = categoryRepository.findById(routinePreset.getCategory().getId())
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+            childCategory = null;
+
+          } else {
+
+            childCategory = categoryRepository.findById(routinePreset.getCategory().getId())
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+            parentCategory = categoryRepository.findById(routinePreset.getCategory().getParentId())
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+          }
+          return RoutinePresetViewDTO.builder()
+              .presetId(routinePreset.getId())
+              .categoryId(routinePreset.getCategory().getId())
+              .majorCategory(parentCategory != null ? parentCategory.getName() : null)
+              .subCategory(childCategory != null ? childCategory.getName() : null)
+              .name(routinePreset.getContent())
+              .triggerTime(routinePreset.getTriggerTime())
+              .isImportant(routinePreset.isImportant())
+              .createdAt(routinePreset.getCreatedAt())
+              .updatedAt(routinePreset.getUpdatedAt())
+              .build();
+        })
         .collect(Collectors.toList());
+
+
   }
 
   /**
@@ -66,14 +87,33 @@ public class AdminRoutinePresetService {
 
     RoutinePreset routinePreset = routinePresetRepository.findWithCategoryById(presetId)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+    Category parentCategory ;
+    Category childCategory ;
+    CategoryType type = routinePreset.getCategory().getType();
+    if (type == CategoryType.MAJOR) {
+      parentCategory = categoryRepository.findById(routinePreset.getCategory().getId())
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+      childCategory = null;
+
+    } else {
+
+      childCategory = categoryRepository.findById(routinePreset.getCategory().getId())
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+      parentCategory = categoryRepository.findById(routinePreset.getCategory().getParentId())
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+    }
 
     //DTO 변환하여 반환
     RoutinePresetViewDTO dto = RoutinePresetViewDTO.builder()
         .presetId(routinePreset.getId())
         .categoryId(routinePreset.getCategory().getId())
-        .categoryName(routinePreset.getCategory().getName())
-        .content(routinePreset.getContent())
-        .isActive(routinePreset.getIsActive())
+        .majorCategory(parentCategory != null ? parentCategory.getName() : null)
+        .subCategory(childCategory != null ? childCategory.getName() : null)
+        .name(routinePreset.getContent())
+        .triggerTime(routinePreset.getTriggerTime())
+        .isImportant(routinePreset.isImportant())
         .createdAt(routinePreset.getCreatedAt())
         .updatedAt(routinePreset.getUpdatedAt())
         .build();
