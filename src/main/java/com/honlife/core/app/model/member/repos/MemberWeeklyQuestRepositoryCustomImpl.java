@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class MemberQuestRepositoryCustomImpl implements MemberQuestRepositoryCustom{
+public class MemberWeeklyQuestRepositoryCustomImpl implements MemberWeeklyQuestRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 

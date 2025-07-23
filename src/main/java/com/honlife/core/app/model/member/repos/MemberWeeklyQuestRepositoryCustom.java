@@ -1,6 +1,6 @@
 package com.honlife.core.app.model.member.repos;
 
-public interface MemberQuestRepositoryCustom {
+public interface MemberWeeklyQuestRepositoryCustom {
 
     /**
      * 멤버 아이디를 통해 멤버 퀘스트를 소프트 드랍하는 메소드

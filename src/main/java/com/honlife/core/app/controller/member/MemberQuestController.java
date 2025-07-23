@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.model.member.service.MemberQuestService;
+import com.honlife.core.app.model.member.service.MemberWeeklyQuestService;
 
 @Tag(name="회원 보유 퀘스트", description = "현재 로그인한 회원이 보유하고 있는 퀘스트 관련 API 입니다.")
 @SecurityRequirement(name = "bearerAuth")
@@ -27,10 +27,10 @@ import com.honlife.core.app.model.member.service.MemberQuestService;
 
 public class MemberQuestController {
 
-    private final MemberQuestService memberQuestService;
+    private final MemberWeeklyQuestService memberWeeklyQuestService;
 
-    public MemberQuestController(final MemberQuestService memberQuestService) {
-        this.memberQuestService = memberQuestService;
+    public MemberQuestController(final MemberWeeklyQuestService memberWeeklyQuestService) {
+        this.memberWeeklyQuestService = memberWeeklyQuestService;
     }
 
     /**

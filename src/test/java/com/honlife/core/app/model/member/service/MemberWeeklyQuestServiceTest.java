@@ -8,11 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 class MemberWeeklyQuestServiceTest {
 
     @Autowired
-    private MemberQuestService memberQuestService;
+    private MemberWeeklyQuestService memberWeeklyQuestService;
 
     @Test
     void deleteMemberQuestByMemberId() {
-        memberQuestService.softDropMemberQuestByMemberId(3L);
+        memberWeeklyQuestService.softDropMemberQuestByMemberId(3L);
     }
 
 }

@@ -5,7 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.member.domain.Member;
 
 
-public interface MemberQuestRepository extends JpaRepository<MemberWeeklyQuest, Long>, MemberQuestRepositoryCustom {
+public interface MemberWeeklyQuestRepository extends JpaRepository<MemberWeeklyQuest, Long>,
+    MemberWeeklyQuestRepositoryCustom {
 
     MemberWeeklyQuest findFirstByMember(Member member);
 

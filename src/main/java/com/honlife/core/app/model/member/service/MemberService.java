@@ -8,7 +8,7 @@ import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.member.repos.MemberQuestRepository;
+import com.honlife.core.app.model.member.repos.MemberWeeklyQuestRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
@@ -54,7 +54,7 @@ public class MemberService {
     private final RoutineRepository routineRepository;
     private final CategoryRepository categoryRepository;
     private final MemberItemRepository memberItemRepository;
-    private final MemberQuestRepository memberQuestRepository;
+    private final MemberWeeklyQuestRepository memberWeeklyQuestRepository;
     private final MemberBadgeRepository memberBadgeRepository;
     private final InterestCategoryRepository interestCategoryRepository;
 
@@ -148,7 +148,7 @@ public class MemberService {
             referencedWarning.addParam(memberMemberItem.getId());
             return referencedWarning;
         }
-        final MemberWeeklyQuest memberMemberWeeklyQuest = memberQuestRepository.findFirstByMemberAndIsActive(member, true);
+        final MemberWeeklyQuest memberMemberWeeklyQuest = memberWeeklyQuestRepository.findFirstByMemberAndIsActive(member, true);
         if (memberMemberWeeklyQuest != null) {
             referencedWarning.setKey("member.memberQuest.member.referenced");
             referencedWarning.addParam(memberMemberWeeklyQuest.getId());
