@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ChildCategoryPayload {
+public class ChildCategoryResponse {
 
     private Long categoryId;
 
@@ -20,11 +20,11 @@ public class ChildCategoryPayload {
 
     private String emoji;
 
-    public static List<ChildCategoryPayload> fromDTO(List<ChildCategoryDTO> children) {
+    public static List<ChildCategoryResponse> fromDTO(List<ChildCategoryDTO> children) {
 
         return children.stream().map(
             child -> {
-                return ChildCategoryPayload.builder()
+                return ChildCategoryResponse.builder()
                     .categoryId(child.getCategoryId())
                     .categoryName(child.getCategoryName())
                     .categoryType(child.getCategoryType())
