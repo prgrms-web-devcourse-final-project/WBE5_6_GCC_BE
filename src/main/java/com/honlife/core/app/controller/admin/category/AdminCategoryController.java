@@ -73,7 +73,7 @@ public class AdminCategoryController {
 
         adminCategoryService.createDefaultCategory(request, adminEmail);
 
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+        return ResponseEntity.ok(CommonApiResponse.success(ResponseCode.CATEGORY_CREATED));
     }
 
     /**
