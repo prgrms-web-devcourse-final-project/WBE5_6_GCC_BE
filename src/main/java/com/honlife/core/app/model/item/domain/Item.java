@@ -8,15 +8,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
-import lombok.Getter;
-import lombok.Setter;
 import com.honlife.core.app.model.common.BaseEntity;
 import com.honlife.core.app.model.item.code.ItemType;
+import lombok.*;
 
-
-@Entity
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Entity
 public class Item extends BaseEntity {
 
     @Id
@@ -33,23 +34,23 @@ public class Item extends BaseEntity {
     )
     private Long id;
 
-    @Column(unique = true, length = 50)
+    @Column( unique = true,nullable = false, length = 50)
     private String itemKey;
 
-    @Column(length = 50)
+    @Column(length = 50,nullable = false)
     private String name;
 
     @Column(length = 50)
     private String description;
 
-    @Column
+    @Column(nullable = false)
     private Integer price;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ItemType type;
 
-    @Column
+    @Column(nullable = false)
     private Boolean isListed;
 
 }
