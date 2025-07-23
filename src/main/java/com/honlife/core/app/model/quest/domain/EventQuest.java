@@ -28,14 +28,14 @@ public class EventQuest extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
+            name = "event_quest_sequence",
+            sequenceName = "event_quest_sequence",
             allocationSize = 1,
             initialValue = 10000
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+            generator = "event_quest_sequence"
     )
     private Long id;
 
