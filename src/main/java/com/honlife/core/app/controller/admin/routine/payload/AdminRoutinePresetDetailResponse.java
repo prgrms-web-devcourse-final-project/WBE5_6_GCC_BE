@@ -20,11 +20,15 @@ public class AdminRoutinePresetDetailResponse {
 
     private Long categoryId;
 
-    private String categoryName;
+    private String majorCategory;
 
-    private String content;
+    private String subCategory;
 
-    private Boolean isActive;
+    private String name;
+
+    private String triggerTime;
+
+    private Boolean isImportant;
 
     private LocalDateTime createdAt;
 
@@ -35,9 +39,11 @@ public class AdminRoutinePresetDetailResponse {
         return AdminRoutinePresetDetailResponse.builder()
             .presetId(dto.getPresetId())
             .categoryId(dto.getCategoryId())
-            .categoryName(dto.getCategoryName())
-            .content(dto.getContent())
-            .isActive(dto.getIsActive())
+            .majorCategory(dto.getMajorCategory())
+            .subCategory(dto.getSubCategory())
+            .name(dto.getName())
+            .triggerTime(dto.getTriggerTime())
+            .isImportant(dto.getIsImportant())
             .createdAt(dto.getCreatedAt())
             .updatedAt(dto.getUpdatedAt())
             .build();
