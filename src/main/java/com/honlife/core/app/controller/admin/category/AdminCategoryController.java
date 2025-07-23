@@ -42,6 +42,20 @@ public class AdminCategoryController {
         return ResponseEntity.ok(CommonApiResponse.success(defaultCategories));
     }
 
+
+    /**
+     * 기본 카테고리 단건 조회 API
+     * @return AdminCategoryResponse
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonApiResponse<AdminCategoryResponse>> getDefaultCategoryById (
+        @PathVariable(name="id") Long categoryId
+    ) {
+        AdminCategoryResponse defaultCategories = AdminCategoryResponse.fromDTO(adminCategoryService.findDefaultCategory(categoryId));
+
+        return ResponseEntity.ok(CommonApiResponse.success(defaultCategories));
+    }
+
     /**
      * 기본 카테고리 생성 API
      *

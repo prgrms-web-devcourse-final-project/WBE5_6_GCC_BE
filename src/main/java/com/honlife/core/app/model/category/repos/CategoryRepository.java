@@ -28,5 +28,18 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      */
     Optional<Category> findCategoryByNameAndMember_Email(String name, String memberEmail);
 
+    /**
+     * 타입을 통해 카테고리를 조회
+     * @param type 카테고리 타입
+     * @return List<Category>
+     */
     List<Category> findCategoriesByType(CategoryType type);
+
+    /**
+     * id와 타입을 통해 카테고리를 조회
+     * @param id 카테고리 id
+     * @param type 타입
+     * @return Optional<Category>
+     */
+    Optional<Category> findByIdAndType(Long id, CategoryType type);
 }

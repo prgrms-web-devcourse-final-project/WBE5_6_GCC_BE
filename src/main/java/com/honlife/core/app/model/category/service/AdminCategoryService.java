@@ -34,4 +34,26 @@ public class AdminCategoryService {
                     .build();
             }).toList();
     }
+
+    /**
+     * id를 통해 기본 카테고리를 조회합니다.
+     * @param categoryId 카테고리 아이디
+     * @return CategoryDTO
+     */
+    public CategoryDTO findDefaultCategory(Long categoryId) {
+
+        Category category = categoryRepository.findByIdAndType(categoryId,CategoryType.DEFAULT).orElseThrow(
+            ()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY)
+        );
+
+        return CategoryDTO.builder()
+            .id(category.getId())
+            .name(category.getName())
+            .emoji(category.getEmoji())
+            .type(category.getType())
+            .createdAt(category.getCreatedAt())
+            .updatedAt(category.getUpdatedAt())
+            .build();
+
+    }
 }
