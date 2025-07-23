@@ -24,14 +24,14 @@ public class WeeklyQuestProgress extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
+            name = "weekly_quest_progress_sequence",
+            sequenceName = "weekly_quest_progress_sequence",
             allocationSize = 1,
             initialValue = 10000
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+            generator = "weekly_quest_progress_sequence"
     )
     private Long id;
 
