@@ -29,4 +29,6 @@ public interface MemberPointRepository extends JpaRepository<MemberPoint, Long>,
      * @return Optional<MemberPoint>
      */
     Optional<MemberPoint> findByMemberId(Long memberId);
+
+    Optional<MemberPoint> findByMember_Email(String email);
 }
