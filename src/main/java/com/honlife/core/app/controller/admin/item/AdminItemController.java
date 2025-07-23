@@ -1,5 +1,7 @@
 package com.honlife.core.app.controller.admin.item;
 
+import com.honlife.core.app.controller.admin.item.payload.AdminCreateItemRequeset;
+import com.honlife.core.app.controller.admin.item.payload.AdminItemListedRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
@@ -102,38 +104,10 @@ public class AdminItemController {
                 .build());
         return ResponseEntity.ok(CommonApiResponse.success(items));
     }
-
-    /**
-     * 특정 아이템 정보 조회 요청 API
-     *
-     * @param itemId 특정 아이템 ID
-     * @return 성공시 {@code AdminItemResponse} 를 응답객체에 담아 반환합니다.
-     */
-    @Operation(summary = "특정 아이템 조회", description = "아이템 id를 통해 특정 아이템에 대한 정보를 조회할 수 있습니다.")
-    @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<?>> getItem(
-            @PathVariable(name = "id") final Long itemId
-    ) {
-        if (itemId == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
-        AdminItemResponse itemResponse = AdminItemResponse.builder()
-                .itemId(1L)
-                .itemKey("top_item_01")
-                .itemName("청소 상의")
-                .itemPrice(100)
-                .itemType(ItemType.TOP)
-                .itemDescription("청소에 도움됩니다.")
-                .isListed(true)
-                .isActive(true)
-                .build();
-        return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
-    }
-
     /**
      * 아이템 추가 요청 처리 API
      *
-     * @param adminItemRequest 아이템 정보 객체
+     * @param  아이템 정보 객체
      * @return 성공시 {@code 200}을 반환합니다.
      */
     @Operation(
@@ -143,13 +117,13 @@ public class AdminItemController {
                     required = true,
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = AdminItemRequest.class)
+                            schema = @Schema(implementation = AdminCreateItemRequeset.class)
                     )
             )
     )
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createItem(
-            @RequestBody @Valid AdminItemRequest adminItemRequest
+            @RequestBody @Valid AdminCreateItemRequeset adminCreateItemRequeset
     ) {
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
@@ -157,7 +131,7 @@ public class AdminItemController {
     /**
      * 아이템 수정 처리 API
      *
-     * @param id      아이템 식별 id
+     * @param itemkey     아이템 식별 key값
      * @param request 아이템 정보 객체
      * @return 성공시 {@code 200}을 반환합니다.
      */
@@ -166,10 +140,10 @@ public class AdminItemController {
             description = "아이템을 수정합니다.",
             parameters = {
                     @Parameter(
-                            name = "id",
-                            description = "수정할 아이템의 ID",
+                            name = "itemKey",
+                            description = "수정할 아이템의 key값",
                             required = true,
-                            example = "10"
+                            example = "top_item_01"
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -180,12 +154,12 @@ public class AdminItemController {
                     )
             )
     )
-    @PatchMapping("/{id}")
+    @PatchMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> updateItem(
-            @PathVariable Long id,
+            @PathVariable("key") String itemkey,
             @RequestBody @Valid AdminItemRequest request
     ) {
-        if (id == 10L) {
+        if (itemkey.equals("top_item_01")) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
@@ -195,7 +169,7 @@ public class AdminItemController {
     /**
      * 아이템 삭제 요청 처리 API
      *
-     * @param id 아이템 id
+     * @param itemKey 아이템 key값
      * @return 성공시 {@code 200}을 반환합니다.
      */
     @Operation(
@@ -203,18 +177,50 @@ public class AdminItemController {
             description = "아이템을 삭제합니다.",
             parameters = {
                     @Parameter(
-                            name = "id",
-                            description = "삭제할 아이템의 ID",
+                            name = "itemKey",
+                            description = "삭제할 아이템의 itemKey값",
                             required = true,
-                            example = "10"
+                            example = "top_item_01"
                     )
             }
     )
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> deleteItem(
-            @PathVariable Long id
+            @PathVariable("key") String itemKey
     ) {
-        if (id == 10L) {
+        if (itemKey.equals("top_item_01")) {
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
+        }
+    }
+
+    /**
+     * 아이템 활성화 상태 요청 처리 API
+     *
+     * @param itemKey 아이템 key값
+     * @param request 활성화 여부 (false or true)
+     * @return 성공시 {@code 200}을 반환합니다.
+     */
+    @Operation(
+            summary = "아이템 활성/비활성화",
+            description = "아이템을 활성화 또는 비활성화 합니다.",
+            parameters = {
+                    @Parameter(
+                            name = "itemKey",
+                            description = "비활성화 할 itemKey값",
+                            required = true,
+                            example = "top_item_01"
+                    )
+            }
+    )
+    @PatchMapping("/{key}/listed")
+    public ResponseEntity<CommonApiResponse<Void>> updateItemListedStatus(
+            @PathVariable("key") String itemKey,
+            @RequestBody @Valid AdminItemListedRequest request
+            ){
+        if (itemKey.equals("top_item_01")) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
