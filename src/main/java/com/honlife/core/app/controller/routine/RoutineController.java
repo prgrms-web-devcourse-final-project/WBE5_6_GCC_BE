@@ -51,7 +51,6 @@ public class RoutineController {
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        try {
             if (date == null) {
                 date = LocalDate.now();
             }
@@ -63,11 +62,6 @@ public class RoutineController {
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
 
-        } catch (CommonException e ) {
-            return ResponseEntity
-                .status(e.code().status())
-                .body(CommonApiResponse.error(e.code()));
-        }
     }
 
 
@@ -131,7 +125,7 @@ public class RoutineController {
             routineService.createRoutine(routineSaveRequest, userEmail);
 
             return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(ResponseCode.CREATED.status())
                 .body(CommonApiResponse.noContent());
 
     }
