@@ -1,6 +1,7 @@
 package com.honlife.core.app.model.category.repos;
 
 import com.honlife.core.app.model.category.code.CategoryType;
+import com.honlife.core.app.model.category.dto.CategoryDTO;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,7 +34,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @param type 카테고리 타입
      * @return List<Category>
      */
-    List<Category> findCategoriesByType(CategoryType type);
+    List<Category> findCategoriesByTypeAndIsActive(CategoryType type, Boolean isActive);
 
     /**
      * id와 타입을 통해 카테고리를 조회
@@ -41,5 +42,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @param type 타입
      * @return Optional<Category>
      */
-    Optional<Category> findByIdAndType(Long id, CategoryType type);
+    Optional<Category> findByIdAndTypeAndIsActive(Long id, CategoryType type, Boolean isActive);
 }

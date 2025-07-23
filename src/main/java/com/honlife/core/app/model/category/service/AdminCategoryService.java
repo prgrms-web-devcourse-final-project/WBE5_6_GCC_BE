@@ -22,7 +22,7 @@ public class AdminCategoryService {
      * @return {@code List<CategoryDTO>}
      */
     public List<CategoryDTO> findAllDefaultCategory() {
-        return categoryRepository.findCategoriesByType(CategoryType.DEFAULT).stream().map(
+        return categoryRepository.findCategoriesByTypeAndIsActive(CategoryType.DEFAULT, true).stream().map(
             category ->{
                 return CategoryDTO.builder()
                     .id(category.getId())
@@ -42,8 +42,8 @@ public class AdminCategoryService {
      */
     public CategoryDTO findDefaultCategory(Long categoryId) {
 
-        Category category = categoryRepository.findByIdAndType(categoryId,CategoryType.DEFAULT).orElseThrow(
-            ()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY)
+        Category category = categoryRepository.findByIdAndTypeAndIsActive(categoryId, CategoryType.DEFAULT, true).orElseThrow(
+            () -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY)
         );
 
         return CategoryDTO.builder()
