@@ -57,7 +57,7 @@ public class RoutineScheduleService {
     private RoutineScheduleDTO mapToDTO(final RoutineSchedule routineSchedule,
             final RoutineScheduleDTO routineScheduleDTO) {
         routineScheduleDTO.setId(routineSchedule.getId());
-        routineScheduleDTO.setDate(routineSchedule.getDate());
+        routineScheduleDTO.setDate(routineSchedule.getScheduleDate());
         routineScheduleDTO.setIsDone(routineSchedule.getIsDone());
         routineScheduleDTO.setCreatedAt(routineSchedule.getCreatedAt());
         routineScheduleDTO.setRoutine(routineSchedule.getRoutine() == null ? null : routineSchedule.getRoutine().getId());
@@ -66,7 +66,7 @@ public class RoutineScheduleService {
 
     private RoutineSchedule mapToEntity(final RoutineScheduleDTO routineScheduleDTO,
             final RoutineSchedule routineSchedule) {
-        routineSchedule.setDate(routineScheduleDTO.getDate());
+        routineSchedule.setScheduleDate(routineScheduleDTO.getDate());
         routineSchedule.setIsDone(routineScheduleDTO.getIsDone());
         routineSchedule.setCreatedAt(routineScheduleDTO.getCreatedAt());
         final Routine routine = routineScheduleDTO.getRoutine() == null ? null : routineRepository.findById(routineScheduleDTO.getRoutine())
