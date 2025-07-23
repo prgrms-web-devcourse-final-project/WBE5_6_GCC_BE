@@ -50,4 +50,5 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> , Routin
   List<Routine> findAllByMemberAndIsActiveWithCategory(@Param("member") Member member,
       @Param("isActive") boolean isActive);
 
+  List<Routine> findAllByIsActiveTrue();
 }

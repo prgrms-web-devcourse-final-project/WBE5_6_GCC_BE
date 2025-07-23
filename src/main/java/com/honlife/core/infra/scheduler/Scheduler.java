@@ -32,7 +32,8 @@ public class Scheduler {
   public void updateStatus() {
     log.info("[Scheduler] 루틴 스케줄러 실행됨");
 
-    List<Routine> routines = routineRepository.findAll();
+    List<Routine> routines = routineRepository.findAllByIsActiveTrue();
+
 
     LocalDate today = LocalDate.now();
 
