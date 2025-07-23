@@ -41,4 +41,12 @@ public class RoutinePreset extends BaseEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column
+    private String triggerTime;
+
+    @Column
+    private boolean isImportant;
+
+
+
 }

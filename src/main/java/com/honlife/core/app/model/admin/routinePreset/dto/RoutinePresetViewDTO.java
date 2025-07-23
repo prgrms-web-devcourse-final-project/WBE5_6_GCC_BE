@@ -19,11 +19,15 @@ public class RoutinePresetViewDTO {
 
   private Long categoryId;
 
-  private String categoryName;
+  private String majorCategory;
 
-  private String content;
+  private String subCategory;
 
-  private Boolean isActive;
+  private String name;
+
+  private String triggerTime;
+
+  private Boolean isImportant;
 
   private LocalDateTime createdAt;
 
