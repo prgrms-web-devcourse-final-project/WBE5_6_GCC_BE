@@ -6,11 +6,11 @@ import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesTodayResponse;
 import com.honlife.core.app.model.routine.dto.RoutineDetailDTO;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
+import com.honlife.core.app.model.routine.dto.RoutineTodayItemDTO;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
@@ -80,17 +80,12 @@ public class RoutineController {
     public ResponseEntity<CommonApiResponse<RoutinesTodayResponse>> getTodayUserRoutines(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        try {
+
             String userEmail = userDetails.getUsername();
-            List<RoutineItemDTO> routinesResponses = routineService.getTodayRoutines(userEmail);
+            List<RoutineTodayItemDTO> routinesResponses = routineService.getTodayRoutines(userEmail);
             RoutinesTodayResponse today = new RoutinesTodayResponse(routinesResponses, LocalDate.now());
 
             return ResponseEntity.ok(CommonApiResponse.success(today));
-        }  catch (CommonException e ) {
-            return ResponseEntity
-                .status(e.code().status())
-                .body(CommonApiResponse.error(e.code()));
-        }
     }
 
     /**
@@ -104,16 +99,11 @@ public class RoutineController {
     public ResponseEntity<CommonApiResponse<RoutineDetailResponse>> getDetailRoutine(
         @PathVariable(name = "id") Long routineId
     ) {
-        try {
+
             RoutineDetailDTO responseDto = routineService.getDetailRoutine(routineId);
             RoutineDetailResponse response = RoutineDetailResponse.toDto(responseDto);
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
-        } catch (CommonException e ) {
-            return ResponseEntity
-                .status(e.code().status())
-                .body(CommonApiResponse.error(e.code()));
-        }
     }
 
 
@@ -136,18 +126,14 @@ public class RoutineController {
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
-        try {
+
             String userEmail = userDetails.getUsername();
             routineService.createRoutine(routineSaveRequest, userEmail);
 
             return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(CommonApiResponse.noContent());
-        }  catch (CommonException e ) {
-            return ResponseEntity
-                .status(e.code().status())
-                .body(CommonApiResponse.error(e.code()));
-        }
+
     }
     /**
      * 루틴 수정 API
