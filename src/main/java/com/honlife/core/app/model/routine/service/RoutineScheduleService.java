@@ -5,11 +5,13 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.app.model.point.domain.PointPolicy;
 import com.honlife.core.app.model.point.repos.PointPolicyRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -98,8 +100,9 @@ public class RoutineScheduleService {
 
         RoutineSchedule routineSchedule = routineScheduleRepository.findWithRoutineAndMemberById(scheduleId);
 
-        MemberPoint memberPoint = memberPointRepository.findByMember_Email(userEmail)
-            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_POINT));
+        Optional<MemberPoint> member = memberPointRepository.findByMember_Email(userEmail);
+
+        MemberPoint memberPoint = member.get();
 
         if(routineSchedule == null){
            throw new CommonException(ResponseCode.NOT_FOUND_ROUTINE);
@@ -113,7 +116,7 @@ public class RoutineScheduleService {
             routineSchedule.setIsDone(request.getIsDone());
 
             // 포인트 회수 로직
-            PointPolicy policy = pointPolicyRepository.findByType("ROUTINE");
+            PointPolicy policy = pointPolicyRepository.findByType(PointSourceType.ROUTINE);
             int reversePoint = policy.getPoint();
 
             int point = memberPoint.getPoint() - reversePoint;
@@ -125,7 +128,7 @@ public class RoutineScheduleService {
             routineSchedule.setIsDone(request.getIsDone());
 
             // 포인트 추가 로직
-            PointPolicy policy = pointPolicyRepository.findByType("ROUTINE");
+            PointPolicy policy = pointPolicyRepository.findByType(PointSourceType.ROUTINE);
             int addPoint = policy.getPoint();
 
             int point = memberPoint.getPoint() + addPoint;
