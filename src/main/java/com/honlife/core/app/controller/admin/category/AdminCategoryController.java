@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,9 +65,14 @@ public class AdminCategoryController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<CommonApiResponse<Void>> createCategory(
-        @RequestBody @Valid AdminCategoryRequest request
+    public ResponseEntity<CommonApiResponse<Void>> createDefaultCategory(
+        @RequestBody @Valid AdminCategoryRequest request,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
+        String adminEmail = userDetails.getUsername();
+
+        adminCategoryService.createDefaultCategory(request, adminEmail);
+
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 

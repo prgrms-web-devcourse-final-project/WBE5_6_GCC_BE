@@ -1,21 +1,28 @@
 package com.honlife.core.app.model.category.service;
 
+import com.honlife.core.app.controller.admin.category.payload.AdminCategoryRequest;
+import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
+import com.honlife.core.app.model.member.domain.Member;
+import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AdminCategoryService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper mapper;
+    private final MemberRepository memberRepository;
 
     /**
      * 기본 카테고리를 조회합니다.
@@ -55,5 +62,25 @@ public class AdminCategoryService {
             .updatedAt(category.getUpdatedAt())
             .build();
 
+    }
+
+    /**
+     * 새로운 기본 카테고리를 생성합니다.
+     * @param request 카테고리 정보
+     * @param adminEmail 로그인 한 관리자 이메일
+     */
+    @Transactional
+    public void createDefaultCategory(AdminCategoryRequest request, String adminEmail) {
+        
+        Member admin = memberRepository.findByEmail(adminEmail).orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_MEMBER));
+
+        Category newDefaultCategory = Category.builder()
+            .name(request.getCategoryName())
+            .type(CategoryType.DEFAULT)
+            .emoji(request.getEmoji())
+            .member(admin)
+            .build();
+
+        categoryRepository.save(newDefaultCategory);
     }
 }
