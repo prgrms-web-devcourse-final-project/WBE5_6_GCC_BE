@@ -3,6 +3,7 @@ package com.honlife.core.app.controller.admin.item;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
+import com.honlife.core.app.model.item.service.AdminItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/admin/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminItemController {
+
+    private final AdminItemService adminItemService;
 
     /**
      * 모든 아이템 조회 요청 처리 API
@@ -141,16 +144,25 @@ public class AdminItemController {
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
+    /**
+     * 관리자 - 아이템 수정 API
+     *
+     * @param itemKey 수정 대상 아이템의 고유 키
+     * @param request 수정할 아이템 정보 (이름, 설명, 가격, 타입 등)
+     * @return 204 No Content
+     * <p><b>[설명]</b></p>
+     * - 관리자 페이지에서 아이템을 수정할 때 사용됩니다.
+     * - 수정 가능한 항목: 아이템 이름, 설명, 가격, 타입
+     * - 아이템 고유키(itemKey)를 기준으로 기존 데이터를 조회한 후 값 갱신
+     * - isListed, isActive 같은 상태 필드는 별도 API에서 관리
+     */
     @PatchMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> updateItem(
         @PathVariable("key") String itemKey,
-        @RequestBody @Valid AdminItemRequest request
+        @RequestBody AdminItemRequest request
     ) {
-        if (id == 10L) {
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
+        adminItemService.updateItem(itemKey, request);
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
     /**
