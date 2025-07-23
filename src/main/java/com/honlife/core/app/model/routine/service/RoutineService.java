@@ -186,6 +186,8 @@ public class RoutineService {
                       .isImportant(routine.getIsImportant())
                       .date(currentDate)
                       .startRoutineDate(routine.getStartRoutineDate())
+                      .repeatType(routine.getRepeatType())
+                      .repeatValue(routine.getRepeatValue())
                       .build();
                 })
         )
@@ -195,64 +197,7 @@ public class RoutineService {
   }
 
 
-  /**
-   * 사용자 당일 루틴 조회 입니다
-   * return RoutinesDailyResponse
-   * 지연로딩으로 routine 들고올때 category와 fetch join사용 했습니다
-   * 스케줄러에 없을시 날짜 계산을 해서 루틴들고오는거를 만들었습니다
-   */
-  public List<RoutineTodayItemDTO> getTodayRoutines(String userEmail) {
-    Member member = memberRepository.findByEmail(userEmail)
-        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
-    List<Routine> routines = routineRepository.findAllByMemberAndIsActiveWithCategory(member, true);
-
-    List<RoutineTodayItemDTO> responseRoutines = routines.stream()
-
-        .filter(routine ->
-            !routine.getStartRoutineDate().isAfter(LocalDate.now()) &&
-                routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
-                ChronoUnit.WEEKS.between(routine.getStartRoutineDate(), LocalDate.now()) % routine.getRepeatInterval() == 0
-        )
-
-        .map(routine -> {
-          Category parentCategory = null;
-          Category childCategory = null;
-          CategoryType type = routine.getCategory().getType();
-          if (type == CategoryType.MAJOR) {
-            parentCategory = categoryRepository.findById(routine.getCategory().getId())
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
-
-            childCategory = null;
-          }else{
-
-            childCategory = categoryRepository.findById(routine.getCategory().getId())
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
-
-            parentCategory = categoryRepository.findById(routine.getCategory().getParentId())
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
-          }
-
-          RoutineSchedule routineSchedule = routineScheduleRepository
-              .findByRoutineAndScheduleDate(routine, LocalDate.now());
-
-          return RoutineTodayItemDTO.builder()
-              .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
-              .routineId(routine.getId())
-              .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
-              .subCategory(childCategory != null ? routine.getCategory().getName() : null)
-              .name(routine.getContent())
-              .triggerTime(routine.getTriggerTime())
-              .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
-              .isImportant(routine.getIsImportant())
-              .build();
-
-        })
-        .toList();
-
-
-    return responseRoutines;
-  }
 
   /**
    * 사용자 루틴 단건 조회 입니다
