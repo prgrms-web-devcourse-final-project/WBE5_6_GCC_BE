@@ -359,6 +359,14 @@ public class CategoryService {
     public void softDrop(Long categoryId) {
         Category targetCategory = categoryRepository.findCategoryById(categoryId).orElseThrow(()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
+        if(targetCategory.getType() == CategoryType.MAJOR){
+            targetCategory.getChildren().forEach(
+                child ->{
+                    child.setIsActive(false);
+                }
+            );
+        }
+
         targetCategory.setIsActive(false);
         categoryRepository.save(targetCategory);
     }

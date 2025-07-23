@@ -1,5 +1,9 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.model.category.code.CategoryType;
+import com.honlife.core.app.model.category.dto.CategoryDTO;
+import com.honlife.core.app.model.category.service.CategoryService;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
@@ -136,7 +140,19 @@ public class RoutineService {
      * @param categoryId 카테고리 아이디
      */
     @Transactional
-    public void removeCategoryReference(Long categoryId) {
+    public void removeCategoryReference(Long categoryId, String userEmail) {
+
+        Category category = categoryRepository.findCategoryById(categoryId, userEmail).orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        if(category.getType() == CategoryType.MAJOR){
+            category.getChildren().forEach(child -> {
+                List<Routine> routines = routineRepository.findAllByCategory_Id(child.getId());
+
+                routines.forEach(routine -> {
+                    routine.setCategory(null);
+                });
+            });
+        }
 
         List<Routine> routines = routineRepository.findAllByCategory_Id(categoryId);
 
