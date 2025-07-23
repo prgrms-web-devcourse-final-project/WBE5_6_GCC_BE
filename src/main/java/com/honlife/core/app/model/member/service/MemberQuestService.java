@@ -1,12 +1,12 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.app.model.member.domain.MemberWeeklyQuest;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.domain.MemberQuest;
-import com.honlife.core.app.model.member.model.MemberQuestDTO;
+import com.honlife.core.app.model.member.model.MemberWeeklyQuestDTO;
 import com.honlife.core.app.model.member.repos.MemberQuestRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
@@ -25,59 +25,61 @@ public class MemberQuestService {
         this.memberRepository = memberRepository;
     }
 
-    public List<MemberQuestDTO> findAll() {
-        final List<MemberQuest> memberQuests = memberQuestRepository.findAll(Sort.by("id"));
-        return memberQuests.stream()
-                .map(memberQuest -> mapToDTO(memberQuest, new MemberQuestDTO()))
+    public List<MemberWeeklyQuestDTO> findAll() {
+        final List<MemberWeeklyQuest> memberWeeklyQuests = memberQuestRepository.findAll(Sort.by("id"));
+        return memberWeeklyQuests.stream()
+                .map(memberWeeklyQuest -> mapToDTO(memberWeeklyQuest, new MemberWeeklyQuestDTO()))
                 .toList();
     }
 
-    public MemberQuestDTO get(final Long id) {
+    public MemberWeeklyQuestDTO get(final Long id) {
         return memberQuestRepository.findById(id)
-                .map(memberQuest -> mapToDTO(memberQuest, new MemberQuestDTO()))
+                .map(memberWeeklyQuest -> mapToDTO(memberWeeklyQuest, new MemberWeeklyQuestDTO()))
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_QUEST));
     }
 
-    public Long create(final MemberQuestDTO memberQuestDTO) {
-        final MemberQuest memberQuest = new MemberQuest();
-        mapToEntity(memberQuestDTO, memberQuest);
-        return memberQuestRepository.save(memberQuest).getId();
+    public Long create(final MemberWeeklyQuestDTO memberWeeklyQuestDTO) {
+        final MemberWeeklyQuest memberWeeklyQuest = new MemberWeeklyQuest();
+        mapToEntity(memberWeeklyQuestDTO, memberWeeklyQuest);
+        return memberQuestRepository.save(memberWeeklyQuest).getId();
     }
 
-    public void update(final Long id, final MemberQuestDTO memberQuestDTO) {
-        final MemberQuest memberQuest = memberQuestRepository.findById(id)
+    public void update(final Long id, final MemberWeeklyQuestDTO memberWeeklyQuestDTO) {
+        final MemberWeeklyQuest memberWeeklyQuest = memberQuestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_QUEST));
-        mapToEntity(memberQuestDTO, memberQuest);
-        memberQuestRepository.save(memberQuest);
+        mapToEntity(memberWeeklyQuestDTO, memberWeeklyQuest);
+        memberQuestRepository.save(memberWeeklyQuest);
     }
 
     public void delete(final Long id) {
         memberQuestRepository.deleteById(id);
     }
 
-    private MemberQuestDTO mapToDTO(final MemberQuest memberQuest,
-            final MemberQuestDTO memberQuestDTO) {
-        memberQuestDTO.setCreatedAt(memberQuest.getCreatedAt());
-        memberQuestDTO.setUpdatedAt(memberQuest.getUpdatedAt());
-        memberQuestDTO.setIsActive(memberQuest.getIsActive());
-        memberQuestDTO.setId(memberQuest.getId());
-        memberQuestDTO.setReferenceKey(memberQuest.getReferenceKey());
-        memberQuestDTO.setIdDone(memberQuest.getIsDone());
-        memberQuestDTO.setMember(memberQuest.getMember() == null ? null : memberQuest.getMember().getId());
-        return memberQuestDTO;
+    private MemberWeeklyQuestDTO mapToDTO(final MemberWeeklyQuest memberWeeklyQuest,
+            final MemberWeeklyQuestDTO memberWeeklyQuestDTO) {
+        memberWeeklyQuestDTO.setCreatedAt(memberWeeklyQuest.getCreatedAt());
+        memberWeeklyQuestDTO.setUpdatedAt(memberWeeklyQuest.getUpdatedAt());
+        memberWeeklyQuestDTO.setIsActive(memberWeeklyQuest.getIsActive());
+        memberWeeklyQuestDTO.setId(memberWeeklyQuest.getId());
+        memberWeeklyQuestDTO.setReferenceKey(memberWeeklyQuest.getReferenceKey());
+        memberWeeklyQuestDTO.setIdDone(memberWeeklyQuest.getIsDone());
+        memberWeeklyQuestDTO.setMember(
+            memberWeeklyQuest.getMember() == null ? null : memberWeeklyQuest.getMember().getId());
+        return memberWeeklyQuestDTO;
     }
 
-    private MemberQuest mapToEntity(final MemberQuestDTO memberQuestDTO,
-            final MemberQuest memberQuest) {
-        memberQuest.setCreatedAt(memberQuestDTO.getCreatedAt());
-        memberQuest.setUpdatedAt(memberQuestDTO.getUpdatedAt());
-        memberQuest.setIsActive(memberQuestDTO.getIsActive());
-        memberQuest.setReferenceKey(memberQuestDTO.getReferenceKey());
-        memberQuest.setIsDone(memberQuestDTO.getIdDone());
-        final Member member = memberQuestDTO.getMember() == null ? null : memberRepository.findById(memberQuestDTO.getMember())
+    private MemberWeeklyQuest mapToEntity(final MemberWeeklyQuestDTO memberWeeklyQuestDTO,
+            final MemberWeeklyQuest memberWeeklyQuest) {
+        memberWeeklyQuest.setCreatedAt(memberWeeklyQuestDTO.getCreatedAt());
+        memberWeeklyQuest.setUpdatedAt(memberWeeklyQuestDTO.getUpdatedAt());
+        memberWeeklyQuest.setIsActive(memberWeeklyQuestDTO.getIsActive());
+        memberWeeklyQuest.setReferenceKey(memberWeeklyQuestDTO.getReferenceKey());
+        memberWeeklyQuest.setIsDone(memberWeeklyQuestDTO.getIdDone());
+        final Member member = memberWeeklyQuestDTO.getMember() == null ? null : memberRepository.findById(
+                memberWeeklyQuestDTO.getMember())
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
-        memberQuest.setMember(member);
-        return memberQuest;
+        memberWeeklyQuest.setMember(member);
+        return memberWeeklyQuest;
     }
 
     /**
@@ -93,9 +95,9 @@ public class MemberQuestService {
      * 해당 멤버와 연관된 활성화된 첫번째 멤버 퀘스트를 조회합니다.
      * @param member 멤버
      * @param isActive 활성화 상태
-     * @return {@link MemberQuest}
+     * @return {@link MemberWeeklyQuest}
      */
-    public MemberQuest findFirstMemberQuestByMemberAndIsActive(Member member, boolean isActive) {
+    public MemberWeeklyQuest findFirstMemberQuestByMemberAndIsActive(Member member, boolean isActive) {
         return memberQuestRepository.findFirstByMemberAndIsActive(member, isActive);
     }
 }

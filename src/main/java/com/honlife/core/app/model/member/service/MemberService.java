@@ -31,7 +31,7 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
-import com.honlife.core.app.model.member.domain.MemberQuest;
+import com.honlife.core.app.model.member.domain.MemberWeeklyQuest;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
@@ -148,10 +148,10 @@ public class MemberService {
             referencedWarning.addParam(memberMemberItem.getId());
             return referencedWarning;
         }
-        final MemberQuest memberMemberQuest = memberQuestRepository.findFirstByMemberAndIsActive(member, true);
-        if (memberMemberQuest != null) {
+        final MemberWeeklyQuest memberMemberWeeklyQuest = memberQuestRepository.findFirstByMemberAndIsActive(member, true);
+        if (memberMemberWeeklyQuest != null) {
             referencedWarning.setKey("member.memberQuest.member.referenced");
-            referencedWarning.addParam(memberMemberQuest.getId());
+            referencedWarning.addParam(memberMemberWeeklyQuest.getId());
             return referencedWarning;
         }
         final MemberBadge memberMemberBadge = memberBadgeRepository.findFirstByMemberAndIsActive(member, true);
