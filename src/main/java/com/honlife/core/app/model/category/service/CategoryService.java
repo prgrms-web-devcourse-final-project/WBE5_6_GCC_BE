@@ -141,7 +141,7 @@ public class CategoryService {
     /**
      * 사용자 이메일을 받아 기본 카테고리와 하위 카테고리를 반환합니다. 이 때 하위 카테고리는 사용자의 카테고리만 반환됩니다.
      * @param userEmail 사용자 이메일
-     * @return {@link CategoryDTO} 를 리스트로 반환합니다.
+     * @return {@code List<CategoryDTO>}
      */
     public List<CategoryDTO> getDefaultCategories(String userEmail) {
         return new ArrayList<>(
@@ -162,7 +162,7 @@ public class CategoryService {
     /**
      * 사용자 이메일을 받아 사용자 카테고리와 사용자 하위 카테고리를 반환합니다.
      * @param userEmail 사용자 이메일
-     * @return {@link CategoryDTO} 를 리스트로 반환합니다.
+     * @return {@code List<CategoryDTO>}
      */
     public List<CategoryDTO> getCustomCategories(String userEmail) {
         return new ArrayList<>(
@@ -183,7 +183,7 @@ public class CategoryService {
     /**
      * 사용자 아이디를 받아 기본 카테고리와 커스텀 카테고리 모두를 반환합니다.
      * @param userEmail 사용자 이메일
-     * @return List<CategoryDTO>
+     * @return {@code List<CategoryDTO>}
      */
     public List<CategoryDTO> getCategories(String userEmail) {
 
@@ -203,7 +203,7 @@ public class CategoryService {
      * 특정 카테고리의 하위 카테고리 조회
      * @param userEmail
      * @param majorName 하위 카테고리를 조회할 major 카테고리의 이름
-     * @return
+     * @return List<CategoryDTO>
      */
     public List<CategoryDTO> getSubCategories(String userEmail, String majorName) {
 
