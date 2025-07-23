@@ -1,7 +1,6 @@
 package com.honlife.core.app.model.category.service;
 
 import com.honlife.core.app.controller.admin.category.payload.AdminCategoryRequest;
-import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
@@ -10,7 +9,6 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -97,5 +95,31 @@ public class AdminCategoryService {
 
         categoryRepository.save(targetCategory);
 
+    }
+
+    /**
+     * 해당하는 기본 카테고리를 참조하는 소분류 카테고리들이 더이상 참조하지 않도록 정리
+     * @param categoryId 기본 카테고리 아이디
+     */
+    public void removeCategoryReference(Long categoryId) {
+        Category targetCategory = categoryRepository.findByIdAndTypeAndIsActive(categoryId, CategoryType.DEFAULT, true).orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+        
+        List<Category> categories = categoryRepository.findCategoriesByParent(targetCategory);
+
+        categories.forEach(category -> {
+           // 더 좋은 방법이 생각나지 않음
+            // 이러면 부모가 없는 소분류 카테고리 인데 어떻게 해야함??
+            category.setParent(null);
+        });
+    }
+
+    /**
+     * 기본 카테고리를 소프트 드랍 합니다.
+     * @param categoryId 기본 카테고리 아이디
+     */
+    public void softDropDefaultCategory(Long categoryId) {
+        Category targetCategory = categoryRepository.findByIdAndTypeAndIsActive(categoryId, CategoryType.DEFAULT, true).orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        targetCategory.setIsActive(false);
     }
 }

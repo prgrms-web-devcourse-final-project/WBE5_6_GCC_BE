@@ -102,13 +102,16 @@ public class AdminCategoryController {
      * @return
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
+    public ResponseEntity<CommonApiResponse<Void>> deleteDefaultCategory(
         @PathVariable(name = "id")
         final Long categoryId) {
-        if (categoryId != 1L && categoryId != 2L && categoryId != 3L) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
-        }
+
+        // 삭제하려는 기본 카테고리를 참조하는 카테고리들 정리
+        adminCategoryService.removeCategoryReference(categoryId);
+
+        // 기본 카테고리 삭제
+        adminCategoryService.softDropDefaultCategory(categoryId);
+
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
