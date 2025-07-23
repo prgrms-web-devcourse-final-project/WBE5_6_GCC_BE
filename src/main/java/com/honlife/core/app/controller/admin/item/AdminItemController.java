@@ -1,43 +1,35 @@
 package com.honlife.core.app.controller.admin.item;
 
+import com.honlife.core.app.controller.admin.item.payload.AdminCreateItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
+import com.honlife.core.app.model.item.service.AdminItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-/**
- * 관리자 아이템 컨트롤러입니다. 관리자 페이지에서 아이템 조회, 추가, 수정 및 삭제에 사용되는 API 들을 정의합니다.
- */
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
-@SecurityRequirement(name = "bearerAuth")
+@RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "[관리자] 아이템 관리", description = "관리자 아이템 관련 API 입니다.")
 @RequestMapping(value = "/api/v1/admin/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminItemController {
+
+    private final AdminItemService adminItemService;
 
     /**
      * 모든 아이템 조회 요청 처리 API
@@ -122,25 +114,16 @@ public class AdminItemController {
     }
 
     /**
-     * 아이템 추가 요청 처리 API
-     * @param adminItemRequest 아이템 정보 객체
-     * @return 성공시 {@code 200}을 반환합니다.
+     * 관리자 아이템 생성 API
+     *
+     * @param request 아이템 생성 요청 정보(AdminCreateItemRequest)
+     * @return 성공 시 204 No Content 반환
      */
-    @Operation(
-        summary = "아이템 추가",
-        description = "아이템을 추가합니다.",
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = AdminItemRequest.class)
-            )
-        )
-    )
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createItem(
-        @RequestBody @Valid AdminItemRequest adminItemRequest
-        ) {
+            @RequestBody AdminCreateItemRequest request
+    ) {
+        adminItemService.createItem(request);
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
