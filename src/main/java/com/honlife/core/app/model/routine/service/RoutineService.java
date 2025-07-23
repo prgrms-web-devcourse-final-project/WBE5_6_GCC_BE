@@ -240,8 +240,8 @@ public class RoutineService {
           return RoutineTodayItemDTO.builder()
               .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
               .routineId(routine.getId())
-              .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
-              .subCategory(childCategory != null ? routine.getCategory().getName() : null)
+              .majorCategory(parentCategory != null ? parentCategory.getName() : null)
+              .subCategory(childCategory != null ? childCategory.getName() : null)
               .name(routine.getContent())
               .triggerTime(routine.getTriggerTime())
               .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
@@ -268,9 +268,19 @@ public class RoutineService {
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
     Category parentCategory = null;
-    Long parentId = routine.getCategory().getParentId();
-    if (parentId != null) {
-      parentCategory = categoryRepository.findById(parentId)
+    Category childCategory = null;
+    CategoryType type = routine.getCategory().getType();
+    if (type == CategoryType.MAJOR) {
+      parentCategory = categoryRepository.findById(routine.getCategory().getId())
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+      childCategory = null;
+    }else{
+
+      childCategory = categoryRepository.findById(routine.getCategory().getId())
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+      parentCategory = categoryRepository.findById(routine.getCategory().getParentId())
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
     }
 
@@ -278,8 +288,8 @@ public class RoutineService {
     RoutineDetailDTO response = RoutineDetailDTO.builder()
         .routineId(routineId)
         .categoryId(routine.getCategory().getId())
-        .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
-        .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
+        .majorCategory(parentCategory != null ? parentCategory.getName() : null)
+        .subCategory(parentCategory != null ? childCategory.getName() : null)
         .name(routine.getContent())
         .triggerTime(routine.getTriggerTime())
         .isImportant(routine.getIsImportant())
