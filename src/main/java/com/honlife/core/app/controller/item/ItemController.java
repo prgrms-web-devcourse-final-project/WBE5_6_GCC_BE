@@ -28,7 +28,7 @@ import java.util.List;
 
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "아이템", description = "아이템 관련 api 입니다.")
+@Tag(name = "✅ [일반] 아이템", description = "아이템 관련 api 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemController {

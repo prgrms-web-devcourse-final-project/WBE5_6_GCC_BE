@@ -74,48 +74,96 @@ public class RoutinePresetController {
             presets.add(RoutinePresetsResponse.PresetItem.builder()
                 .presetId(1L)
                 .categoryId(1L)
-                .content("화장실 청소하기")
+                .majorCategory("청소")
+                .subCategory("화장실 청소")
+                .name("화장실 청소하기")
+                .triggerTime("23:00")
+                .isDone(false)
+                .isImportant(true)
                 .build());
+
             presets.add(RoutinePresetsResponse.PresetItem.builder()
-                .presetId(4L)
+                .presetId(2L)
                 .categoryId(1L)
-                .content("방 정리하기")
+                .majorCategory("청소")
+                .subCategory("거실 청소")
+                .name("청소기 돌리기")
+                .triggerTime("21:00")
+                .isDone(false)
+                .isImportant(true)
                 .build());
+
             presets.add(RoutinePresetsResponse.PresetItem.builder()
-                .presetId(6L)
+                .presetId(3L)
                 .categoryId(1L)
-                .content("설거지하기")
+                .majorCategory("청소")
+                .subCategory("주방 정리")
+                .name("식탁 닦기")
+                .triggerTime("20:00")
+                .isDone(false)
+                .isImportant(false)
                 .build());
+
         } else if (categoryId == 2L) {
             // 건강 카테고리 프리셋
             presets.add(RoutinePresetsResponse.PresetItem.builder()
-                .presetId(2L)
+                .presetId(4L)
                 .categoryId(2L)
-                .content("자기 전 명상 10분")
+                .majorCategory("건강")
+                .subCategory("명상")
+                .name("명상하기")
+                .triggerTime("22:00")
+                .isDone(false)
+                .isImportant(true)
                 .build());
+
             presets.add(RoutinePresetsResponse.PresetItem.builder()
-                .presetId(7L)
+                .presetId(5L)
                 .categoryId(2L)
-                .content("물 2L 마시기")
+                .majorCategory("건강")
+                .subCategory("수분 보충")
+                .name("물 마시기")
+                .triggerTime("08:00")
+                .isDone(false)
+                .isImportant(true)
                 .build());
+
         } else if (categoryId == 4L) {
             // 운동 카테고리 프리셋
             presets.add(RoutinePresetsResponse.PresetItem.builder()
-                .presetId(3L)
+                .presetId(6L)
                 .categoryId(4L)
-                .content("아침 스트레칭 하기")
+                .majorCategory("운동")
+                .subCategory("스트레칭")
+                .name("아침 스트레칭")
+                .triggerTime("07:30")
+                .isDone(false)
+                .isImportant(true)
                 .build());
+
             presets.add(RoutinePresetsResponse.PresetItem.builder()
-                .presetId(5L)
+                .presetId(7L)
                 .categoryId(4L)
-                .content("플랭크 1분")
+                .majorCategory("운동")
+                .subCategory("코어운동")
+                .name("플랭크")
+                .triggerTime("18:00")
+                .isDone(false)
+                .isImportant(false)
                 .build());
+
             presets.add(RoutinePresetsResponse.PresetItem.builder()
                 .presetId(8L)
                 .categoryId(4L)
-                .content("계단 오르기")
+                .majorCategory("운동")
+                .subCategory("유산소")
+                .name("계단 오르기")
+                .triggerTime("출근시간")
+                .isDone(false)
+                .isImportant(false)
                 .build());
         }
+
 
         response.setPresets(presets);
 

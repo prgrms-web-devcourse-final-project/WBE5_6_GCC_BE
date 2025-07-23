@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "루틴", description = "루틴 관련 api 입니다.")
+@Tag(name = "[회원] 루틴", description = "루틴 관련 api 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -120,14 +121,17 @@ public class RoutineController {
                 date = LocalDate.now();
             }
 
+
+            LocalDate monday = date.with(DayOfWeek.MONDAY);
+
             Map<String, List<RoutinesResponse.RoutineItem>> routinesMap = new LinkedHashMap<>();
 
-            // 7일치 루프
             for (int i = 0; i < 7; i++) {
-                LocalDate targetDate = date.plusDays(i);
+                LocalDate targetDate = monday.plusDays(i);
                 String key = targetDate.toString();
 
                 List<RoutinesResponse.RoutineItem> items = new ArrayList<>();
+                LocalDate startRoutineDate = monday.minusWeeks(1);
 
                 items.add(RoutinesResponse.RoutineItem.builder()
                     .scheduleId((long) i + 1)
@@ -139,6 +143,7 @@ public class RoutineController {
                     .isDone(false)
                     .isImportant(true)
                     .date(targetDate)
+                    .startRoutineDate(startRoutineDate)
                     .build());
 
                 routinesMap.put(key, items);
@@ -149,7 +154,6 @@ public class RoutineController {
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
-
 
 
     /**
@@ -166,6 +170,7 @@ public class RoutineController {
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
+
         if (routineId == 1L) {
             RoutineDetailResponse response = RoutineDetailResponse.builder()
                 .routineId(1L)
@@ -177,6 +182,7 @@ public class RoutineController {
                 .isImportant(false)
                 .repeatType(RepeatType.WEEKLY)
                 .repeatValue("1,3,5")
+                .startRoutineDate(LocalDate.of(2025, 7, 1))
                 .build();
 
             return ResponseEntity.ok(CommonApiResponse.success(response));

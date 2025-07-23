@@ -28,7 +28,7 @@ import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 
 
 @RequiredArgsConstructor
-@Tag(name="업적", description = "업적 관련 API 입니다.")
+@Tag(name="[일반] 업적", description = "업적 관련 API 입니다.")
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping(value = "/api/v1/badges", produces = MediaType.APPLICATION_JSON_VALUE)
