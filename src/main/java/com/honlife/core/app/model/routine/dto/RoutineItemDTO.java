@@ -33,6 +33,8 @@ public class RoutineItemDTO {
     private Boolean isImportant;
 
     private LocalDate date;
+
+    private LocalDate startRoutineDate;
   }
 
 
