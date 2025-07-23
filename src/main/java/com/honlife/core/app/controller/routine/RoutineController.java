@@ -53,9 +53,66 @@ public class RoutineController {
         this.routineService = routineService;
     }
 
+    /**
+     * 사용자 루틴 오늘 날짜 조회 API
+
+     * @return UserRoutinesPayload
+     */
+    @Operation(
+        summary = "사용자 오늘 루틴 조회",
+        description = "사용자의 오늘 날짜 기준 루틴 목록을 조회합니다."
+    )
+    @GetMapping("/today")
+    public ResponseEntity<CommonApiResponse<List<RoutineItemDTO>>> getUserRoutines(
+    ) {
+
+        List<RoutineItemDTO> routines = new ArrayList<>();
+
+        routines.add(RoutineItemDTO.builder()
+            .scheduleId(3L)
+            .routineId(3L)
+            .majorCategory("업무")
+            .subCategory("회의")
+            .name("팀 미팅 참석")
+            .triggerTime("10:00")
+            .isDone(true)
+            .isImportant(true)
+            .repeatType(RepeatType.WEEKLY)
+            .repeatValue("1,2,3")
+            .build());
+
+        routines.add(RoutineItemDTO.builder()
+            .scheduleId(4L)
+            .routineId(4L)
+            .majorCategory("학습")
+            .subCategory("독서")
+            .name("기술 서적 읽기")
+            .triggerTime("20:00")
+            .isDone(false)
+            .isImportant(false)
+            .repeatType(RepeatType.DAILY)
+            .repeatValue(null)
+            .build());
+
+        routines.add(RoutineItemDTO.builder()
+            .scheduleId(5L)
+            .routineId(5L)
+            .majorCategory("건강")
+            .subCategory("운동")
+            .name("저녁 조깅")
+            .triggerTime("19:00")
+            .isDone(false)
+            .isImportant(true)
+            .repeatType(RepeatType.WEEKLY)
+            .repeatValue("5,4")
+            .build());
+
+        return ResponseEntity.ok(CommonApiResponse.success(routines));
+    }
 
 
-        /**
+
+    /**
          * 사용자 루틴 조회 API
          * @param date 조회할 날짜 (없으면 오늘 날짜)
          * @param userDetails 로그인된 사용자 정보
