@@ -10,6 +10,7 @@ import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,20 +27,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.category.service.CategoryService;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/v1/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    public CategoryController(final CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
     /**
      * 카테고리 조회 API
-     * @param majorName 카테고리 이름이 넘어오지 않으면 소분류 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
-     * @return List<CategoryResponse>
+     * 전체 조회 시 대분류 카테고리와 동시에 해당 카테고리의 소분류 카테고리도 함께 반환됩니다.
+     * @return CategoryWrapper
      */
     @GetMapping
     public ResponseEntity<CommonApiResponse<CategoryWrapper>> getCategories(
