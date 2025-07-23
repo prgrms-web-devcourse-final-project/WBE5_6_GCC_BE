@@ -14,6 +14,7 @@ public class AdminItemResponse {
     private String itemName;
     private Integer itemPrice;
     private ItemType itemType;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private String itemDescription;
+    private Boolean isActive;
+    private Boolean isListed;
 }

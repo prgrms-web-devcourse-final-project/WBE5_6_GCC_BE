@@ -28,7 +28,7 @@ import java.util.List;
 
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "아이템", description = "아이템 관련 api 입니다.")
+@Tag(name = "✅ [일반] 아이템", description = "아이템 관련 api 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemController {
@@ -118,11 +118,6 @@ public class ItemController {
     }
 
 
-    /**
-     * 아이템 구매 API
-     *
-     * @param itemId 아이템 고유 아이다
-     */
     @Operation(summary = "아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
     @PostMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> getItem(

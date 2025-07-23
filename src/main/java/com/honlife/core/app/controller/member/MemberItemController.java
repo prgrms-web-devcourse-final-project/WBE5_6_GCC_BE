@@ -1,8 +1,8 @@
 package com.honlife.core.app.controller.member;
 
-import com.honlife.core.app.controller.member.payload.MemberItemEquippedRequest;
 import com.honlife.core.app.controller.member.payload.MemberItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
+import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,14 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.model.member.service.MemberItemService;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @Tag(name = "회원 보유 아이템", description = "현재 로그인한 회원이 보유하고 있는 아이템 관련 API 입니다.")
 @RestController
@@ -69,8 +64,8 @@ public class MemberItemController {
                 .isListed(true)
                 .build();
         MemberItemResponse accessory = MemberItemResponse.builder()
-                .itemKey("accessory_item_01")
-                .itemName("요리사 모자")
+            .itemKey("accessory_item_01")
+            .itemName("요리사 모자")
                 .itemDescription("위생에 한층 더 강력해집니다.")
                 .itemtype(ItemType.ACCESSORY)
                 .isEquipped(true)

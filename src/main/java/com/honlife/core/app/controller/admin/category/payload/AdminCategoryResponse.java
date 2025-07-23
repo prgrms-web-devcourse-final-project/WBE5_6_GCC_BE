@@ -11,6 +11,7 @@ public class AdminCategoryResponse {
 
     private Long categoryId;
     private String categoryName;
+    private String emoji;
     private CategoryType categoryType;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
