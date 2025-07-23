@@ -20,10 +20,6 @@ public class ItemDTO {
 
     private Long id;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
     @JsonProperty("isActive")
     private Boolean isActive;
 
@@ -43,5 +39,7 @@ public class ItemDTO {
 
     @JsonProperty("isOwned")
     private Boolean isOwned;
+
+    private Boolean isListed;
 
 }
