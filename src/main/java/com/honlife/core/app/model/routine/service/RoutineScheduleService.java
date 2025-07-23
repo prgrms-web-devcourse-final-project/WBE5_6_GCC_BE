@@ -97,10 +97,9 @@ public class RoutineScheduleService {
         // 5. 취소 시 포인트 회수 로직 (필요한 경우)
 
         RoutineSchedule routineSchedule = routineScheduleRepository.findWithRoutineAndMemberById(scheduleId);
-        Member member = memberRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
-        MemberPoint memberPoint = memberPointRepository.findByMember(member);
+        MemberPoint memberPoint = memberPointRepository.findByMember_Email(userEmail)
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_POINT));
 
         if(routineSchedule == null){
            throw new CommonException(ResponseCode.NOT_FOUND_ROUTINE);
