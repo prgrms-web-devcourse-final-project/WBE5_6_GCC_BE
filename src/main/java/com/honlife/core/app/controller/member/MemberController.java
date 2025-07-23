@@ -7,7 +7,7 @@ import com.honlife.core.app.model.category.service.InterestCategoryService;
 import com.honlife.core.app.model.member.service.MemberBadgeService;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberPointService;
-import com.honlife.core.app.model.member.service.MemberWeeklyQuestService;
+import com.honlife.core.app.model.quest.service.WeeklyQuestProgressService;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -48,20 +48,20 @@ public class MemberController {
     private final RoutineService routineService;
     private final CategoryService categoryService;
     private final MemberItemService memberItemService;
-    private final MemberWeeklyQuestService memberWeeklyQuestService;
+    private final WeeklyQuestProgressService weeklyQuestProgressService;
     private final MemberBadgeService memberBadgeService;
     private final InterestCategoryService interestCategoryService;
     private final MemberPointService memberPointService;
 
     public MemberController(final MemberService memberService, RoutineService routineService,
         CategoryService categoryService, MemberItemService memberItemService,
-        MemberWeeklyQuestService memberWeeklyQuestService, MemberBadgeService memberBadgeService,
+        WeeklyQuestProgressService weeklyQuestProgressService, MemberBadgeService memberBadgeService,
         InterestCategoryService interestCategoryService, MemberPointService memberPointService) {
         this.memberService = memberService;
         this.routineService = routineService;
         this.categoryService = categoryService;
         this.memberItemService = memberItemService;
-        this.memberWeeklyQuestService = memberWeeklyQuestService;
+        this.weeklyQuestProgressService = weeklyQuestProgressService;
         this.memberBadgeService = memberBadgeService;
         this.interestCategoryService = interestCategoryService;
         this.memberPointService = memberPointService;
@@ -168,7 +168,7 @@ public class MemberController {
         // 멤버 아이템 is_active = false
         memberItemService.softDropMemberItemByMemberId(memberId);
         // 멤버 퀘스트 is active = false
-        memberWeeklyQuestService.softDropMemberQuestByMemberId(memberId);
+        weeklyQuestProgressService.softDropMemberQuestByMemberId(memberId);
         // 멤버 업적 is_active = false
         memberBadgeService.softDropMemberBadgeByMemberId(memberId);
         // 선호 카테고리 is_active = false

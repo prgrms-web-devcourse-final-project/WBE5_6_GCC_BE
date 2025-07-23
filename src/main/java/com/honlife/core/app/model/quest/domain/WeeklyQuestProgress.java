@@ -1,6 +1,6 @@
-package com.honlife.core.app.model.member.domain;
+package com.honlife.core.app.model.quest.domain;
 
-import com.honlife.core.app.model.quest.domain.WeeklyQuest;
+import com.honlife.core.app.model.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,7 +19,7 @@ import com.honlife.core.app.model.common.BaseEntity;
 @Entity
 @Getter
 @Setter
-public class MemberWeeklyQuest extends BaseEntity {
+public class WeeklyQuestProgress extends BaseEntity {
 
     @Id
     @Column(nullable = false, updatable = false)

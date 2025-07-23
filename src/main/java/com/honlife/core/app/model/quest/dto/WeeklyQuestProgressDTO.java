@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.member.model;
+package com.honlife.core.app.model.quest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MemberEventQuestDTO {
+public class WeeklyQuestProgressDTO {
 
     private Long id;
 
@@ -23,6 +23,10 @@ public class MemberEventQuestDTO {
     private Integer progress;
 
     private Boolean idDone;
+
+    private LocalDateTime startAt;
+
+    private LocalDateTime endAt;
 
     @NotNull
     private Long member;

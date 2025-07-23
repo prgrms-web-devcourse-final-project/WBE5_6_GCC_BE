@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.member.repos;
+package com.honlife.core.app.model.quest.repos;
 
 import com.honlife.core.app.model.member.domain.QMemberQuest;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class MemberWeeklyQuestRepositoryCustomImpl implements MemberWeeklyQuestRepositoryCustom {
+public class WeeklyQuestProgressRepositoryCustomImpl implements
+    WeeklyQuestProgressRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
