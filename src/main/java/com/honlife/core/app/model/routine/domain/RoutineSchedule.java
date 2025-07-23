@@ -40,8 +40,12 @@ public class RoutineSchedule {
     )
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routine_id", nullable = false)
+    private Routine routine;
+
     @Column
-    private LocalDate date;
+    private LocalDate scheduleDate;
 
     @Column
     private Boolean isDone;
@@ -49,8 +53,6 @@ public class RoutineSchedule {
     @Column
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "routine_id", nullable = false)
-    private Routine routine;
+
 
 }

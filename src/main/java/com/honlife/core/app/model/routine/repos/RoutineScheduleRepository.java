@@ -16,8 +16,6 @@ public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule
 
 
 
-  RoutineSchedule findByRoutineAndDate(Routine routine, LocalDate now);
-
   List<RoutineSchedule> findByRoutine(Routine routine);
 
   boolean existsByRoutineAndDate(Routine routine, LocalDate today);
@@ -25,4 +23,6 @@ public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule
   @Query("SELECT rs FROM RoutineSchedule rs JOIN FETCH rs.routine r JOIN FETCH r.member WHERE rs.id = :id")
   RoutineSchedule findWithRoutineAndMemberById(Long id);
 
+
+  RoutineSchedule findByRoutineAndScheduleDate(Routine routine, LocalDate now);
 }

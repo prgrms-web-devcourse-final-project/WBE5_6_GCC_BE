@@ -30,5 +30,5 @@ public interface MemberPointRepository extends JpaRepository<MemberPoint, Long>,
      */
     Optional<MemberPoint> findByMemberId(Long memberId);
 
-  MemberPoint findByMember(Member member);
+    Optional<MemberPoint> findByMember_Email(String email);
 }
