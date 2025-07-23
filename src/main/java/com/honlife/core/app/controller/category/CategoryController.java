@@ -5,7 +5,6 @@ import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.controller.category.wrapper.CategoryWrapper;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
-import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
