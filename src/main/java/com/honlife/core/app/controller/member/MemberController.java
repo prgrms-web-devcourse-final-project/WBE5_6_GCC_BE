@@ -1,7 +1,10 @@
 package com.honlife.core.app.controller.member;
 
+import com.honlife.core.app.controller.member.payload.MemberBadgeResponse;
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
+import com.honlife.core.app.controller.member.wrapper.MemberResponseWrapper;
+import com.honlife.core.app.model.badge.code.BadgeTier;
 import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -61,19 +64,28 @@ public class MemberController {
      */
     @Operation(summary = "로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
-    public ResponseEntity<CommonApiResponse<MemberPayload>> getCurrentMember(
+    public ResponseEntity<CommonApiResponse<MemberResponseWrapper>> getCurrentMember(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
         if(userId.equals("user01@test.com")){
-            MemberPayload response = new MemberPayload();
-            response.setName("홍길동");
-            response.setNickname("닉네임");
-            response.setResidenceExperience(ResidenceExperience.OVER_10Y);
-            response.setRegionDept1("서울시");
-            response.setRegionDept2("강북구");
-            response.setRegionDept3("미아동");
-            return ResponseEntity.ok(CommonApiResponse.success(response));
+            MemberPayload member = new MemberPayload();
+            member.setName("홍길동");
+            member.setNickname("닉네임");
+            member.setResidenceExperience(ResidenceExperience.OVER_10Y);
+            member.setRegionDept1("서울시");
+            member.setRegionDept2("강북구");
+            member.setRegionDept3("미아동");
+
+            MemberBadgeResponse equippedBadge = MemberBadgeResponse.builder()
+                .badgeKey("clean_bronze")
+                .badgeName("청소 초보")
+                .badgeTier(BadgeTier.BRONZE)
+                .build();
+
+            MemberResponseWrapper responseWrapper = new MemberResponseWrapper(member, equippedBadge);
+
+            return ResponseEntity.ok(CommonApiResponse.success(responseWrapper));
         }
         return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
             .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
