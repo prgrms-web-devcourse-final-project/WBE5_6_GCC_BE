@@ -41,20 +41,13 @@ public class CategoryController {
      */
     @GetMapping
     public ResponseEntity<CommonApiResponse<CategoryWrapper>> getCategories(
-        @RequestParam(required = false) String majorName,
         @AuthenticationPrincipal UserDetails userDetails
 
     ) {
         String userEmail = userDetails.getUsername();
-        List<CategoryDTO> categories = new ArrayList<>();
 
-        if(majorName == null) {
-            // 전체 카테고리 찾기
-            categories = categoryService.getCategories(userEmail);
-        }else{
-            // 소분류 카테고리 찾기
-            categories = categoryService.getSubCategories(userEmail, majorName);
-        }
+        // 전체 카테고리 찾기
+        List<CategoryDTO> categories = categoryService.getCategories(userEmail);
 
         List<CategoryResponse> categoryResponses = categories.stream().map(
             CategoryResponse::fromDTO

@@ -194,33 +194,4 @@ public class CategoryService {
 
         return categories;
     }
-
-
-    /**
-     * 특정 카테고리의 하위 카테고리 조회
-     * @param userEmail
-     * @param majorName 하위 카테고리를 조회할 major 카테고리의 이름
-     * @return List<CategoryDTO>
-     */
-    public List<CategoryDTO> getSubCategories(String userEmail, String majorName) {
-
-        // 커스텀 카테고리에서 찾지 못하면 기본 카테고리에서 찾음
-        Category majorCategory = categoryRepository.findCustomCategoryByName(majorName, userEmail)
-            .orElseGet(()->categoryRepository.findDefaultCategoryByName(majorName, userEmail)
-                .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY)));
-
-        return List.of(
-            CategoryDTO.builder()
-                    .id(majorCategory.getId())
-                    .children(majorCategory.getChildren().stream().map(
-                        ChildCategoryDTO::fromEntity
-                    ).toList())
-                    .name(majorCategory.getName())
-                    .type(majorCategory.getType())
-                    .member(majorCategory.getMember().getId())
-                    .emoji(majorCategory.getEmoji())
-                    .build()
-            );
-    }
-
 }
