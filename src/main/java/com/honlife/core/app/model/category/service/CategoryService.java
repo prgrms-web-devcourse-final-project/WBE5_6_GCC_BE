@@ -1,7 +1,5 @@
 package com.honlife.core.app.model.category.service;
 
-import com.honlife.core.app.model.category.code.CategoryType;
-import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.ArrayList;
@@ -30,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-@Slf4j
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
