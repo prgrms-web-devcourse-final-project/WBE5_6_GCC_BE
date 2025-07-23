@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.routine.payload;
 
+import com.honlife.core.app.model.routine.code.RepeatType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 import lombok.Builder;
@@ -54,5 +55,11 @@ public class RoutinesResponse {
 
         @Schema(description = "루틴 시작 날짜", example = "2025-11-10")
         private LocalDate startRoutineDate;
+
+        @Schema(description = "반복 타입", example = "WEEKLY")
+        private RepeatType repeatType;
+
+        @Schema(description = "반복 값", example = "1,3,5")
+        private String repeatValue;
     }
 }
