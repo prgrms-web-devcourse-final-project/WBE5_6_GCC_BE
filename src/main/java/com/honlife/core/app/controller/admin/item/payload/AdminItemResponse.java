@@ -30,7 +30,6 @@ public class AdminItemResponse {
                 .itemDescription(dto.getDescription())
                 .itemPrice(dto.getPrice())
                 .itemType(dto.getType())
-                .isOwned(dto.getIsOwned())
                 .isListed(dto.getIsListed())
                 .isActive(dto.getIsActive())
                 .build();
