@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.category.service.CategoryService;
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name="카테고리", description = "카테고리 관련 API 입니다. <br>요청 바디 중 type에는 MAJOR, SUB가 들어갈 수 있습니다.")
+@Tag(name="[일반] 카테고리", description = "카테고리 관련 API 입니다. <br>요청 바디 중 type에는 MAJOR, SUB가 들어갈 수 있습니다.")
 @RestController
 @RequestMapping(value = "/api/v1/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
@@ -204,7 +205,7 @@ public class CategoryController {
      * @return
      */
     @Operation(summary = "카테고리 수정", description = "특정 카테고리를 수정합니다. <br>id가 1,2,3 인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
         @Schema(description = "카테고리 id", example = "3")
