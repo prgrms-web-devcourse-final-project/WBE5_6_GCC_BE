@@ -16,4 +16,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @return
      */
     Category findFirstByMemberAndIsActive(Member member, Boolean isActive);
+
+    Category findByName(String subCategory);
 }
