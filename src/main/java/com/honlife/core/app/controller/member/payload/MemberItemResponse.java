@@ -15,6 +15,7 @@ public class MemberItemResponse {
     private String itemDescription;
     private ItemType itemtype;
     private Boolean isEquipped;
+    private Boolean isListed;
 
 
 }
