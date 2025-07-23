@@ -8,28 +8,29 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
-import lombok.Getter;
-import lombok.Setter;
 import com.honlife.core.app.model.common.BaseEntity;
 import com.honlife.core.app.model.item.code.ItemType;
+import lombok.*;
 
-
-@Entity
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Entity
 public class Item extends BaseEntity {
 
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-        name = "item_sequence",
-        sequenceName = "item_sequence",
-        allocationSize = 1,
-        initialValue = 10000
+            name = "item_sequence",
+            sequenceName = "item_sequence",
+            allocationSize = 1,
+            initialValue = 10000
     )
     @GeneratedValue(
-        strategy = GenerationType.SEQUENCE,
-        generator = "item_sequence"
+            strategy = GenerationType.SEQUENCE,
+            generator = "item_sequence"
     )
     private Long id;
 
@@ -48,5 +49,8 @@ public class Item extends BaseEntity {
     @Column
     @Enumerated(EnumType.STRING)
     private ItemType type;
+
+    @Column
+    private Boolean isListed;
 
 }
