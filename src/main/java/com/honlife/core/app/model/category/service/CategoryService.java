@@ -196,13 +196,13 @@ public class CategoryService {
 
         return categories;
     }
+
     /**
      * id를 통해 카테고리 정보를 검색합니다.
      * @param categoryId 카테고리 아이디
      * @param userEmail 유저 이메일
      * @return {@link CategoryDTO}
      */
-
     public CategoryDTO findCategoryById(Long categoryId, String userEmail) {
         Category category = categoryRepository.findCategoryById(categoryId, userEmail)
             .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));

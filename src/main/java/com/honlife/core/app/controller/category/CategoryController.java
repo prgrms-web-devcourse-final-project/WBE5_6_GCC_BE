@@ -59,12 +59,13 @@ public class CategoryController {
 
 
     /**
-     * 카테고리 특정 조회 API
+     * 카테고리 단건 조회 API
+     * 대분류 카테고리 조회 시 이를 참조하는 소분류 카테고리도 함께 조회 가능합니다.
      * @param categoryId 카테고리 아이디.
-     * @return CategoryResponse
+     * @return CategoryWithParentResponse
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<CategoryWithParentResponse>> getCategory(
+    public ResponseEntity<CommonApiResponse<CategoryWithParentResponse>> getCategoryById(
         @PathVariable(name="id")
         final Long categoryId,
         @AuthenticationPrincipal UserDetails userDetails
