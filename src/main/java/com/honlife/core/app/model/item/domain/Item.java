@@ -35,7 +35,7 @@ public class Item extends BaseEntity {
     private Long id;
 
     @Column( unique = true,nullable = false, length = 50)
-    private String itemKey;
+    private String key;
 
     @Column(length = 50,nullable = false)
     private String name;
