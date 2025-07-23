@@ -1,6 +1,6 @@
 package com.honlife.core.app.model.category.repos;
 
-import java.util.Collection;
+import com.honlife.core.app.model.category.code.CategoryType;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +28,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      */
     Optional<Category> findCategoryByNameAndMember_Email(String name, String memberEmail);
 
+    List<Category> findCategoriesByType(CategoryType type);
 }
