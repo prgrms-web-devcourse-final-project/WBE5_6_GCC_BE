@@ -16,5 +16,4 @@ public class MemberItemDTOCustom {
     private ItemType itemtype;
     private String itemDescription;
     private Boolean isEquipped;
-    private Boolean isListed;
 }

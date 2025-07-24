@@ -25,7 +25,6 @@ public class MemberItemResponse {
                 .itemtype(dto.getItemtype())
                 .itemDescription(dto.getItemDescription())
                 .isEquipped(dto.getIsEquipped())
-                .isListed(dto.getIsListed())
                 .build();
     }
     public static List<MemberItemResponse> fromDTOList(List<MemberItemDTOCustom> dtos) {
