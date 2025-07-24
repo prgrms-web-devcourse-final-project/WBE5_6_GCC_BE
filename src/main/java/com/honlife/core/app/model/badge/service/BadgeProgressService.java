@@ -30,13 +30,13 @@ public class BadgeProgressService {
         log.debug("Incrementing category progress for member: {}, category: {}", memberId, categoryId);
 
         BadgeProgress progress = findOrCreateCategoryProgress(memberId, categoryId);
-        progress.setCount(progress.getCount() + 1);
+        progress.setCountValue(progress.getCountValue() + 1);
         progress.setLastDate(LocalDate.now());
 
         badgeProgressRepository.save(progress);
 
         log.debug("Category progress updated - member: {}, category: {}, new count: {}",
-            memberId, categoryId, progress.getCount());
+            memberId, categoryId, progress.getCountValue());
     }
 
     /**
@@ -53,15 +53,15 @@ public class BadgeProgressService {
 
         if (progress.getLastDate() != null && progress.getLastDate().equals(yesterday)) {
             // 연속 로그인 유지 - 카운트 증가
-            progress.setCount(progress.getCount() + 1);
-            log.debug("Login streak continued - member: {}, new streak: {}", memberId, progress.getCount());
+            progress.setCountValue(progress.getCountValue() + 1);
+            log.debug("Login streak continued - member: {}, new streak: {}", memberId, progress.getCountValue());
         } else if (progress.getLastDate() != null && progress.getLastDate().equals(today)) {
             // 오늘 이미 로그인함 - 아무것도 하지 않음
             log.debug("Already logged in today - member: {}", memberId);
             return;
         } else {
             // 연속 끊어짐 또는 첫 로그인 - 1로 리셋
-            progress.setCount(1);
+            progress.setCountValue(1);
             log.debug("Login streak reset - member: {}, new streak: 1", memberId);
         }
 
@@ -80,7 +80,7 @@ public class BadgeProgressService {
     public int getCurrentProgress(Long memberId, ProgressType progressType, String progressKey) {
         return badgeProgressRepository
             .findByMemberIdAndProgressTypeAndProgressKey(memberId, progressType, progressKey)
-            .map(BadgeProgress::getCount)
+            .map(BadgeProgress::getCountValue)
             .orElse(0);
     }
 
@@ -116,7 +116,7 @@ public class BadgeProgressService {
             .progressType(ProgressType.CATEGORY)
             .progressKey(categoryId.toString())
             .countType(CountType.CUMULATIVE)
-            .count(0)
+            .countValue(0)
             .lastDate(LocalDate.now())
             .build();
 
@@ -135,7 +135,7 @@ public class BadgeProgressService {
             .progressType(ProgressType.LOGIN)
             .progressKey("DAILY")
             .countType(CountType.STREAK)
-            .count(0)
+            .countValue(0)
             .lastDate(LocalDate.now())
             .build();
 

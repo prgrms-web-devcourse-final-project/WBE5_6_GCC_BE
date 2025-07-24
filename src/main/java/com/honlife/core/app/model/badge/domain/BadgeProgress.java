@@ -63,8 +63,8 @@ public class BadgeProgress extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CountType countType;
 
-    @Column(name = "count", nullable = false)
-    private Integer count;
+    @Column(name = "count_value", nullable = false)
+    private Integer countValue;
 
     @Column(name = "last_date")
     private LocalDate lastDate;

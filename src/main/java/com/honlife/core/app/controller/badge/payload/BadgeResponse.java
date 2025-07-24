@@ -43,7 +43,7 @@ public class BadgeResponse {
             .badgeKey(dto.getBadgeKey())
             .badgeName(dto.getBadgeName())
             .tier(dto.getTier())
-            .how(dto.getHow())
+            .how(dto.getMessage())
             .requirement(dto.getRequirement())
             .info(dto.getInfo())
             .categoryName(dto.getCategoryName())
