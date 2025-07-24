@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -35,9 +36,9 @@ public class MemberItemService {
     private final ItemService itemService;
 
      /** 사용자의 아이템 장착 상태를 전환합니다.
-      - 같은 타입의 아이템 중 이미 장착된 것이 있으면 모두 해제합니다.
-      - 클릭한 아이템이 이미 장착 중이면 해제만 수행하고 종료합니다.
-      - 그렇지 않으면 해당 아이템을 장착 처리합니다.
+      - 클릭한 아이템이 이미 장착 중이라면 장착을 해제합니다.
+      - 장착 중인 같은 타입 아이템이 존재하면 해당 아이템을 해제합니다.
+      - 이후 클릭한 아이템을 장착 처리합니다.
 
       @param memberId 사용자 ID
      * @param itemKey  장착 또는 해제할 아이템의 고유 키
@@ -62,14 +63,11 @@ public class MemberItemService {
             target.setIsEquipped(false);
             return;
         }
-        // 해당 멤버의 같은 '타입' 아이템들 정보 가져오기
-        List<MemberItem> equippedItems = memberItemRepository
+        // 해당 멤버의 같은 '타입 및 장착중인 ' 아이템 정보 가져오기
+        Optional<MemberItem> currentlyEquippedItem = memberItemRepository
                 .findByMemberIdAndItemTypeAndIsEquippedTrue(memberId, item.getType());
 
-        // isEquipped = true인 것들 해제
-        for (MemberItem equippedItem : equippedItems) {
-            equippedItem.setIsEquipped(false);
-        }
+        currentlyEquippedItem.ifPresent(equipped -> equipped.setIsEquipped(false));
 
         target.setIsEquipped(true);
     }

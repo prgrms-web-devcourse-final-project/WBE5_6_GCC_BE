@@ -46,7 +46,7 @@ public class MemberItemController {
      * @param itemKey       장착 또는 해제하려는 아이템의 고유 키
      * @param userDetails   로그인된 사용자 정보
      */
-    @PatchMapping("/equip")
+    @PatchMapping()
     public ResponseEntity<CommonApiResponse<Void>> SwitchEquipItem(
             @RequestParam String itemKey,
             @AuthenticationPrincipal UserDetails userDetails

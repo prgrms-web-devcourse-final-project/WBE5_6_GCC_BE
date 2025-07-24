@@ -36,7 +36,7 @@ public interface MemberItemRepository extends JpaRepository<MemberItem, Long>, M
     /**
      * 특정 회원이 장착 중인 아이템들 중, 타입이 일치하고 isEquipped=true인 항목 조회
      */
-    List<MemberItem> findByMemberIdAndItemTypeAndIsEquippedTrue(Long memberId, ItemType type);
+    Optional<MemberItem> findByMemberIdAndItemTypeAndIsEquippedTrue(Long memberId, ItemType type);
 
     /**
      * 특정 회원이 보유한 특정 아이템 조회
