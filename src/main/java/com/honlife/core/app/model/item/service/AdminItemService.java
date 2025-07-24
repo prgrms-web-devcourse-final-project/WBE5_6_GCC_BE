@@ -22,7 +22,7 @@ public class AdminItemService {
      * @return List<ItemDTO> - 아이템 정보 DTO 리스트
      */
     public List<ItemDTO> getAllItems() {
-        List<Item> items = itemRepository.findAll(); // QueryDSL 결과
+        List<Item> items = itemRepository.findAllByIsActiveTrue(); // QueryDSL 결과
 
         return items.stream()
                 .map(item -> ItemDTO.builder()

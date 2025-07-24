@@ -20,6 +20,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     boolean existsByItemKeyIgnoreCase(String itemKey);
 
     // Item 테이블의 모든 데이터를 조회합니다. (isActive 조건 없음)
-    List<Item> findAll();
+    List<Item> findAllByIsActiveTrue();
 
 }
