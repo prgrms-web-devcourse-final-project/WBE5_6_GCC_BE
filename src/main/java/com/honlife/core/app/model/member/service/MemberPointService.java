@@ -116,4 +116,31 @@ public class MemberPointService {
             .point(memberPoint.getPoint())
             .build();
     }
+
+    /**
+     * 회원에게 포인트 추가 지급
+     * @param memberId 회원 ID
+     * @param pointToAdd 추가할 포인트
+     * @return 업데이트 후 총 포인트
+     */
+    @Transactional
+    public int addPointToMember(Long memberId, int pointToAdd) {
+        Optional<MemberPoint> memberPoint = getPointByMemberId(memberId)
+            .filter(mp -> Boolean.TRUE.equals(mp.getIsActive()));
+
+        if (memberPoint.isEmpty()) {
+            throw new NotFoundException(ResponseCode.NOT_FOUND_POINT);
+        }
+
+        MemberPoint point = memberPoint.get();
+        int currentPoint = point.getPoint();
+        int newTotalPoint = currentPoint + pointToAdd;
+
+        // 포인트 업데이트
+        MemberPointDTO pointDTO = get(point.getId());
+        pointDTO.setPoint(newTotalPoint);
+        update(point.getId(), pointDTO);
+
+        return newTotalPoint;
+    }
 }

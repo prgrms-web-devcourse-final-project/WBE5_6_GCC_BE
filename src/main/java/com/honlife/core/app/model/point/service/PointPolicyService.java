@@ -49,6 +49,17 @@ public class PointPolicyService {
         pointPolicyRepository.deleteById(id);
     }
 
+    /**
+     * referenceKey로 포인트 정책 조회
+     * @param referenceKey 참조 키 (배지 키 등)
+     * @return 포인트 정책 DTO
+     */
+    public PointPolicyDTO findByReferenceKey(String referenceKey) {
+        return pointPolicyRepository.findByReferenceKeyAndIsActiveTrue(referenceKey)
+            .map(policy -> mapToDTO(policy, new PointPolicyDTO()))
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POLICY));
+    }
+
     private PointPolicyDTO mapToDTO(final PointPolicy pointPolicy,
             final PointPolicyDTO pointPolicyDTO) {
         pointPolicyDTO.setCreatedAt(pointPolicy.getCreatedAt());

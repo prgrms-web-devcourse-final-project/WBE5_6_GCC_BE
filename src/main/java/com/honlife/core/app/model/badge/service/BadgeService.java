@@ -9,16 +9,15 @@ import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.member.domain.MemberBadge;
-import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
-import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.member.service.MemberBadgeService;
+import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.app.model.point.code.PointLogType;
-import com.honlife.core.app.model.point.domain.PointLog;
-import com.honlife.core.app.model.point.domain.PointPolicy;
-import com.honlife.core.app.model.point.repos.PointLogRepository;
-import com.honlife.core.app.model.point.repos.PointPolicyRepository;
+import com.honlife.core.app.model.point.dto.PointPolicyDTO;
+import com.honlife.core.app.model.point.service.PointLogService;
+import com.honlife.core.app.model.point.service.PointPolicyService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.error.exceptions.ReferencedWarning;
@@ -42,9 +41,10 @@ public class BadgeService {
     private final MemberBadgeRepository memberBadgeRepository;
     private final MemberService memberService;
     private final BadgeProgressService badgeProgressService;
-    private final PointPolicyRepository pointPolicyRepository;
-    private final MemberPointRepository memberPointRepository;
-    private final PointLogRepository pointLogRepository;
+    private final MemberBadgeService memberBadgeService;
+    private final MemberPointService memberPointService;
+    private final PointPolicyService pointPolicyService;
+    private final PointLogService pointLogService;
 
     // === 사용자별 조회 메서드들 ===
 
@@ -130,7 +130,7 @@ public class BadgeService {
     }
 
     /**
-     * 배지 보상 수령 - 실제 구현
+     * 배지 보상 수령 - 실제 구현 (도메인 분리 준수)
      * @param badgeKey 배지 key 값
      * @param email 사용자 이메일
      * @return 완료한 배지에 대한 정보 및 포인트 획득 내역 DTO
@@ -146,7 +146,7 @@ public class BadgeService {
         Long memberId = memberDTO.getId();
 
         // 3. 이미 획득했는지 체크
-        boolean alreadyOwned = memberBadgeRepository.existsByMemberIdAndBadge(memberId, badge);
+        boolean alreadyOwned = memberBadgeService.existsByMemberIdAndBadgeId(memberId, badge.getId());
         if (alreadyOwned) {
             throw new CommonException(ResponseCode.GRANT_CONFLICT_BADGE);
         }
@@ -158,45 +158,24 @@ public class BadgeService {
         }
 
         // 5. 포인트 정책 조회
-        PointPolicy pointPolicy = pointPolicyRepository.findByReferenceKeyAndIsActiveTrue(badgeKey)
-            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POLICY));
+        PointPolicyDTO pointPolicy = pointPolicyService.findByReferenceKey(badgeKey);
 
         // 6. 포인트 지급
-        MemberPoint memberPoint = memberPointRepository.findByMemberId(memberId)
-            .filter(mp -> Boolean.TRUE.equals(mp.getIsActive()))  // 활성화 상태 체크
-            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
-
         int pointToAdd = pointPolicy.getPoint();
-        int currentPoint = memberPoint.getPoint();
-        int newTotalPoint = currentPoint + pointToAdd;
-
-        memberPoint.setPoint(newTotalPoint);
-        memberPointRepository.save(memberPoint);
+        int newTotalPoint = memberPointService.addPointToMember(memberId, pointToAdd);
 
         // 7. 포인트 로그 기록
-        PointLog pointLog = PointLog.builder()
-            .member(memberService.getMemberByEmail(email))
-            .type(PointLogType.GET)
-            .point(pointToAdd)
-            .reason("Badge reward: " + badge.getName())
-            .time(LocalDateTime.now())
-            .build();
-        pointLogRepository.save(pointLog);
+        pointLogService.recordPointLog(email, pointToAdd, "Badge reward: " + badge.getName(), PointLogType.GET);
 
         // 8. MemberBadge 생성 (배지 획득 처리)
-        MemberBadge memberBadge = MemberBadge.builder()
-            .member(memberService.getMemberByEmail(email))
-            .badge(badge)
-            .isEquipped(false)  // 기본값: 미장착
-            .build();
-        memberBadgeRepository.save(memberBadge);
+        memberBadgeService.createMemberBadge(memberId, badge.getId());
 
         // 9. DTO 반환
         return BadgeRewardDTO.builder()
             .badgeId(badge.getId())
             .badgeKey(badge.getKey())
             .badgeName(badge.getName())
-            .message(badge.getMessage())  // 축하 메시지
+            .message(badge.getMessage())
             .pointAdded((long) pointToAdd)
             .totalPoint((long) newTotalPoint)
             .receivedAt(LocalDateTime.now())
