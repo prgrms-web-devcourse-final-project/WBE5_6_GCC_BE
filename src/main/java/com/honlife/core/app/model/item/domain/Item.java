@@ -10,7 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import com.honlife.core.app.model.common.BaseEntity;
 import com.honlife.core.app.model.item.code.ItemType;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.Builder;
 
 @Getter
 @Setter

@@ -121,7 +121,7 @@ public class AdminItemController {
      */
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createItem(
-            @RequestBody AdminCreateItemRequest request
+            @RequestBody @Valid AdminCreateItemRequest request
     ) {
         adminItemService.createItem(request);
         return ResponseEntity.ok(CommonApiResponse.noContent());
