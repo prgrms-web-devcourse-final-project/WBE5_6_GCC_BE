@@ -1,12 +1,11 @@
 package com.honlife.core.app.controller.admin.item.payload;
 
 import com.honlife.core.app.model.item.code.ItemType;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.honlife.core.app.model.item.dto.ItemDTO;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -18,7 +17,6 @@ public class AdminItemResponse {
     private String itemDescription;
     private Integer itemPrice;
     private ItemType itemType;
-    private Boolean isOwned;
     private Boolean isListed;
     private Boolean isActive;
 

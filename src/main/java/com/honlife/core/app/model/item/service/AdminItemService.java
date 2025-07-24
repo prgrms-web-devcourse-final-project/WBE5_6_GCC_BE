@@ -32,7 +32,6 @@ public class AdminItemService {
                         .description(item.getDescription())
                         .price(item.getPrice())
                         .type(item.getType())
-                        .isOwned(null)
                         .isListed(item.getIsListed())
                         .isActive(item.getIsActive())
                         .build())
