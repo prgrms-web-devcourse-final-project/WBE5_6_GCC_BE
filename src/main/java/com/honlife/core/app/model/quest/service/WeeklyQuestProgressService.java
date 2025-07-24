@@ -1,8 +1,12 @@
 package com.honlife.core.app.model.quest.service;
 
 import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
+import com.honlife.core.app.model.quest.dto.MemberWeeklyQuestDTO;
 import com.honlife.core.infra.response.ResponseCode;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
@@ -14,15 +18,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class WeeklyQuestProgressService {
 
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
     private final MemberRepository memberRepository;
 
-    public WeeklyQuestProgressService(final WeeklyQuestProgressRepository weeklyQuestProgressRepository,
-            final MemberRepository memberRepository) {
-        this.weeklyQuestProgressRepository = weeklyQuestProgressRepository;
-        this.memberRepository = memberRepository;
+    /**
+     * 회원에게 할당되고, 활성화 상태인 주간 퀘스트 목록 검색
+     * @param userEmail 회원 이메일
+     * @return List of {@link MemberWeeklyQuestDTO}
+     */
+    @Transactional(readOnly = true)
+    public List<MemberWeeklyQuestDTO> getMemberWeeklyQuestsProgress(String userEmail) {
+        List<WeeklyQuestProgress> memberWeeklyQuestProgressList = weeklyQuestProgressRepository.findAllByMember_EmailAndIsActive(userEmail, true);
+        return memberWeeklyQuestProgressList.stream().map(MemberWeeklyQuestDTO::fromEntity).collect(
+            Collectors.toList());
     }
 
     public List<WeeklyQuestProgressDTO> findAll() {
