@@ -148,13 +148,13 @@ public class AdminItemController {
      * 관리자 - 아이템 수정 API
      *
      * @param itemKey 수정 대상 아이템의 고유 키
-     * @param request 수정할 아이템 정보 (이름, 설명, 가격, 타입 등)
+     * @param request 수정할 아이템 정보 (이름,설명,타입,[선택](설명,활성/비 활성화))
      * @return 204 No Content
      * <p><b>[설명]</b></p>
      * - 관리자 페이지에서 아이템을 수정할 때 사용됩니다.
-     * - 수정 가능한 항목: 아이템 이름, 설명, 가격, 타입
+     * - 수정 가능한 항목: 아이템 이름, 설명, 가격, 타입,활성화,비활성화
      * - 아이템 고유키(itemKey)를 기준으로 기존 데이터를 조회한 후 값 갱신
-     * - isListed, isActive 같은 상태 필드는 별도 API에서 관리
+     * - isActive 상태 필드는 별도 API에서 관리
      */
     @PatchMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> updateItem(
