@@ -203,7 +203,7 @@ public class CategoryController {
 //        if (referencedWarning != null) {
 //            throw new ReferencedException(referencedWarning);
 //        }
-        categoryService.delete(categoryId);
+//        categoryService.delete(categoryId);
         // 존재하지 않는 카테고리 아이디로 접근
         if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
             return ResponseEntity
