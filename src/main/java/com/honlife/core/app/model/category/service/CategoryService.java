@@ -1,7 +1,12 @@
 package com.honlife.core.app.model.category.service;
 
+import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.infra.response.ResponseCode;
+import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.badge.domain.Badge;
@@ -21,7 +26,7 @@ import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@RequiredArgsConstructor
 @Service
 public class CategoryService {
 
@@ -31,19 +36,7 @@ public class CategoryService {
     private final RoutinePresetRepository routinePresetRepository;
     private final BadgeRepository badgeRepository;
     private final InterestCategoryRepository interestCategoryRepository;
-
-    public CategoryService(final CategoryRepository categoryRepository,
-        final MemberRepository memberRepository, final RoutineRepository routineRepository,
-        final RoutinePresetRepository routinePresetRepository,
-        final BadgeRepository badgeRepository,
-        final InterestCategoryRepository interestCategoryRepository) {
-        this.categoryRepository = categoryRepository;
-        this.memberRepository = memberRepository;
-        this.routineRepository = routineRepository;
-        this.routinePresetRepository = routinePresetRepository;
-        this.badgeRepository = badgeRepository;
-        this.interestCategoryRepository = interestCategoryRepository;
-    }
+    private final ModelMapper mapper;
 
     public List<CategoryDTO> findAll() {
         final List<Category> categories = categoryRepository.findAll(Sort.by("id"));
@@ -80,7 +73,7 @@ public class CategoryService {
         categoryDTO.setUpdatedAt(category.getUpdatedAt());
         categoryDTO.setIsActive(category.getIsActive());
         categoryDTO.setId(category.getId());
-        categoryDTO.setParentId(category.getParentId());
+        categoryDTO.setParent(category.getParent() == null ? null : category.getParent().getId());
         categoryDTO.setName(category.getName());
         categoryDTO.setType(category.getType());
         categoryDTO.setMember(category.getMember() == null ? null : category.getMember().getId());
@@ -91,7 +84,9 @@ public class CategoryService {
         category.setCreatedAt(categoryDTO.getCreatedAt());
         category.setUpdatedAt(categoryDTO.getUpdatedAt());
         category.setIsActive(categoryDTO.getIsActive());
-        category.setParentId(categoryDTO.getParentId());
+        final Category parentCategory = categoryDTO.getParent() == null ? null : categoryRepository.findById(categoryDTO.getParent())
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
+        category.setParent(parentCategory);
         category.setName(categoryDTO.getName());
         category.setType(categoryDTO.getType());
         final Member member = categoryDTO.getMember() == null ? null : memberRepository.findById(categoryDTO.getMember())
@@ -141,13 +136,62 @@ public class CategoryService {
     }
 
     /**
-     * 해당 멤버와 연관된 활성화된 첫번째 카테고리를 조회합니다.
-     * @param member 멤버
-     * @param isActive 활성화 상태
-     * @return {@link Category}
+     * 사용자 이메일을 받아 기본 카테고리와 하위 카테고리를 반환합니다. 이 때 하위 카테고리는 사용자의 카테고리만 반환됩니다.
+     * @param userEmail 사용자 이메일
+     * @return {@code List<CategoryDTO>}
      */
-    public Category findFirstCategoryByMemberAndIsActive(Member member, boolean isActive) {
+    public List<CategoryDTO> getDefaultCategories(String userEmail) {
+        return new ArrayList<>(
+            categoryRepository.findDefaultCategory(userEmail).stream().map(
+                category -> CategoryDTO.builder()
+                    .id(category.getId())
+                    .children(category.getChildren().stream().map(
+                        ChildCategoryDTO::fromEntity
+                    ).toList())
+                    .name(category.getName())
+                    .type(category.getType())
+                    .member(category.getMember().getId())
+                    .emoji(category.getEmoji())
+                    .build()
+            ).toList());
+    }
 
-        return categoryRepository.findFirstByMemberAndIsActive(member, isActive);
+    /**
+     * 사용자 이메일을 받아 사용자 카테고리와 사용자 하위 카테고리를 반환합니다.
+     * @param userEmail 사용자 이메일
+     * @return {@code List<CategoryDTO>}
+     */
+    public List<CategoryDTO> getCustomCategories(String userEmail) {
+        return new ArrayList<>(
+            categoryRepository.findCustomCategory(userEmail).stream().map(
+                category -> CategoryDTO.builder()
+                    .id(category.getId())
+                    .children(category.getChildren().stream().map(
+                        ChildCategoryDTO::fromEntity
+                    ).toList())
+                    .name(category.getName())
+                    .type(category.getType())
+                    .member(category.getMember().getId())
+                    .emoji(category.getEmoji())
+                    .build()
+            ).toList());
+    }
+
+    /**
+     * 사용자 아이디를 받아 기본 카테고리와 커스텀 카테고리 모두를 반환합니다.
+     * @param userEmail 사용자 이메일
+     * @return {@code List<CategoryDTO>}
+     */
+    public List<CategoryDTO> getCategories(String userEmail) {
+
+        // 기본 카테고리
+        List<CategoryDTO> categories = getDefaultCategories(userEmail);
+
+        // 커스텀 카테고리
+        List<CategoryDTO> customCategories = getCustomCategories(userEmail);
+
+        categories.addAll(customCategories);
+
+        return categories;
     }
 }
