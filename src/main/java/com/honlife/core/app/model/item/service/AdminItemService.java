@@ -2,6 +2,7 @@ package com.honlife.core.app.model.item.service;
 
 import com.honlife.core.app.controller.admin.item.payload.AdminCreateItemRequest;
 import com.honlife.core.app.model.item.domain.Item;
+import com.honlife.core.app.model.item.repos.ItemRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AdminItemService {
 
-    private ItemService itemService;
+    private ItemRepository itemRepository;
 
     /**
      * 관리자 전용 아이템 생성 로직
@@ -36,10 +37,6 @@ public class AdminItemService {
                 .type(request.getItemType())
                 .isListed(true)
                 .build();
-
-        item.setIsActive(true);
-
-        itemService.save(item);
-
+        itemRepository.save(item);
     }
 }
