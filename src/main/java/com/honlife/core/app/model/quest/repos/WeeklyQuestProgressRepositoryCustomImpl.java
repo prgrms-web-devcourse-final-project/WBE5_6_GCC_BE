@@ -1,6 +1,6 @@
 package com.honlife.core.app.model.quest.repos;
 
-import com.honlife.core.app.model.member.domain.QMemberQuest;
+import com.honlife.core.app.model.quest.domain.QWeeklyQuestProgress;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -12,15 +12,15 @@ public class WeeklyQuestProgressRepositoryCustomImpl implements
 
     private final JPAQueryFactory queryFactory;
 
-    QMemberQuest memberQuest = QMemberQuest.memberQuest;
+    QWeeklyQuestProgress weeklyQuestProgress = QWeeklyQuestProgress.weeklyQuestProgress;
 
 
     @Override
     public void softDropByMemberId(Long memberId) {
         queryFactory
-            .update(memberQuest)
-            .set(memberQuest.isActive, false)
-            .where(memberQuest.member.id.eq(memberId))
+            .update(weeklyQuestProgress)
+            .set(weeklyQuestProgress.isActive, false)
+            .where(weeklyQuestProgress.member.id.eq(memberId))
             .execute();
     }
 }
