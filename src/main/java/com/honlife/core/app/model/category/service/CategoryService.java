@@ -232,42 +232,25 @@ public class CategoryService {
      * @param userEmail 멤버 이메일
      */
     @Transactional
-    public void createCategory(@Valid CategorySaveRequest categorySaveRequest, String userEmail) {
-
-        // 이미 같은 이름으로 생성된 카테고리가 있는지 확인
-        if(isExistsCategory(categorySaveRequest.getCategoryName(), userEmail))
-            throw new CommonException(ResponseCode.CONFLICT_EXIST_CATEGORY);
-
+    public void createCategory(CategorySaveRequest categorySaveRequest, String userEmail) {
         // 부모 카테고리 정보 가져오기
         Category majorCategory = null;
 
-        if(categorySaveRequest.getParentName() != null){
-            // 커스텀 카테고리에서 찾지 못하면 기본 카테고리에서 찾음
-            majorCategory = categoryRepository.findCustomCategoryByName(categorySaveRequest.getParentName(), userEmail)
-                .orElseGet(()->categoryRepository.findDefaultCategoryByName(categorySaveRequest.getParentName(), userEmail)
-                    .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY)));
+        if(categorySaveRequest.getCategoryType() == CategoryType.SUB){
+            majorCategory = categoryRepository.findCategoryById(categorySaveRequest.getParentId(), userEmail)
+                    .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
         }
 
-        Member member = mapper.map(memberService.findMemberByEmail(userEmail), Member.class);
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
 
         Category category = Category.builder()
             .name(categorySaveRequest.getCategoryName())
             .emoji(categorySaveRequest.getEmoji())
             .type(categorySaveRequest.getCategoryType())
-            .parent(categorySaveRequest.getCategoryType()==CategoryType.MAJOR? null: majorCategory)
+            .parent(majorCategory)
             .member(member)
             .build();
 
         categoryRepository.save(category);
-    }
-
-    /**
-     * 해당 이름으로 된 카테고리가 있는지 확인합니다.
-     * @param categoryName 카테고리 이름
-     * @return Boolean
-     */
-    private boolean isExistsCategory(String categoryName, String userEmail) {
-        return categoryRepository.existsCategoriesByNameAndIsActiveAndMember_Email(categoryName,true, userEmail)
-            || categoryRepository.existsCategoryByTypeAndName(CategoryType.DEFAULT, categoryName);
     }
 }
