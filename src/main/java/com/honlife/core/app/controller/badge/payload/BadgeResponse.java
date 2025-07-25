@@ -1,7 +1,8 @@
 package com.honlife.core.app.controller.badge.payload;
 
+import com.honlife.core.app.model.badge.code.BadgeStatus;
 import com.honlife.core.app.model.badge.code.BadgeTier;
-import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
+import com.honlife.core.app.model.badge.dto.BadgeStatusDTO;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,38 +18,39 @@ import lombok.Setter;
 @Builder
 public class BadgeResponse {
 
+    // === 배지 기본 정보 ===
     private Long badgeId;
-
     private String badgeKey;
-
     private String badgeName;
-
     private BadgeTier tier;
-
-    private String how;
-
-    private Integer requirement;
-
+    private String message;
     private String info;
-
     private String categoryName;
+    private Integer requirement;        // 목표값 (항상 표시)
 
-    private Boolean isReceived;
+    // === 핵심 상태 정보 ===
+    private BadgeStatus status;         // 이것만으로 UI 제어
 
-    private LocalDateTime receivedDate;
+    // === 조건부 정보 ===
+    private Integer currentProgress;    // LOCKED/ACHIEVABLE일 때만 (null 가능)
+    private LocalDateTime receivedDate; // OWNED/EQUIPPED일 때만 (null 가능)
 
-    public static BadgeResponse fromDto(BadgeWithMemberInfoDTO dto) {
+    private Boolean isEquipped;
+
+    public static BadgeResponse fromDto(BadgeStatusDTO dto) {
         return BadgeResponse.builder()
             .badgeId(dto.getBadgeId())
             .badgeKey(dto.getBadgeKey())
             .badgeName(dto.getBadgeName())
             .tier(dto.getTier())
-            .how(dto.getMessage())
+            .message(dto.getMessage())
             .requirement(dto.getRequirement())
             .info(dto.getInfo())
             .categoryName(dto.getCategoryName())
-            .isReceived(dto.getIsReceived())
+            .status(dto.getStatus())
+            .currentProgress(dto.getCurrentProgress())
             .receivedDate(dto.getReceivedDate())
+            .isEquipped(dto.getIsEquipped())
             .build();
     }
 }
