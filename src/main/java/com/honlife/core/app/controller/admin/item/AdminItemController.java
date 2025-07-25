@@ -1,7 +1,9 @@
 package com.honlife.core.app.controller.admin.item;
 
+import com.honlife.core.app.controller.admin.item.payload.AdminCreateItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemResponse;
+import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.service.AdminItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -17,16 +19,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping(value = "/api/v1/admin/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminItemController {
 
     private final AdminItemService adminItemService;
-
 
     /**
      * 관리자 - 전체 아이템 조회 API
@@ -42,25 +45,16 @@ public class AdminItemController {
     }
 
     /**
-     * 아이템 추가 요청 처리 API
-     * @param adminItemRequest 아이템 정보 객체
-     * @return 성공시 {@code 200}을 반환합니다.
+     * 관리자 아이템 생성 API
+     *
+     * @param request 아이템 생성 요청 정보(AdminCreateItemRequest)
+     * @return 성공 시 204 No Content 반환
      */
-    @Operation(
-            summary = "아이템 추가",
-            description = "아이템을 추가합니다.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = AdminItemRequest.class)
-                    )
-            )
-    )
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createItem(
-            @RequestBody @Valid AdminItemRequest adminItemRequest
+            @RequestBody @Valid AdminCreateItemRequest request
     ) {
+        adminItemService.createItem(request);
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
