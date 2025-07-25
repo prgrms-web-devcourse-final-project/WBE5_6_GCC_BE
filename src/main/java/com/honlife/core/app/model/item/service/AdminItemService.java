@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminItemService {
 
     private ItemRepository itemRepository;
+    private ItemService itemService;
 
     /**
      * 관리자 전용 아이템 생성 로직
