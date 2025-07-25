@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -105,7 +106,7 @@ public class ItemService {
      * @param itemKey
      * return Optional<Item></Item>
      */
-    public Item getItemByKey(String itemKey) {
+    public Optional<Item> getItemByKey(String itemKey) {
         return itemRepository.findByItemKeyAndIsActiveTrue(itemKey);
     }
 

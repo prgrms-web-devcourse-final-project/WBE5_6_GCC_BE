@@ -27,12 +27,8 @@ public class AdminItemService {
      */
     @Transactional
     public void updateItem(String itemKey, AdminItemRequest request) {
-        Item item = itemService.getItemByKey(itemKey);
-
-        if(item == null) {
-            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
-        }
-
+        Item item = itemService.getItemByKey(itemKey)
+                .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_ITEM));
         item.setName(request.getItemName());
         item.setDescription(request.getItemDescription());
         item.setPrice(request.getPrice());
