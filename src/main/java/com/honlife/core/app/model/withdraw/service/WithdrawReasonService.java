@@ -7,6 +7,7 @@ import com.honlife.core.infra.response.ResponseCode;
 import com.querydsl.core.Tuple;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -100,18 +101,15 @@ public class WithdrawReasonService {
     public List<WithdrawCountDTO> findWithdrawCountByDate(LocalDateTime startDate,
         LocalDateTime endDate) {
         // 타입과 해당 타입의 count 값을 받아 옴
-        Map<WithdrawType, Long> withdrawCountMap = withdrawReasonRepository.countByType(startDate, endDate);
+        Map<WithdrawType, Long> countedMap = withdrawReasonRepository.countByType(startDate, endDate);
 
-        List<WithdrawCountDTO> withdrawCountDTOList = new ArrayList<>();
-        
-        for(WithdrawType withdrawType : WithdrawType.getAllTypes()) {
-            withdrawCountDTOList.add(WithdrawCountDTO.builder()
-                .withdrawType(withdrawType)
-                .withdrawCount(withdrawCountMap.get(withdrawType)==null?0L:withdrawCountMap.get(withdrawType))
-                .build());
-        }
-
-        return withdrawCountDTOList;
+        // 모든 WithdrawType을 순회하며 DTO 생성 (없는 타입은 0으로 채움)
+        return Arrays.stream(WithdrawType.values())
+            .map(type -> WithdrawCountDTO.builder()
+                .withdrawType(type)
+                .withdrawCount(countedMap.getOrDefault(type, 0L))
+                .build())
+            .collect(Collectors.toList());
 
     }
 }
