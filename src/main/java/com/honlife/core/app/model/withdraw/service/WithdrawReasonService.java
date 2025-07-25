@@ -1,7 +1,13 @@
 package com.honlife.core.app.model.withdraw.service;
 
 import com.honlife.core.infra.response.ResponseCode;
+import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.withdraw.domain.WithdrawReason;
@@ -10,14 +16,12 @@ import com.honlife.core.app.model.withdraw.repos.WithdrawReasonRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
+@RequiredArgsConstructor
 @Service
 public class WithdrawReasonService {
 
     private final WithdrawReasonRepository withdrawReasonRepository;
-
-    public WithdrawReasonService(final WithdrawReasonRepository withdrawReasonRepository) {
-        this.withdrawReasonRepository = withdrawReasonRepository;
-    }
+    private final ModelMapper mapper;
 
     public List<WithdrawReasonDTO> findAll() {
         final List<WithdrawReason> withdrawReasons = withdrawReasonRepository.findAll(Sort.by("id"));
@@ -66,4 +70,17 @@ public class WithdrawReasonService {
         return withdrawReason;
     }
 
+    /**
+     *
+     * @param pageable
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public Page<WithdrawReasonDTO> findPagedByDate(Pageable pageable ,LocalDateTime startDate, LocalDateTime endDate) {
+
+        return withdrawReasonRepository.findPagedByDate(pageable, startDate, endDate)
+            .map(e-> mapper.map(e, WithdrawReasonDTO.class));
+
+    }
 }

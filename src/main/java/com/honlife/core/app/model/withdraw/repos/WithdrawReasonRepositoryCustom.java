@@ -1,0 +1,11 @@
+package com.honlife.core.app.model.withdraw.repos;
+
+import com.honlife.core.app.model.withdraw.domain.WithdrawReason;
+import java.time.LocalDateTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+public interface WithdrawReasonRepositoryCustom {
+
+    Page<WithdrawReason> findPagedByDate(Pageable pageable, LocalDateTime startDate, LocalDateTime endDate);
+}
