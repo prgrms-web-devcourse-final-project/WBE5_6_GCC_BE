@@ -1,6 +1,8 @@
 package com.honlife.core.app.model.member.repos;
 
 import java.util.List;
+
+import com.honlife.core.app.model.item.code.ItemType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.honlife.core.app.model.item.domain.Item;
@@ -11,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface MemberItemRepository extends JpaRepository<MemberItem, Long>, MemberItemRepositoryCustom {
@@ -29,6 +32,16 @@ public interface MemberItemRepository extends JpaRepository<MemberItem, Long>, M
     List<MemberItem> member(Member member);
 
     MemberItem findFirstByMemberAndIsActive(Member member, Boolean isActive);
+
+    /**
+     * 특정 회원이 장착 중인 아이템들 중, 타입이 일치하고 isEquipped=true인 항목 조회
+     */
+    Optional<MemberItem> findByMemberIdAndItemTypeAndIsEquippedTrue(Long memberId, ItemType type);
+
+    /**
+     * 특정 회원이 보유한 특정 아이템 조회
+     */
+    Optional<MemberItem> findByMemberIdAndItemId(Long memberId, Long itemId);
 
     /**
      * 특정 아이템을 보유한 모든 회원의 MemberItem 리스트를 조회합니다.
