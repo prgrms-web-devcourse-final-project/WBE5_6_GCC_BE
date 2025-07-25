@@ -2,7 +2,6 @@ package com.honlife.core.app.model.category.service;
 
 import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
-import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -34,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-@Slf4j
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -146,7 +144,7 @@ public class CategoryService {
     /**
      * 사용자 이메일을 받아 기본 카테고리와 하위 카테고리를 반환합니다. 이 때 하위 카테고리는 사용자의 카테고리만 반환됩니다.
      * @param userEmail 사용자 이메일
-     * @return {@link CategoryDTO} 를 리스트로 반환합니다.
+     * @return {@code List<CategoryDTO>}
      */
     public List<CategoryDTO> getDefaultCategories(String userEmail) {
         return new ArrayList<>(
@@ -167,7 +165,7 @@ public class CategoryService {
     /**
      * 사용자 이메일을 받아 사용자 카테고리와 사용자 하위 카테고리를 반환합니다.
      * @param userEmail 사용자 이메일
-     * @return {@link CategoryDTO} 를 리스트로 반환합니다.
+     * @return {@code List<CategoryDTO>}
      */
     public List<CategoryDTO> getCustomCategories(String userEmail) {
         return new ArrayList<>(
@@ -188,7 +186,7 @@ public class CategoryService {
     /**
      * 사용자 아이디를 받아 기본 카테고리와 커스텀 카테고리 모두를 반환합니다.
      * @param userEmail 사용자 이메일
-     * @return List<CategoryDTO>
+     * @return {@code List<CategoryDTO>}
      */
     public List<CategoryDTO> getCategories(String userEmail) {
 
@@ -203,34 +201,6 @@ public class CategoryService {
         return categories;
     }
 
-
-    /**
-     * 특정 카테고리의 하위 카테고리 조회
-     * @param userEmail
-     * @param majorName 하위 카테고리를 조회할 major 카테고리의 이름
-     * @return
-     */
-    public List<CategoryDTO> getSubCategories(String userEmail, String majorName) {
-
-        // 커스텀 카테고리에서 찾지 못하면 기본 카테고리에서 찾음
-        Category majorCategory = categoryRepository.findCustomCategoryByName(majorName, userEmail)
-            .orElseGet(()->categoryRepository.findDefaultCategoryByName(majorName, userEmail)
-                .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY)));
-
-        return List.of(
-            CategoryDTO.builder()
-                    .id(majorCategory.getId())
-                    .children(majorCategory.getChildren().stream().map(
-                        ChildCategoryDTO::fromEntity
-                    ).toList())
-                    .name(majorCategory.getName())
-                    .type(majorCategory.getType())
-                    .member(majorCategory.getMember().getId())
-                    .emoji(majorCategory.getEmoji())
-                    .build()
-            );
-    }
-
     /**
      * id를 통해 카테고리 정보를 검색합니다.
      * @param categoryId 카테고리 아이디
@@ -238,7 +208,6 @@ public class CategoryService {
      * @return {@link CategoryDTO}
      */
     public CategoryDTO findCategoryById(Long categoryId, String userEmail) {
-
         Category category = categoryRepository.findCategoryById(categoryId, userEmail)
             .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
@@ -249,7 +218,7 @@ public class CategoryService {
             ).toList())
             .name(category.getName())
             .type(category.getType())
-            .parent(category.getType()==CategoryType.SUB? category.getParent().getId() : null)
+            .parent(category.getType()== CategoryType.SUB? category.getParent().getId() : null)
             .member(category.getMember().getId())
             .emoji(category.getEmoji())
             .build();
