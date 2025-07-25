@@ -1,6 +1,8 @@
 package com.honlife.core.app.model.withdraw.code;
 
 
+import java.util.List;
+
 public enum WithdrawType {
 
     TOO_MUCH_EFFORT("기록하는 게 귀찮아요"),
@@ -19,5 +21,9 @@ public enum WithdrawType {
 
     public String getDescription() {
         return description;
+    }
+
+    public static List<WithdrawType> getAllTypes() {
+        return List.of(WithdrawType.values());
     }
 }
