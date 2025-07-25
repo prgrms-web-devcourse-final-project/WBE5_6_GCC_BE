@@ -51,9 +51,6 @@ public class RoutineSchedule extends BaseEntity {
     @Column
     private Boolean isDone;
 
-    @Column
-    private LocalDateTime createdAt;
-
 
 
 }
