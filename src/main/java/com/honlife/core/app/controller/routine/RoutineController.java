@@ -79,11 +79,27 @@ public class RoutineController {
     ) {
 
             RoutineDetailDTO responseDto = routineService.getDetailRoutine(routineId);
-            RoutineDetailResponse response = RoutineDetailResponse.toDto(responseDto);
+            RoutineDetailResponse response = RoutineDetailResponse.fromDto(responseDto);
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
     }
 
+    /**
+     * 사용자 루틴 오늘날짜 조회 API
+     * @param userDetails 로그인된 사용자 정보
+     * @return RoutinesDailyResponse
+     */
+    @GetMapping("/today")
+    public ResponseEntity<CommonApiResponse<RoutinesTodayResponse>> getTodayUserRoutines(
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        String userEmail = userDetails.getUsername();
+        List<RoutineTodayItemDTO> routinesResponses = routineService.getTodayRoutines(userEmail);
+        RoutinesTodayResponse today = new RoutinesTodayResponse(routinesResponses, LocalDate.now());
+
+        return ResponseEntity.ok(CommonApiResponse.success(today));
+    }
 
     /**
      * 루틴 등록 API

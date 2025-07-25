@@ -62,10 +62,10 @@ public class Routine extends BaseEntity {
     private String repeatValue;
 
     @Column
-    private LocalDate startRoutineDate;
+    private LocalDate startDate;
 
     @Column
-    private int repeatInterval;
+    private int repeatTerm;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -76,18 +76,4 @@ public class Routine extends BaseEntity {
     private Category category;
 
 
-
-    public void updateRoutine( String content, String triggerTime, Boolean isImportant,
-        RepeatType repeatType, String repeatValue, LocalDate startRoutineDate, int repeatInterval,
-        Member member, Category category) {
-        this.content = content;
-        this.triggerTime = triggerTime;
-        this.isImportant = isImportant;
-        this.repeatType = repeatType;
-        this.repeatValue = repeatValue;
-        this.startRoutineDate = startRoutineDate;
-        this.repeatInterval = repeatInterval;
-        this.member = member;
-        this.category = category;
-    }
 }

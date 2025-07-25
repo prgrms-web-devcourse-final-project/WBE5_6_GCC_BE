@@ -45,7 +45,7 @@ public class RoutineDetailResponse {
     private String repeatValue;
 
 
-    public static RoutineDetailResponse toDto(RoutineDetailDTO dto) {
+    public static RoutineDetailResponse fromDto(RoutineDetailDTO dto) {
 
         return RoutineDetailResponse.builder()
             .routineId(dto.getRoutineId())

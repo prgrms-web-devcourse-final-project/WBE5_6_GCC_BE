@@ -35,7 +35,7 @@ public class RoutineItemDTO {
 
     private LocalDate date;
 
-    private LocalDate startRoutineDate;
+    private LocalDate startDate;
 
     private RepeatType repeatType;
 

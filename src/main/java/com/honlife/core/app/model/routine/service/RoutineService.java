@@ -1,6 +1,7 @@
 package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.model.category.code.CategoryType;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineTodayItemDTO;
 import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
@@ -145,30 +146,27 @@ public class RoutineService {
             startDate.datesUntil(endDate.plusDays(1))
                 .filter(currentDate ->
                     //해당 날짜로부터 시작 날짜 포함해서 이후에 값만 들고오는거 입니다
-                    !routine.getStartRoutineDate().isAfter(LocalDate.now()) &&
+                    !routine.getStartDate().isAfter(LocalDate.now()) &&
                         routine.getRepeatType().isMatched(currentDate, routine.getRepeatValue()) &&
                         // 달마다 차이나는 것을 무시하고 순수한 주차 사이 값을 돌려준다는 메서드인데 진짜 너무 대박이네요
-                        ChronoUnit.WEEKS.between(routine.getStartRoutineDate(), currentDate) % routine.getRepeatInterval() == 0
+                        ChronoUnit.WEEKS.between(routine.getStartDate(), currentDate) % routine.getRepeatTerm() == 0
                 )
 
                 .map(currentDate -> {
-                  // null로 판단하기 보단 type으로 판단하는게 더 정확하다는 생각이 들어 바꾸게 되었습니다
+                  Category category = routine.getCategory();
+                  CategoryType type = category.getType();
+
                   Category parentCategory = null;
                   Category childCategory = null;
-                  CategoryType type = routine.getCategory().getType();
-                  if (type == CategoryType.MAJOR) {
-                    parentCategory = categoryRepository.findById(routine.getCategory().getId())
-                        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
+                  if (type == CategoryType.DEFAULT || type == CategoryType.MAJOR)  {
+                    parentCategory = category; // 이미 연관된 엔티티
                     childCategory = null;
-                  }else{
-
-                    childCategory = categoryRepository.findById(routine.getCategory().getId())
-                        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
-
-                    parentCategory = categoryRepository.findById(routine.getCategory().getParentId())
-                        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+                  } else {
+                    childCategory = category;
+                    parentCategory = category.getParent(); // 연관관계로 접근 가능해야 함
                   }
+
 
                   RoutineSchedule routineSchedule = routineScheduleRepository
                       .findByRoutineAndScheduleDate(routine, currentDate);
@@ -185,7 +183,7 @@ public class RoutineService {
                       .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
                       .isImportant(routine.getIsImportant())
                       .date(currentDate)
-                      .startRoutineDate(routine.getStartRoutineDate())
+                      .startDate(routine.getStartDate())
                       .repeatType(routine.getRepeatType())
                       .repeatValue(routine.getRepeatValue())
                       .build();
@@ -208,28 +206,92 @@ public class RoutineService {
     Routine routine = routineRepository.findByIdWithCategory(routineId)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
+    Category category = routine.getCategory();
+    CategoryType type = category.getType();
+
     Category parentCategory = null;
-    Long parentId = routine.getCategory().getParentId();
-    if (parentId != null) {
-      parentCategory = categoryRepository.findById(parentId)
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+    Category childCategory = null;
+
+    if (type == CategoryType.DEFAULT || type == CategoryType.MAJOR) {
+      parentCategory = category; // 이미 연관된 엔티티
+      childCategory = null;
+    } else {
+      childCategory = category;
+      parentCategory = category.getParent();// 연관관계로 접근 가능해야 함
     }
+
 
 
     RoutineDetailDTO response = RoutineDetailDTO.builder()
         .routineId(routineId)
         .categoryId(routine.getCategory().getId())
         .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
-        .subCategory(parentCategory != null ? routine.getCategory().getName() : null)
+        .subCategory(childCategory != null ? childCategory.getName() : null)
         .name(routine.getContent())
         .triggerTime(routine.getTriggerTime())
         .isImportant(routine.getIsImportant())
         .repeatType(routine.getRepeatType())
         .repeatValue(routine.getRepeatValue())
-        .startRoutineDate(routine.getStartRoutineDate())
+        .startRoutineDate(routine.getStartDate())
         .build();
 
     return response;
+  }
+
+  /**
+   * 사용자 당일 루틴 조회 입니다
+   * return RoutinesDailyResponse
+   * 지연로딩으로 routine 들고올때 category와 fetch join사용 했습니다
+   * 스케줄러에 없을시 날짜 계산을 해서 루틴들고오는거를 만들었습니다
+   */
+  public List<RoutineTodayItemDTO> getTodayRoutines(String userEmail) {
+    Member member = memberRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
+
+    List<Routine> routines = routineRepository.findAllByMemberAndIsActiveWithCategory(member, true);
+
+    List<RoutineTodayItemDTO> responseRoutines = routines.stream()
+
+        .filter(routine ->
+            !routine.getStartDate().isAfter(LocalDate.now()) &&
+                routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
+                ChronoUnit.WEEKS.between(routine.getStartDate(), LocalDate.now()) % routine.getRepeatTerm() == 0
+        )
+
+        .map(routine -> {
+          Category category = routine.getCategory();
+          CategoryType type = category.getType();
+
+          Category parentCategory = null;
+          Category childCategory = null;
+
+          if (type == CategoryType.DEFAULT || type == CategoryType.MAJOR) {
+            parentCategory = category; // 이미 연관된 엔티티
+            childCategory = null;
+          } else {
+            childCategory = category;
+            parentCategory = category.getParent();// 연관관계로 접근 가능해야 함
+          }
+
+          RoutineSchedule routineSchedule = routineScheduleRepository
+              .findByRoutineAndScheduleDate(routine, LocalDate.now());
+
+          return RoutineTodayItemDTO.builder()
+              .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
+              .routineId(routine.getId())
+              .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
+              .subCategory(childCategory != null ? routine.getCategory().getName() : null)
+              .name(routine.getContent())
+              .triggerTime(routine.getTriggerTime())
+              .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
+              .isImportant(routine.getIsImportant())
+              .build();
+
+        })
+        .toList();
+
+
+    return responseRoutines;
   }
 
   /**
@@ -262,8 +324,8 @@ public class RoutineService {
         .isImportant(routineSaveRequest.getIsImportant())
         .repeatType(routineSaveRequest.getRepeatType())
         .repeatValue(routineSaveRequest.getRepeatValue())
-        .startRoutineDate(routineSaveRequest.getStartRoutineDate())
-        .repeatInterval(routineSaveRequest.getRepeatInterval())
+        .startDate(routineSaveRequest.getStartRoutineDate())
+        .repeatTerm(routineSaveRequest.getRepeatInterval())
         .member(member)
         .build();
 
@@ -299,8 +361,15 @@ public class RoutineService {
     }
 
 
-    routine.updateRoutine(request.getName(), request.getTriggerTime(), request.getIsImportant(), request.getRepeatType(),
-        request.getRepeatValue(),request.getStartRoutineDate(), request.getRepeatInterval(), member, category);
+    routine.setContent(request.getName());
+    routine.setTriggerTime(request.getTriggerTime());
+    routine.setIsImportant(request.getIsImportant());
+    routine.setRepeatType(request.getRepeatType());
+    routine.setRepeatValue(request.getRepeatValue());
+    routine.setStartDate(request.getStartRoutineDate());
+    routine.setRepeatTerm(request.getRepeatInterval());
+    routine.setMember(member);
+    routine.setCategory(category);
   }
 
 
@@ -345,6 +414,7 @@ public class RoutineService {
 
         return routineRepository.findFirstByMemberAndIsActive(member, isActive);
     }
+
 
 
 }
