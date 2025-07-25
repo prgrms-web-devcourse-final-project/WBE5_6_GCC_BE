@@ -9,12 +9,17 @@ import org.springframework.data.domain.Page;
 @RequiredArgsConstructor
 public class PageResponse<T> {
 
+    private final String url;
     private final Page<T> page;
     private final int pageButtonCnt;
 
-    public int currentNumber(){
-        return page.getNumber() + 1;
+    public String url(){
+        return url;
     }
+
+    public int currentNumber(){
+    return page.getNumber() + 1;
+}
     
     public int prevPage(){
         return Math.max(currentNumber() - 1, 1);

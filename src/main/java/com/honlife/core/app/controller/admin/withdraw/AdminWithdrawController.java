@@ -39,10 +39,11 @@ public class AdminWithdrawController {
      * 회원 탈퇴 사유를 조회하는 API입니다.
      * @param startDate 조회 시작일
      * @param endDate 조회 종료일
+     * @param pageParam 페이지네이션 설정
      * @return 모든 탈퇴 사유에 대한 리스트를 반환합니다. 시작일과 종료일이 함께 넘어온 경우, 두 날짜 사이의 탈퇴 사유만 반환합니다.
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<PageResponse<AdminWithdrawResponse>>> getAllWithdrawReason(
+    public ResponseEntity<CommonApiResponse<Page<AdminWithdrawResponse>>> getAllWithdrawReason(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime startDate,
@@ -62,9 +63,7 @@ public class AdminWithdrawController {
             Page<AdminWithdrawResponse> responsePage = page.map(
                 AdminWithdrawResponse::fromDTO);
 
-            PageResponse<AdminWithdrawResponse> response = new PageResponse<>(responsePage, 5);
-
-            return ResponseEntity.ok(CommonApiResponse.success(response));
+            return ResponseEntity.ok(CommonApiResponse.success(responsePage));
     }
 
 }
