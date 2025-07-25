@@ -19,7 +19,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     // ItemKey 값의 Unique함을 보장하기 위함
     boolean existsByItemKeyIgnoreCase(String itemKey);
 
-    // Item 테이블의 모든 데이터를 조회합니다. (isActive 조건 없음)
+    // Item 테이블의 모든 데이터를 조회합니다.
     List<Item> findAllByIsActiveTrue();
 
 }
