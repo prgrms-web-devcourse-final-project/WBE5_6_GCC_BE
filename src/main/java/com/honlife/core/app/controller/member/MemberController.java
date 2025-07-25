@@ -13,9 +13,8 @@ import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.ReferencedException;
 import com.honlife.core.infra.error.exceptions.ReferencedWarning;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,36 +35,13 @@ import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 
-
+@RequiredArgsConstructor
 @Slf4j
-@Tag(name = "회원", description = "회원관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
-@SecurityRequirement(name = "bearerAuth")
 public class MemberController {
 
     private final MemberService memberService;
-    private final RoutineService routineService;
-    private final CategoryService categoryService;
-    private final MemberItemService memberItemService;
-    private final WeeklyQuestProgressService weeklyQuestProgressService;
-    private final MemberBadgeService memberBadgeService;
-    private final InterestCategoryService interestCategoryService;
-    private final MemberPointService memberPointService;
-
-    public MemberController(final MemberService memberService, RoutineService routineService,
-        CategoryService categoryService, MemberItemService memberItemService,
-        WeeklyQuestProgressService weeklyQuestProgressService, MemberBadgeService memberBadgeService,
-        InterestCategoryService interestCategoryService, MemberPointService memberPointService) {
-        this.memberService = memberService;
-        this.routineService = routineService;
-        this.categoryService = categoryService;
-        this.memberItemService = memberItemService;
-        this.weeklyQuestProgressService = weeklyQuestProgressService;
-        this.memberBadgeService = memberBadgeService;
-        this.interestCategoryService = interestCategoryService;
-        this.memberPointService = memberPointService;
-    }
 
     /**
      * 로그인된 회원의 정보 조회
@@ -158,24 +134,7 @@ public class MemberController {
         if(withdrawRequest.getWithdrawType()==WithdrawType.ETC&&withdrawRequest.getEtcReason()==null){
             return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
-        Long memberId = memberService.findMemberByEmail(userEmail).getId();
-
-        // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
-        // 루틴 is_active = false
-        routineService.softDropRoutineByMemberId(memberId);
-        // 카테고리 is_active = false
-        categoryService.softDropCategoryByMemberId(memberId);
-        // 멤버 아이템 is_active = false
-        memberItemService.softDropMemberItemByMemberId(memberId);
-        // 멤버 퀘스트 is active = false
-        weeklyQuestProgressService.softDropMemberQuestByMemberId(memberId);
-        // 멤버 업적 is_active = false
-        memberBadgeService.softDropMemberBadgeByMemberId(memberId);
-        // 선호 카테고리 is_active = false
-        interestCategoryService.softDropInterestCategoryByMemberId(memberId);
-        // 멤버 포인트 is_active = false
-        memberPointService.softDropMemberPointByMemberId(memberId);
-
+        memberService.removeMemberReference(userEmail);
 
         try{
             // 제대로 처리 됐는지 검증
