@@ -85,15 +85,9 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createCategory(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestBody @Valid final CategorySaveRequest categorySaveRequest,
-        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.status())
-                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-        }
+        @RequestBody @Valid final CategorySaveRequest categorySaveRequest) {
         // SUB 카테고리지만 부모 카테고리 정보가 없는 경우
-        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && (categorySaveRequest.getParentName() == null|| categorySaveRequest.getParentName().isEmpty())) {
+        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && categorySaveRequest.getParentId() == null) {
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
