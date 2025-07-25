@@ -42,7 +42,7 @@ public class AdminWithdrawController {
      * @param pageParam 페이지네이션 설정
      * @return 모든 탈퇴 사유에 대한 리스트를 반환합니다. 시작일과 종료일이 함께 넘어온 경우, 두 날짜 사이의 탈퇴 사유만 반환합니다.
      */
-    @GetMapping
+    @GetMapping("/reasons")
     public ResponseEntity<CommonApiResponse<Page<AdminWithdrawResponse>>> getAllWithdrawReason(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -65,5 +65,6 @@ public class AdminWithdrawController {
 
             return ResponseEntity.ok(CommonApiResponse.success(responsePage));
     }
+
 
 }
