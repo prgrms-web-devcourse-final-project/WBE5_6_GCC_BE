@@ -35,7 +35,7 @@ public class AdminItemService {
                 .description(request.getItemDescription())
                 .price(request.getItemPrice())
                 .type(request.getItemType())
-                .isListed(true)
+                .isListed(request.getIsListed())
                 .build();
         itemRepository.save(item);
     }
