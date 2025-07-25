@@ -18,12 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class DashboardController {
 
     @GetMapping
-    public ResponseEntity<CommonApiResponse<Void>> getReportData(
+    public ResponseEntity<CommonApiResponse<MemberDashboardWrapper>> getDashboardData(
         @RequestParam
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         LocalDateTime startDate
     ){
-        return null;
+
+        MemberDashboardWrapper wrapper = new MemberDashboardWrapper();
+
+        return ResponseEntity.ok(CommonApiResponse.success(wrapper));
     }
 
 }
