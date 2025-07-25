@@ -28,14 +28,14 @@ public class Item extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-        name = "item_sequence",
-        sequenceName = "item_sequence",
-        allocationSize = 1,
-        initialValue = 10000
+            name = "item_sequence",
+            sequenceName = "item_sequence",
+            allocationSize = 1,
+            initialValue = 10000
     )
     @GeneratedValue(
-        strategy = GenerationType.SEQUENCE,
-        generator = "item_sequence"
+            strategy = GenerationType.SEQUENCE,
+            generator = "item_sequence"
     )
     private Long id;
 

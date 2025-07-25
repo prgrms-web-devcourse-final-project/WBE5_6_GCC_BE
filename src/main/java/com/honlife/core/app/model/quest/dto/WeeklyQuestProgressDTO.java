@@ -1,22 +1,15 @@
-package com.honlife.core.app.model.member.model;
+package com.honlife.core.app.model.quest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.honlife.core.app.model.member.annotation.MemberPointMemberUnique;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class MemberPointDTO {
+public class WeeklyQuestProgressDTO {
 
     private Long id;
 
@@ -27,10 +20,18 @@ public class MemberPointDTO {
     @JsonProperty("isActive")
     private Boolean isActive;
 
-    private Integer point;
+    private Integer progress;
+
+    private Boolean idDone;
+
+    private LocalDateTime startAt;
+
+    private LocalDateTime endAt;
 
     @NotNull
-    @MemberPointMemberUnique
     private Long member;
+
+    @NotNull
+    private Long quest;
 
 }

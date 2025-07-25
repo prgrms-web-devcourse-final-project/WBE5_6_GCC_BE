@@ -182,4 +182,13 @@ public class ItemService {
         }
         return null;
     }
+
+    /**
+     * Item 엔티티 저장
+     *
+     * @param item 저장할 Item 객체
+     */
+    public void save(Item item) {
+        itemRepository.save(item);
+    }
 }

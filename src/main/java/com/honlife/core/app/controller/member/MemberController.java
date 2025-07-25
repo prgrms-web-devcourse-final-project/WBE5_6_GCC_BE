@@ -7,7 +7,7 @@ import com.honlife.core.app.model.category.service.InterestCategoryService;
 import com.honlife.core.app.model.member.service.MemberBadgeService;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberPointService;
-import com.honlife.core.app.model.member.service.MemberQuestService;
+import com.honlife.core.app.model.quest.service.WeeklyQuestProgressService;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -25,8 +25,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.controller.member.payload.MemberPayload;
 import com.honlife.core.app.model.member.model.MemberDTO;
@@ -46,20 +48,20 @@ public class MemberController {
     private final RoutineService routineService;
     private final CategoryService categoryService;
     private final MemberItemService memberItemService;
-    private final MemberQuestService memberQuestService;
+    private final WeeklyQuestProgressService weeklyQuestProgressService;
     private final MemberBadgeService memberBadgeService;
     private final InterestCategoryService interestCategoryService;
     private final MemberPointService memberPointService;
 
     public MemberController(final MemberService memberService, RoutineService routineService,
         CategoryService categoryService, MemberItemService memberItemService,
-        MemberQuestService memberQuestService, MemberBadgeService memberBadgeService,
+        WeeklyQuestProgressService weeklyQuestProgressService, MemberBadgeService memberBadgeService,
         InterestCategoryService interestCategoryService, MemberPointService memberPointService) {
         this.memberService = memberService;
         this.routineService = routineService;
         this.categoryService = categoryService;
         this.memberItemService = memberItemService;
-        this.memberQuestService = memberQuestService;
+        this.weeklyQuestProgressService = weeklyQuestProgressService;
         this.memberBadgeService = memberBadgeService;
         this.interestCategoryService = interestCategoryService;
         this.memberPointService = memberPointService;
@@ -166,7 +168,7 @@ public class MemberController {
         // 멤버 아이템 is_active = false
         memberItemService.softDropMemberItemByMemberId(memberId);
         // 멤버 퀘스트 is active = false
-        memberQuestService.softDropMemberQuestByMemberId(memberId);
+        weeklyQuestProgressService.softDropMemberQuestByMemberId(memberId);
         // 멤버 업적 is_active = false
         memberBadgeService.softDropMemberBadgeByMemberId(memberId);
         // 선호 카테고리 is_active = false
@@ -193,6 +195,24 @@ public class MemberController {
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
 
+    }
+
+    /**
+     * 비밀번호 확인 요청 처리 API
+     * @param userDetails 유저 인증 정보
+     * @return 확인 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
+     */
+    @PostMapping("/password")
+    public ResponseEntity<CommonApiResponse<Void>> checkPassword(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestParam String password
+    ) {
+        String userEmail = userDetails.getUsername();
+
+        if(memberService.isCorrectPassword(userEmail, password)){
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
     }
 
 }
