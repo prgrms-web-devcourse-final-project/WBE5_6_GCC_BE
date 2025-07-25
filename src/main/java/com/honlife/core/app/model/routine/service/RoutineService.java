@@ -8,7 +8,6 @@ import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
 import com.honlife.core.app.model.routine.dto.RoutineDetailDTO;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
-import com.honlife.core.infra.response.ResponseCode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
