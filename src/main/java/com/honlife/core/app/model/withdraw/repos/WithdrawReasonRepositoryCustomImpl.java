@@ -39,6 +39,7 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
             .from(withdrawReason)
             .where(builder
                 .and(withdrawReason.type.eq(WithdrawType.ETC)))
+            .orderBy(withdrawReason.createdAt.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
