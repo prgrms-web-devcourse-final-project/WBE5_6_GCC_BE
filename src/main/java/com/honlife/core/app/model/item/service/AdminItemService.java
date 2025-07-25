@@ -36,21 +36,4 @@ public class AdminItemService {
         List<MemberItem> memberItems = memberItemService.findAllByItem(item);
         memberItems.forEach((memberItem) -> {memberItem.setIsActive(false);});
     }
-
-    /**
-     * 아이템의 isListed 값을 수정합니다.
-     * - itemKey로 해당 아이템을 조회하여, 존재하지 않으면 예외를 발생시킵니다.
-     * - 존재할 경우 isListed 값을 변경합니다.
-     *
-     * @param itemKey   대상 아이템의 고유 키
-     * @param isListed  변경할 노출 여부 값 (true: 노출, false: 숨김)
-     */
-    @Transactional
-    public void updateListedStatus(String itemKey, Boolean isListed) {
-        Item item = itemService.getItemByKey(itemKey);
-        if(item == null) {
-            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
-        }
-        item.setIsListed(isListed);
-    }
 }
