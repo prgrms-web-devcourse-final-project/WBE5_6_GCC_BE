@@ -84,12 +84,8 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
 
-        try{
-            memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        }catch (CommonException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
-        }
+        memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
+        return ResponseEntity.ok(CommonApiResponse.noContent());
 
     }
 
@@ -107,12 +103,8 @@ public class MemberController {
     ) {
         String userEmail = userDetails.getUsername();
 
-        try{
-            memberService.updateMember(userEmail, memberPayload.toDTO());
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
-        }
+        memberService.updateMember(userEmail, memberPayload.toDTO());
+        return ResponseEntity.ok(CommonApiResponse.noContent());
 
     }
 
@@ -136,16 +128,10 @@ public class MemberController {
         }
         memberService.removeMemberReference(userEmail);
 
-        try{
             // 제대로 처리 됐는지 검증
-            final ReferencedWarning referencedWarning = memberService.getReferencedWarning(userEmail);
-            if (referencedWarning != null) {
-                throw new ReferencedException(referencedWarning);
-            }
-        } catch (Exception e) {
-            // 제대로 삭제가 안 됐을 때
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(userEmail);
+        if (referencedWarning != null) {
+            throw new CommonException(ResponseCode.INTERNAL_SERVER_ERROR);
         }
 
         memberService.softDropMember(userEmail);
