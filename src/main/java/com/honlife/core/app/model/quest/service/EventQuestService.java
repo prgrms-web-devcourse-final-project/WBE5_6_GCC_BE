@@ -56,7 +56,6 @@ public class EventQuestService {
         eventQuestDTO.setId(eventQuest.getId());
         eventQuestDTO.setKey(eventQuest.getKey());
         eventQuestDTO.setName(eventQuest.getName());
-        eventQuestDTO.setInfo(eventQuest.getInfo());
         eventQuestDTO.setStartDate(eventQuest.getStartDate());
         eventQuestDTO.setEndDate(eventQuest.getEndDate());
         return eventQuestDTO;
@@ -68,7 +67,6 @@ public class EventQuestService {
         eventQuest.setIsActive(eventQuestDTO.getIsActive());
         eventQuest.setKey(eventQuestDTO.getKey());
         eventQuest.setName(eventQuestDTO.getName());
-        eventQuest.setInfo(eventQuestDTO.getInfo());
         eventQuest.setStartDate(eventQuestDTO.getStartDate());
         eventQuest.setEndDate(eventQuestDTO.getEndDate());
         return eventQuest;

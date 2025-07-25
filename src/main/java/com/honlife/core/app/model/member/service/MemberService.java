@@ -8,7 +8,7 @@ import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.member.repos.MemberQuestRepository;
+import com.honlife.core.app.model.quest.repos.WeeklyQuestProgressRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
@@ -31,7 +31,7 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
-import com.honlife.core.app.model.member.domain.MemberQuest;
+import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
@@ -53,7 +53,7 @@ public class MemberService {
     private final RoutineRepository routineRepository;
     private final CategoryRepository categoryRepository;
     private final MemberItemRepository memberItemRepository;
-    private final MemberQuestRepository memberQuestRepository;
+    private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
     private final MemberBadgeRepository memberBadgeRepository;
     private final InterestCategoryRepository interestCategoryRepository;
 
@@ -147,10 +147,10 @@ public class MemberService {
             referencedWarning.addParam(memberMemberItem.getId());
             return referencedWarning;
         }
-        final MemberQuest memberMemberQuest = memberQuestRepository.findFirstByMemberAndIsActive(member, true);
-        if (memberMemberQuest != null) {
+        final WeeklyQuestProgress memberWeeklyQuestProgress = weeklyQuestProgressRepository.findFirstByMemberAndIsActive(member, true);
+        if (memberWeeklyQuestProgress != null) {
             referencedWarning.setKey("member.memberQuest.member.referenced");
-            referencedWarning.addParam(memberMemberQuest.getId());
+            referencedWarning.addParam(memberWeeklyQuestProgress.getId());
             return referencedWarning;
         }
         final MemberBadge memberMemberBadge = memberBadgeRepository.findFirstByMemberAndIsActive(member, true);
