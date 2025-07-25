@@ -4,10 +4,14 @@ import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import com.honlife.core.app.model.withdraw.domain.QWithdrawReason;
 import com.honlife.core.app.model.withdraw.domain.WithdrawReason;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,5 +55,31 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
 
         return PageableExecutionUtils.getPage(withdrawReasons, pageable, countQuery::fetchOne);
 
+    }
+
+    @Override
+    public Map<WithdrawType, Long> countByType(LocalDateTime startDate, LocalDateTime endDate) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (startDate != null) {
+            builder.and(withdrawReason.createdAt.goe(startDate));
+        }
+        if (endDate != null) {
+            builder.and(withdrawReason.createdAt.loe(endDate));
+        }
+
+        List<Tuple> result = queryFactory
+            .select(withdrawReason.type, withdrawReason.count())
+            .from(withdrawReason)
+            .where(builder)
+            .groupBy(withdrawReason.type)
+            .fetch();
+
+        return result.stream()
+            .collect(Collectors.toMap(
+                tuple -> tuple.get(withdrawReason.type),
+                tuple -> Optional.ofNullable(tuple.get(withdrawReason.count())).orElse(0L)
+            ));
     }
 }

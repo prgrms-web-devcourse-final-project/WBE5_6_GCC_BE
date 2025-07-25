@@ -1,17 +1,20 @@
 package com.honlife.core.app.controller.admin.withdraw;
 
+import com.honlife.core.app.controller.admin.withdraw.payload.AdminWithDrawCountResponse;
 import com.honlife.core.app.controller.admin.withdraw.payload.AdminWithdrawResponse;
+import com.honlife.core.app.model.withdraw.code.WithdrawType;
+import com.honlife.core.app.model.withdraw.dto.WithdrawCountDTO;
 import com.honlife.core.app.model.withdraw.dto.WithdrawReasonDTO;
 import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 import com.honlife.core.infra.payload.PageParam;
 import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.PageResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +36,7 @@ public class AdminWithdrawController {
 
 
     private final WithdrawReasonService withdrawReasonService;
+    private final ModelMapper mapper;
 
 
     /**
@@ -66,5 +70,27 @@ public class AdminWithdrawController {
             return ResponseEntity.ok(CommonApiResponse.success(responsePage));
     }
 
+    /**
+     * withdrawType 별로 count하여 그 값을 반환하는 API 입니다.
+     * @param startDate 조회 시작일
+     * @param endDate 조회 종료일
+     * @return List<AdminWithDrawCountResponse>
+     */
+    @GetMapping
+    public ResponseEntity<CommonApiResponse<List<AdminWithDrawCountResponse>>> getAllWithdrawCount(
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        LocalDateTime startDate,
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        LocalDateTime endDate
+    ){
+        List<WithdrawCountDTO> withdrawCountMap = withdrawReasonService.findWithdrawCountByDate(startDate,endDate);
 
+        List<AdminWithDrawCountResponse> responses = withdrawCountMap.stream().map(withdrawCountDTO -> {
+            return mapper.map(withdrawCountDTO, AdminWithDrawCountResponse.class);
+        }).toList();
+
+        return ResponseEntity.ok(CommonApiResponse.success(responses));
+    }
 }

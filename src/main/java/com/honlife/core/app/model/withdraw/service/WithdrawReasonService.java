@@ -1,8 +1,15 @@
 package com.honlife.core.app.model.withdraw.service;
 
+import com.honlife.core.app.model.withdraw.code.WithdrawType;
+import com.honlife.core.app.model.withdraw.domain.QWithdrawReason;
+import com.honlife.core.app.model.withdraw.dto.WithdrawCountDTO;
 import com.honlife.core.infra.response.ResponseCode;
+import com.querydsl.core.Tuple;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -81,6 +88,30 @@ public class WithdrawReasonService {
 
         return withdrawReasonRepository.findPagedByDate(pageable, startDate, endDate)
             .map(e-> mapper.map(e, WithdrawReasonDTO.class));
+
+    }
+
+    /**
+     * 날짜와 type별로 Withdraw 테이블에 저장된 값을 count 합니다.
+     * @param startDate 시작일
+     * @param endDate 종료일
+     * @return List<WithdrawCountDTO>
+     */
+    public List<WithdrawCountDTO> findWithdrawCountByDate(LocalDateTime startDate,
+        LocalDateTime endDate) {
+        // 타입과 해당 타입의 count 값을 받아 옴
+        Map<WithdrawType, Long> withdrawCountMap = withdrawReasonRepository.countByType(startDate, endDate);
+
+        List<WithdrawCountDTO> withdrawCountDTOList = new ArrayList<>();
+        
+        for(WithdrawType withdrawType : WithdrawType.getAllTypes()) {
+            withdrawCountDTOList.add(WithdrawCountDTO.builder()
+                .withdrawType(withdrawType)
+                .withdrawCount(withdrawCountMap.get(withdrawType)==null?0L:withdrawCountMap.get(withdrawType))
+                .build());
+        }
+
+        return withdrawCountDTOList;
 
     }
 }
