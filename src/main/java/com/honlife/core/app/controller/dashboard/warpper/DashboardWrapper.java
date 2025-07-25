@@ -2,23 +2,25 @@ package com.honlife.core.app.controller.dashboard.warpper;
 
 import com.honlife.core.app.controller.dashboard.payload.CategoryRankResponse;
 import com.honlife.core.app.controller.dashboard.payload.CategoryTotalCountResponse;
-import com.honlife.core.app.controller.dashboard.payload.DailyRoutineCountResponse;
+import com.honlife.core.app.controller.dashboard.payload.DayRoutineCountResponse;
 import com.honlife.core.app.controller.dashboard.payload.RoutineTotalCountResponse;
 import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberDashboardWrapper {
+@Builder
+public class DashboardWrapper {
     // 한 주 루틴 카운트
     private RoutineTotalCountResponse routineCount;
 
     // 하루 루틴 카운트
-    private Map<LocalDateTime, DailyRoutineCountResponse> dailyRoutineCount;
+    private Map<LocalDateTime, DayRoutineCountResponse> dayRoutineCount;
 
     // 한 주 카테고리 카운트
     private CategoryTotalCountResponse categoryCount;
