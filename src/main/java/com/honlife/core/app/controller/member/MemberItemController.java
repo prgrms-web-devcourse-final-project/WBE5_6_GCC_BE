@@ -43,16 +43,16 @@ public class MemberItemController {
 
     /**
      * 로그인된 사용자가 아이템 장착 상태 변경 API
-     * @param itemKey       장착 또는 해제하려는 아이템의 고유 키
+     * @param key       장착 또는 해제하려는 아이템의 고유 키
      * @param userDetails   로그인된 사용자 정보
      */
     @PatchMapping()
     public ResponseEntity<CommonApiResponse<Void>> SwitchEquipItem(
-            @RequestParam String itemKey,
+            @RequestParam String key,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
-        memberItemService.switchItemEquip(member.getId(),itemKey);
+        memberItemService.switchItemEquip(member.getId(), key);
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
