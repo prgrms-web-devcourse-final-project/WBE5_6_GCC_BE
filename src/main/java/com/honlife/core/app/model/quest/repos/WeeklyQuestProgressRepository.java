@@ -1,6 +1,8 @@
 package com.honlife.core.app.model.quest.repos;
 
 import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.member.domain.Member;
 
@@ -17,4 +19,8 @@ public interface WeeklyQuestProgressRepository extends JpaRepository<WeeklyQuest
      * @return {@link WeeklyQuestProgress}
      */
     WeeklyQuestProgress findFirstByMemberAndIsActive(Member member, Boolean isActive);
+
+    List<WeeklyQuestProgress> findAllByMember_EmailAndIsActive(String memberEmail, Boolean isActive);
+
+    Optional<WeeklyQuestProgress> findByMember_EmailAndId(String memberEmail, Long id);
 }
