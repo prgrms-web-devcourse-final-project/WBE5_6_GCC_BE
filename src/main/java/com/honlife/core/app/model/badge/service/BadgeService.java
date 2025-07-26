@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,14 +49,15 @@ public class BadgeService {
     private final PointLogService pointLogService;
 
     /**
-     * 모든 배지를 사용자 정보와 함께 조회 (진행률 포함)
+     * 모든 배지를 사용자 상태와 함께 페이지네이션으로 조회
      * @param email 사용자 이메일
-     * @return 모든 배지 정보 + 사용자 획득 여부 + 진행률 리스트
+     * @param pageable 페이지 정보
+     * @return 페이지네이션된 배지 상태 정보
      */
     @Transactional(readOnly = true)
-    public List<BadgeStatusDTO> getAllBadgesWithMemberInfo(String email) {
-        // 1. 모든 활성 배지 조회
-        List<Badge> badges = badgeRepository.findAllByIsActiveTrue();
+    public Page<BadgeStatusDTO> getAllBadgesWithStatus(String email, Pageable pageable) {
+        // 1. 페이지네이션으로 활성 배지 조회
+        Page<Badge> badgePage = badgeRepository.findAllByIsActiveTrue(pageable);
 
         // 2. Member 조회
         MemberDTO memberDTO = memberService.findMemberByEmail(email);
@@ -68,33 +71,31 @@ public class BadgeService {
                 mb -> mb
             ));
 
-        // 4. DTO 변환 (진행률 계산 포함)
-        return badges.stream()
-            .map(badge -> {
-                MemberBadge memberBadge = memberBadgeMap.get(badge.getId());
+        // 4. Page<Badge> → Page<BadgeStatusDTO> 변환
+        return badgePage.map(badge -> {
+            MemberBadge memberBadge = memberBadgeMap.get(badge.getId());
 
-                // 진행률 계산
-                int currentProgress = calculateBadgeProgress(badge, memberId);
+            // 진행률 계산
+            int currentProgress = calculateBadgeProgress(badge, memberId);
 
-                // 배지 상태 결정
-                BadgeStatus status = determineBadgeStatus(badge, memberBadge, currentProgress);
+            // 배지 상태 결정
+            BadgeStatus status = determineBadgeStatus(badge, memberBadge, currentProgress);
 
-                return BadgeStatusDTO.builder()
-                    .badgeId(badge.getId())
-                    .badgeKey(badge.getKey())
-                    .badgeName(badge.getName())
-                    .tier(badge.getTier())
-                    .message(badge.getMessage())
-                    .info(badge.getInfo())
-                    .requirement(badge.getRequirement())
-                    .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
-                    .status(status)
-                    .currentProgress(shouldShowProgress(status) ? currentProgress : null)
-                    .receivedDate(memberBadge != null ? memberBadge.getCreatedAt() : null)
-                    .isEquipped(memberBadge != null && Boolean.TRUE.equals(memberBadge.getIsEquipped()))
-                    .build();
-            })
-            .toList();
+            return BadgeStatusDTO.builder()
+                .badgeId(badge.getId())
+                .badgeKey(badge.getKey())
+                .badgeName(badge.getName())
+                .tier(badge.getTier())
+                .message(badge.getMessage())
+                .info(badge.getInfo())
+                .requirement(badge.getRequirement())
+                .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
+                .status(status)
+                .currentProgress(shouldShowProgress(status) ? currentProgress : null)
+                .receivedDate(memberBadge != null ? memberBadge.getCreatedAt() : null)
+                .isEquipped(memberBadge != null && Boolean.TRUE.equals(memberBadge.getIsEquipped()))
+                .build();
+        });
     }
 
     /**
