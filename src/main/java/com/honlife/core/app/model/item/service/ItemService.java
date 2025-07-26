@@ -2,7 +2,7 @@ package com.honlife.core.app.model.item.service;
 
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
-import org.springframework.data.domain.Sort;
+
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
@@ -21,13 +21,9 @@ import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
-import com.honlife.core.infra.response.ResponseCode;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
@@ -60,12 +56,13 @@ public class ItemService {
 
                     return ItemDTO.builder()
                             .id(i.getId())
-                            .itemKey(i.getItemKey())
+                            .itemKey(i.getKey())
                             .name(i.getName())
                             .description(i.getDescription())
                             .type(i.getType())
                             .price(i.getPrice())
                             .isOwned(isOwned)
+                            .isListed(i.getIsListed())
                             .build();
                 })
                 .toList();
@@ -90,12 +87,13 @@ public class ItemService {
 
         return ItemDTO.builder()
                 .id(i.getId())
-                .itemKey(i.getItemKey())
+                .itemKey(i.getKey())
                 .name(i.getName())
                 .description(i.getDescription())
                 .type(i.getType())
                 .price(i.getPrice())
                 .isOwned(isOwned)
+                .isListed(i.getIsListed())
                 .build();
     }
 
@@ -148,7 +146,7 @@ public class ItemService {
         itemDTO.setUpdatedAt(item.getUpdatedAt());
         itemDTO.setIsActive(item.getIsActive());
         itemDTO.setId(item.getId());
-        itemDTO.setItemKey(item.getItemKey());
+        itemDTO.setItemKey(item.getKey());
         itemDTO.setName(item.getName());
         itemDTO.setPrice(item.getPrice());
         itemDTO.setType(item.getType());
@@ -159,7 +157,7 @@ public class ItemService {
         item.setCreatedAt(itemDTO.getCreatedAt());
         item.setUpdatedAt(itemDTO.getUpdatedAt());
         item.setIsActive(itemDTO.getIsActive());
-        item.setItemKey(itemDTO.getItemKey());
+        item.setKey(itemDTO.getItemKey());
         item.setName(itemDTO.getName());
         item.setPrice(itemDTO.getPrice());
         item.setType(itemDTO.getType());
@@ -183,5 +181,14 @@ public class ItemService {
             return referencedWarning;
         }
         return null;
+    }
+
+    /**
+     * Item 엔티티 저장
+     *
+     * @param item 저장할 Item 객체
+     */
+    public void save(Item item) {
+        itemRepository.save(item);
     }
 }
