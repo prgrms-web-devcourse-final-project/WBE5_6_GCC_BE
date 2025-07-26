@@ -23,4 +23,6 @@ public interface WeeklyQuestProgressRepository extends JpaRepository<WeeklyQuest
     List<WeeklyQuestProgress> findAllByMember_EmailAndIsActive(String memberEmail, Boolean isActive);
 
     Optional<WeeklyQuestProgress> findByMember_EmailAndId(String memberEmail, Long id);
+
+    List<WeeklyQuestProgress> findAllByMember_EmailAndIsActiveAndIsDone(String memberEmail, Boolean isActive, Boolean isDone);
 }
