@@ -72,9 +72,12 @@ public class Scheduler {
     RoutineSchedule routineSchedule = RoutineSchedule.builder()
         .scheduleDate(today)
         .isDone(false)
-        .createdAt(LocalDateTime.now())
         .routine(routine)
         .build();
+
+    routineSchedule.setCreatedAt(LocalDateTime.now());
+    routineSchedule.setUpdatedAt(LocalDateTime.now());
+
 
     routineScheduleRepository.save(routineSchedule);
     log.info("[Scheduler] 루틴 ID {} 의 {} 스케줄 저장 완료", routineId, today);
