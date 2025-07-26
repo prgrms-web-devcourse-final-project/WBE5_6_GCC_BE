@@ -42,9 +42,9 @@ public class Scheduler {
       /** 루틴에서 오늘날짜에 해당되는 루틴 뭔지 검사한다
        * 그리고 startRoutineDate를 이용해서 루틴 시작 날짜부터 계산해서 스케줄을 추가해준다
        * 또한 주기를 받는거에서 주기에 해당한는 주만 반영이 되도록 추가해준다*/
-      if (!today.isBefore(routine.getStartRoutineDate()) &&
+      if (!today.isBefore(routine.getStartDate()) &&
           routine.getRepeatType().isMatched(today, routine.getRepeatValue()) &&
-          ChronoUnit.WEEKS.between(routine.getStartRoutineDate(), today) % routine.getRepeatInterval() == 0
+          ChronoUnit.WEEKS.between(routine.getStartDate(), today) % routine.getRepeatTerm() == 0
       ) {
 
         boolean exists = routineScheduleRepository.existsByRoutineAndScheduleDate(routine, today);
