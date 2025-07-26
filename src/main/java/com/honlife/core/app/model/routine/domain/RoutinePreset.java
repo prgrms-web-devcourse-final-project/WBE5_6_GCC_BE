@@ -65,7 +65,7 @@ public class RoutinePreset extends BaseEntity {
     private String triggerTime;
 
     @Column
-    private int repeatTerm;
+    private Integer repeatTerm = 1 ;
 
     @Column
     private LocalDate startDate;

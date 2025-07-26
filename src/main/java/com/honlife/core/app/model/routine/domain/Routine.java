@@ -65,7 +65,7 @@ public class Routine extends BaseEntity {
     private LocalDate startDate;
 
     @Column
-    private int repeatTerm;
+    private Integer repeatTerm = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
