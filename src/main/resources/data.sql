@@ -469,37 +469,37 @@ INSERT INTO MEMBER_BADGE (id, member_id, badge_id, created_at, updated_at, is_ac
 --         : bottom_item_01 = 청소 바지, bottom_item_02 = 요리 바지, bottom_item_03 = 헬스 바지, bottom_item_04 = 쇼핑 바지, bottom_item_05 = 공부 반바지
 --         : accessory_item_01 = 청소 마스크, accessory_item_02 =  요리 후라이팬, accessory_item_03 = 헬스 덤벨, accessory_item_04 = 쇼핑 바구니, accessory_item_05 = 연필
 -- item_type: TOP, BOTTOM, ACCESSORY
-INSERT INTO ITEM (id, item_key, name, price, type, created_at, updated_at, is_active)
+INSERT INTO ITEM (id, item_key, name, price, type, created_at, updated_at, is_active,is_listed)
 VALUES
 -- 상의 아이템
-(1, 'top_item_01', '청소 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(2, 'top_item_02', '요리 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(3, 'top_item_03', '헬스 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(4, 'top_item_04', '쇼핑 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(5, 'top_item_05', '공부 머리띠', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
+(1, 'top_item_01', '청소 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true, true),
+(2, 'top_item_02', '요리 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(3, 'top_item_03', '헬스 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(4, 'top_item_04', '쇼핑 모자', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(5, 'top_item_05', '공부 머리띠', 100, 'TOP', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
 
 -- 하의 아이템
-(6, 'bottom_item_01', '청소 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(7, 'bottom_item_02', '요리 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(8, 'bottom_item_03', '헬스 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(9, 'bottom_item_04', '쇼핑 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(10, 'bottom_item_05', '공부 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
+(6, 'bottom_item_01', '청소 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(7, 'bottom_item_02', '요리 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(8, 'bottom_item_03', '헬스 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(9, 'bottom_item_04', '쇼핑 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(10, 'bottom_item_05', '공부 바지', 100, 'BOTTOM', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
 
 -- 악세사리 아이템
-(11, 'accessory_item_01', '청소 마스크', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(12, 'accessory_item_02', '요리 후라이팬', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(13, 'accessory_item_03', '헬스 바구니', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(14, 'accessory_item_04', '쇼핑 모자', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-(15, 'accessory_item_05', '연필', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
+(11, 'accessory_item_01', '청소 마스크', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(12, 'accessory_item_02', '요리 후라이팬', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(13, 'accessory_item_03', '헬스 바구니', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(14, 'accessory_item_04', '쇼핑 모자', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true),
+(15, 'accessory_item_05', '연필', 100, 'ACCESSORY', '2025-04-04 21:30:00', '2025-04-10 06:15:00', true,true);
 
 
 -- MEMBER_ITEM 테스트 데이터 (PostgreSQL)
 INSERT INTO MEMBER_ITEM (id, item_id, member_id, is_equipped, created_at, updated_at, is_active)
-VALUES (1, 1, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-       (2, 2, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-       (3, 3, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-       (4, 4, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
-       (5, 5, 2, true, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
+VALUES (1, 1, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
+       (2, 2, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
+       (3, 3, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
+       (4, 4, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
+       (5, 5, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
 
 -- NOTIFICATION 테스트 데이터 (PostgreSQL)
 INSERT INTO NOTIFICATION(id, member_id, is_email, is_routine, is_badge)
