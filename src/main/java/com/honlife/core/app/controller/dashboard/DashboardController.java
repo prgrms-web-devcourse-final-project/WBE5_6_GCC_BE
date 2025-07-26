@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.dashboard;
 
+import com.honlife.core.app.controller.dashboard.payload.CategoryRankResponse;
 import com.honlife.core.app.controller.dashboard.payload.CategoryTotalCountResponse;
 import com.honlife.core.app.controller.dashboard.payload.DayRoutineCountResponse;
 import com.honlife.core.app.controller.dashboard.payload.RoutineTotalCountResponse;
@@ -38,7 +39,21 @@ public class DashboardController {
         String userEmail = userDetails.getUsername();
 
         DashboardDTO dashboardDTO = dashboardService.getDashBoardData(userEmail, startDate);
-        DashboardWrapper wrapper = null;
+
+        DashboardWrapper wrapper = DashboardWrapper.builder()
+            .routineCount(mapper.map(dashboardDTO, RoutineTotalCountResponse.class))
+            .dayRoutineCount(dashboardDTO.getDayRoutineCount().stream().map(
+                dayRoutineCountDTO-> mapper.map(dayRoutineCountDTO,DayRoutineCountResponse.class)
+            ).toList())
+            .categoryCount(dashboardDTO.getCategoryCount().stream().map(
+                categoryTotalCountDTO-> mapper.map(categoryTotalCountDTO,CategoryTotalCountResponse.class)
+            ).toList())
+            .top5(dashboardDTO.getTop5().stream().map(
+                categoryRankDTO->mapper.map(categoryRankDTO,CategoryRankResponse.class)
+            ).toList())
+            .totalPoint(dashboardDTO.getTotalPoint())
+            .aiComment(dashboardDTO.getAiComment())
+            .build();
 
         return ResponseEntity.ok(CommonApiResponse.success(wrapper));
     }
