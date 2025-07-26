@@ -96,32 +96,18 @@ public class AdminItemController {
     }
 
     /**
-     * 아이템 삭제 요청 처리 API
-     * @param id 아이템 id
-     * @return 성공시 {@code 200}을 반환합니다.
+     * 관리자 전용 아이템 삭제(Soft Delete) API
+     * 해당 itemKey를 가진 아이템의 isActive 값을 false로 변경하여
+     * 사용자 단에서는 보이지 않도록 처리합니다.
+     *
+     * @param itemKey 삭제할 아이템의 고유 키
      */
-    @Operation(
-            summary = "아이템 삭제",
-            description = "아이템을 삭제합니다.",
-            parameters = {
-                    @Parameter(
-                            name = "id",
-                            description = "삭제할 아이템의 ID",
-                            required = true,
-                            example = "10"
-                    )
-            }
-    )
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> deleteItem(
-            @PathVariable Long id
+            @PathVariable("key") String itemKey
     ) {
-        if (id == 10L) {
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
+        adminItemService.softDeleteItem(itemKey);
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
 

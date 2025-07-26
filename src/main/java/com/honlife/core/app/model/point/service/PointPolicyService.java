@@ -1,7 +1,9 @@
 package com.honlife.core.app.model.point.service;
 
+import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.point.domain.PointPolicy;
@@ -11,13 +13,10 @@ import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
+@RequiredArgsConstructor
 public class PointPolicyService {
 
     private final PointPolicyRepository pointPolicyRepository;
-
-    public PointPolicyService(final PointPolicyRepository pointPolicyRepository) {
-        this.pointPolicyRepository = pointPolicyRepository;
-    }
 
     public List<PointPolicyDTO> findAll() {
         final List<PointPolicy> pointPolicies = pointPolicyRepository.findAll(Sort.by("id"));
@@ -72,4 +71,16 @@ public class PointPolicyService {
         return pointPolicy;
     }
 
+    /**
+     * Find amount of point with reference key and point source type
+     * @param key reference key
+     * @param type point source type
+     * @return {@code Integer} amount of point
+     */
+    public Integer getPoint(String key, PointSourceType type) {
+        PointPolicy pointPolicy = pointPolicyRepository.findByTypeAndReferenceKeyAndIsActive(type,
+                key, true)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POLICY));
+        return pointPolicy.getPoint();
+    }
 }
