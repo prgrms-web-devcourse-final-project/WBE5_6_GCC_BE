@@ -197,6 +197,58 @@ public class BadgeService {
         }
     }
 
+    /**
+     * 배지 장착 상태 변경
+     * @param badgeKey 배지 키
+     * @param email 사용자 이메일
+     * @param isEquipped 장착 여부 (true: 장착, false: 해제)
+     */
+    @Transactional
+    public void updateBadgeEquipStatus(String badgeKey, String email, boolean isEquipped) {
+        // 1. 배지 조회
+        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
+
+        // 2. 사용자 조회
+        MemberDTO memberDTO = memberService.findMemberByEmail(email);
+        Long memberId = memberDTO.getId();
+
+        // 3. 해당 배지를 보유하고 있는지 확인
+        MemberBadge memberBadge = memberBadgeRepository.findByMemberIdAndBadge(memberId, badge)
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_BADGE));
+
+        if (isEquipped) {
+            // 장착 로직
+            // 4-1. 이미 장착 중인지 확인
+            if (Boolean.TRUE.equals(memberBadge.getIsEquipped())) {
+                throw new CommonException(ResponseCode.BAD_REQUEST); // 이미 장착됨
+            }
+
+            // 4-2. 기존에 장착된 배지가 있다면 해제
+            memberBadgeRepository.findByMemberIdAndIsEquippedTrue(memberId)
+                .ifPresent(equippedBadge -> {
+                    equippedBadge.setIsEquipped(false);
+                    memberBadgeRepository.save(equippedBadge);
+                });
+
+            // 4-3. 새 배지 장착
+            memberBadge.setIsEquipped(true);
+
+        } else {
+            // 해제 로직
+            // 4-4. 현재 장착 중인지 확인
+            if (!Boolean.TRUE.equals(memberBadge.getIsEquipped())) {
+                throw new CommonException(ResponseCode.BAD_REQUEST); // 장착되지 않음
+            }
+
+            // 4-5. 배지 해제
+            memberBadge.setIsEquipped(false);
+        }
+
+        // 5. 변경사항 저장
+        memberBadgeRepository.save(memberBadge);
+    }
+
     // === 기존 매핑 메서드들 ===
 
     private BadgeDTO mapToDTO(final Badge badge, final BadgeDTO badgeDTO) {
