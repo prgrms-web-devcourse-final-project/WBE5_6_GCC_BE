@@ -84,9 +84,11 @@ public class DashboardService {
             .totalPoint(currentPoint)
             .build();
 
-        // ai 추가
-        String aiComment = aiService.getOrCreateAIComment(userEmail, startDate, dashboardDTO);
-        dashboardDTO.setAiComment(aiComment);
+        if(!endDate.equals(LocalDate.now())){
+            // ai 추가
+            String aiComment = aiService.getOrCreateAIComment(userEmail, startDate, dashboardDTO);
+            dashboardDTO.setAiComment(aiComment);
+        }
 
         return dashboardDTO;
 
