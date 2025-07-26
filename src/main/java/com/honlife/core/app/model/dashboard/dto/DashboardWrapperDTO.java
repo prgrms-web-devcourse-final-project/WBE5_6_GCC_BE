@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DashboardDTO {
+public class DashboardWrapperDTO {
     // 한 주 루틴 카운트
     private RoutineTotalCountDTO routineCount;
 

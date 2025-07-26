@@ -5,7 +5,7 @@ import com.honlife.core.app.controller.dashboard.payload.CategoryTotalCountRespo
 import com.honlife.core.app.controller.dashboard.payload.DayRoutineCountResponse;
 import com.honlife.core.app.controller.dashboard.payload.RoutineTotalCountResponse;
 import com.honlife.core.app.controller.dashboard.warpper.DashboardWrapper;
-import com.honlife.core.app.model.dashboard.dto.DashboardDTO;
+import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
 import com.honlife.core.app.model.dashboard.service.DashboardService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import java.time.LocalDateTime;
@@ -38,7 +38,7 @@ public class DashboardController {
     ){
         String userEmail = userDetails.getUsername();
 
-        DashboardDTO dashboardDTO = dashboardService.getDashBoardData(userEmail, startDate);
+        DashboardWrapperDTO dashboardDTO = dashboardService.getDashBoardData(userEmail, startDate);
 
         DashboardWrapper wrapper = DashboardWrapper.builder()
             .routineCount(mapper.map(dashboardDTO, RoutineTotalCountResponse.class))

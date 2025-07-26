@@ -3,7 +3,7 @@ package com.honlife.core.app.model.dashboard.service;
 import com.honlife.core.app.model.dashboard.dto.CategoryRankDTO;
 import com.honlife.core.app.model.dashboard.dto.CategoryCountDTO;
 import com.honlife.core.app.model.dashboard.dto.CategoryTotalCountDTO;
-import com.honlife.core.app.model.dashboard.dto.DashboardDTO;
+import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
 import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
 import com.honlife.core.app.model.dashboard.dto.RoutineTotalCountDTO;
 import com.honlife.core.app.model.point.code.PointLogType;
@@ -29,7 +29,7 @@ public class DashboardService {
     private final RoutineScheduleRepository routineScheduleRepository;
     private final PointLogRepository pointLogRepository;
 
-    public DashboardDTO getDashBoardData(String userEmail, LocalDateTime startDateTime) {
+    public DashboardWrapperDTO getDashBoardData(String userEmail, LocalDateTime startDateTime) {
         LocalDate startDate = startDateTime.toLocalDate().with(DayOfWeek.MONDAY);
         LocalDate endDate = LocalDate.now();
         if(startDate.plusDays(7).isBefore(LocalDate.now()))
@@ -69,7 +69,7 @@ public class DashboardService {
         // ai 추가
         String aiComment = null;
 
-        return DashboardDTO.builder()
+        return DashboardWrapperDTO.builder()
             .routineCount(routineTotalCountDTO)
             .dayRoutineCount(dayRoutineCountDTOs)
             .categoryCount(categoryTotalCountDTOs)
