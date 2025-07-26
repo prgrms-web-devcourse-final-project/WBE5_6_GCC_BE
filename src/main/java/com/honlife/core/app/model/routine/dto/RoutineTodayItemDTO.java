@@ -10,6 +10,7 @@ import lombok.Getter;
 public class RoutineTodayItemDTO {
   private Long scheduleId;
 
+  private Long categoryId;
 
   private Long routineId;
 

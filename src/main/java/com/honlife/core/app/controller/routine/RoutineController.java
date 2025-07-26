@@ -2,13 +2,13 @@ package com.honlife.core.app.controller.routine;
 
 import com.honlife.core.app.controller.routine.payload.RoutineDetailResponse;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
+import com.honlife.core.app.controller.routine.payload.RoutineUpdateRequest;
 import com.honlife.core.app.controller.routine.payload.RoutinesResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinesTodayResponse;
 import com.honlife.core.app.model.routine.dto.RoutineDetailDTO;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
 import com.honlife.core.app.model.routine.dto.RoutineTodayItemDTO;
 import com.honlife.core.app.model.routine.service.RoutineService;
-import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
@@ -17,12 +17,10 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -127,9 +125,7 @@ public class RoutineController {
     /**
      * 루틴 수정 API
      * @param routineId 수정할 루틴 ID
-     * @param routineSaveRequest 수정할 루틴의 정보
      * @param userDetails 로그인된 사용자 정보
-     * @param bindingResult validation
      * @return
      */
 
@@ -137,18 +133,13 @@ public class RoutineController {
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateRoutine(
         @PathVariable(name = "id") final Long routineId,
-        @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
-        @AuthenticationPrincipal UserDetails userDetails,
-        BindingResult bindingResult
+        @RequestBody @Valid final RoutineUpdateRequest routineUpdateRequest,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.status())
-                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-        }
+
 
             String userEmail = userDetails.getUsername();
-            routineService.updateRoutine(routineId, routineSaveRequest, userEmail);
+            routineService.updateRoutine(routineId, routineUpdateRequest);
             return ResponseEntity.ok(CommonApiResponse.noContent());
 
     }

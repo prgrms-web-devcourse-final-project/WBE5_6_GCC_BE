@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.controller.routine.payload.RoutineUpdateRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineTodayItemDTO;
@@ -173,6 +174,7 @@ public class RoutineService {
                   return RoutineItemDTO.builder()
                       .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
                       .routineId(routine.getId())
+                      .categoryId(routine.getCategory().getId())
                       .majorCategory(parentCategory != null ? parentCategory.getName()
                           : routine.getCategory().getName())
                       .subCategory(
@@ -278,6 +280,7 @@ public class RoutineService {
           return RoutineTodayItemDTO.builder()
               .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
               .routineId(routine.getId())
+              .categoryId(routine.getCategory().getId())
               .majorCategory(parentCategory != null ? parentCategory.getName() : routine.getCategory().getName())
               .subCategory(childCategory != null ? routine.getCategory().getName() : null)
               .name(routine.getContent())
@@ -295,6 +298,7 @@ public class RoutineService {
 
   /**
    * 사용자  루틴 등록 입니다
+   * 프론트에서 받은 카테고리 Id로 저장합니다
    * return void
    */
   @Transactional
@@ -303,17 +307,9 @@ public class RoutineService {
     Member member = memberRepository.findByEmail(userEmail)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
-    Category category = categoryRepository.findByName(routineSaveRequest.getSubCategory());
+    Category category = categoryRepository.findById(routineSaveRequest.getCategoryid())
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
-    //중복 이름 카테고리는 없을거라 생각해서 name으로 찾습니다
-    if(category == null){
-      //만약 대분류랑 소분류 모두 카테고리 없으면 예외처리 한다
-      if(categoryRepository.findByName(routineSaveRequest.getMajorCategory()) == null){
-        throw new CommonException(ResponseCode.NOT_FOUND);
-      }else{
-        category = categoryRepository.findByName(routineSaveRequest.getMajorCategory());
-      }
-    }
 
     /** 간단한 로직이라 DTO를 사용할 필요 없을거같아 바로 Routine으로 넣어줬습니다*/
     Routine routine = Routine.builder()
@@ -336,39 +332,51 @@ public class RoutineService {
   /**
    * 사용자 루틴 수정 입니다
    * return void
+   * 수정도 카테고리 Id롤 받습니다
    * transaction으로 updateRoutine에 넣어준다
    */
   @Transactional
-  public void updateRoutine(Long routineId, RoutineSaveRequest request, String userEmail) {
-
-    Member member = memberRepository.findByEmail(userEmail)
-        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
+  public void updateRoutine(Long routineId, RoutineUpdateRequest request) {
 
     Routine routine = routineRepository.findById(routineId)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
-    Category category = categoryRepository.findByName(request.getSubCategory());
 
-    //중복 이름 카테고리는 없을거라 생각해서 name으로 찾습니다
-    if(category == null){
-      //만약 대분류랑 소분류 모두 카테고리 없으면 예외처리 한다
-      if(categoryRepository.findByName(request.getMajorCategory()) == null){
-        throw new CommonException(ResponseCode.NOT_FOUND);
-      }else{
-        category = categoryRepository.findByName(request.getMajorCategory());
-      }
+    if (request.getCategoryid() != null) {
+      Category category = categoryRepository.findById(request.getCategoryid())
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+      routine.setCategory(category);
     }
 
 
-    routine.setContent(request.getName());
-    routine.setTriggerTime(request.getTriggerTime());
-    routine.setIsImportant(request.getIsImportant());
-    routine.setRepeatType(request.getRepeatType());
-    routine.setRepeatValue(request.getRepeatValue());
-    routine.setStartDate(request.getStartRoutineDate());
-    routine.setRepeatTerm(request.getRepeatInterval());
-    routine.setMember(member);
-    routine.setCategory(category);
+    if (request.getName() != null) {
+      routine.setContent(request.getName());
+    }
+
+    if (request.getTriggerTime() != null) {
+      routine.setTriggerTime(request.getTriggerTime());
+    }
+
+    if (request.getIsImportant() != null) {
+      routine.setIsImportant(request.getIsImportant());
+    }
+
+    if (request.getRepeatType() != null) {
+      routine.setRepeatType(request.getRepeatType());
+    }
+
+    if (request.getRepeatValue() != null) {
+      routine.setRepeatValue(request.getRepeatValue());
+    }
+
+    if (request.getStartRoutineDate() != null) {
+      routine.setStartDate(request.getStartRoutineDate());
+    }
+
+    if (request.getRepeatInterval() != null) {
+      routine.setRepeatTerm(request.getRepeatInterval());
+    }
+
   }
 
 

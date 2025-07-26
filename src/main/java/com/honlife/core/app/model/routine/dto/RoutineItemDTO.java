@@ -12,24 +12,19 @@ public class RoutineItemDTO {
 
     private Long scheduleId;
 
+    private Long categoryId;
 
     private Long routineId;
 
-
     private String majorCategory;
-
 
     private String subCategory;
 
-
     private String name;
-
 
     private String triggerTime;
 
-
     private Boolean isDone;
-
 
     private Boolean isImportant;
 
