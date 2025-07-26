@@ -1,8 +1,12 @@
 package com.honlife.core.app.model.point.service;
 
+import com.honlife.core.app.model.point.code.PointLogType;
 import com.honlife.core.infra.response.ResponseCode;
+import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
@@ -75,4 +79,23 @@ public class PointLogService {
         return pointLog;
     }
 
+    /**
+     * Save point get or consume log
+     * @param userEmail
+     * @param pointLogType
+     * @param key {@code Quest} or {@code Item} or {@code Badge} key value
+     */
+    @Async
+    @Transactional
+    public void saveLog(String userEmail, PointLogType pointLogType, String key) {
+        Member member = memberRepository.findByEmailIgnoreCase(userEmail);
+        pointLogRepository.save(
+            PointLog.builder()
+                .member(member)
+                .type(pointLogType)
+                .reason(key)
+                .time(LocalDateTime.now())
+                .build()
+        );
+    }
 }

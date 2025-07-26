@@ -1,9 +1,9 @@
 package com.honlife.core.app.model.quest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.honlife.core.app.model.quest.code.QuestType;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,10 +26,14 @@ public class EventQuestDTO {
   @Size(max = 255)
   private String name;
 
-  private String info;
+  private QuestType type;
 
-  private LocalDateTime startDate;
+  private Integer target;
 
-  private LocalDateTime endDate;
+  private LocalDateTime startAt;
+
+  private LocalDateTime endAt;
+
+  private Long Category;
 
 }
