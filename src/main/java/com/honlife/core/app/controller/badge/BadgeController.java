@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.badge;
 
+import com.honlife.core.app.controller.badge.payload.BadgePageResponse;
 import com.honlife.core.app.controller.badge.payload.BadgeResponse;
 import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 import com.honlife.core.app.model.badge.dto.BadgeRewardDTO;
@@ -7,8 +8,8 @@ import com.honlife.core.app.model.badge.dto.BadgeStatusDTO;
 import com.honlife.core.app.model.badge.service.BadgeService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.PageResponse;
 import com.honlife.core.infra.response.ResponseCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +40,7 @@ public class BadgeController {
      * @return 페이지네이션된 배지 정보
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<PageResponse<BadgeResponse>>> getAllBadges(
+    public ResponseEntity<CommonApiResponse<BadgePageResponse>> getAllBadges(
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "12") int size,
         @AuthenticationPrincipal UserDetails userDetails
@@ -61,15 +62,13 @@ public class BadgeController {
         // 4. Service에서 페이지네이션된 배지 조회
         Page<BadgeStatusDTO> badgePage = badgeService.getAllBadgesWithStatus(email, pageable);
 
-        // 5. Page<BadgeStatusDTO> → Page<BadgeResponse> 변환
-        Page<BadgeResponse> badgeResponsePage = badgePage.map(BadgeResponse::fromDto);
+        // 5. DTO → Response 변환
+        List<BadgeResponse> badgeResponses = badgePage.getContent().stream()
+            .map(BadgeResponse::fromDto)
+            .toList();
 
         // 6. PageResponse 생성
-        PageResponse<BadgeResponse> pageResponse = new PageResponse<>(
-            "/api/v1/badges",  // URL
-            badgeResponsePage, // Page 객체
-            10                 // 페이지 버튼 개수 (1~10까지 표시)
-        );
+        BadgePageResponse pageResponse = BadgePageResponse.from(badgePage, badgeResponses);
 
         return ResponseEntity.ok(CommonApiResponse.success(pageResponse));
     }
