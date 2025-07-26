@@ -7,10 +7,10 @@ import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
-import com.honlife.core.app.model.routine.dto.RoutinePresetDTO;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,9 +69,13 @@ public class AdminRoutinePresetService {
               .subCategory(childCategory != null ? childCategory.getName() : null)
               .name(routinePreset.getContent())
               .triggerTime(routinePreset.getTriggerTime())
-              .isImportant(routinePreset.isImportant())
+              .isImportant(routinePreset.getIsImportant())
               .createdAt(routinePreset.getCreatedAt())
               .updatedAt(routinePreset.getUpdatedAt())
+              .repeatInterval(routinePreset.getRepeatTerm())
+              .startRoutineDate(routinePreset.getStartDate())
+              .repeatType(routinePreset.getRepeatType())
+              .repeatValue(routinePreset.getRepeatValue())
               .build();
         })
         .collect(Collectors.toList());
@@ -109,9 +113,13 @@ public class AdminRoutinePresetService {
         .subCategory(childCategory != null ? childCategory.getName() : null)
         .name(routinePreset.getContent())
         .triggerTime(routinePreset.getTriggerTime())
-        .isImportant(routinePreset.isImportant())
+        .isImportant(routinePreset.getIsImportant())
         .createdAt(routinePreset.getCreatedAt())
         .updatedAt(routinePreset.getUpdatedAt())
+        .repeatInterval(routinePreset.getRepeatTerm())
+        .startRoutineDate(routinePreset.getStartDate())
+        .repeatType(routinePreset.getRepeatType())
+        .repeatValue(routinePreset.getRepeatValue())
         .build();
 
     return dto;
@@ -179,6 +187,8 @@ public class AdminRoutinePresetService {
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
       routinePreset.setCategory(category);
     }
+
+    routinePreset.setUpdatedAt(LocalDateTime.now());
 
 
   }
