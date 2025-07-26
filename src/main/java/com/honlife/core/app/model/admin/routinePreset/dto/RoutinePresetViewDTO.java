@@ -1,6 +1,8 @@
 package com.honlife.core.app.model.admin.routinePreset.dto;
 
 
+import com.honlife.core.app.model.routine.code.RepeatType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,4 +34,12 @@ public class RoutinePresetViewDTO {
   private LocalDateTime createdAt;
 
   private LocalDateTime updatedAt;
+
+  private int repeatInterval;
+
+  private LocalDate startRoutineDate;
+
+  private RepeatType repeatType;
+
+  private String repeatValue;
 }
