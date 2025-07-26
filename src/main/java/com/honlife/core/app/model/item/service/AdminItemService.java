@@ -35,7 +35,7 @@ public class AdminItemService {
         return items.stream()
                 .map(item -> ItemDTO.builder()
                         .id(item.getId())
-                        .itemKey(item.getItemKey())
+                        .itemKey(item.getKey())
                         .name(item.getName())
                         .description(item.getDescription())
                         .price(item.getPrice())
@@ -61,7 +61,7 @@ public class AdminItemService {
         }
 
         Item item = Item.builder()
-                .itemKey(request.getItemKey())
+                .key(request.getItemKey())
                 .name(request.getItemName())
                 .description(request.getItemDescription())
                 .price(request.getItemPrice())
