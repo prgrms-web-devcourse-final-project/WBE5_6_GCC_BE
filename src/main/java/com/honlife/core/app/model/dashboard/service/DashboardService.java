@@ -28,6 +28,7 @@ public class DashboardService {
 
     private final RoutineScheduleRepository routineScheduleRepository;
     private final PointLogRepository pointLogRepository;
+    private final AICommentService aiService;
 
     public DashboardWrapperDTO getDashBoardData(String userEmail, LocalDateTime startDateTime) {
         LocalDate startDate = startDateTime.toLocalDate().with(DayOfWeek.MONDAY);
@@ -66,17 +67,20 @@ public class DashboardService {
         // 얻은 누적 포인트량 (주)
         Integer currentPoint = pointLogRepository.getTotalPointByDate(startDate.atStartOfDay(), endDate.atStartOfDay(), PointLogType.GET, userEmail);
 
-        // ai 추가
-        String aiComment = null;
 
-        return DashboardWrapperDTO.builder()
+        DashboardWrapperDTO dashboardDTO = DashboardWrapperDTO.builder()
             .routineCount(routineTotalCountDTO)
             .dayRoutineCount(dayRoutineCountDTOs)
             .categoryCount(categoryTotalCountDTOs)
             .top5(top5CategoryRankDTOS)
             .totalPoint(currentPoint)
-            .aiComment(aiComment)
             .build();
+
+        // ai 추가
+        String aiComment = aiService.getOrCreateAIComment(userEmail, startDate, dashboardDTO);
+        dashboardDTO.setAiComment(aiComment);
+
+        return dashboardDTO;
 
     }
 
