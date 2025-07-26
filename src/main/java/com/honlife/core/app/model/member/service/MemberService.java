@@ -393,4 +393,10 @@ public class MemberService {
     public Member getMemberByEmail(String userEmail){
         return memberRepository.findByEmailIgnoreCase(userEmail);
     }
+
+    /**
+     * Item에 대한 정보를 바탕으로
+     * 해당 아이템을 보유한 모든 회원 정보 반환
+     *
+     */
 }
