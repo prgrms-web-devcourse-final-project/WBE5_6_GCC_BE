@@ -11,7 +11,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.honlife.core.app.model.common.BaseEntity;
 
@@ -19,6 +22,9 @@ import com.honlife.core.app.model.common.BaseEntity;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class WeeklyQuestProgress extends BaseEntity {
 
     @Id
@@ -35,9 +41,11 @@ public class WeeklyQuestProgress extends BaseEntity {
     )
     private Long id;
 
+    @Builder.Default
     @Column(nullable = false)
     private Integer progress = 0;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isDone = false;
 
