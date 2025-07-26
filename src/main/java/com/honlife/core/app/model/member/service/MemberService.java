@@ -8,6 +8,7 @@ import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.quest.repos.EventQuestProgressRepository;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestProgressRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
@@ -57,6 +58,7 @@ public class MemberService {
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
     private final MemberBadgeRepository memberBadgeRepository;
     private final InterestCategoryRepository interestCategoryRepository;
+    private final EventQuestProgressRepository eventQuestProgressRepository;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -395,8 +397,30 @@ public class MemberService {
     }
 
     /**
-     * Item에 대한 정보를 바탕으로
-     * 해당 아이템을 보유한 모든 회원 정보 반환
-     *
+     * 해당하는 멤버를 참조하는 모든 값들을 싹 soft drop시킵니다.
+     * @param userEmail 멤버 이메일
      */
+    @Transactional
+    public void removeMemberReference(String userEmail) {
+        Long memberId = findMemberByEmail(userEmail).getId();
+
+        // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
+        // 루틴 is_active = false
+        routineRepository.softDropByMemberId(memberId);
+        // 카테고리 is_active = false
+        categoryRepository.softDropByMemberId(memberId);
+        // 멤버 아이템 is_active = false
+        memberItemRepository.softDropByMemberId(memberId);
+        // 주간 퀘스트 진행도 is active = false
+        weeklyQuestProgressRepository.softDropByMemberId(memberId);
+        // 이벤트 퀘스트 진행도 is active = false
+        eventQuestProgressRepository.softDropByMemberId(memberId);
+        // 멤버 업적 is_active = false
+        memberBadgeRepository.softDropByMemberId(memberId);
+        // 선호 카테고리 is_active = false
+        interestCategoryRepository.softDropByMemberId(memberId);
+        // 멤버 포인트 is_active = false
+        memberPointRepository.softDropByMemberId(memberId);
+
+    }
 }

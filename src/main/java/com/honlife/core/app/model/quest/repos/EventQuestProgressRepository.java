@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EventQuestProgressRepository extends JpaRepository<EventQuestProgress, Long> {
+public interface EventQuestProgressRepository extends JpaRepository<EventQuestProgress, Long>, EventQuestProgressRepositoryCustom {
 
     List<EventQuestProgress> findAllByMember_EmailAndIsActive(String memberEmail, Boolean isActive);
 
