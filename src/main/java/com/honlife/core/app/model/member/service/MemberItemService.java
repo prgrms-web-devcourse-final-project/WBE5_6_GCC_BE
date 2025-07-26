@@ -5,6 +5,7 @@ import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.repos.ItemRepository;
+import com.honlife.core.app.model.item.service.ItemService;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.QMemberItem;
@@ -12,6 +13,7 @@ import com.honlife.core.app.model.member.model.MemberItemDTO;
 import com.honlife.core.app.model.member.model.MemberItemDTOCustom;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.response.ResponseCode;
 import com.querydsl.core.Tuple;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -30,6 +33,44 @@ public class MemberItemService {
     private final MemberItemRepository memberItemRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
+    private final ItemService itemService;
+
+     /** 사용자의 아이템 장착 상태를 전환합니다.
+      - 클릭한 아이템이 이미 장착 중이라면 장착을 해제합니다.
+      - 장착 중인 같은 타입 아이템이 존재하면 해당 아이템을 해제합니다.
+      - 이후 클릭한 아이템을 장착 처리합니다.
+
+      @param memberId 사용자 ID
+     * @param itemKey  장착 또는 해제할 아이템의 고유 키
+     */
+    @Transactional
+    public void switchItemEquip(Long memberId, String itemKey) {
+
+        Item item = itemService.getItemByKey(itemKey);
+
+        if (item == null) {
+            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
+        }
+
+        // 해당 itemId과 일치하는 회원 보유 아이템 정보 가져옴
+        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
+                // 회원이 해당 아이템을 보유하지 않았을 때
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+
+        // 해당 아이템이 장착되어있었다면
+        // 즉, 아이템 해제하기 클릭 시 해제
+        if (target.getIsEquipped()) {
+            target.setIsEquipped(false);
+            return;
+        }
+        // 해당 멤버의 같은 '타입 및 장착중인 ' 아이템 정보 가져오기
+        Optional<MemberItem> currentlyEquippedItem = memberItemRepository
+                .findByMemberIdAndItemTypeAndIsEquippedTrue(memberId, item.getType());
+
+        currentlyEquippedItem.ifPresent(equipped -> equipped.setIsEquipped(false));
+
+        target.setIsEquipped(true);
+    }
 
     /**
      * 특정 회원이 보유한 아이템 목록을 조회합니다.
@@ -138,5 +179,15 @@ public class MemberItemService {
      */
     public Boolean isItemOwnByMember(Long memberId, Long itemId) {
         return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
+    }
+
+    /**
+     * 특정 아이템을 보유한 모든 MemberItem 정보를 조회합니다.
+     *
+     * @param item 조회할 대상 아이템
+     * @return MemberItem 리스트
+     */
+    public List<MemberItem> findAllByItem(Item item) {
+        return memberItemRepository.findAllByItem(item);
     }
 }

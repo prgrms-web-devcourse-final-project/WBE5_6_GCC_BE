@@ -57,7 +57,6 @@ public class WeeklyQuestService {
         weeklyQuestDTO.setId(weeklyQuest.getId());
         weeklyQuestDTO.setKey(weeklyQuest.getKey());
         weeklyQuestDTO.setName(weeklyQuest.getName());
-        weeklyQuestDTO.setInfo(weeklyQuest.getInfo());
         return weeklyQuestDTO;
     }
 
@@ -68,7 +67,6 @@ public class WeeklyQuestService {
         weeklyQuest.setIsActive(weeklyQuestDTO.getIsActive());
         weeklyQuest.setKey(weeklyQuestDTO.getKey());
         weeklyQuest.setName(weeklyQuestDTO.getName());
-        weeklyQuest.setInfo(weeklyQuestDTO.getInfo());
         return weeklyQuest;
     }
 
