@@ -1,7 +1,9 @@
 package com.honlife.core.app.controller.admin.routine.payload;
 
 import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +36,14 @@ public class AdminRoutinePresetDetailResponse {
 
     private LocalDateTime updatedAt;
 
+    private int repeatInterval;
+
+    private LocalDate startRoutineDate;
+
+    private RepeatType repeatType;
+
+    private String repeatValue;
+
 
     public static AdminRoutinePresetDetailResponse fromDto(RoutinePresetViewDTO dto) {
         return AdminRoutinePresetDetailResponse.builder()
@@ -46,6 +56,10 @@ public class AdminRoutinePresetDetailResponse {
             .isImportant(dto.getIsImportant())
             .createdAt(dto.getCreatedAt())
             .updatedAt(dto.getUpdatedAt())
+            .repeatInterval(dto.getRepeatInterval())
+            .startRoutineDate(dto.getStartRoutineDate())
+            .repeatType(dto.getRepeatType())
+            .repeatValue(dto.getRepeatValue())
             .build();
     }
 
