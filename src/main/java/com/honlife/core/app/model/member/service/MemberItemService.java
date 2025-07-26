@@ -180,4 +180,14 @@ public class MemberItemService {
     public Boolean isItemOwnByMember(Long memberId, Long itemId) {
         return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
     }
+
+    /**
+     * 특정 아이템을 보유한 모든 MemberItem 정보를 조회합니다.
+     *
+     * @param item 조회할 대상 아이템
+     * @return MemberItem 리스트
+     */
+    public List<MemberItem> findAllByItem(Item item) {
+        return memberItemRepository.findAllByItem(item);
+    }
 }
