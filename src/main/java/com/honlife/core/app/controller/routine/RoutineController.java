@@ -101,41 +101,19 @@ public class RoutineController {
             return ResponseEntity.ok(CommonApiResponse.success(response));
     }
 
-    /**
-     * 사용자 루틴 오늘날짜 조회 API
-     * @param userDetails 로그인된 사용자 정보
-     * @return RoutinesDailyResponse
-     */
-    @GetMapping("/today")
-    public ResponseEntity<CommonApiResponse<RoutinesTodayResponse>> getTodayUserRoutines(
-        @AuthenticationPrincipal UserDetails userDetails
-    ) {
 
-        String userEmail = userDetails.getUsername();
-        List<RoutineTodayItemDTO> routinesResponses = routineService.getTodayRoutines(userEmail);
-        RoutinesTodayResponse today = new RoutinesTodayResponse(routinesResponses, LocalDate.now());
-
-        return ResponseEntity.ok(CommonApiResponse.success(today));
-    }
 
     /**
      * 루틴 등록 API
      * @param routineSaveRequest 등록할 루틴의 정보
      * @param userDetails 로그인된 사용자 정보
-     * @param bindingResult validation
      */
 
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createRoutine(
         @RequestBody @Valid final RoutineSaveRequest routineSaveRequest,
-        @AuthenticationPrincipal UserDetails userDetails,
-        BindingResult bindingResult
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.status())
-                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-        }
 
 
             String userEmail = userDetails.getUsername();
@@ -169,16 +147,10 @@ public class RoutineController {
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
-        try {
             String userEmail = userDetails.getUsername();
             routineService.updateRoutine(routineId, routineSaveRequest, userEmail);
             return ResponseEntity.ok(CommonApiResponse.noContent());
 
-        }  catch (CommonException e ) {
-            return ResponseEntity
-                .status(e.code().status())
-                .body(CommonApiResponse.error(e.code()));
-        }
     }
 
     /**
@@ -188,15 +160,10 @@ public class RoutineController {
     public ResponseEntity<CommonApiResponse<Void>> deleteRoutine(
         @PathVariable(name = "id") final Long routineId
     ) {
-        try {
+
             routineService.deleteRoutine(routineId);
             return ResponseEntity.ok(CommonApiResponse.noContent());
 
-        } catch (CommonException e ) {
-            return ResponseEntity
-                .status(e.code().status())
-                .body(CommonApiResponse.error(e.code()));
-        }
     }
 
 
