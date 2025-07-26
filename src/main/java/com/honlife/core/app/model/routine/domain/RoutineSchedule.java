@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.domain;
 
+import com.honlife.core.app.model.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,7 +25,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoutineSchedule {
+public class RoutineSchedule extends BaseEntity {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -40,17 +41,16 @@ public class RoutineSchedule {
     )
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routine_id", nullable = false)
+    private Routine routine;
+
     @Column
-    private LocalDate date;
+    private LocalDate scheduleDate;
 
     @Column
     private Boolean isDone;
 
-    @Column
-    private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "routine_id", nullable = false)
-    private Routine routine;
 
 }

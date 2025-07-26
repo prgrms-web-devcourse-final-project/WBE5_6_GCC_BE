@@ -12,13 +12,11 @@ import java.util.List;
 
 @Getter
 @Setter
-@Schema(description = "사용자 루틴 조회 응답")
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoutinesResponse {
 
 
-    @Schema(description = "루틴 목록")
     private Map<LocalDate, List<RoutineItemDTO>> routines;
 
 
