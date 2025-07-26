@@ -35,7 +35,7 @@ public class AdminRoutinePresetDetailResponse {
     private LocalDateTime updatedAt;
 
 
-    public static AdminRoutinePresetDetailResponse from(RoutinePresetViewDTO dto) {
+    public static AdminRoutinePresetDetailResponse fromDto(RoutinePresetViewDTO dto) {
         return AdminRoutinePresetDetailResponse.builder()
             .presetId(dto.getPresetId())
             .categoryId(dto.getCategoryId())

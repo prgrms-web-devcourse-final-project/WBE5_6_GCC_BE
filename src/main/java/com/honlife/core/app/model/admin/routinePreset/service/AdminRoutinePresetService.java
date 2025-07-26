@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 public class AdminRoutinePresetService {
 
   private final RoutinePresetRepository routinePresetRepository;
-  private final CategoryRepository categoryRepository;
-
   /**
    * 추천 루틴 프리셋 목록 조회 service
    * @return List<RoutinePresetViewDTO>
@@ -31,9 +29,9 @@ public class AdminRoutinePresetService {
 
     List<RoutinePreset> routinePresetList;
     if(categoryId == null){
-      routinePresetList = routinePresetRepository.findAllWithCategory();
+      routinePresetList = routinePresetRepository.findAllActiveWithCategory();
     }else{
-      routinePresetList = routinePresetRepository.getRoutinePresetWithCategoryId(categoryId);
+      routinePresetList = routinePresetRepository.getActiveRoutinePresetWithCategoryId(categoryId);
     }
 
     //만약에 category가 null이면 예외 던짐
@@ -45,22 +43,18 @@ public class AdminRoutinePresetService {
     return routinePresetList.stream()
         .sorted(Comparator.comparing(RoutinePreset::getCreatedAt))
         .map(routinePreset -> {
-          Category parentCategory ;
-          Category childCategory ;
-          CategoryType type = routinePreset.getCategory().getType();
-          if (type == CategoryType.MAJOR) {
-            parentCategory = categoryRepository.findById(routinePreset.getCategory().getId())
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+          Category category = routinePreset.getCategory();
+          CategoryType type = category.getType();
 
+          Category parentCategory = null;
+          Category childCategory = null;
+
+          if (type == CategoryType.DEFAULT || type == CategoryType.MAJOR) {
+            parentCategory = category; // 이미 연관된 엔티티
             childCategory = null;
-
           } else {
-
-            childCategory = categoryRepository.findById(routinePreset.getCategory().getId())
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
-
-            parentCategory = categoryRepository.findById(routinePreset.getCategory().getParentId())
-                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+            childCategory = category;
+            parentCategory = category.getParent();// 연관관계로 접근 가능해야 함
           }
           return RoutinePresetViewDTO.builder()
               .presetId(routinePreset.getId())
@@ -87,22 +81,18 @@ public class AdminRoutinePresetService {
 
     RoutinePreset routinePreset = routinePresetRepository.findWithCategoryById(presetId)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
-    Category parentCategory ;
-    Category childCategory ;
-    CategoryType type = routinePreset.getCategory().getType();
-    if (type == CategoryType.MAJOR) {
-      parentCategory = categoryRepository.findById(routinePreset.getCategory().getId())
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+    Category category = routinePreset.getCategory();
+    CategoryType type = category.getType();
 
+    Category parentCategory = null;
+    Category childCategory = null;
+
+    if (type == CategoryType.DEFAULT || type == CategoryType.MAJOR) {
+      parentCategory = category; // 이미 연관된 엔티티
       childCategory = null;
-
     } else {
-
-      childCategory = categoryRepository.findById(routinePreset.getCategory().getId())
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
-
-      parentCategory = categoryRepository.findById(routinePreset.getCategory().getParentId())
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+      childCategory = category;
+      parentCategory = category.getParent();// 연관관계로 접근 가능해야 함
     }
 
     //DTO 변환하여 반환

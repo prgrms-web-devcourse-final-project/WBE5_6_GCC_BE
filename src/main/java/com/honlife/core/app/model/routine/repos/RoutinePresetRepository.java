@@ -31,4 +31,11 @@ public interface RoutinePresetRepository extends JpaRepository<RoutinePreset, Lo
     @Query("SELECT rp FROM RoutinePreset rp JOIN FETCH rp.category WHERE rp.id = :id")
     Optional<RoutinePreset> findWithCategoryById(@Param("id") Long id);
 
+    /** 활성화 된 값들만 들고온다 */
+    @Query("SELECT rp FROM RoutinePreset rp JOIN FETCH rp.category c WHERE rp.isActive = true")
+    List<RoutinePreset> findAllActiveWithCategory();
+
+    @Query("SELECT rp FROM RoutinePreset rp JOIN FETCH rp.category c WHERE rp.isActive = true AND c.id = :categoryId")
+    List<RoutinePreset> getActiveRoutinePresetWithCategoryId(@Param("categoryId") Long categoryId);
+
 }

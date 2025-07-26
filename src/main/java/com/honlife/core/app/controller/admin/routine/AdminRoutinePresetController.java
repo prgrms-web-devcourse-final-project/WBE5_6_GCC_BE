@@ -69,7 +69,7 @@ public class AdminRoutinePresetController {
 
     RoutinePresetViewDTO routineDetailDTO = adminRoutinePresetService.getRoutinePreset(presetId);
 
-    AdminRoutinePresetDetailResponse response = AdminRoutinePresetDetailResponse.from(routineDetailDTO);
+    AdminRoutinePresetDetailResponse response = AdminRoutinePresetDetailResponse.fromDto(routineDetailDTO);
 
     return ResponseEntity.ok(CommonApiResponse.success(response));
   }
