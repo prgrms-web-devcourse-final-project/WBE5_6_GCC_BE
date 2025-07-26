@@ -1,7 +1,6 @@
 package com.honlife.core.app.model.dashboard.dto;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,13 +17,13 @@ public class DashboardDTO {
     private RoutineTotalCountDTO routineCount;
 
     // 하루 루틴 카운트
-    private Map<LocalDateTime, DayRoutineCountDTO> dayRoutineCount;
+    private List<DayRoutineCountDTO> dayRoutineCount;
 
     // 한 주 카테고리 카운트
-    private CategoryTotalCountDTO categoryCount;
+    private List<CategoryTotalCountDTO> categoryCount;
 
     // 한 주 top 5 카테고리 랭킹
-    private CategoryRankDTO[] top5 = new CategoryRankDTO[5];
+    private List<CategoryRankDTO> top5;
 
     // 한 주 동안 얻은 누적 포인트량
     private Integer totalPoint;
