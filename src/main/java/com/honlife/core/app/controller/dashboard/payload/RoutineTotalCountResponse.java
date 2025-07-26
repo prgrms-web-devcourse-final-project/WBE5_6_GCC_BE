@@ -2,6 +2,9 @@ package com.honlife.core.app.controller.dashboard.payload;
 
 import lombok.Data;
 
+/**
+ * 해당 주의 총 루틴 수를 담은 Response
+ */
 @Data
 public class RoutineTotalCountResponse {
     

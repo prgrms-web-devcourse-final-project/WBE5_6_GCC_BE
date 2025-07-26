@@ -29,8 +29,8 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
     public RoutineTotalCountDTO countRoutineScheduleByMemberAndDateAndIsDone(String userEmail, LocalDate startDate, LocalDate endDate) {
         return queryFactory
             .select(Projections.constructor(RoutineTotalCountDTO.class,
-                    routineSchedule.count(),
-                    JPAExpressions
+                    routineSchedule.count(), // 총 루틴 수
+                    JPAExpressions // 완료한 루틴 수
                         .select(routineSchedule.count())
                         .from(routineSchedule)
                         .where((routineSchedule.date.goe(startDate))
@@ -52,9 +52,9 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
 
          return queryFactory
             .select(Projections.constructor(DayRoutineCountDTO.class,
-                outerRoutineSchedule.date,
-                outerRoutineSchedule.count(),
-                JPAExpressions.select(routineSchedule.count())
+                outerRoutineSchedule.date, // 해당 날짜
+                outerRoutineSchedule.count(), // 해당 날짜의 총 루틴 수
+                JPAExpressions.select(routineSchedule.count()) // 해당 날짜의 완료한 루틴 수
                     .from(routineSchedule)
                     .where((routineSchedule.date.eq(outerRoutineSchedule.date))
                         .and(routineSchedule.routine.member.email.eq(userEmail)
@@ -77,9 +77,9 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
 
         return queryFactory
             .select(Projections.constructor(CategoryCountDTO.class,
-                parent.name,
-                category.name,
-                routineSchedule.count()
+                parent.name, // 부모 카테고리의 이름
+                category.name, // 루틴에 저장된 카테고리의 이름
+                routineSchedule.count() // 카테고리 별 루틴 수
             ))
             .from(routineSchedule)
             .leftJoin(routineSchedule.routine.category, category)
