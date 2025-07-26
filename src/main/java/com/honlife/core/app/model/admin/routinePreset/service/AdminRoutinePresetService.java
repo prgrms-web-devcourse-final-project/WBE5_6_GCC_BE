@@ -1,10 +1,13 @@
 package com.honlife.core.app.model.admin.routinePreset.service;
 
+import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetSaveRequest;
+import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetUpdateRequest;
 import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
+import com.honlife.core.app.model.routine.dto.RoutinePresetDTO;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
@@ -13,12 +16,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AdminRoutinePresetService {
 
   private final RoutinePresetRepository routinePresetRepository;
+  private final CategoryRepository categoryRepository;
+
   /**
    * 추천 루틴 프리셋 목록 조회 service
    * @return List<RoutinePresetViewDTO>
@@ -109,6 +115,80 @@ public class AdminRoutinePresetService {
         .build();
 
     return dto;
+
+  }
+
+  public void createRoutinePreset(AdminRoutinePresetSaveRequest request) {
+
+    Category category = categoryRepository.findById(request.getCategoryId())
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+    RoutinePreset routinePreset = RoutinePreset.builder()
+        .category(category)
+        .triggerTime(request.getTriggerTime())
+        .isImportant(request.getIsImportant())
+        .content(request.getName())
+        .repeatType(request.getRepeatType())
+        .repeatValue(request.getRepeatValue())
+        .repeatTerm(request.getRepeatInterval())
+        .startDate(request.getStartRoutineDate())
+        .build();
+
+    routinePresetRepository.save(routinePreset);
+
+  }
+
+
+  @Transactional
+  public void updateRoutinePreset(Long presetId, AdminRoutinePresetUpdateRequest request) {
+
+
+    RoutinePreset routinePreset = routinePresetRepository.findById(presetId)
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
+
+    if (request.getName() != null) {
+      routinePreset.setContent(request.getName());
+    }
+
+    if (request.getTriggerTime() != null) {
+      routinePreset.setTriggerTime(request.getTriggerTime());
+    }
+
+    if (request.getIsImportant() != null) {
+      routinePreset.setIsImportant(request.getIsImportant());
+    }
+
+    if (request.getRepeatType() != null) {
+      routinePreset.setRepeatType(request.getRepeatType());
+    }
+
+    if (request.getRepeatValue() != null) {
+      routinePreset.setRepeatValue(request.getRepeatValue());
+    }
+
+    if (request.getRepeatInterval() != null) {
+      routinePreset.setRepeatTerm(request.getRepeatInterval());
+    }
+
+    if (request.getStartRoutineDate() != null) {
+      routinePreset.setStartDate(request.getStartRoutineDate());
+    }
+
+    if (request.getCategoryId() != null) {
+      Category category = categoryRepository.findById(request.getCategoryId())
+          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+      routinePreset.setCategory(category);
+    }
+
+
+  }
+
+  @Transactional
+  public void deleteRoutinePreset(Long presetId) {
+    RoutinePreset routinePreset = routinePresetRepository.findById(presetId)
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
+
+    routinePreset.setIsActive(false);
 
   }
 }
