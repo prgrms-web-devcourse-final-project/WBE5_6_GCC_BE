@@ -29,17 +29,24 @@ public class DashboardController {
     private final DashboardService dashboardService;
     private final ModelMapper mapper;
 
+    /**
+     * 멤버 대시보드의 데이터를 조회하는 API 입니다.
+     * @param date 데이토를 조회할 해당 주에 속한 날짜
+     * @param userDetails 로그인한 멤버 데이터
+     * @return DashboardWrapper
+     */
     @GetMapping
     public ResponseEntity<CommonApiResponse<DashboardWrapper>> getDashboardData(
         @RequestParam
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        LocalDateTime startDate,
+        LocalDateTime date,
         @AuthenticationPrincipal UserDetails userDetails
     ){
         String userEmail = userDetails.getUsername();
+        // 데이터를 가져옴
+        DashboardWrapperDTO dashboardDTO = dashboardService.getDashBoardData(userEmail, date);
 
-        DashboardWrapperDTO dashboardDTO = dashboardService.getDashBoardData(userEmail, startDate);
-
+        // response에 맞게 매핑
         DashboardWrapper wrapper = DashboardWrapper.builder()
             .routineCount(mapper.map(dashboardDTO, RoutineTotalCountResponse.class))
             .dayRoutineCount(dashboardDTO.getDayRoutineCount().stream().map(

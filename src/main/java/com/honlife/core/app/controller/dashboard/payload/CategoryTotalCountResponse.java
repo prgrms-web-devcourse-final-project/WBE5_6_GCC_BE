@@ -2,6 +2,10 @@ package com.honlife.core.app.controller.dashboard.payload;
 
 import lombok.Data;
 
+/**
+ * 카테고리 이름과 해당 카테고리가 쓰인 루틴이 등록된 횟수를 담은 response
+ * 카테고리 점유율에 사용
+ */
 @Data
 public class CategoryTotalCountResponse {
     // 카테고리 이름

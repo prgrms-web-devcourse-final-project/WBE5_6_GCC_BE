@@ -30,8 +30,14 @@ public class DashboardService {
     private final PointLogRepository pointLogRepository;
     private final AICommentService aiService;
 
-    public DashboardWrapperDTO getDashBoardData(String userEmail, LocalDateTime startDateTime) {
-        LocalDate startDate = startDateTime.toLocalDate().with(DayOfWeek.MONDAY);
+    /**
+     * 데이터를 가져오는 메소드
+     * @param userEmail 로그인한 멤버 이메일
+     * @param date 조회할 주에 속한 아무 날짜
+     * @return DashboardWrapperDTO
+     */
+    public DashboardWrapperDTO getDashBoardData(String userEmail, LocalDateTime date) {
+        LocalDate startDate = date.toLocalDate().with(DayOfWeek.MONDAY);
         LocalDate endDate = LocalDate.now();
         if(startDate.plusDays(7).isBefore(LocalDate.now()))
             endDate = startDate.plusDays(7);
@@ -44,6 +50,7 @@ public class DashboardService {
 
         // 카테고리 이름, 카테고리 참조 루틴 개수
         List<CategoryCountDTO> categoryCountDTOS = routineScheduleRepository.countRoutineSchedulesGroupByCategory(userEmail, startDate, endDate, null);
+        // 소분류 카테고리로 되어있으면 대분류 카테고리로 집계되도록
         Map<String, Long> countMap = countByMajorCategory(categoryCountDTOS);
         List<CategoryTotalCountDTO> categoryTotalCountDTOs = new ArrayList<>();
         for(String categoryName: countMap.keySet()){
@@ -53,6 +60,7 @@ public class DashboardService {
         // 카테고리 이름, 카테고리 참조 완료 루틴 개수
         List<CategoryCountDTO> categoryTop5Count = routineScheduleRepository.countRoutineSchedulesGroupByCategory(userEmail, startDate, endDate, true);
 
+        // 가장 많이 수행한 루틴의 카테고리 top5
         List<CategoryRankDTO> top5CategoryRankDTOS = countByMajorCategory(categoryTop5Count).entrySet().stream()
             .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
             .limit(5)
@@ -84,6 +92,11 @@ public class DashboardService {
 
     }
 
+    /**
+     * 루틴에 저장된 카테고리 별로 집계된 것을 대분류 카테고리로 바꾸어 count
+     * @param categoryCountDTOS 카테고리 별로 카운트 된 데이터
+     * @return Map<String, Long>
+     */
     private static Map<String, Long> countByMajorCategory(List<CategoryCountDTO> categoryCountDTOS) {
         // 대분류 카테고리를 가져와 이름 별로 카운트
         Map<String, Long> countMap = new HashMap<>();
