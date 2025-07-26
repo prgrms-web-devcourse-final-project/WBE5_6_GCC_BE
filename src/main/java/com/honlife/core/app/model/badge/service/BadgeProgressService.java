@@ -7,6 +7,7 @@ import com.honlife.core.app.model.badge.repos.BadgeProgressRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.service.MemberService;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,42 @@ public class BadgeProgressService {
         badgeProgressRepository.save(progress);
 
         log.debug("Category progress updated - member: {}, category: {}, new count: {}",
+            memberId, categoryId, progress.getCountValue());
+    }
+
+    /**
+     * 카테고리별 루틴 완료 진행률 감소
+     * @param memberId 회원 ID
+     * @param categoryId 카테고리 ID
+     */
+    @Transactional
+    public void decrementCategoryProgress(Long memberId, Long categoryId) {
+        log.debug("Decrementing category progress for member: {}, category: {}", memberId, categoryId);
+
+        Optional<BadgeProgress> progressOpt = badgeProgressRepository
+            .findByMemberIdAndProgressTypeAndProgressKey(
+                memberId, ProgressType.CATEGORY, categoryId.toString());
+
+        if (progressOpt.isEmpty()) {
+            log.warn("No progress found to decrement for member: {}, category: {}", memberId, categoryId);
+            return;
+        }
+
+        BadgeProgress progress = progressOpt.get();
+
+        // 0 이하로 내려가지 않도록 보호
+        if (progress.getCountValue() <= 0) {
+            log.warn("Progress already at 0, cannot decrement further - member: {}, category: {}",
+                memberId, categoryId);
+            return;
+        }
+
+        progress.setCountValue(progress.getCountValue() - 1);
+        progress.setLastDate(LocalDate.now());
+
+        badgeProgressRepository.save(progress);
+
+        log.debug("Category progress decremented - member: {}, category: {}, new count: {}",
             memberId, categoryId, progress.getCountValue());
     }
 

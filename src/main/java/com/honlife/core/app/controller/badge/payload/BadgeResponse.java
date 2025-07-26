@@ -25,7 +25,7 @@ public class BadgeResponse {
 
     private BadgeTier tier;
 
-    private String how;
+    private String message;
 
     private Integer requirement;
 
@@ -43,7 +43,7 @@ public class BadgeResponse {
             .badgeKey(dto.getBadgeKey())
             .badgeName(dto.getBadgeName())
             .tier(dto.getTier())
-            .how(dto.getMessage())
+            .message(dto.getMessage())
             .requirement(dto.getRequirement())
             .info(dto.getInfo())
             .categoryName(dto.getCategoryName())

@@ -1,13 +1,15 @@
 package com.honlife.core.app.model.badge.listener;
 
 import com.honlife.core.app.model.badge.event.LoginEvent;
-import com.honlife.core.app.model.badge.event.RoutineCompletedEvent;
+import com.honlife.core.app.model.badge.event.RoutineProgressEvent;
 import com.honlife.core.app.model.badge.service.BadgeProgressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
@@ -17,28 +19,38 @@ public class BadgeEventListener {
     private final BadgeProgressService badgeProgressService;
 
     /**
-     * 루틴 완료 이벤트 처리
-     * @param event 루틴 완료 이벤트
+     * 루틴 진행률 변경 이벤트 처리 (완료/취소 통합)
+     * @param event 루틴 진행률 변경 이벤트
      */
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
-    public void onRoutineCompleted(RoutineCompletedEvent event) {
+    public void onRoutineProgress(RoutineProgressEvent event) {
         try {
-            log.debug("Processing routine completed event - memberId: {}, categoryId: {}",
-                event.getMemberId(), event.getCategoryId());
+            log.debug("Processing routine progress event after transaction commit - memberId: {}, categoryId: {}, action: {}",
+                event.getMemberId(), event.getCategoryId(), event.getAction());
 
-            badgeProgressService.incrementCategoryProgress(
-                event.getMemberId(),
-                event.getCategoryId()
-            );
-
-            log.debug("Successfully updated badge progress for routine completion - memberId: {}, categoryId: {}",
-                event.getMemberId(), event.getCategoryId());
+            switch (event.getAction()) {
+                case COMPLETED -> {
+                    badgeProgressService.incrementCategoryProgress(
+                        event.getMemberId(),
+                        event.getCategoryId()
+                    );
+                    log.debug("Successfully incremented badge progress - memberId: {}, categoryId: {}",
+                        event.getMemberId(), event.getCategoryId());
+                }
+                case CANCELLED -> {
+                    badgeProgressService.decrementCategoryProgress(
+                        event.getMemberId(),
+                        event.getCategoryId()
+                    );
+                    log.debug("Successfully decremented badge progress - memberId: {}, categoryId: {}",
+                        event.getMemberId(), event.getCategoryId());
+                }
+            }
 
         } catch (Exception e) {
-            log.error("Failed to process routine completed event - memberId: {}, categoryId: {}, error: {}",
-                event.getMemberId(), event.getCategoryId(), e.getMessage(), e);
-            // 이벤트 처리 실패해도 원본 로직에는 영향 없음
+            log.error("Failed to process routine progress event - memberId: {}, categoryId: {}, action: {}, error: {}",
+                event.getMemberId(), event.getCategoryId(), event.getAction(), e.getMessage(), e);
         }
     }
 
