@@ -36,7 +36,7 @@ public class AdminItemService {
         }
 
         Item item = Item.builder()
-                .itemKey(request.getItemKey())
+                .key(request.getItemKey())
                 .name(request.getItemName())
                 .description(request.getItemDescription())
                 .price(request.getItemPrice())

@@ -72,12 +72,12 @@ public class ItemService {
      * 회원 ID와 아이템 key를 기준으로 해당 아이템 정보를 조회하고,
      * 회원의 보유 여부를 포함한 ItemResponse DTO로 반환합니다.
      *
-     * @param itemKey   조회할 아이템의 고유 키
+     * @param key   조회할 아이템의 고유 키
      * @param memberId  현재 로그인한 회원의 ID
      * @return          아이템 정보 및 보유 여부를 담은 ItemResponse
      */
-    public ItemDTO getItemResponseByKey(String itemKey, Long memberId) {
-        Tuple tuple = itemRepositoryCustom.findItemWithOwnership(itemKey, memberId);
+    public ItemDTO getItemResponseByKey(String key, Long memberId) {
+        Tuple tuple = itemRepositoryCustom.findItemWithOwnership(key, memberId);
         if (tuple == null) {
             throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
         }
@@ -100,11 +100,11 @@ public class ItemService {
 
     /**
      * itemKey로 단일 아이템 조회
-     * @param itemKey
+     * @param key
      * return Optional<Item></Item>
      */
-    public Item getItemByKey(String itemKey) {
-        return itemRepository.findByItemKeyAndIsActiveTrue(itemKey);
+    public Item getItemByKey(String key) {
+        return itemRepository.findByKeyAndIsActiveTrue(key);
     }
 
     /**
@@ -137,8 +137,8 @@ public class ItemService {
      * itemKeyExists,mapToDTO,mapToEntity,get,getReferencedWarning
      * Item Unique 보장을 위함
      */
-    public boolean itemKeyExists(final String itemKey) {
-        return itemRepository.existsByItemKeyIgnoreCase(itemKey);
+    public boolean itemKeyExists(final String key) {
+        return itemRepository.existsByKeyIgnoreCase(key);
     }
 
     private ItemDTO mapToDTO(final Item item, final ItemDTO itemDTO) {
