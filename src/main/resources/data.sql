@@ -1,8 +1,8 @@
-INSERT INTO MEMBER (id, role, email, password, name, nickname, residence_experience, region1dept, region2dept, region3dept, is_verified, created_at, updated_at, is_active) VALUES
-(1, 'ROLE_ADMIN', 'admin@test.com', '{bcrypt}$2a$10$iC0JoLYyZ1kflTuNTtVsr.3rKS0Hl7jaCe4xjSxMWbFcYd0DOb0AO', '관리자', '관리자', null, null, null, null, true, null, null, true),
-(2, 'ROLE_USER', 'user01@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '홍길동', '닉네임1', 'OVER_10Y', '서울특별시', '강북구', '미아동', true, '2025-06-01 10:15:00', '2025-06-01 10:15:00', true),
-(3, 'ROLE_USER', 'user02@test.com', '{bcrypt}$2a$10$4dTVUJL9Rp/b8.q3upjZIuIewKcu6cBTlzskYQnasQZfZoI5RtgMK', '김영희', '닉네임2', 'Y1_TO_3', '서울특별시', '강북구', '수유1동', true, '2025-06-03 09:00:00', '2025-06-05 18:30:00', true),
-(4, 'ROLE_USER', 'user03@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '박철수', '닉네임3', 'UNDER_1Y', '서울특별시', '강남구', '역삼동', true, '2025-07-14 10:00:00', '2025-07-14 10:00:00', true);
+INSERT INTO MEMBER (id, role, email, password, provider, providerId, name, nickname, residence_experience, region1dept, region2dept, region3dept, is_verified, created_at, updated_at, is_active) VALUES
+(1, 'ROLE_ADMIN', 'admin@test.com', '{bcrypt}$2a$10$iC0JoLYyZ1kflTuNTtVsr.3rKS0Hl7jaCe4xjSxMWbFcYd0DOb0AO', null, null, '관리자', '관리자', null, null, null, null, true, null, null, true),
+(2, 'ROLE_USER', 'user01@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', null, null, '홍길동', '닉네임1', 'OVER_10Y', '서울특별시', '강북구', '미아동', true, '2025-06-01 10:15:00', '2025-06-01 10:15:00', true),
+(3, 'ROLE_USER', 'user02@test.com', '{bcrypt}$2a$10$4dTVUJL9Rp/b8.q3upjZIuIewKcu6cBTlzskYQnasQZfZoI5RtgMK', null, null, '김영희', '닉네임2', 'Y1_TO_3', '서울특별시', '강북구', '수유1동', true, '2025-06-03 09:00:00', '2025-06-05 18:30:00', true),
+(4, 'ROLE_USER', 'user03@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', null, null, '박철수', '닉네임3', 'UNDER_1Y', '서울특별시', '강남구', '역삼동', true, '2025-07-14 10:00:00', '2025-07-14 10:00:00', true);
 
 -- 카테고리 insert
 INSERT INTO CATEGORY (id, member_id, parent_id, name, type, created_at, updated_at, is_active) VALUES
