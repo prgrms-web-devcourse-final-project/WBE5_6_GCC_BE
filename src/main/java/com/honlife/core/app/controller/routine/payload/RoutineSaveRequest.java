@@ -19,11 +19,9 @@ public class RoutineSaveRequest {
     @Schema(description = "루틴 이름", example = "변기 청소하기", required = true)
     private String name;
 
-    @Schema(description = "대분류 카테고리", example = "청소")
-    private String majorCategory;
+    @Schema(description = "카테고리 ID", example = "1")
+    private Long categoryId;
 
-    @Schema(description = "소분류 카테고리", example = "화장실 청소")
-    private String subCategory;
 
 
     @NotNull(message = "반복 유형은 필수입니다")

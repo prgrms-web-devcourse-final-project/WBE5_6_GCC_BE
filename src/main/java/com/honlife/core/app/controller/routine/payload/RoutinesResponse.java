@@ -28,6 +28,9 @@ public class RoutinesResponse {
         @Schema(description = "스케줄 ID", example = "1")
         private Long scheduleId;
 
+        @Schema(description = "카테고리 ID", example = "3")
+        private Long categoryId;
+
         @Schema(description = "루틴 ID", example = "1")
         private Long routineId;
 

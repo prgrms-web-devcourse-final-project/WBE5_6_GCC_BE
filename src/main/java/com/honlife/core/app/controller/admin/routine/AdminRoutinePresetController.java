@@ -81,6 +81,10 @@ public class AdminRoutinePresetController {
           .isImportant(true)
           .updatedAt(LocalDate.of(2025, 8, 1).atStartOfDay())
           .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .repeatInterval(3)
+          .startRoutineDate(LocalDate.of(2025, 8, 1))
+          .repeatType(RepeatType.WEEKLY)
+          .repeatValue("1,3,5")
           .build());
 
       presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
@@ -93,6 +97,10 @@ public class AdminRoutinePresetController {
           .isImportant(true)
           .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
           .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .repeatInterval(3)
+          .startRoutineDate(LocalDate.of(2025, 8, 1))
+          .repeatType(RepeatType.WEEKLY)
+          .repeatValue("1,3,5")
           .build());
 
       presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
@@ -105,6 +113,10 @@ public class AdminRoutinePresetController {
           .isImportant(false)
           .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
           .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .repeatInterval(1)
+          .startRoutineDate(LocalDate.of(2025, 8, 1))
+          .repeatType(RepeatType.DAILY)
+          .repeatValue(null)
           .build());
 
     } else if (categoryId == 2L) {
@@ -119,6 +131,10 @@ public class AdminRoutinePresetController {
           .isImportant(true)
           .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
           .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .repeatInterval(3)
+          .startRoutineDate(LocalDate.of(2025, 7, 1))
+          .repeatType(RepeatType.WEEKLY)
+          .repeatValue("4,5")
           .build());
 
       presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
@@ -131,6 +147,11 @@ public class AdminRoutinePresetController {
           .isImportant(true)
           .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
           .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .repeatInterval(2)
+          .startRoutineDate(LocalDate.of(2025, 7, 1))
+          .repeatType(RepeatType.WEEKLY)
+          .repeatValue("4,5")
+
           .build());
 
     } else if (categoryId == 4L) {
@@ -145,6 +166,10 @@ public class AdminRoutinePresetController {
           .isImportant(true)
           .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
           .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .repeatInterval(3)
+          .startRoutineDate(LocalDate.of(2025, 5, 1))
+          .repeatType(RepeatType.DAILY)
+          .repeatValue(null)
           .build());
 
       presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
@@ -157,6 +182,10 @@ public class AdminRoutinePresetController {
           .isImportant(false)
           .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
           .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .repeatInterval(3)
+          .startRoutineDate(LocalDate.of(2025, 8, 1))
+          .repeatType(RepeatType.WEEKLY)
+          .repeatValue("1,3,5")
           .build());
 
       presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
@@ -169,6 +198,10 @@ public class AdminRoutinePresetController {
           .isImportant(false)
           .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
           .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+          .repeatInterval(3)
+          .startRoutineDate(LocalDate.of(2025, 8, 1))
+          .repeatType(RepeatType.WEEKLY)
+          .repeatValue("1,3,5")
           .build());
     }
 
@@ -217,6 +250,8 @@ public class AdminRoutinePresetController {
         .isImportant(false)
         .updatedAt(LocalDate.of(2025, 7, 1).atStartOfDay())
         .createdAt(LocalDate.of(2025, 6, 1).atStartOfDay())
+        .repeatInterval(3)
+        .startRoutineDate(LocalDate.of(2025, 8, 1))
         .repeatType(RepeatType.WEEKLY)
         .repeatValue("1,3,5")
         .build();

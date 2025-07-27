@@ -18,11 +18,6 @@ public class AdminRoutinePresetSaveRequest {
   @Schema(description = "카테고리 ID", example = "1", required = true)
   private Long categoryId;
 
-  @Schema(description = "대분류 카테고리", example = "청소")
-  private String majorCategory;
-
-  @Schema(description = "소분류 카테고리", example = "화장실 청소")
-  private String subCategory;
 
   @Schema(description = "트리거 시간", example = "09:00")
   private String triggerTime;
@@ -45,6 +40,10 @@ public class AdminRoutinePresetSaveRequest {
   @Size(max = 50, message = "루틴 내용은 50자를 초과할 수 없습니다")
   @Schema(description = "루틴 내용", example = "아침 스트레칭 하기", required = true)
   private String name;
+
+  @Schema(description = "주 반복 간격 (1 = 매주, 2 = 격주 등)", example = "1")
+  private Integer repeatInterval = 1;  // 기본값: 매주
+
 
 
 

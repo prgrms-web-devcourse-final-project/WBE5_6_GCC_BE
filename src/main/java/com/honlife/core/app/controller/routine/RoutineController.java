@@ -143,6 +143,7 @@ public class RoutineController {
 
                 items.add(RoutinesResponse.RoutineItem.builder()
                     .scheduleId((long) i + 1)
+                    .categoryId((long) i+ 1)
                     .routineId((long) i + 1)
                     .majorCategory("건강")
                     .subCategory(null)
