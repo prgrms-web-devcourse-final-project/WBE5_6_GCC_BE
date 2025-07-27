@@ -5,10 +5,16 @@ import com.honlife.core.app.controller.dashboard.payload.CategoryTotalCountRespo
 import com.honlife.core.app.controller.dashboard.payload.DayRoutineCountResponse;
 import com.honlife.core.app.controller.dashboard.payload.RoutineTotalCountResponse;
 import com.honlife.core.app.controller.dashboard.warpper.DashboardWrapper;
-import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
+import com.honlife.core.app.model.dashboard.dto.CategoryRankDTO;
+import com.honlife.core.app.model.dashboard.dto.CategoryTotalCountDTO;
+import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
+import com.honlife.core.app.model.dashboard.dto.RoutineTotalCountDTO;
 import com.honlife.core.app.model.dashboard.service.DashboardService;
 import com.honlife.core.infra.response.CommonApiResponse;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -43,23 +49,42 @@ public class DashboardController {
         @AuthenticationPrincipal UserDetails userDetails
     ){
         String userEmail = userDetails.getUsername();
+        // 아무 날짜나 들어왔을 때 그 주의 첫번째 요일로 만듦
+        LocalDate startDate = date.toLocalDate().with(DayOfWeek.MONDAY);
+        // startDate를 기준으로 7일을 더해 조회 종료일(포함x)을 구함
+        LocalDate endDate = LocalDate.now();
+        if(startDate.plusDays(7).isBefore(LocalDate.now()))
+            endDate = startDate.plusDays(7);
+
         // 데이터를 가져옴
-        DashboardWrapperDTO dashboardDTO = dashboardService.getDashBoardData(userEmail, date);
+
+        RoutineTotalCountDTO routineTotalCountDTO = dashboardService.getRoutineTotalCount(userEmail, startDate, endDate);
+
+        List<DayRoutineCountDTO> dayRoutineCountDTOS = dashboardService.getDayRoutineCounts(userEmail, startDate, endDate);
+
+        List<CategoryTotalCountDTO> categoryTotalCountDTOS = dashboardService.getCategoryTotalCounts(userEmail, startDate, endDate);
+
+        List<CategoryRankDTO> categoryRankDTOS = dashboardService.getCategoryRanks(userEmail, startDate, endDate);
+
+        Integer totalPoint = dashboardService.getTotalPoint(userEmail, startDate, endDate);
+
+        String aiComment = null;
+
 
         // response에 맞게 매핑
         DashboardWrapper wrapper = DashboardWrapper.builder()
-            .routineCount(mapper.map(dashboardDTO, RoutineTotalCountResponse.class))
-            .dayRoutineCount(dashboardDTO.getDayRoutineCount().stream().map(
-                dayRoutineCountDTO-> mapper.map(dayRoutineCountDTO,DayRoutineCountResponse.class)
+            .routineCount(mapper.map(routineTotalCountDTO, RoutineTotalCountResponse.class))
+            .dayRoutineCount(dayRoutineCountDTOS.stream().map(
+                DayRoutineCountResponse::fromDTO
             ).toList())
-            .categoryCount(dashboardDTO.getCategoryCount().stream().map(
+            .categoryCount(categoryTotalCountDTOS.stream().map(
                 categoryTotalCountDTO-> mapper.map(categoryTotalCountDTO,CategoryTotalCountResponse.class)
             ).toList())
-            .top5(dashboardDTO.getTop5().stream().map(
+            .top5(categoryRankDTOS.stream().map(
                 categoryRankDTO->mapper.map(categoryRankDTO,CategoryRankResponse.class)
             ).toList())
-            .totalPoint(dashboardDTO.getTotalPoint())
-            .aiComment(dashboardDTO.getAiComment())
+            .totalPoint(totalPoint)
+            .aiComment(aiComment)
             .build();
 
         return ResponseEntity.ok(CommonApiResponse.success(wrapper));
