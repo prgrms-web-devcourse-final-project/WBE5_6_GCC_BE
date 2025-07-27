@@ -21,5 +21,6 @@ public class RoutineDetailDTO {
   private RepeatType repeatType;
   private String repeatValue;
   private LocalDate startRoutineDate;
+  private String emoji;
 
 }

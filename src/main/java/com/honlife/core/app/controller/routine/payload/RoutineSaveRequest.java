@@ -20,9 +20,6 @@ public class RoutineSaveRequest {
 
     private Long categoryid;
 
-    private String majorCategory;
-
-    private String subCategory;
 
     @NotNull(message = "루틴 시작 날짜는 필수입니다")
     private LocalDate startRoutineDate;

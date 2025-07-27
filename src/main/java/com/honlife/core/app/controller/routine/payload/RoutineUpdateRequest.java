@@ -21,10 +21,6 @@ public class RoutineUpdateRequest {
 
   private Long categoryid;
 
-  private String majorCategory;
-
-  private String subCategory;
-
   private LocalDate startRoutineDate;
 
   private String triggerTime;

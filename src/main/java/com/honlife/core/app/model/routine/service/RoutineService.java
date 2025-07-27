@@ -234,6 +234,7 @@ public class RoutineService {
         .repeatType(routine.getRepeatType())
         .repeatValue(routine.getRepeatValue())
         .startRoutineDate(routine.getStartDate())
+        .emoji(routine.getCategory().getEmoji())
         .build();
 
     return response;
