@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.Key;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,7 +64,7 @@ public class ItemController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         // 아이템 조회
-        Item item = itemService.getItemByKey(itemKey)
+        Item item = itemService.getItemByKey(key)
                 .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_ITEM));
 
         // 사용자 정보 조회
@@ -86,7 +87,7 @@ public class ItemController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         // 아이템 키값으로 Item 정보 가져옴
-        Item item = itemService.getItemByKey(itemKey)
+        Item item = itemService.getItemByKey(key)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
 
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
