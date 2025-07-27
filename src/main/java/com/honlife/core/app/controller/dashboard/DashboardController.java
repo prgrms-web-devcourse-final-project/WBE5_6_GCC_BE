@@ -68,7 +68,7 @@ public class DashboardController {
         List<CategoryRankDTO> categoryRankDTOS = dashboardService.getCategoryRanks(userEmail, startDate, endDate);
 
         Integer totalPoint = dashboardService.getTotalPoint(userEmail, startDate, endDate);
-        
+
         String aiComment = null;
 
 
@@ -76,7 +76,7 @@ public class DashboardController {
         DashboardWrapper wrapper = DashboardWrapper.builder()
             .routineCount(mapper.map(routineTotalCountDTO, RoutineTotalCountResponse.class))
             .dayRoutineCount(dayRoutineCountDTOS.stream().map(
-                dayRoutineCountDTO-> mapper.map(dayRoutineCountDTO,DayRoutineCountResponse.class)
+                DayRoutineCountResponse::fromDTO
             ).toList())
             .categoryCount(categoryTotalCountDTOS.stream().map(
                 categoryTotalCountDTO-> mapper.map(categoryTotalCountDTO,CategoryTotalCountResponse.class)
