@@ -21,10 +21,10 @@ public class KakaoClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${spring.kakao.auth.client}")
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
 
-    @Value("${spring.kakao.auth.redirect}")
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
 
     @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
