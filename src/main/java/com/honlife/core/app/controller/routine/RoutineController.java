@@ -56,7 +56,7 @@ public class RoutineController {
             String userEmail = userDetails.getUsername();
 
             Map<LocalDate, List<RoutineItemDTO>> routines = routineService.getUserWeeklyRoutines(userEmail, date);
-            RoutinesResponse response = new RoutinesResponse(routines);
+            RoutinesResponse response = RoutinesResponse.fromDTO(routines);
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
 
@@ -137,7 +137,6 @@ public class RoutineController {
     ) {
 
 
-            routineService.updateRoutine(routineId, routineUpdateRequest);
             routineService.updateRoutine(routineId, routineUpdateRequest);
             return ResponseEntity.ok(CommonApiResponse.noContent());
 

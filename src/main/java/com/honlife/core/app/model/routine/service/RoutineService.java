@@ -146,10 +146,10 @@ public class RoutineService {
             startDate.datesUntil(endDate.plusDays(1))
                 .filter(currentDate ->
                     //해당 날짜로부터 시작 날짜 포함해서 이후에 값만 들고오는거 입니다
-                    !routine.getStartDate().isAfter(LocalDate.now()) &&
+                    !routine.getStartInitDate().isAfter(LocalDate.now()) &&
                         routine.getRepeatType().isMatched(currentDate, routine.getRepeatValue()) &&
                         // 달마다 차이나는 것을 무시하고 순수한 주차 사이 값을 돌려준다는 메서드인데 진짜 너무 대박이네요
-                        ChronoUnit.WEEKS.between(routine.getStartDate(), currentDate) % routine.getRepeatTerm() == 0
+                        ChronoUnit.WEEKS.between(routine.getStartInitDate(), currentDate) % routine.getRepeatTerm() == 0
                 )
 
                 .map(currentDate -> {
@@ -184,7 +184,7 @@ public class RoutineService {
                       .isDone(routineSchedule != null ? routineSchedule.getIsDone() : false)
                       .isImportant(routine.getIsImportant())
                       .date(currentDate)
-                      .startDate(routine.getStartDate())
+                      .startInitDate(routine.getStartInitDate())
                       .repeatType(routine.getRepeatType())
                       .repeatValue(routine.getRepeatValue())
                       .build();
@@ -233,7 +233,7 @@ public class RoutineService {
         .isImportant(routine.getIsImportant())
         .repeatType(routine.getRepeatType())
         .repeatValue(routine.getRepeatValue())
-        .startRoutineDate(routine.getStartDate())
+        .startInitDate(routine.getStartInitDate())
         .emoji(routine.getCategory().getEmoji())
         .build();
 
@@ -255,9 +255,9 @@ public class RoutineService {
     List<RoutineTodayItemDTO> responseRoutines = routines.stream()
 
         .filter(routine ->
-            !routine.getStartDate().isAfter(LocalDate.now()) &&
+            !routine.getStartInitDate().isAfter(LocalDate.now()) &&
                 routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
-                ChronoUnit.WEEKS.between(routine.getStartDate(), LocalDate.now()) % routine.getRepeatTerm() == 0
+                ChronoUnit.WEEKS.between(routine.getStartInitDate(), LocalDate.now()) % routine.getRepeatTerm() == 0
         )
 
         .map(routine -> {
@@ -320,8 +320,8 @@ public class RoutineService {
         .isImportant(routineSaveRequest.getIsImportant())
         .repeatType(routineSaveRequest.getRepeatType())
         .repeatValue(routineSaveRequest.getRepeatValue())
-        .startDate(routineSaveRequest.getStartRoutineDate())
-        .repeatTerm(routineSaveRequest.getRepeatInterval())
+        .startInitDate(routineSaveRequest.getStartRoutineDate())
+        .repeatTerm(routineSaveRequest.getRepeatTerm())
         .member(member)
         .build();
 
@@ -343,40 +343,17 @@ public class RoutineService {
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
 
-    if (request.getCategoryid() != null) {
       Category category = categoryRepository.findById(request.getCategoryid())
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
       routine.setCategory(category);
-    }
-
-
-    if (request.getName() != null) {
       routine.setContent(request.getName());
-    }
-
-    if (request.getTriggerTime() != null) {
       routine.setTriggerTime(request.getTriggerTime());
-    }
-
-    if (request.getIsImportant() != null) {
       routine.setIsImportant(request.getIsImportant());
-    }
-
-    if (request.getRepeatType() != null) {
       routine.setRepeatType(request.getRepeatType());
-    }
-
-    if (request.getRepeatValue() != null) {
       routine.setRepeatValue(request.getRepeatValue());
-    }
-
-    if (request.getStartRoutineDate() != null) {
-      routine.setStartDate(request.getStartRoutineDate());
-    }
-
-    if (request.getRepeatInterval() != null) {
-      routine.setRepeatTerm(request.getRepeatInterval());
-    }
+      routine.setStartInitDate(request.getStartInitDate());
+      routine.setRepeatTerm(request.getRepeatTerm());
 
   }
 
@@ -397,7 +374,7 @@ public class RoutineService {
 
     for (RoutineSchedule schedule : routineSchedules) {
 
-      routineScheduleRepository.deleteById(schedule.getId());
+      schedule.setIsActive(false);
 
     }
 

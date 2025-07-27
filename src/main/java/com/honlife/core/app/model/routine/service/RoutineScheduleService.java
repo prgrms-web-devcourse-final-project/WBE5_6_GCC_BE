@@ -10,10 +10,15 @@ import com.honlife.core.app.model.point.domain.PointPolicy;
 import com.honlife.core.app.model.point.repos.PointPolicyRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.domain.RoutineSchedule;
@@ -26,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RoutineScheduleService {
 
     private final RoutineScheduleRepository routineScheduleRepository;
@@ -86,7 +92,8 @@ public class RoutineScheduleService {
         routineSchedule.setRoutine(routine);
         return routineSchedule;
     }
-    /** 루틴중에서 완료처리와 완료한거 취소하는 처리 포인트 처리 */
+    /** 루틴중에서 완료처리와 완료한거 취소하는 처리 포인트 처리
+     * 아직 포인트 업적 수령 pr이 머지가 안되서 머지되면 반영해서 다시 작성하겠습니다 */
 
     @Transactional
     public void completeRoutineSchedule(Long scheduleId, RoutineScheduleCompleteRequest request, String userEmail) {
@@ -137,6 +144,37 @@ public class RoutineScheduleService {
 
         /** 루틴 완료시 이제 완료율로 뱃지 체크  어떤 뱃지 할건지 논의 해봐야함 */
 
+
+    }
+
+    /** DB에 해당 루틴에 관련된 거 DB에 저장하는 로직 구현*/
+    @Async
+    @Transactional
+    public void createSchedule(LocalDate today) {
+
+        List<Routine> routines = routineRepository.findAllByIsActiveTrue();
+
+
+        for (Routine routine : routines) {
+            if (!today.isBefore(routine.getStartInitDate())
+                && routine.getRepeatType().isMatched(today, routine.getRepeatValue())
+                && ChronoUnit.WEEKS.between(routine.getStartInitDate(), today) % routine.getRepeatTerm() == 0) {
+
+                log.info("✅ [Scheduler] 루틴 ID {} 에 대한 스케줄 생성", routine.getId());
+
+                boolean exists = routineScheduleRepository.existsByRoutineAndScheduleDate(routine, today);
+                if (!exists) {
+                    RoutineSchedule schedule = RoutineSchedule.builder()
+                        .scheduleDate(today)
+                        .isDone(false)
+                        .routine(routine)
+                        .build();
+                    routineScheduleRepository.save(schedule);
+
+                    log.info("[Scheduler] 루틴 ID {} 의 {} 스케줄 저장 완료", routine.getId() , today);
+                }
+            }
+        }
 
     }
 }

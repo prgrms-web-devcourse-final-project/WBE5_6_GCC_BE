@@ -21,7 +21,7 @@ public class RoutineUpdateRequest {
 
   private Long categoryid;
 
-  private LocalDate startRoutineDate;
+  private LocalDate startInitDate;
 
   private String triggerTime;
 
@@ -32,5 +32,5 @@ public class RoutineUpdateRequest {
   @Size(max = 100, message = "반복 값은 100자를 초과할 수 없습니다")
   private String repeatValue;
 
-  private Integer repeatInterval = 1;
+  private Integer repeatTerm = 1;
 }

@@ -62,7 +62,7 @@ public class Routine extends BaseEntity {
     private String repeatValue;
 
     @Column
-    private LocalDate startDate;
+    private LocalDate startInitDate;
 
     @Column
     private int repeatTerm;
