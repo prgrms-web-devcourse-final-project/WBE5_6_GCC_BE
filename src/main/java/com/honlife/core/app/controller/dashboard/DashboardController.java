@@ -7,7 +7,6 @@ import com.honlife.core.app.controller.dashboard.payload.RoutineTotalCountRespon
 import com.honlife.core.app.controller.dashboard.warpper.DashboardWrapper;
 import com.honlife.core.app.model.dashboard.dto.CategoryRankDTO;
 import com.honlife.core.app.model.dashboard.dto.CategoryTotalCountDTO;
-import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
 import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
 import com.honlife.core.app.model.dashboard.dto.RoutineTotalCountDTO;
 import com.honlife.core.app.model.dashboard.service.DashboardService;
