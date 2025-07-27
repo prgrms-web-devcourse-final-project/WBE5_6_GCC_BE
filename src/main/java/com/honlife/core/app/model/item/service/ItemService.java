@@ -109,6 +109,15 @@ public class ItemService {
     }
 
     /**
+     * itemId로 단일 아이템 조회
+     * @param id
+     * return Optional<Item></Item>
+     */
+    public Optional<Item>  getItemById(Long id) {
+        return itemRepository.findByIdAndIsActiveTrue(id);
+    }
+
+    /**
      * 아이템 구매 기능
      * @param item 컨트롤러에서 key값을 통해 구매하려는 Item 정보를 가지고 있음
      * @param member 구매하는 사용자 Member 테이블 값

@@ -34,8 +34,8 @@ public class AdminItemService {
      * - 존재하지 않는 아이템일 경우 NOT_FOUND 예외 발생
      */
     @Transactional
-    public void updateItem(String itemKey, AdminItemRequest request) {
-        Item item = itemService.getItemByKey(itemKey)
+    public void updateItem(Long itemId, AdminItemRequest request) {
+        Item item = itemService.getItemById(itemId)
                 .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_ITEM));
         item.setName(request.getItemName());
         item.setDescription(request.getItemDescription());
@@ -76,12 +76,12 @@ public class AdminItemService {
      * 아이템을 Soft Delete 처리합니다.
      * itemKey에 해당하는 아이템을 조회하여 isActive 값을 false로 설정합니다.
      *
-     * @param itemKey 삭제할 아이템의 고유 키
+     * @param itemId 삭제할 아이템의 고유 키
      */
     @Transactional
-    public void softDeleteItem(String itemKey) {
+    public void softDeleteItem(Long itemId) {
 
-        Item item = itemService.getItemByKey(itemKey)
+        Item item = itemService.getItemById(itemId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
         item.setIsActive(false);
 
