@@ -1,6 +1,8 @@
 package com.honlife.core.app.model.dashboard.service;
 
 import com.honlife.core.app.model.dashboard.domain.MemberDashboard;
+import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
+import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
 import com.honlife.core.app.model.dashboard.repos.MemberDashboardRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.RoutineSchedule;
@@ -23,7 +25,7 @@ public class AICommentService {
     private final MemberRepository memberRepository;
     private final RoutineScheduleRepository routineScheduleRepository;
 
-    public String getOrCreateAIComment(String userEmail, LocalDate startDate, LocalDate endDate) {
+    public String getOrCreateAIComment(String userEmail, LocalDate startDate, LocalDate endDate, DashboardWrapperDTO dashboardWrapperDTO) {
 
         Optional<MemberDashboard> memberDashboard = memberDashboardRepository.findByMember_EmailAndStartDate(userEmail, startDate);
 
@@ -31,15 +33,28 @@ public class AICommentService {
             return memberDashboard.get().getAiComment();
         }
 
-        return createAIComment(userEmail, startDate, endDate);
+        return createAIComment(userEmail, startDate, endDate, dashboardWrapperDTO);
 
     }
 
-    private String createAIComment(String userEmail, LocalDate startDate, LocalDate endDate) {
+    private String createAIComment(String userEmail, LocalDate startDate, LocalDate endDate, DashboardWrapperDTO dashboardDTO) {
         StringBuilder stringBuilder = new StringBuilder();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 날짜 포맷 지정
 
         List<RoutineSchedule> routineSchedules = routineScheduleRepository.findAllByDateBetween(userEmail, startDate, endDate);
+
+        // 이 데이터를 안 보내주니까 완료율 같은 걸 지멋대로 계산하길래 더 정확한 데이터를 위해 추가하였습니다.
+        for (DayRoutineCountDTO dayData : dashboardDTO.getDayRoutineCount()) {
+            String formattedDate = dayData.getDate().format(dateFormatter);
+
+            stringBuilder.append(String.format("  - %s : 총 %d개, 완료 %d개%n",
+                formattedDate,
+                dayData.getTotalCount(),
+                dayData.getCompletedCount()
+            ));
+        }
+
+        String dayRoutine = stringBuilder.toString();
 
         for (RoutineSchedule routineSchedule : routineSchedules) {
             String formattedDate = routineSchedule.getDate().format(dateFormatter);
@@ -52,15 +67,7 @@ public class AICommentService {
             ));
         }
 
-        String allRoutineData = stringBuilder.toString();
-        ;
-
-        String prompt = String.format("""          
-            [이번 주 루틴 데이터]
-            모든 루틴 데이터: %s
-            """,
-            allRoutineData
-        );
+        String prompt = createPrompt(dashboardDTO, stringBuilder, dayRoutine);
 
         String aiComment=memberDashBoardAIService.chat(prompt);
 
@@ -73,5 +80,27 @@ public class AICommentService {
 
         memberDashboardRepository.save(savedDashboard);
         return aiComment;
+    }
+
+    private static String createPrompt(DashboardWrapperDTO dashboardDTO, StringBuilder stringBuilder,
+        String dayRoutine) {
+        String allRoutineData = stringBuilder.toString();
+
+        return String.format("""          
+            [이번 주 루틴 데이터]
+            총_루틴_개수: %d
+            완료_루틴_개수: %d
+            획득_포인트: %d
+            가장_많이_완료한_카테고리: %s
+            일별 루틴 데이터: %s
+            모든 루틴 데이터: %s
+            """,
+            dashboardDTO.getRoutineCount().getTotalCount(),
+            dashboardDTO.getRoutineCount().getCompletedCount(),
+            dashboardDTO.getTotalPoint(),
+            dashboardDTO.getTop5().getFirst().getCategoryName(),
+            dayRoutine,
+            allRoutineData
+        );
     }
 }

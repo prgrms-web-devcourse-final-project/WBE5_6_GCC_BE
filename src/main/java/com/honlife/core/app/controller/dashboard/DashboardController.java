@@ -7,6 +7,7 @@ import com.honlife.core.app.controller.dashboard.payload.RoutineTotalCountRespon
 import com.honlife.core.app.controller.dashboard.warpper.DashboardWrapper;
 import com.honlife.core.app.model.dashboard.dto.CategoryRankDTO;
 import com.honlife.core.app.model.dashboard.dto.CategoryTotalCountDTO;
+import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
 import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
 import com.honlife.core.app.model.dashboard.dto.RoutineTotalCountDTO;
 import com.honlife.core.app.model.dashboard.service.AICommentService;
@@ -71,7 +72,15 @@ public class DashboardController {
 
         Integer totalPoint = dashboardService.getTotalPoint(userEmail, startDate, endDate);
 
-        String aiComment = aiService.getOrCreateAIComment(userEmail,startDate, endDate);
+        DashboardWrapperDTO dashboardWrapperDTO = DashboardWrapperDTO.builder()
+            .routineCount(routineTotalCountDTO)
+            .dayRoutineCount(dayRoutineCountDTOS)
+            .categoryCount(categoryTotalCountDTOS)
+            .top5(categoryRankDTOS)
+            .totalPoint(totalPoint)
+            .build();
+
+        String aiComment = aiService.getOrCreateAIComment(userEmail,startDate, endDate, dashboardWrapperDTO);
 
 
         // response에 맞게 매핑

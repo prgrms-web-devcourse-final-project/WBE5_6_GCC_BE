@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.dashboard.scheduler;
 
+import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
 import com.honlife.core.app.model.dashboard.service.AICommentService;
 import com.honlife.core.app.model.dashboard.service.DashboardService;
 import com.honlife.core.app.model.member.domain.Member;
@@ -25,6 +26,7 @@ public class MemberDashboardScheduler {
 
     private final MemberRepository memberRepository;
     private final AICommentService aiCommentService;
+    private final DashboardService dashboardService;
 
     /**
      * 일 -> 월 넘어갈 때 AI comment를 생성
@@ -40,7 +42,8 @@ public class MemberDashboardScheduler {
         LocalDate startDate = endDate.with(DayOfWeek.MONDAY);
         // 활성화된 member들의 ai comment를 만듭니다.
         for (Member member : members) {
-            aiCommentService.getOrCreateAIComment(member.getEmail(),startDate, endDate);
+            DashboardWrapperDTO dashboardWrapperDTO = dashboardService.getDashboardData(member.getEmail(), startDate, endDate);
+            aiCommentService.getOrCreateAIComment(member.getEmail(),startDate, endDate, dashboardWrapperDTO);
         }
 
     }
