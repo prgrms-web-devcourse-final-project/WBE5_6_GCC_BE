@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PointPolicyRepository extends JpaRepository<PointPolicy, Long> {
 
+  PointPolicy findByType(PointSourceType routine);
     Optional<PointPolicy> findByTypeAndReferenceKeyAndIsActive(PointSourceType type, String referenceKey, Boolean isActive);
 
-  PointPolicy findByType(PointSourceType routine);
 }
