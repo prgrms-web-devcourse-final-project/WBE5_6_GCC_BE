@@ -8,5 +8,5 @@ import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule, Long>, RoutineScheduleRepositoryCustom {
 
     RoutineSchedule findFirstByRoutine(Routine routine);
-
+    
 }

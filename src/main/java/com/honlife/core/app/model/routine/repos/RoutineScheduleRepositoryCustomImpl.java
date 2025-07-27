@@ -7,6 +7,7 @@ import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
 import com.honlife.core.app.model.dashboard.dto.RoutineTotalCountDTO;
 import com.honlife.core.app.model.routine.domain.QRoutine;
 import com.honlife.core.app.model.routine.domain.QRoutineSchedule;
+import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,6 +25,7 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
     private final QRoutineSchedule routineSchedule=QRoutineSchedule.routineSchedule;
     private final QRoutine routine=QRoutine.routine;
     private final QCategory category=QCategory.category;
+
 
     @Override
     public RoutineTotalCountDTO countRoutineScheduleByMemberAndDateBetweenAndIsDone(String userEmail, LocalDate startDate, LocalDate endDate) {
@@ -91,5 +93,17 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
             .groupBy(category, parent)
             .orderBy(routineSchedule.count().desc())
             .fetch();
+    }
+
+    @Override
+    public List<RoutineSchedule> findAllByDateBetween(String userEmail, LocalDate startDate, LocalDate endDate) {
+        return queryFactory.select(routineSchedule)
+            .from(routineSchedule)
+            .leftJoin(routineSchedule.routine, routine).fetchJoin()
+            .leftJoin(routine.category, category).fetchJoin()
+            .where((routine.member.email.eq(userEmail))
+                .and(routineSchedule.date.goe(startDate))
+                .and(routineSchedule.date.lt(endDate))
+            ).fetch();
     }
 }
