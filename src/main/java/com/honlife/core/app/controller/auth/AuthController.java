@@ -87,8 +87,8 @@ public class AuthController {
         @RequestBody SignupRequest signupRequest
     ) {
         //TODO: API 요청시 이메일로 인증번호 보내는 로직 추가 필요
-        return ResponseEntity.status(HttpStatus.CONTINUE)
-            .body(CommonApiResponse.success(ResponseCode.CONTINUE));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(CommonApiResponse.noContent());
     }
 
     /**
