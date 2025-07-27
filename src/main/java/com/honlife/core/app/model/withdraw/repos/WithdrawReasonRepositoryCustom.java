@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface WithdrawReasonRepositoryCustom {
 
-    Page<WithdrawReason> findPagedByDate(Pageable pageable, LocalDateTime startDate, LocalDateTime endDate);
+    Page<WithdrawReason> findPagedByDateBetween(Pageable pageable, LocalDateTime startDate, LocalDateTime endDate);
 }

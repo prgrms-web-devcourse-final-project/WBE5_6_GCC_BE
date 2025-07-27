@@ -22,7 +22,7 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
     private final QWithdrawReason withdrawReason=QWithdrawReason.withdrawReason;
 
     @Override
-    public Page<WithdrawReason> findPagedByDate(Pageable pageable, LocalDateTime startDate,
+    public Page<WithdrawReason> findPagedByDateBetween(Pageable pageable, LocalDateTime startDate,
         LocalDateTime endDate) {
 
         BooleanBuilder builder = new BooleanBuilder();

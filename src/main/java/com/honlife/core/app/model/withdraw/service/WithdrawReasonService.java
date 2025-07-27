@@ -6,7 +6,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -79,7 +78,7 @@ public class WithdrawReasonService {
      */
     public Page<WithdrawReasonDTO> findPagedByDate(Pageable pageable ,LocalDateTime startDate, LocalDateTime endDate) {
 
-        return withdrawReasonRepository.findPagedByDate(pageable, startDate, endDate)
+        return withdrawReasonRepository.findPagedByDateBetween(pageable, startDate, endDate)
             .map(e-> mapper.map(e, WithdrawReasonDTO.class));
 
     }
