@@ -16,7 +16,7 @@ public class PointLogRepositoryCustomImpl implements PointLogRepositoryCustom{
 
 
     @Override
-    public Integer getTotalPointByDate(LocalDateTime startDate, LocalDateTime endDate,
+    public Integer getTotalPointByDateBetween(LocalDateTime startDate, LocalDateTime endDate,
         PointLogType pointLogType, String userEmail) {
             return queryFactory
                 .select(pointLog.point.sum())

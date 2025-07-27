@@ -5,5 +5,5 @@ import java.time.LocalDateTime;
 
 public interface PointLogRepositoryCustom {
 
-    Integer getTotalPointByDate(LocalDateTime localDateTime, LocalDateTime localDateTime1, PointLogType pointLogType, String userEmail);
+    Integer getTotalPointByDateBetween(LocalDateTime localDateTime, LocalDateTime localDateTime1, PointLogType pointLogType, String userEmail);
 }

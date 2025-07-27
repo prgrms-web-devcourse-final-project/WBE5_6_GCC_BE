@@ -26,7 +26,7 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
     private final QCategory category=QCategory.category;
 
     @Override
-    public RoutineTotalCountDTO countRoutineScheduleByMemberAndDateAndIsDone(String userEmail, LocalDate startDate, LocalDate endDate) {
+    public RoutineTotalCountDTO countRoutineScheduleByMemberAndDateBetweenAndIsDone(String userEmail, LocalDate startDate, LocalDate endDate) {
         return queryFactory
             .select(Projections.constructor(RoutineTotalCountDTO.class,
                     routineSchedule.count(), // 총 루틴 수
@@ -47,7 +47,7 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
     }
 
     @Override
-    public List<DayRoutineCountDTO> countRoutineSchedulesGroupByDate(String userEmail, LocalDate startDate, LocalDate endDate) {
+    public List<DayRoutineCountDTO> countRoutineSchedulesGroupByDateBetween(String userEmail, LocalDate startDate, LocalDate endDate) {
         QRoutineSchedule outerRoutineSchedule = new QRoutineSchedule("outerRoutineSchedule");
 
          return queryFactory
