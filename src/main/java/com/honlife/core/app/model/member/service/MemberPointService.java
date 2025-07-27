@@ -1,10 +1,15 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.app.model.point.code.PointLogType;
+import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.point.service.PointLogService;
+import com.honlife.core.app.model.point.service.PointPolicyService;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
@@ -16,16 +21,13 @@ import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
+@RequiredArgsConstructor
 public class MemberPointService {
 
     private final MemberPointRepository memberPointRepository;
     private final MemberRepository memberRepository;
-
-    public MemberPointService(final MemberPointRepository memberPointRepository,
-        final MemberRepository memberRepository) {
-        this.memberPointRepository = memberPointRepository;
-        this.memberRepository = memberRepository;
-    }
+    private final PointPolicyService pointPolicyService;
+    private final PointLogService pointLogService;
 
     public List<MemberPointDTO> findAll() {
         final List<MemberPoint> memberPoints = memberPointRepository.findAll(Sort.by("id"));
@@ -94,15 +96,6 @@ public class MemberPointService {
     }
 
     /**
-     * 해당 멤버와 연관된 활성화된 첫번째 멤버 포인트를 조회합니다.
-     * @param member 멤버
-     * @param isActive 활성화 상태
-     * @return {@link MemberPoint}
-     */
-    public MemberPoint findFirstMemberPointByMemberAndIsActive(Member member, boolean isActive) {
-        return memberPointRepository.findFirstByMemberAndIsActive(member,isActive);
-    }
-    /**
      * memberId를 통해 MemberPoint 정보를 가져옵니다.
      *
      * @param memberId 사용자 ID
@@ -110,5 +103,42 @@ public class MemberPointService {
      */
     public Optional<MemberPoint> getPointByMemberId(Long memberId) {
         return memberPointRepository.findByMemberId(memberId);
+    }
+
+    /**
+     * find MemberPoint via member's email and map to MemberPointDTO
+     * @param email member's email
+     * @return {@link MemberPointDTO}
+     */
+    public MemberPointDTO getMemberPoint(String email) {
+        MemberPoint memberPoint = memberPointRepository.findByMember_Email(email)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
+        return MemberPointDTO.builder()
+            .id(memberPoint.getId())
+            .point(memberPoint.getPoint())
+            .build();
+    }
+
+    /**
+     * Search for the number of points to be granted from PointPolicy DB<br>
+     * and add to member's current point.<br>
+     * Then, save a log
+     * @param userEmail user's email
+     * @param key reference_key
+     * @param type type of point source
+     */
+    @Transactional
+    public void addPoint(String userEmail, String key, PointSourceType type) {
+        Integer points = pointPolicyService.getPoint(key, type);
+
+        MemberPoint memberPoint = memberPointRepository.findByMember_EmailAndIsActive(userEmail, true)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
+
+        Integer CurrentPoints = memberPoint.getPoint();
+        memberPoint.setPoint(CurrentPoints + points);
+        memberPointRepository.save(memberPoint);
+
+        // Save Log
+        pointLogService.saveLog(userEmail, PointLogType.GET, key);
     }
 }

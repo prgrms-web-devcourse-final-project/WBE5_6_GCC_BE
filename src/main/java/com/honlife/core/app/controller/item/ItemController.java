@@ -54,12 +54,12 @@ public class ItemController {
     /**
      * 아이템 key값을 통한 단건 조회 API
      *
-     * @param itemKey 아이템 고유 아이다
-     * @return ItemResponse itemKey 값과 일치하는 아이템 정보 반환
+     * @param key 아이템 고유 아이다
+     * @return ItemResponse key 값과 일치하는 아이템 정보 반환
      */
     @GetMapping("/{key}")
     public ResponseEntity<CommonApiResponse<ItemDTO>> getItemByKey(
-            @PathVariable("key") String itemKey,
+            @PathVariable("key") String key,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         // 아이템 조회
@@ -69,7 +69,7 @@ public class ItemController {
         // 사용자 정보 조회
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
         // itemKey값을 통한 해당 item 정보 조회
-        ItemDTO itemResponse = itemService.getItemResponseByKey(itemKey, member.getId());
+        ItemDTO itemResponse = itemService.getItemResponseByKey(key, member.getId());
 
         return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
 
@@ -78,11 +78,11 @@ public class ItemController {
     /**
      * 아이템 구매 API
      *
-     * @param itemKey 아이템 고유 아이다
+     * @param key 아이템 고유 아이다
      **/
     @PostMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> buyItem(
-            @PathVariable("key") String itemKey,
+            @PathVariable("key") String key,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         // 아이템 키값으로 Item 정보 가져옴

@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.admin.item;
 
+import com.honlife.core.app.controller.admin.item.payload.AdminCreateItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemRequest;
 import com.honlife.core.app.controller.admin.item.payload.AdminItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
@@ -10,30 +11,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping(value = "/api/v1/admin/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminItemController {
 
@@ -122,25 +114,16 @@ public class AdminItemController {
     }
 
     /**
-     * 아이템 추가 요청 처리 API
-     * @param adminItemRequest 아이템 정보 객체
-     * @return 성공시 {@code 200}을 반환합니다.
+     * 관리자 아이템 생성 API
+     *
+     * @param request 아이템 생성 요청 정보(AdminCreateItemRequest)
+     * @return 성공 시 204 No Content 반환
      */
-    @Operation(
-        summary = "아이템 추가",
-        description = "아이템을 추가합니다.",
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = AdminItemRequest.class)
-            )
-        )
-    )
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createItem(
-        @RequestBody @Valid AdminItemRequest adminItemRequest
-        ) {
+            @RequestBody @Valid AdminCreateItemRequest request
+    ) {
+        adminItemService.createItem(request);
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
@@ -166,31 +149,17 @@ public class AdminItemController {
     }
 
     /**
-     * 아이템 삭제 요청 처리 API
-     * @param id 아이템 id
-     * @return 성공시 {@code 200}을 반환합니다.
+     * 관리자 전용 아이템 삭제(Soft Delete) API
+     * 해당 itemKey를 가진 아이템의 isActive 값을 false로 변경하여
+     * 사용자 단에서는 보이지 않도록 처리합니다.
+     *
+     * @param itemKey 삭제할 아이템의 고유 키
      */
-    @Operation(
-        summary = "아이템 삭제",
-        description = "아이템을 삭제합니다.",
-        parameters = {
-            @Parameter(
-                name = "id",
-                description = "삭제할 아이템의 ID",
-                required = true,
-                example = "10"
-            )
-        }
-    )
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> deleteItem(
-        @PathVariable Long id
+            @PathVariable("key") String itemKey
     ) {
-        if (id == 10L) {
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
+        adminItemService.softDeleteItem(itemKey);
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
