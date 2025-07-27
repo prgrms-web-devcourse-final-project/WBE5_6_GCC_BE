@@ -155,6 +155,7 @@ public class WeeklyQuestProgressService {
     /**
      * 모든 활성화되어있던 주간퀘스트를 비활성화 처리
      */
+    @Async
     @Transactional
     public void deactivatePreviousWeeklyQuests() {
         weeklyQuestProgressRepository.deactivateAllActiveWeeklyQuests();
