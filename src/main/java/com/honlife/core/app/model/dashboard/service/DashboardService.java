@@ -25,7 +25,6 @@ public class DashboardService {
 
     private final RoutineScheduleRepository routineScheduleRepository;
     private final PointLogRepository pointLogRepository;
-    private final AICommentService aiService;
 
     /**
      * 루틴에 저장된 카테고리 별로 집계된 것을 대분류 카테고리로 바꾸어 count
