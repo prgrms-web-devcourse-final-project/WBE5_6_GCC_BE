@@ -5,12 +5,9 @@ import com.honlife.core.app.model.withdraw.dto.WithdrawReasonDTO;
 import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 import com.honlife.core.infra.payload.PageParam;
 import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.PageResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,7 +51,7 @@ public class AdminWithdrawController {
     ) {
 
             Pageable pageable = PageRequest.of(pageParam.getPage()-1, pageParam.getSize());
-            Page<WithdrawReasonDTO> page =  withdrawReasonService.findPagedByDate(pageable, startDate, endDate);
+            Page<WithdrawReasonDTO> page =  withdrawReasonService.findPagedByDateBetween(pageable, startDate, endDate);
 
             if(pageParam.getPage() != 1 && page.getContent().isEmpty()){
                 return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));

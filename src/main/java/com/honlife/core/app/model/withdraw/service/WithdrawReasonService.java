@@ -70,13 +70,13 @@ public class WithdrawReasonService {
     }
 
     /**
-     *
-     * @param pageable
-     * @param startDate
-     * @param endDate
-     * @return
+     * 입력한 두 날짜 사이의 탈퇴 사유를 조회합니다.
+     * @param pageable 탈퇴사유를 페이지네이션으로 가져오기 위한 페이지네이션 정보
+     * @param startDate 조회 시작일(포함)
+     * @param endDate 조회 종료일(포함)
+     * @return Page<WithdrawReasonDTO>
      */
-    public Page<WithdrawReasonDTO> findPagedByDate(Pageable pageable ,LocalDateTime startDate, LocalDateTime endDate) {
+    public Page<WithdrawReasonDTO> findPagedByDateBetween(Pageable pageable ,LocalDateTime startDate, LocalDateTime endDate) {
 
         return withdrawReasonRepository.findPagedByDateBetween(pageable, startDate, endDate)
             .map(e-> mapper.map(e, WithdrawReasonDTO.class));
