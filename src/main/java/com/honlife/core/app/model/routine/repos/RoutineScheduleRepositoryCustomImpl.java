@@ -27,7 +27,7 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
             .leftJoin(qRoutineSchedule.routine, qRoutine)
             .leftJoin(qRoutine.member, qMember)
             .where(
-                qRoutineSchedule.date.eq(date),
+                qRoutineSchedule.scheduleDate.eq(date),
                 qMember.email.eq(userEmail),
                 qRoutineSchedule.isDone.isFalse()
             )

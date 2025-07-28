@@ -142,6 +142,22 @@ public class MemberPointService {
         pointLogService.saveLog(userEmail, PointLogType.GET, key);
     }
 
+    @Transactional
+    public void subtractPoint(String userEmail, String key, PointSourceType type) {
+
+        Integer points = pointPolicyService.getPoint(key, type);
+
+        MemberPoint memberPoint = memberPointRepository.findByMember_EmailAndIsActive(userEmail, true)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
+
+        Integer CurrentPoints = memberPoint.getPoint();
+        memberPoint.setPoint(CurrentPoints - points);
+        memberPointRepository.save(memberPoint);
+
+        // Save Log
+        pointLogService.saveLog(userEmail, PointLogType.GET, key);
+    }
+
     /**
      * 회원에게 포인트 추가 지급
      * @param memberId 회원 ID
