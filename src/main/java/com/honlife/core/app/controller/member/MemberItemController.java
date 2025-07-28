@@ -53,7 +53,6 @@ public class MemberItemController {
                 .itemDescription("먼지가 달라 붙지 않아요!")
                 .itemtype(ItemType.TOP)
                 .isEquipped(true)
-                .isListed(true)
                 .build();
         MemberItemResponse bottom = MemberItemResponse.builder()
                 .itemKey("bottom_item_01")
@@ -61,7 +60,6 @@ public class MemberItemController {
                 .itemDescription("패션 감각 +1.")
                 .itemtype(ItemType.BOTTOM)
                 .isEquipped(false)
-                .isListed(true)
                 .build();
         MemberItemResponse accessory = MemberItemResponse.builder()
             .itemKey("accessory_item_01")
@@ -69,7 +67,6 @@ public class MemberItemController {
                 .itemDescription("위생에 한층 더 강력해집니다.")
                 .itemtype(ItemType.ACCESSORY)
                 .isEquipped(true)
-                .isListed(true)
                 .build();
 
 
@@ -102,7 +99,7 @@ public class MemberItemController {
      * 아이템 시나리오에 부연 설명을 하였습니다.
      *
      * @param userDetails     인증된 사용자 정보
-     * @return 유효하지 않은 사용자 요청 또는 존재하지 않는 아이템 키에 대해서는 <code>UNAUTHORIZED (401)</code> 또는 <code>NOT_FOUND_ITEM (404)</code> 상태 코드를 반환합니다.
+     * @return 유효하지 않은 사용자 요청 또는 존재하지 않는 아이템 id에 대해서는 <code>UNAUTHORIZED (401)</code> 또는 <code>NOT_FOUND_ITEM (404)</code> 상태 코드를 반환합니다.
      */
     @PatchMapping
     @Operation(summary = "아이템 장착 상태 변경",
@@ -115,10 +112,10 @@ public class MemberItemController {
                     "- 1번을 수행하면 해당 버튼은 착용해제로 바뀌고 눌렀을 경우 장착이 해제 됩니다."+
                     "*실제 DB에 반영되지 않음*")
     public ResponseEntity<CommonApiResponse<Void>> updateItemIsEquipped(
-            @Schema(name= "장착하고자 하는 itemKey"
-                    , description = "현재 장착 중인 itemKey는 top_item_02"
-                    ,example = "top_item_01")
-            @RequestParam String itemKey,
+            @Schema(name= "id"
+                    , description = "장착하고자하는 아이템 ID"
+                    ,example = "1L")
+            @RequestParam Long id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
@@ -128,11 +125,11 @@ public class MemberItemController {
         }
 
         // 새로운 아이템 장착
-        if (itemKey.equals("top_item_01")) {
+        if (id == 1L) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
         // 장착 해제 으로 장착 해제됨
-        if (itemKey.equals("top_item_02")) {
+        if (id == 2L) {
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
         return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
