@@ -49,7 +49,8 @@ public class RoutineSchedule extends BaseEntity {
     private LocalDate scheduleDate;
 
     @Column
-    private Boolean isDone;
+    @Builder.Default
+    private Boolean isDone = false;
 
 
 
