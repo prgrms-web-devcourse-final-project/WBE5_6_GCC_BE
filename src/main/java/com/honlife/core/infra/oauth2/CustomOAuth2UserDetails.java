@@ -1,7 +1,6 @@
 package com.honlife.core.infra.oauth2;
 
 import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.infra.oauth2.dto.OAuth2UserInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;

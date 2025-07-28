@@ -1,4 +1,4 @@
-package com.honlife.core.infra.oauth2.dto;
+package com.honlife.core.app.model.oauth2.dto;
 
 public interface OAuth2UserInfo {
     String getProvider();
