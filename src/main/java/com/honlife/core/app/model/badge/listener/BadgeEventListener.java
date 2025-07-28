@@ -26,31 +26,30 @@ public class BadgeEventListener {
     @Async
     public void onRoutineProgress(RoutineProgressEvent event) {
         try {
-            log.debug("Processing routine progress event after transaction commit - memberId: {}, categoryId: {}, action: {}",
-                event.getMemberId(), event.getCategoryId(), event.getAction());
+            log.debug("Processing routine progress event after transaction commit - memberId: {}, categoryId: {}, isDone: {}",
+                event.getMemberId(), event.getCategoryId(), event.getIsDone());
 
-            switch (event.getAction()) {
-                case COMPLETED -> {
-                    badgeProgressService.incrementCategoryProgress(
-                        event.getMemberId(),
-                        event.getCategoryId()
-                    );
-                    log.debug("Successfully incremented badge progress - memberId: {}, categoryId: {}",
-                        event.getMemberId(), event.getCategoryId());
-                }
-                case CANCELLED -> {
-                    badgeProgressService.decrementCategoryProgress(
-                        event.getMemberId(),
-                        event.getCategoryId()
-                    );
-                    log.debug("Successfully decremented badge progress - memberId: {}, categoryId: {}",
-                        event.getMemberId(), event.getCategoryId());
-                }
+            if (event.getIsDone()) {
+                // 루틴 완료
+                badgeProgressService.incrementCategoryProgress(
+                    event.getMemberId(),
+                    event.getCategoryId()
+                );
+                log.debug("Successfully incremented badge progress - memberId: {}, categoryId: {}",
+                    event.getMemberId(), event.getCategoryId());
+            } else {
+                // 루틴 완료 취소
+                badgeProgressService.decrementCategoryProgress(
+                    event.getMemberId(),
+                    event.getCategoryId()
+                );
+                log.debug("Successfully decremented badge progress - memberId: {}, categoryId: {}",
+                    event.getMemberId(), event.getCategoryId());
             }
 
         } catch (Exception e) {
-            log.error("Failed to process routine progress event - memberId: {}, categoryId: {}, action: {}, error: {}",
-                event.getMemberId(), event.getCategoryId(), event.getAction(), e.getMessage(), e);
+            log.error("Failed to process routine progress event - memberId: {}, categoryId: {}, isDone: {}, error: {}",
+                event.getMemberId(), event.getCategoryId(), event.getIsDone(), e.getMessage(), e);
         }
     }
 

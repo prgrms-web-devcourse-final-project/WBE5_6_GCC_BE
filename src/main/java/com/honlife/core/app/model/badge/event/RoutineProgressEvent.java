@@ -1,6 +1,5 @@
 package com.honlife.core.app.model.badge.event;
 
-import com.honlife.core.app.model.badge.code.ProgressAction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,7 @@ public class RoutineProgressEvent {
     private Long categoryId;
 
     /**
-     * 진행률 변경 액션 (COMPLETED: +1, CANCELLED: -1)
+     * 루틴 완료 여부 (true: 완료, false: 취소)
      */
-    private ProgressAction action;
+    private Boolean isDone;
 }

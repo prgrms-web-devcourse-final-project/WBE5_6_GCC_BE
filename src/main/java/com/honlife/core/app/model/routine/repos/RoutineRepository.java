@@ -21,4 +21,6 @@ public interface RoutineRepository extends JpaRepository<Routine, Long>, Routine
      * @return {@link Routine}
      */
     Routine findFirstByMemberAndIsActive(Member member, Boolean isActive);
+
+    Routine findByIdAndMember_email(Long id, String memberEmail);
 }
