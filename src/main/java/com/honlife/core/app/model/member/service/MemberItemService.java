@@ -41,12 +41,12 @@ public class MemberItemService {
       - 이후 클릭한 아이템을 장착 처리합니다.
 
       @param memberId 사용자 ID
-     * @param itemKey  장착 또는 해제할 아이템의 고유 키
+     * @param key  장착 또는 해제할 아이템의 고유 키
      */
     @Transactional
-    public void switchItemEquip(Long memberId, String itemKey) {
+    public void switchItemEquip(Long memberId, String key) {
 
-        Item item = itemService.getItemByKey(itemKey);
+        Item item = itemService.getItemByKey(key);
 
         if (item == null) {
             throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
@@ -87,7 +87,7 @@ public class MemberItemService {
             MemberItem mi = tuple.get(QMemberItem.memberItem);
             Item item = tuple.get(QItem.item);
             return MemberItemDTOCustom.builder()
-                    .itemKey(item.getItemKey())
+                    .itemKey(item.getKey())
                     .itemName(item.getName())
                     .itemDescription(item.getDescription())
                     .itemtype(item.getType())
@@ -179,5 +179,15 @@ public class MemberItemService {
      */
     public Boolean isItemOwnByMember(Long memberId, Long itemId) {
         return memberItemRepository.existsByMemberIdAndItemId(memberId, itemId);
+    }
+
+    /**
+     * 특정 아이템을 보유한 모든 MemberItem 정보를 조회합니다.
+     *
+     * @param item 조회할 대상 아이템
+     * @return MemberItem 리스트
+     */
+    public List<MemberItem> findAllByItem(Item item) {
+        return memberItemRepository.findAllByItem(item);
     }
 }

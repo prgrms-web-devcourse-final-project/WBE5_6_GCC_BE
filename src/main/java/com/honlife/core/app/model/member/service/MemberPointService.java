@@ -1,10 +1,15 @@
 package com.honlife.core.app.model.member.service;
 
+import com.honlife.core.app.model.point.code.PointLogType;
+import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.point.service.PointLogService;
+import com.honlife.core.app.model.point.service.PointPolicyService;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
@@ -16,16 +21,13 @@ import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 
 @Service
+@RequiredArgsConstructor
 public class MemberPointService {
 
     private final MemberPointRepository memberPointRepository;
     private final MemberRepository memberRepository;
-
-    public MemberPointService(final MemberPointRepository memberPointRepository,
-        final MemberRepository memberRepository) {
-        this.memberPointRepository = memberPointRepository;
-        this.memberRepository = memberRepository;
-    }
+    private final PointPolicyService pointPolicyService;
+    private final PointLogService pointLogService;
 
     public List<MemberPointDTO> findAll() {
         final List<MemberPoint> memberPoints = memberPointRepository.findAll(Sort.by("id"));
@@ -115,5 +117,55 @@ public class MemberPointService {
             .id(memberPoint.getId())
             .point(memberPoint.getPoint())
             .build();
+    }
+
+    /**
+     * Search for the number of points to be granted from PointPolicy DB<br>
+     * and add to member's current point.<br>
+     * Then, save a log
+     * @param userEmail user's email
+     * @param key reference_key
+     * @param type type of point source
+     */
+    @Transactional
+    public void addPoint(String userEmail, String key, PointSourceType type) {
+        Integer points = pointPolicyService.getPoint(key, type);
+
+        MemberPoint memberPoint = memberPointRepository.findByMember_EmailAndIsActive(userEmail, true)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
+
+        Integer CurrentPoints = memberPoint.getPoint();
+        memberPoint.setPoint(CurrentPoints + points);
+        memberPointRepository.save(memberPoint);
+
+        // Save Log
+        pointLogService.saveLog(userEmail, PointLogType.GET, key);
+    }
+
+    /**
+     * 회원에게 포인트 추가 지급
+     * @param memberId 회원 ID
+     * @param pointToAdd 추가할 포인트
+     * @return 업데이트 후 총 포인트
+     */
+    @Transactional
+    public int addPointToMember(Long memberId, int pointToAdd) {
+        Optional<MemberPoint> memberPoint = getPointByMemberId(memberId)
+            .filter(mp -> Boolean.TRUE.equals(mp.getIsActive()));
+
+        if (memberPoint.isEmpty()) {
+            throw new NotFoundException(ResponseCode.NOT_FOUND_POINT);
+        }
+
+        MemberPoint point = memberPoint.get();
+        int currentPoint = point.getPoint();
+        int newTotalPoint = currentPoint + pointToAdd;
+
+        // 포인트 업데이트
+        MemberPointDTO pointDTO = get(point.getId());
+        pointDTO.setPoint(newTotalPoint);
+        update(point.getId(), pointDTO);
+
+        return newTotalPoint;
     }
 }

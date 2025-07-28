@@ -44,4 +44,6 @@ public class ItemDTO {
     @JsonProperty("isOwned")
     private Boolean isOwned;
 
+    private Boolean isListed;
+
 }

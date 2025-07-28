@@ -14,6 +14,15 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import com.honlife.core.app.model.member.domain.QMember;
+import com.honlife.core.app.model.routine.domain.QRoutineSchedule;
+import com.honlife.core.app.model.routine.domain.QRoutine;
+import com.honlife.core.app.model.routine.domain.RoutineSchedule;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.stereotype.Repository;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,8 +32,22 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
 
     private final QRoutineSchedule routineSchedule=QRoutineSchedule.routineSchedule;
     private final QRoutine routine=QRoutine.routine;
+    QMember qMember = QMember.member;
     private final QCategory category=QCategory.category;
 
+    public Long getCountOfNotCompletedMemberSchedule(LocalDate date, String userEmail) {
+        return queryFactory
+            .select(qRoutineSchedule.count())
+            .from(qRoutineSchedule)
+            .leftJoin(qRoutineSchedule.routine, qRoutine)
+            .leftJoin(qRoutine.member, qMember)
+            .where(
+                qRoutineSchedule.date.eq(date),
+                qMember.email.eq(userEmail),
+                qRoutineSchedule.isDone.isFalse()
+            )
+            .fetchOne();
+    }
     @Override
     public RoutineTotalCountDTO countRoutineScheduleByMemberAndDateBetweenAndIsDone(String userEmail, LocalDate startDate, LocalDate endDate) {
         return queryFactory
