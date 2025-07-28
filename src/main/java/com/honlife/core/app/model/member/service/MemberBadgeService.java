@@ -1,9 +1,5 @@
 package com.honlife.core.app.model.member.service;
 
-import com.honlife.core.infra.response.ResponseCode;
-import java.util.List;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.member.domain.Member;
@@ -14,6 +10,7 @@ import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -56,6 +53,10 @@ public class MemberBadgeService {
         memberBadgeRepository.save(memberBadge);
     }
 
+    public void delete(final Long id) {
+        memberBadgeRepository.deleteById(id);
+    }
+
     /**
      * 특정 사용자가 보유한 모든 배지의 상세 정보 조회 (이메일로)
      * @param email 사용자 이메일
@@ -91,8 +92,30 @@ public class MemberBadgeService {
             .toList();
     }
 
-    public void delete(final Long id) {
-        memberBadgeRepository.deleteById(id);
+    /**
+     * 특정 회원이 특정 배지를 이미 보유했는지 확인
+     * @param memberId 회원 ID
+     * @param badgeId 배지 ID
+     * @return 보유 여부
+     */
+    public boolean existsByMemberIdAndBadgeId(Long memberId, Long badgeId) {
+        Badge badge = badgeRepository.findById(badgeId)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
+        return memberBadgeRepository.existsByMemberIdAndBadge(memberId, badge);
+    }
+
+    /**
+     * 배지 획득 처리 (간편 메서드)
+     * @param memberId 회원 ID
+     * @param badgeId 배지 ID
+     * @return 생성된 MemberBadge ID
+     */
+    public Long createMemberBadge(Long memberId, Long badgeId) {
+        MemberBadgeDTO memberBadgeDTO = new MemberBadgeDTO();
+        memberBadgeDTO.setMember(memberId);
+        memberBadgeDTO.setBadge(badgeId);
+        memberBadgeDTO.setIsActive(true);
+        return create(memberBadgeDTO);
     }
 
     private MemberBadgeDTO mapToDTO(final MemberBadge memberBadge,

@@ -9,7 +9,7 @@ import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import org.springframework.data.jpa.repository.Query;
 
 
-public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule, Long> {
+public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule, Long>, RoutineScheduleRepositoryCustom {
 
     RoutineSchedule findFirstByRoutine(Routine routine);
 

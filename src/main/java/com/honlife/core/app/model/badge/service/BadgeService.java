@@ -1,7 +1,9 @@
 package com.honlife.core.app.model.badge.service;
 
+import com.honlife.core.app.model.badge.code.ProgressType;
 import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.badge.dto.BadgeDTO;
+import com.honlife.core.app.model.badge.dto.BadgeRewardDTO;
 import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.category.domain.Category;
@@ -9,7 +11,14 @@ import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
+import com.honlife.core.app.model.member.service.MemberBadgeService;
+import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
+import com.honlife.core.app.model.point.code.PointLogType;
+import com.honlife.core.app.model.point.dto.PointPolicyDTO;
+import com.honlife.core.app.model.point.service.PointLogService;
+import com.honlife.core.app.model.point.service.PointPolicyService;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import com.honlife.core.infra.response.ResponseCode;
@@ -19,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,38 +40,11 @@ public class BadgeService {
     private final CategoryRepository categoryRepository;
     private final MemberBadgeRepository memberBadgeRepository;
     private final MemberService memberService;
-
-    // === 기존 CRUD 메서드들 ===
-
-    public List<BadgeDTO> findAll() {
-        final List<Badge> badges = badgeRepository.findAll(Sort.by("id"));
-        return badges.stream()
-            .map(badge -> mapToDTO(badge, new BadgeDTO()))
-            .toList();
-    }
-
-    public BadgeDTO get(final Long id) {
-        return badgeRepository.findById(id)
-            .map(badge -> mapToDTO(badge, new BadgeDTO()))
-            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
-    }
-
-    public Long create(final BadgeDTO badgeDTO) {
-        final Badge badge = new Badge();
-        mapToEntity(badgeDTO, badge);
-        return badgeRepository.save(badge).getId();
-    }
-
-    public void update(final Long id, final BadgeDTO badgeDTO) {
-        final Badge badge = badgeRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
-        mapToEntity(badgeDTO, badge);
-        badgeRepository.save(badge);
-    }
-
-    public void delete(final Long id) {
-        badgeRepository.deleteById(id);
-    }
+    private final BadgeProgressService badgeProgressService;
+    private final MemberBadgeService memberBadgeService;
+    private final MemberPointService memberPointService;
+    private final PointPolicyService pointPolicyService;
+    private final PointLogService pointLogService;
 
     // === 사용자별 조회 메서드들 ===
 
@@ -92,7 +73,7 @@ public class BadgeService {
             .badgeKey(badge.getKey())
             .badgeName(badge.getName())
             .tier(badge.getTier())
-            .how(badge.getHow())
+            .message(badge.getMessage())
             .requirement(badge.getRequirement())
             .info(badge.getInfo())
             .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
@@ -137,7 +118,7 @@ public class BadgeService {
                     .badgeKey(badge.getKey())
                     .badgeName(badge.getName())
                     .tier(badge.getTier())
-                    .how(badge.getHow())
+                    .message(badge.getMessage())
                     .requirement(badge.getRequirement())
                     .info(badge.getInfo())
                     .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
@@ -146,6 +127,79 @@ public class BadgeService {
                     .build();
             })
             .toList();
+    }
+
+    /**
+     * 배지 보상 수령 - 실제 구현 (도메인 분리 준수)
+     * @param badgeKey 배지 key 값
+     * @param email 사용자 이메일
+     * @return 완료한 배지에 대한 정보 및 포인트 획득 내역 DTO
+     */
+    @Transactional
+    public BadgeRewardDTO claimBadgeReward(String badgeKey, String email) {
+        // 1. 배지 조회
+        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
+
+        // 2. 사용자 조회
+        MemberDTO memberDTO = memberService.findMemberByEmail(email);
+        Long memberId = memberDTO.getId();
+
+        // 3. 이미 획득했는지 체크
+        boolean alreadyOwned = memberBadgeService.existsByMemberIdAndBadgeId(memberId, badge.getId());
+        if (alreadyOwned) {
+            throw new CommonException(ResponseCode.GRANT_CONFLICT_BADGE);
+        }
+
+        // 4. 달성 조건 만족하는지 체크
+        int currentProgress = calculateBadgeProgress(badge, memberId);
+        if (currentProgress < badge.getRequirement()) {
+            throw new CommonException(ResponseCode.BAD_REQUEST); // 달성 조건 미충족
+        }
+
+        // 5. 포인트 정책 조회
+        PointPolicyDTO pointPolicy = pointPolicyService.findByReferenceKey(badgeKey);
+
+        // 6. 포인트 지급
+        int pointToAdd = pointPolicy.getPoint();
+        int newTotalPoint = memberPointService.addPointToMember(memberId, pointToAdd);
+
+        // 7. 포인트 로그 기록
+        pointLogService.recordPointLog(email, pointToAdd, "Badge reward: " + badge.getName(), PointLogType.GET);
+
+        // 8. MemberBadge 생성 (배지 획득 처리)
+        memberBadgeService.createMemberBadge(memberId, badge.getId());
+
+        // 9. DTO 반환
+        return BadgeRewardDTO.builder()
+            .badgeId(badge.getId())
+            .badgeKey(badge.getKey())
+            .badgeName(badge.getName())
+            .message(badge.getMessage())
+            .pointAdded((long) pointToAdd)
+            .totalPoint((long) newTotalPoint)
+            .receivedAt(LocalDateTime.now())
+            .build();
+    }
+
+    /**
+     * 배지의 현재 진행률 계산
+     * @param badge 배지 정보
+     * @param memberId 회원 ID
+     * @return 현재 진행 횟수
+     */
+    private int calculateBadgeProgress(Badge badge, Long memberId) {
+        if (badge.getCategory() == null) {
+            // 카테고리가 없는 배지는 로그인 배지로 가정
+            return badgeProgressService.getCurrentProgress(
+                memberId, ProgressType.LOGIN, "DAILY"
+            );
+        } else {
+            // 카테고리가 있는 배지는 루틴 배지
+            return badgeProgressService.getCurrentProgress(
+                memberId, ProgressType.CATEGORY, badge.getCategory().getId().toString()
+            );
+        }
     }
 
     // === 기존 매핑 메서드들 ===
@@ -158,7 +212,7 @@ public class BadgeService {
         badgeDTO.setKey(badge.getKey());
         badgeDTO.setName(badge.getName());
         badgeDTO.setTier(badge.getTier());
-        badgeDTO.setHow(badge.getHow());
+        badgeDTO.setMessage(badge.getMessage());
         badgeDTO.setRequirement(badge.getRequirement());
         badgeDTO.setInfo(badge.getInfo());
         badgeDTO.setCategory(badge.getCategory() == null ? null : badge.getCategory().getId());
@@ -172,7 +226,7 @@ public class BadgeService {
         badge.setKey(badgeDTO.getKey());
         badge.setName(badgeDTO.getName());
         badge.setTier(badgeDTO.getTier());
-        badge.setHow(badgeDTO.getHow());
+        badge.setMessage(badgeDTO.getMessage());
         badge.setRequirement(badgeDTO.getRequirement());
         badge.setInfo(badgeDTO.getInfo());
         final Category category = badgeDTO.getCategory() == null ? null : categoryRepository.findById(badgeDTO.getCategory())

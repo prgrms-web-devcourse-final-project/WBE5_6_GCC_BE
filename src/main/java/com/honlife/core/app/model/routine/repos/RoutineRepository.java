@@ -8,9 +8,6 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.routine.domain.Routine;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 
 public interface RoutineRepository extends JpaRepository<Routine, Long> , RoutineRepositoryCustom{
@@ -50,5 +47,5 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> , Routin
   List<Routine> findAllByMemberAndIsActiveWithCategory(@Param("member") Member member,
       @Param("isActive") boolean isActive);
 
-  List<Routine> findAllByIsActiveTrue();
+    Routine findByIdAndMember_email(Long id, String memberEmail);
 }
