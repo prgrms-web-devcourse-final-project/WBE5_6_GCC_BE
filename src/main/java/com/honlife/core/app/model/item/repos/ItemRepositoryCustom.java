@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ItemRepositoryCustom {
     List<Tuple> findItemsWithOwnership(Long memberId, ItemType itemType);
-    Tuple findItemWithOwnership(String itemKey, Long memberId);
+    Tuple findItemWithOwnership(Long itemId, Long memberId);
 }

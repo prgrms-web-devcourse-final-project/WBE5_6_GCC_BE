@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositoryCustom {
 
     /**
      * ItemKey의 정보로 IsActive가 True 인 값을 조회합니다.

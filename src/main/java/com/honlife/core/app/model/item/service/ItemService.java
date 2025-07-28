@@ -1,30 +1,28 @@
 package com.honlife.core.app.model.item.service;
 
-import com.honlife.core.infra.response.ResponseCode;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.dto.ItemDTO;
-import com.honlife.core.app.model.item.repos.ItemRepositoryCustom;
 import com.honlife.core.app.model.item.repos.ItemRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.domain.QMemberItem;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
-import com.honlife.core.infra.error.exceptions.NotFoundException;
-import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
-import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
+import com.honlife.core.infra.response.ResponseCode;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -34,9 +32,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final MemberPointRepository memberPointRepository;
     private final MemberItemRepository memberItemRepository;
-    private final MemberService memberService;
     private final MemberPointService memberPointService;
-    private final ItemRepositoryCustom itemRepositoryCustom;
 
     /**
      * 특정 사용자의 아이템 전체 목록을 조회하면서,
@@ -48,7 +44,7 @@ public class ItemService {
      */
     public List<ItemDTO> getAllItemsWithOwnership(Long memberId, ItemType itemType) {
 
-        List<Tuple> tuples = itemRepositoryCustom.findItemsWithOwnership(memberId, itemType);
+        List<Tuple> tuples = itemRepository.findItemsWithOwnership(memberId, itemType);
 
         return tuples.stream()
                 .map(tuple -> {
@@ -70,15 +66,15 @@ public class ItemService {
     }
 
     /**
-     * 회원 ID와 아이템 key를 기준으로 해당 아이템 정보를 조회하고,
+     * 회원 ID와 아이템 ID를 기준으로 해당 아이템 정보를 조회하고,
      * 회원의 보유 여부를 포함한 ItemResponse DTO로 반환합니다.
      *
-     * @param key   조회할 아이템의 고유 키
+     * @param itemId   조회할 아이템의 고유 ID
      * @param memberId  현재 로그인한 회원의 ID
      * @return          아이템 정보 및 보유 여부를 담은 ItemResponse
      */
-    public ItemDTO getItemResponseByKey(String key, Long memberId) {
-        Tuple tuple = itemRepositoryCustom.findItemWithOwnership(key, memberId);
+    public ItemDTO getItemResponseById(Long itemId, Long memberId) {
+        Tuple tuple = itemRepository.findItemWithOwnership(itemId, memberId);
         if (tuple == null) {
             throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
         }

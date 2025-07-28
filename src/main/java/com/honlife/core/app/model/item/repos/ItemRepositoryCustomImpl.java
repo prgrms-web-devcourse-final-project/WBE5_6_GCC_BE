@@ -31,12 +31,12 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public Tuple findItemWithOwnership(String itemKey, Long memberId) {
+    public Tuple findItemWithOwnership(Long itemId, Long memberId) {
         return queryFactory
                 .select(item, mi.id)
                 .from(item)
                 .leftJoin(mi).on(mi.item.id.eq(item.id).and(mi.member.id.eq(memberId)))
-                .where(item.key.eq(itemKey),
+                .where(item.id.eq(itemId),
                        item.isActive.eq(true))
                 .fetchOne();
     }
