@@ -18,7 +18,7 @@ public class RoutineSaveRequest {
     @Size(max = 255, message = "루틴 내용은 255자를 초과할 수 없습니다")
     private String name;
 
-    private Long categoryid;
+    private Long categoryId;
 
 
     @NotNull(message = "루틴 시작 날짜는 필수입니다")

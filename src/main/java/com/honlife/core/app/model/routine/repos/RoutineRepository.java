@@ -48,4 +48,6 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> , Routin
       @Param("isActive") boolean isActive);
 
     Routine findByIdAndMember_email(Long id, String memberEmail);
+
+    List<Routine> findAllByIsActiveTrue();
 }

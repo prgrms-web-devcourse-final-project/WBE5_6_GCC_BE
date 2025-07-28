@@ -1,7 +1,5 @@
 package com.honlife.core.app.model.routine.scheduler;
 
-import com.honlife.core.app.model.routine.repos.RoutineRepository;
-import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import com.honlife.core.app.model.routine.service.RoutineScheduleService;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class Scheduler {
 
-  private final RoutineScheduleRepository routineScheduleRepository;
-  private final RoutineRepository routineRepository;
   private final RoutineScheduleService routineScheduleService;
 
   /** 오늘 날짜 기준으로 자정이 되면 해당 날짜에 해당하는 스케줄러를 추가해줍니다*/

@@ -2,7 +2,6 @@ package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.controller.routine.payload.RoutineUpdateRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
-import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineTodayItemDTO;
 import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
@@ -15,7 +14,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
@@ -26,8 +24,6 @@ import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import com.honlife.core.app.model.routine.dto.RoutineDTO;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
-import com.honlife.core.infra.error.exceptions.NotFoundException;
-import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -48,81 +44,6 @@ public class RoutineService {
         this.routineScheduleRepository = routineScheduleRepository;
     }
 
-    public List<RoutineDTO> findAll() {
-        final List<Routine> routines = routineRepository.findAll(Sort.by("id"));
-        return routines.stream()
-                .map(routine -> mapToDTO(routine, new RoutineDTO()))
-                .toList();
-    }
-
-    public RoutineDTO get(final Long id) {
-        return routineRepository.findById(id)
-                .map(routine -> mapToDTO(routine, new RoutineDTO()))
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
-    }
-
-    public Long create(final RoutineDTO routineDTO) {
-        final Routine routine = new Routine();
-        mapToEntity(routineDTO, routine);
-        return routineRepository.save(routine).getId();
-    }
-
-    public void update(final Long id, final RoutineDTO routineDTO) {
-        final Routine routine = routineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
-        mapToEntity(routineDTO, routine);
-        routineRepository.save(routine);
-    }
-
-    public void delete(final Long id) {
-        routineRepository.deleteById(id);
-    }
-
-    private RoutineDTO mapToDTO(final Routine routine, final RoutineDTO routineDTO) {
-        routineDTO.setCreatedAt(routine.getCreatedAt());
-        routineDTO.setUpdatedAt(routine.getUpdatedAt());
-        routineDTO.setIsActive(routine.getIsActive());
-        routineDTO.setRoutineId(routine.getId());
-        routineDTO.setContent(routine.getContent());
-        routineDTO.setTriggerTime(routine.getTriggerTime());
-        routineDTO.setIsImportant(routine.getIsImportant());
-        routineDTO.setRepeatType(routine.getRepeatType());
-        routineDTO.setRepeatValue(routine.getRepeatValue());
-        routineDTO.setMember(routine.getMember() == null ? null : routine.getMember().getId());
-        routineDTO.setCategory(routine.getCategory() == null ? null : routine.getCategory().getId());
-        return routineDTO;
-    }
-
-    private Routine mapToEntity(final RoutineDTO routineDTO, final Routine routine) {
-        routine.setCreatedAt(routineDTO.getCreatedAt());
-        routine.setUpdatedAt(routineDTO.getUpdatedAt());
-        routine.setIsActive(routineDTO.getIsActive());
-        routine.setContent(routineDTO.getContent());
-        routine.setTriggerTime(routineDTO.getTriggerTime());
-        routine.setIsImportant(routineDTO.getIsImportant());
-        routine.setRepeatType(routineDTO.getRepeatType());
-        routine.setRepeatValue(routineDTO.getRepeatValue());
-        final Member member = routineDTO.getMember() == null ? null : memberRepository.findById(routineDTO.getMember())
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
-        routine.setMember(member);
-        final Category category = routineDTO.getCategory() == null ? null : categoryRepository.findById(routineDTO.getCategory())
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
-        routine.setCategory(category);
-        return routine;
-    }
-
-    public ReferencedWarning getReferencedWarning(final Long id) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final Routine routine = routineRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
-        final RoutineSchedule routineRoutineSchedule = routineScheduleRepository.findFirstByRoutine(routine);
-        if (routineRoutineSchedule != null) {
-            referencedWarning.setKey("routine.routineSchedule.routine.referenced");
-            referencedWarning.addParam(routineRoutineSchedule.getId());
-            return referencedWarning;
-        }
-        return null;
-    }
   /**
    * 사용자 일주일 루틴 조회 입니다
    * return RoutinesResponse
@@ -313,24 +234,37 @@ public class RoutineService {
     Member member = memberRepository.findByEmail(userEmail)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
-    Category category = categoryRepository.findById(routineSaveRequest.getCategoryid())
+    Category category = categoryRepository.findById(routineSaveRequest.getCategoryId())
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
 
+
+
+
     /** 간단한 로직이라 DTO를 사용할 필요 없을거같아 바로 Routine으로 넣어줬습니다*/
-    Routine routine = Routine.builder()
-        .category(category)
-        .content(routineSaveRequest.getName())
-        .triggerTime(routineSaveRequest.getTriggerTime())
-        .isImportant(routineSaveRequest.getIsImportant())
-        .repeatType(routineSaveRequest.getRepeatType())
-        .repeatValue(routineSaveRequest.getRepeatValue())
-        .initDate(routineSaveRequest.getInitDate())
-        .repeatTerm(routineSaveRequest.getRepeatTerm())
-        .member(member)
-        .build();
+    Routine routine = new Routine();
+
+    routine.setCategory(category);
+    routine.setContent(routineSaveRequest.getName());
+    routine.setTriggerTime(routineSaveRequest.getTriggerTime());
+    routine.setIsImportant(routineSaveRequest.getIsImportant());
+    routine.setRepeatType(routineSaveRequest.getRepeatType());
+    routine.setRepeatValue(routineSaveRequest.getRepeatValue());
+    routine.setInitDate(routineSaveRequest.getInitDate());
+    routine.setRepeatTerm(routineSaveRequest.getRepeatTerm());
+    routine.setMember(member);
 
     routineRepository.save(routine);
+
+  boolean exists = routineScheduleRepository.existsByRoutineAndScheduleDate(routine, LocalDate.now());
+    if (!exists) {
+    RoutineSchedule schedule = RoutineSchedule.builder()
+        .scheduleDate(LocalDate.now())
+        .isDone(false)
+        .routine(routine)
+        .build();
+    routineScheduleRepository.save(schedule);;
+    }
 
 
   }
@@ -348,7 +282,7 @@ public class RoutineService {
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
 
-      Category category = categoryRepository.findById(request.getCategoryid())
+      Category category = categoryRepository.findById(request.getCategoryId())
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
       routine.setCategory(category);
@@ -359,6 +293,8 @@ public class RoutineService {
       routine.setRepeatValue(request.getRepeatValue());
       routine.setInitDate(request.getInitDate());
       routine.setRepeatTerm(request.getRepeatTerm());
+      routineRepository.save(routine);
+
 
   }
 

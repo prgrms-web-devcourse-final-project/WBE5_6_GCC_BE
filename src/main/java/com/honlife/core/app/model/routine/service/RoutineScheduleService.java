@@ -1,32 +1,21 @@
 package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.controller.routine.payload.RoutineScheduleCompleteRequest;
-import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.domain.MemberPoint;
-import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
-import com.honlife.core.app.model.point.domain.PointPolicy;
-import com.honlife.core.app.model.point.repos.PointPolicyRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.domain.RoutineSchedule;
-import com.honlife.core.app.model.routine.dto.RoutineScheduleDTO;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
-import com.honlife.core.infra.error.exceptions.NotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -37,62 +26,10 @@ public class RoutineScheduleService {
 
     private final RoutineScheduleRepository routineScheduleRepository;
     private final RoutineRepository routineRepository;
-    private final PointPolicyRepository pointPolicyRepository;
     private final MemberPointService memberPointService;
-    private final MemberPointRepository memberPointRepository;
 
 
 
-    public List<RoutineScheduleDTO> findAll() {
-        final List<RoutineSchedule> routineSchedules = routineScheduleRepository.findAll(Sort.by("id"));
-        return routineSchedules.stream()
-                .map(routineSchedule -> mapToDTO(routineSchedule, new RoutineScheduleDTO()))
-                .toList();
-    }
-
-    public RoutineScheduleDTO get(final Long id) {
-        return routineScheduleRepository.findById(id)
-                .map(routineSchedule -> mapToDTO(routineSchedule, new RoutineScheduleDTO()))
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
-    }
-
-    public Long create(final RoutineScheduleDTO routineScheduleDTO) {
-        final RoutineSchedule routineSchedule = new RoutineSchedule();
-        mapToEntity(routineScheduleDTO, routineSchedule);
-        return routineScheduleRepository.save(routineSchedule).getId();
-    }
-
-    public void update(final Long id, final RoutineScheduleDTO routineScheduleDTO) {
-        final RoutineSchedule routineSchedule = routineScheduleRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
-        mapToEntity(routineScheduleDTO, routineSchedule);
-        routineScheduleRepository.save(routineSchedule);
-    }
-
-    public void delete(final Long id) {
-        routineScheduleRepository.deleteById(id);
-    }
-
-    private RoutineScheduleDTO mapToDTO(final RoutineSchedule routineSchedule,
-            final RoutineScheduleDTO routineScheduleDTO) {
-        routineScheduleDTO.setId(routineSchedule.getId());
-        routineScheduleDTO.setDate(routineSchedule.getUpdatedAt());
-        routineScheduleDTO.setIsDone(routineSchedule.getIsDone());
-        routineScheduleDTO.setCreatedAt(routineSchedule.getCreatedAt());
-        routineScheduleDTO.setRoutine(routineSchedule.getRoutine() == null ? null : routineSchedule.getRoutine().getId());
-        return routineScheduleDTO;
-    }
-
-    private RoutineSchedule mapToEntity(final RoutineScheduleDTO routineScheduleDTO,
-            final RoutineSchedule routineSchedule) {
-        routineSchedule.setUpdatedAt(routineScheduleDTO.getDate());
-        routineSchedule.setIsDone(routineScheduleDTO.getIsDone());
-        routineSchedule.setCreatedAt(routineScheduleDTO.getCreatedAt());
-        final Routine routine = routineScheduleDTO.getRoutine() == null ? null : routineRepository.findById(routineScheduleDTO.getRoutine())
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ROUTINE));
-        routineSchedule.setRoutine(routine);
-        return routineSchedule;
-    }
     /** 루틴중에서 완료처리와 완료한거 취소하는 처리 포인트 처리
      * 아직 포인트 업적 수령 pr이 머지가 안되서 머지되면 반영해서 다시 작성하겠습니다 */
 
