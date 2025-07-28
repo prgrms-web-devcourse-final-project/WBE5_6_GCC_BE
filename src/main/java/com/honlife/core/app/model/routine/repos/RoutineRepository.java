@@ -16,16 +16,17 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> , Routin
 
     Routine findFirstByCategory(Category category);
 
-    /**
-     * 해당 멤버와 연관된 첫번째 루틴을 조회
-     * @param member
-     * @param isActive
-     * @return {@link Routine}
-     */
-    Routine findFirstByMemberAndIsActive(Member member, Boolean isActive);
+  /**
+   * 해당 멤버와 연관된 첫번째 루틴을 조회
+   * @param member
+   * @param isActive
+   * @return {@link Routine}
+   */
+  Routine findFirstByMemberAndIsActive(Member member, Boolean isActive);
 
 
-    @Query("""
+
+  @Query("""
     SELECT r FROM Routine r
     JOIN FETCH r.category c
     WHERE r.member = :member
@@ -38,11 +39,15 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> , Routin
     @Query("SELECT r FROM Routine r WHERE r.id = :id AND r.isActive = true")
     Optional<Routine> findByIdWithMember(@Param("id") Long id);
 
-    @Query("""
+  @Query("""
     SELECT r FROM Routine r 
     JOIN FETCH r.category 
     WHERE r.member = :member AND r.isActive = :isActive
 """)
-    List<Routine> findAllByMemberAndIsActiveWithCategory(@Param("member") Member member,
-        @Param("isActive") boolean isActive);
+  List<Routine> findAllByMemberAndIsActiveWithCategory(@Param("member") Member member,
+      @Param("isActive") boolean isActive);
+
+    Routine findByIdAndMember_email(Long id, String memberEmail);
+
+    List<Routine> findAllByIsActiveTrue();
 }

@@ -16,20 +16,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.controller.auth.payload.LoginRequest;
 import com.honlife.core.app.controller.auth.payload.TokenResponse;
 import com.honlife.core.app.model.auth.AuthService;
-import com.honlife.core.app.model.auth.code.AuthToken;
 import com.honlife.core.app.model.auth.dto.TokenDto;
-import com.honlife.core.infra.auth.jwt.TokenCookieFactory;
 import com.honlife.core.infra.response.CommonApiResponse;
 
 
@@ -79,21 +74,14 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(CommonApiResponse.error(ResponseCode.CONFLICT_EXIST_MEMBER));
             }
-            // 활성화되지 않은 계정인 경우, 이메일 인증으로 넘어감
+            // 활성화되지 않은 계정인 경우, 기존 계정 업데이트
             memberService.updateNotVerifiedMember(signupRequest);
         } else {
-            // 신규 회원의 경우에 새로운 정보 저장 후 이메일 인증으로 넘어감
+            // 신규 회원의 경우에 새로운 정보 저장
             memberService.saveNotVerifiedMember(signupRequest);
         }
-
-        try {
-            mailService.sendVerificationEmail(userEmail);
-            return ResponseEntity.ok()
-                .body(CommonApiResponse.success(ResponseCode.CONTINUE));
-        } catch (MessagingException | IOException e) {
-            return ResponseEntity.internalServerError()
-                .body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
-        }
+        return ResponseEntity.ok()
+            .body(CommonApiResponse.success(ResponseCode.CONTINUE));
     }
 
     /**

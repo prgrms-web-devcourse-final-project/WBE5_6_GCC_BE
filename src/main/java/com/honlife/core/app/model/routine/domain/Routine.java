@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,21 +61,19 @@ public class Routine extends BaseEntity {
     @Column(length = 100)
     private String repeatValue;
 
+    @Column
+    private LocalDate initDate;
+
+    @Column
+    private int repeatTerm = 1;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
-    public void updateRoutine(Category category, String content, String triggerTime, Boolean isImportant, RepeatType repeatType, String repeatValue, Member member) {
-        this.category = category;
-        this.content = content;
-        this.triggerTime = triggerTime;
-        this.isImportant = isImportant;
-        this.repeatType = repeatType;
-        this.repeatValue = repeatValue;
-        this.member = member;
-    }
+
 }

@@ -7,15 +7,14 @@ import com.honlife.core.app.model.category.service.InterestCategoryService;
 import com.honlife.core.app.model.member.service.MemberBadgeService;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberPointService;
-import com.honlife.core.app.model.member.service.MemberQuestService;
+import com.honlife.core.app.model.quest.service.WeeklyQuestProgressService;
 import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.app.model.withdraw.code.WithdrawType;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.ReferencedException;
 import com.honlife.core.infra.error.exceptions.ReferencedWarning;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,36 +35,13 @@ import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 
-
+@RequiredArgsConstructor
 @Slf4j
-@Tag(name = "회원", description = "회원관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
-@SecurityRequirement(name = "bearerAuth")
 public class MemberController {
 
     private final MemberService memberService;
-    private final RoutineService routineService;
-    private final CategoryService categoryService;
-    private final MemberItemService memberItemService;
-    private final MemberQuestService memberQuestService;
-    private final MemberBadgeService memberBadgeService;
-    private final InterestCategoryService interestCategoryService;
-    private final MemberPointService memberPointService;
-
-    public MemberController(final MemberService memberService, RoutineService routineService,
-        CategoryService categoryService, MemberItemService memberItemService,
-        MemberQuestService memberQuestService, MemberBadgeService memberBadgeService,
-        InterestCategoryService interestCategoryService, MemberPointService memberPointService) {
-        this.memberService = memberService;
-        this.routineService = routineService;
-        this.categoryService = categoryService;
-        this.memberItemService = memberItemService;
-        this.memberQuestService = memberQuestService;
-        this.memberBadgeService = memberBadgeService;
-        this.interestCategoryService = interestCategoryService;
-        this.memberPointService = memberPointService;
-    }
 
     /**
      * 로그인된 회원의 정보 조회
@@ -108,12 +84,8 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
 
-        try{
-            memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        }catch (CommonException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
-        }
+        memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
+        return ResponseEntity.ok(CommonApiResponse.noContent());
 
     }
 
@@ -131,12 +103,8 @@ public class MemberController {
     ) {
         String userEmail = userDetails.getUsername();
 
-        try{
-            memberService.updateMember(userEmail, memberPayload.toDTO());
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
-        }
+        memberService.updateMember(userEmail, memberPayload.toDTO());
+        return ResponseEntity.ok(CommonApiResponse.noContent());
 
     }
 
@@ -158,35 +126,12 @@ public class MemberController {
         if(withdrawRequest.getWithdrawType()==WithdrawType.ETC&&withdrawRequest.getEtcReason()==null){
             return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
-        Long memberId = memberService.findMemberByEmail(userEmail).getId();
+        memberService.removeMemberReference(userEmail);
 
-        // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
-        // 루틴 is_active = false
-        routineService.softDropRoutineByMemberId(memberId);
-        // 카테고리 is_active = false
-        categoryService.softDropCategoryByMemberId(memberId);
-        // 멤버 아이템 is_active = false
-        memberItemService.softDropMemberItemByMemberId(memberId);
-        // 멤버 퀘스트 is active = false
-        memberQuestService.softDropMemberQuestByMemberId(memberId);
-        // 멤버 업적 is_active = false
-        memberBadgeService.softDropMemberBadgeByMemberId(memberId);
-        // 선호 카테고리 is_active = false
-        interestCategoryService.softDropInterestCategoryByMemberId(memberId);
-        // 멤버 포인트 is_active = false
-        memberPointService.softDropMemberPointByMemberId(memberId);
-
-
-        try{
             // 제대로 처리 됐는지 검증
-            final ReferencedWarning referencedWarning = memberService.getReferencedWarning(userEmail);
-            if (referencedWarning != null) {
-                throw new ReferencedException(referencedWarning);
-            }
-        } catch (Exception e) {
-            // 제대로 삭제가 안 됐을 때
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(userEmail);
+        if (referencedWarning != null) {
+            throw new CommonException(ResponseCode.INTERNAL_SERVER_ERROR);
         }
 
         memberService.softDropMember(userEmail);

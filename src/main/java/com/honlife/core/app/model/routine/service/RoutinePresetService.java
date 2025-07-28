@@ -2,7 +2,6 @@ package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse.PresetItem;
-import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -95,4 +94,8 @@ public class RoutinePresetService {
                 .content(routinePreset.getContent())
                 .build()).toList();
     }
+
+
+
+
 }

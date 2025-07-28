@@ -8,7 +8,8 @@ import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.member.repos.MemberQuestRepository;
+import com.honlife.core.app.model.quest.repos.EventQuestProgressRepository;
+import com.honlife.core.app.model.quest.repos.WeeklyQuestProgressRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
@@ -31,7 +32,7 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberBadge;
 import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.domain.MemberPoint;
-import com.honlife.core.app.model.member.domain.MemberQuest;
+import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
@@ -53,9 +54,10 @@ public class MemberService {
     private final RoutineRepository routineRepository;
     private final CategoryRepository categoryRepository;
     private final MemberItemRepository memberItemRepository;
-    private final MemberQuestRepository memberQuestRepository;
+    private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
     private final MemberBadgeRepository memberBadgeRepository;
     private final InterestCategoryRepository interestCategoryRepository;
+    private final EventQuestProgressRepository eventQuestProgressRepository;
 
     public List<MemberDTO> findAll() {
         final List<Member> members = memberRepository.findAll(Sort.by("id"));
@@ -147,10 +149,10 @@ public class MemberService {
             referencedWarning.addParam(memberMemberItem.getId());
             return referencedWarning;
         }
-        final MemberQuest memberMemberQuest = memberQuestRepository.findFirstByMemberAndIsActive(member, true);
-        if (memberMemberQuest != null) {
+        final WeeklyQuestProgress memberWeeklyQuestProgress = weeklyQuestProgressRepository.findFirstByMemberAndIsActive(member, true);
+        if (memberWeeklyQuestProgress != null) {
             referencedWarning.setKey("member.memberQuest.member.referenced");
-            referencedWarning.addParam(memberMemberQuest.getId());
+            referencedWarning.addParam(memberWeeklyQuestProgress.getId());
             return referencedWarning;
         }
         final MemberBadge memberMemberBadge = memberBadgeRepository.findFirstByMemberAndIsActive(member, true);
@@ -391,5 +393,33 @@ public class MemberService {
      */
     public Member getMemberByEmail(String userEmail){
         return memberRepository.findByEmailIgnoreCase(userEmail);
+    }
+
+    /**
+     * 해당하는 멤버를 참조하는 모든 값들을 싹 soft drop시킵니다.
+     * @param userEmail 멤버 이메일
+     */
+    @Transactional
+    public void removeMemberReference(String userEmail) {
+        Long memberId = findMemberByEmail(userEmail).getId();
+
+        // 탈퇴하려는 멤버와 관련된 테이블 싹 다 soft drop
+        // 루틴 is_active = false
+        routineRepository.softDropByMemberId(memberId);
+        // 카테고리 is_active = false
+        categoryRepository.softDropByMemberId(memberId);
+        // 멤버 아이템 is_active = false
+        memberItemRepository.softDropByMemberId(memberId);
+        // 주간 퀘스트 진행도 is active = false
+        weeklyQuestProgressRepository.softDropByMemberId(memberId);
+        // 이벤트 퀘스트 진행도 is active = false
+        eventQuestProgressRepository.softDropByMemberId(memberId);
+        // 멤버 업적 is_active = false
+        memberBadgeRepository.softDropByMemberId(memberId);
+        // 선호 카테고리 is_active = false
+        interestCategoryRepository.softDropByMemberId(memberId);
+        // 멤버 포인트 is_active = false
+        memberPointRepository.softDropByMemberId(memberId);
+
     }
 }
