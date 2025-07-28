@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.badge.payload;
 
+import com.honlife.core.app.model.badge.code.BadgeStatus;
 import com.honlife.core.app.model.badge.code.BadgeTier;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -16,24 +17,23 @@ import lombok.Setter;
 @Builder
 public class BadgeResponse {
 
+    // === 배지 기본 정보 ===
     private Long badgeId;
-
     private String badgeKey;
-
     private String badgeName;
-
     private BadgeTier tier;
-
-    private String how;
-
-    private Integer requirement;
-
+    private String message;
     private String info;
-
     private String categoryName;
+    private Integer requirement;        // 목표값 (항상 표시)
 
-    private Boolean isReceived;
+    // === 핵심 상태 정보 ===
+    private BadgeStatus status;         // 이것만으로 UI 제어
 
-    private LocalDateTime receivedDate;
+    // === 조건부 정보 ===
+    private Integer currentProgress;    // LOCKED/ACHIEVABLE일 때만 (null 가능)
+    private LocalDateTime receivedDate; // OWNED/EQUIPPED일 때만 (null 가능)
+
+    private Boolean isEquipped;
 
 }
