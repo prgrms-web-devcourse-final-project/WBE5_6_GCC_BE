@@ -32,16 +32,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo oAuth2UserInfo = null;
 
         if(provider.equals("google")) {
-            log.info("GOOGLE OAuth2 Login");
+            log.info("[OAuth2] Google Login");
             oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
         } else if (provider.equals("kakao")) {
-            log.info("카카오 로그인");
+            log.info("[OAuth2] Kakao Login");
             oAuth2UserInfo = new KakaoUserDetails(oAuth2User.getAttributes());
         }
 
         String providerId = oAuth2UserInfo.getProviderId();
         String email = oAuth2UserInfo.getEmail();
         String name = oAuth2UserInfo.getName();
+        Boolean isNewMember;
 
         Optional<Member> memberOptional = memberRepository.findByProviderId(providerId);
         Member member;
@@ -55,10 +56,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .isVerified(true)
                 .build();
             memberRepository.save(member);
+            isNewMember = true;
+            log.info("[CustomOAuth2UserService] Save member : {}", member);
         } else {
             member = memberOptional.get();
+            isNewMember = false;
+            log.info("[CustomOAuth2UserService] Found member : {}", member);
         }
 
-        return new CustomOAuth2UserDetails(member, oAuth2User.getAttributes());
+        return new CustomOAuth2UserDetails(member, oAuth2User.getAttributes(), isNewMember);
     }
 }

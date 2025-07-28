@@ -137,4 +137,15 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
+
+    // Refresh Token 생성
+    public String createRefreshToken(String memberId) {
+        long now = (new Date()).getTime();
+        Date refreshTokenExpiresIn = new Date(now + refreshTokenExpiration);
+        return Jwts.builder()
+            .subject(memberId) // memberId를 subject로 사용
+            .expiration(refreshTokenExpiresIn)
+            .signWith(getSecretKey())
+            .compact();
+    }
 }
