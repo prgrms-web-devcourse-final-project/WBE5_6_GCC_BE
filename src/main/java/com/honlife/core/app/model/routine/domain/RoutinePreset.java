@@ -3,6 +3,8 @@ package com.honlife.core.app.model.routine.domain;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +13,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.common.BaseEntity;
@@ -20,6 +25,9 @@ import com.honlife.core.app.model.common.BaseEntity;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoutinePreset extends BaseEntity {
 
     @Id
@@ -44,16 +52,22 @@ public class RoutinePreset extends BaseEntity {
     private Category category;
 
     @Column
+    private boolean isImportant;
+
+    @Column(length = 20)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private RepeatType repeatType = RepeatType.DAILY;
+
+    @Column(length = 100)
+    private String repeatValue;
+
+    @Column
     private String triggerTime;
 
     @Column
-    private boolean isImportant;
-
-    @Column
-    private RepeatType repeatType;
-
-    @Column
-    private String repeatValue;
+    @Builder.Default
+    private Integer repeatTerm = 1 ;
 
     @Column
     private LocalDate initDate;
