@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class AdminRoutinePresetService {
 
   private final RoutinePresetRepository routinePresetRepository;
+
   /**
    * 추천 루틴 프리셋 목록 조회 service
    * @return List<RoutinePresetViewDTO>
