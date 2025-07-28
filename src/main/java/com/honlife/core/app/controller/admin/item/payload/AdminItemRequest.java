@@ -24,6 +24,9 @@ public class AdminItemRequest {
   @Schema(description = "아이템 가격", example = "300")
   private Integer price;
 
+  @Schema
+  private String key;
+
   @NotNull
   @Schema(description = "아이템 타입", example = "TOP")
   private ItemType itemType;
@@ -31,4 +34,6 @@ public class AdminItemRequest {
   @NotNull
   @Schema(description = "아이템 설명", example = "청소가 빨라집니다.")
   private String itemDescription;
+
+  private Boolean isListed;
 }

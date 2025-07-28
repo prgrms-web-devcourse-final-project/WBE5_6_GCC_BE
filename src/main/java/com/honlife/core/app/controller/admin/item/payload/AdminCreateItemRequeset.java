@@ -33,6 +33,9 @@ public class AdminCreateItemRequeset {
     private ItemType itemType;
 
     @NotNull
+    @Schema(description = "활성화 상태", example = "true")
+    private Boolean isListed;
+
     @Schema(description = "아이템 설명", example = "청소 성능이 +1 증가합니다.")
     private String itemDescription;
 }
