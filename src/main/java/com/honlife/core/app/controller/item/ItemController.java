@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.item;
 
+import com.honlife.core.app.controller.item.payload.ItemResponse;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
 import com.honlife.core.app.model.item.dto.ItemDTO;
@@ -39,7 +40,7 @@ public class ItemController {
      * @return List<ItemResponse> 모든 아이템에 대한 정보
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<List<ItemDTO>>> getAllItems(
+    public ResponseEntity<CommonApiResponse<List<ItemResponse>>> getAllItems(
             @RequestParam(value = "type", required = false) ItemType itemType,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
@@ -47,8 +48,9 @@ public class ItemController {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
         // 로그인한 회원의 이메일과 요청 파라미터로 전달된 itemType을 기반으로
         // 해당 회원이 보유한 여부(isOwned)를 포함한 아이템 리스트 조회
-        List<ItemDTO> items = itemService.getAllItemsWithOwnership(member.getId(), itemType);
-        return ResponseEntity.ok(CommonApiResponse.success(items));
+
+        List<ItemResponse> responseList = ItemResponse.fromDTOList(itemService.getAllItemsWithOwnership(member.getId(), itemType));
+        return ResponseEntity.ok(CommonApiResponse.success(responseList));
     }
     /**
      * 아이템 구매 API
