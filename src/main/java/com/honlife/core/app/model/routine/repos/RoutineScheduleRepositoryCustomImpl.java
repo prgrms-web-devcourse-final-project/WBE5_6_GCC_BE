@@ -21,12 +21,10 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
 
     private final JPAQueryFactory queryFactory;
 
-    private final QRoutineSchedule routineSchedule=QRoutineSchedule.routineSchedule;
-    private final QRoutineSchedule qRoutineSchedule=QRoutineSchedule.routineSchedule;
-    private final QRoutine routine=QRoutine.routine;
-    private final QRoutine qRoutine=QRoutine.routine;
-    QMember qMember = QMember.member;
+    private final QRoutineSchedule qRoutineSchedule =QRoutineSchedule.routineSchedule;
+    private final QRoutine qRoutine =QRoutine.routine;
     private final QCategory category=QCategory.category;
+    private final QMember qMember = QMember.member;
 
     public Long getCountOfNotCompletedMemberSchedule(LocalDate date, String userEmail) {
         return queryFactory
@@ -45,19 +43,19 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
     public RoutineTotalCountDTO countRoutineScheduleByMemberAndDateBetweenAndIsDone(String userEmail, LocalDate startDate, LocalDate endDate) {
         return queryFactory
             .select(Projections.constructor(RoutineTotalCountDTO.class,
-                    routineSchedule.count(), // 총 루틴 수
+                    qRoutineSchedule.count(), // 총 루틴 수
                     JPAExpressions // 완료한 루틴 수
-                        .select(routineSchedule.count())
-                        .from(routineSchedule)
-                        .where((routineSchedule.scheduledDate.goe(startDate))
-                            .and(routineSchedule.scheduledDate.lt(endDate))
-                            .and(routineSchedule.isDone)
-                            .and(routineSchedule.routine.member.email.eq(userEmail))
+                        .select(qRoutineSchedule.count())
+                        .from(qRoutineSchedule)
+                        .where((qRoutineSchedule.scheduledDate.goe(startDate))
+                            .and(qRoutineSchedule.scheduledDate.lt(endDate))
+                            .and(qRoutineSchedule.isDone)
+                            .and(qRoutineSchedule.routine.member.email.eq(userEmail))
                 )))
-            .from(routineSchedule)
-            .where((routine.member.email.eq(userEmail))
-                .and(routineSchedule.scheduledDate.goe(startDate))
-                .and(routineSchedule.scheduledDate.lt(endDate))
+            .from(qRoutineSchedule)
+            .where((qRoutine.member.email.eq(userEmail))
+                .and(qRoutineSchedule.scheduledDate.goe(startDate))
+                .and(qRoutineSchedule.scheduledDate.lt(endDate))
             )
             .fetchOne();
     }
@@ -70,11 +68,11 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
             .select(Projections.constructor(DayRoutineCountDTO.class,
                 outerRoutineSchedule.scheduledDate, // 해당 날짜
                 outerRoutineSchedule.count(), // 해당 날짜의 총 루틴 수
-                JPAExpressions.select(routineSchedule.count()) // 해당 날짜의 완료한 루틴 수
-                    .from(routineSchedule)
-                    .where((routineSchedule.scheduledDate.eq(outerRoutineSchedule.scheduledDate))
-                        .and(routineSchedule.routine.member.email.eq(userEmail)
-                        .and(routineSchedule.isDone))
+                JPAExpressions.select(qRoutineSchedule.count()) // 해당 날짜의 완료한 루틴 수
+                    .from(qRoutineSchedule)
+                    .where((qRoutineSchedule.scheduledDate.eq(outerRoutineSchedule.scheduledDate))
+                        .and(qRoutineSchedule.routine.member.email.eq(userEmail)
+                        .and(qRoutineSchedule.isDone))
                     )
                 )
             )
@@ -95,17 +93,17 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
             .select(Projections.constructor(CategoryCountDTO.class,
                 parent.name, // 부모 카테고리의 이름
                 category.name, // 루틴에 저장된 카테고리의 이름
-                routineSchedule.count() // 카테고리 별 루틴 수
+                qRoutineSchedule.count() // 카테고리 별 루틴 수
             ))
-            .from(routineSchedule)
-            .leftJoin(routineSchedule.routine.category, category)
+            .from(qRoutineSchedule)
+            .leftJoin(qRoutineSchedule.routine.category, category)
             .leftJoin(category.parent, parent)
-            .where(routine.member.email.eq(userEmail)
-                .and(routineSchedule.scheduledDate.goe(startDate))
-                .and(routineSchedule.scheduledDate.lt(endDate))
-                .and(isDone != null ? routineSchedule.isDone.eq(isDone) : null))
+            .where(qRoutine.member.email.eq(userEmail)
+                .and(qRoutineSchedule.scheduledDate.goe(startDate))
+                .and(qRoutineSchedule.scheduledDate.lt(endDate))
+                .and(isDone != null ? qRoutineSchedule.isDone.eq(isDone) : null))
             .groupBy(category, parent)
-            .orderBy(routineSchedule.count().desc())
+            .orderBy(qRoutineSchedule.count().desc())
             .fetch();
     }
 }
