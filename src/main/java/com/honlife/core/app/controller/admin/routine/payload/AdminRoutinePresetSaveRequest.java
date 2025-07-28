@@ -18,8 +18,6 @@ public class AdminRoutinePresetSaveRequest {
 
   private String majorCategory;
 
-  private String subCategory;
-
   private String triggerTime;
 
   private Boolean isImportant;

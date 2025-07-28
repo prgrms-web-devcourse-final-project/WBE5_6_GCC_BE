@@ -23,7 +23,6 @@ public class RoutinePresetViewDTO {
 
   private String majorCategory;
 
-  private String subCategory;
 
   private String name;
 

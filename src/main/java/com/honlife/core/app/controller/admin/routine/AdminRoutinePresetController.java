@@ -6,22 +6,14 @@ import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetU
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetsResponse;
 import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
 import com.honlife.core.app.model.admin.routinePreset.service.AdminRoutinePresetService;
-import com.honlife.core.app.model.routine.service.RoutinePresetService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminRoutinePresetController {
 
   private final AdminRoutinePresetService adminRoutinePresetService;
-  private final RoutinePresetService routinePresetService;
 
 
   /**
