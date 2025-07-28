@@ -101,7 +101,7 @@ public class BadgeController {
      * @param userDetails 인증된 사용자 정보
      * @return 성공 응답
      */
-    @PatchMapping("/equip")
+    @PatchMapping
     public ResponseEntity<CommonApiResponse<Void>> updateBadgeEquipStatus(
         @RequestParam String badgeKey,
         @AuthenticationPrincipal UserDetails userDetails) {
