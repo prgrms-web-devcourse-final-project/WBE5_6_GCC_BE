@@ -18,7 +18,7 @@ public class CategoryWithParentResponse {
 
     private String emoji;
 
-    private Long parent;
+    private Long parentId;
 
     private List<ChildCategoryResponse> children;
 
@@ -30,7 +30,7 @@ public class CategoryWithParentResponse {
             .categoryName(categoryDTO.getName())
             .categoryType(categoryDTO.getType())
             .emoji(categoryDTO.getEmoji())
-            .parent(categoryDTO.getParent())
+            .parentId(categoryDTO.getParent())
             .children(ChildCategoryResponse.fromDTO(categoryDTO.getChildren()))
             .build();
     }
