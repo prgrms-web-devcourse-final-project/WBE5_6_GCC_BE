@@ -48,7 +48,6 @@ public class ItemController {
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
         // 로그인한 회원의 이메일과 요청 파라미터로 전달된 itemType을 기반으로
         // 해당 회원이 보유한 여부(isOwned)를 포함한 아이템 리스트 조회
-
         List<ItemResponse> responseList = ItemResponse.fromDTOList(itemService.getAllItemsWithOwnership(member.getId(), itemType));
         return ResponseEntity.ok(CommonApiResponse.success(responseList));
     }
