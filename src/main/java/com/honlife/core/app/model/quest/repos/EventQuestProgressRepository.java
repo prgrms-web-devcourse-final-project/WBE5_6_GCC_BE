@@ -12,4 +12,6 @@ public interface EventQuestProgressRepository extends JpaRepository<EventQuestPr
     List<EventQuestProgress> findAllByMember_EmailAndIsActive(String memberEmail, Boolean isActive);
 
     Optional<EventQuestProgress> findByMember_EmailAndId(String userEmail, Long progressId);
+
+    List<EventQuestProgress> findAllByMember_EmailAndIsActiveAndIsDone(String userEmail, boolean b, boolean b1);
 }
