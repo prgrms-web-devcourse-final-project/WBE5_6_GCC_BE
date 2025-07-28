@@ -50,7 +50,6 @@ public class RoutineScheduleController {
 
             routineScheduleService.completeRoutineSchedule(scheduleId, request, userEmail);
 
-
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 

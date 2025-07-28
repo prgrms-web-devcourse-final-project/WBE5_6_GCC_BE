@@ -1,14 +1,9 @@
-package com.honlife.core.app.model.routine.domain;
+package com.honlife.core.app.model.routine.scheduler;
 
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import com.honlife.core.app.model.routine.service.RoutineScheduleService;
-import com.honlife.core.infra.error.exceptions.CommonException;
-import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;

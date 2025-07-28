@@ -1,13 +1,7 @@
 package com.honlife.core.app.model.routine.service;
 
-import com.honlife.core.app.model.routine.domain.Routine;
-import com.honlife.core.app.model.routine.domain.RoutineSchedule;
-import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse.PresetItem;
-import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,7 +11,6 @@ import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.dto.RoutinePresetDTO;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
