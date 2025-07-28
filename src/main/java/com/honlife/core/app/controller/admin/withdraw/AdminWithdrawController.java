@@ -58,7 +58,7 @@ public class AdminWithdrawController {
     ) {
 
             Pageable pageable = PageRequest.of(pageParam.getPage()-1, pageParam.getSize());
-            Page<WithdrawReasonDTO> page =  withdrawReasonService.findPagedByDate(pageable, startDate, endDate);
+            Page<WithdrawReasonDTO> page =  withdrawReasonService.findPagedByDateBetween(pageable, startDate, endDate);
 
             if(pageParam.getPage() != 1 && page.getContent().isEmpty()){
                 return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));

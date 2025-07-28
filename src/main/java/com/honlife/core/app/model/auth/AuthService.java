@@ -1,9 +1,11 @@
 package com.honlife.core.app.model.auth;
 
 import com.honlife.core.app.model.loginLog.service.LoginLogService;
+import com.honlife.core.infra.event.CommonEvent;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -34,6 +36,7 @@ public class AuthService {
     private final UserBlackListRepository userBlackListRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserDetailsService userDetailsService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final LoginLogService loginLogService;
 
@@ -46,6 +49,12 @@ public class AuthService {
         // 인증 실패 시: AuthenticationException 발생
         Authentication authentication = authenticationManagerBuilder.getObject()
             .authenticate(authenticationToken);
+
+        eventPublisher.publishEvent(
+            new CommonEvent(
+                loginRequest.getEmail()
+            )
+        );
 
         return processSignin(authentication);
     }

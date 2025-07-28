@@ -19,7 +19,7 @@ public class PageResponse<T> {
 
     public int currentNumber(){
     return page.getNumber() + 1;
-}
+    }
     
     public int prevPage(){
         return Math.max(currentNumber() - 1, 1);
