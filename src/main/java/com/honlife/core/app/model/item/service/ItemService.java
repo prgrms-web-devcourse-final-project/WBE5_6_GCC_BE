@@ -94,16 +94,6 @@ public class ItemService {
                 .build();
     }
 
-
-    /**
-     * itemKey로 단일 아이템 조회
-     * @param key
-     * return Optional<Item></Item>
-     */
-    public Optional<Item> getItemByKey(String key) {
-        return itemRepository.findByKeyAndIsActiveTrue(key);
-    }
-
     /**
      * itemId로 단일 아이템 조회
      * @param id

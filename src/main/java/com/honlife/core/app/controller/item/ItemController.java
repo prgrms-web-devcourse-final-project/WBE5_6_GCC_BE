@@ -50,27 +50,6 @@ public class ItemController {
         List<ItemDTO> items = itemService.getAllItemsWithOwnership(member.getId(), itemType);
         return ResponseEntity.ok(CommonApiResponse.success(items));
     }
-
-    /**
-     * 아이템 id값을 통한 단건 조회 API
-     *
-     * @param id 아이템 고유 아이디
-     * @return ItemResponse key 값과 일치하는 아이템 정보 반환
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<ItemDTO>> getItemByKey(
-            @PathVariable("id") Long id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-
-        // 사용자 정보 조회
-        Member member = memberService.getMemberByEmail(userDetails.getUsername());
-        // itemId값을 통한 해당 item 정보 조회
-        ItemDTO itemResponse = itemService.getItemResponseById(id, member.getId());
-
-        return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
-
-    }
-
     /**
      * 아이템 구매 API
      *
