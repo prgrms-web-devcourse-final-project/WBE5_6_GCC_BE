@@ -18,6 +18,10 @@ public class MemberBadgeResponse {
     private BadgeTier badgeTier;
 
     public static MemberBadgeResponse fromDTO(MemberBadgeDetailDTO detailDTO) {
+        if(detailDTO == null){
+            return null;
+        }
+
         return MemberBadgeResponse.builder()
             .badgeKey(detailDTO.getBadgeKey())
             .badgeName(detailDTO.getBadgeName())
