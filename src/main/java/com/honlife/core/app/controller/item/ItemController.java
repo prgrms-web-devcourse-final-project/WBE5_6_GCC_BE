@@ -108,19 +108,19 @@ public class ItemController {
      * - 회원이 보유 중인 아이템인지 여부 포함
      * - 해당 아이템이 활성화/비활성화 여부 포함
      *
-     * @param itemKey 아이템 고유 아이다
-     * @return ItemResponse itemKey 값과 일치하는 아이템 정보 반환
+     * @param id 아이템 고유 아이다
+     * @return ItemResponse id 값과 일치하는 아이템 정보 반환
      */
     @Operation(summary = "아이템 단건 조회", description = "아이템 key 값을 통해 특정 아이템을 조회합니다.")
-    @GetMapping("/{key}")
-    public ResponseEntity<CommonApiResponse<ItemResponse>> getItemByKey(
-            @Parameter(description = "아이템 Key 값", example = "top_item_01")
-            @PathVariable("key") String itemKey) {
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonApiResponse<ItemResponse>> getItemById(
+            @Parameter(description = "아이템 id 값", example = "1L")
+            @PathVariable("id") Long id) {
 
         ItemResponse item = ItemResponse.builder()
                 .itemId(1L)
                 .itemType(ItemType.TOP)
-                .itemKey(itemKey)
+                .itemKey("top_item_01")
                 .itemName("청소 상의")
                 .itemDescription("먼지가 달라 붙지 않아요!")
                 .itemPoint(100)
@@ -135,13 +135,19 @@ public class ItemController {
     /**
      * 아이템 구매 API
      *
-     * @param itemKey 아이템 고유 아이다
+     * @param id 아이템 고유 아이다
      */
     @Operation(summary = "아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
-    @PostMapping("/{key}")
+    @PostMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> getItem(
-            @Parameter(name = "key", description = "구매할 아이템의 key", example = "top_item_01")
-            @PathVariable("key") String itemKey,
+            @Parameter(name = "id", description = "구매할 아이템 Id 에 해당하는 아이템을 구매합니다.. <br>" +
+                    "<strong>~구매 시나리오~</strong><br>" +
+                    "1. 현재 존재하는 itemId = 1L,2L <br>" +
+                    "2. 존재하지 않는 Id의 아이템 구매 시 아이템 존재 하지 않는다는 오류 반환<br>" +
+                    "3. 회원이 보유중인 아이템 id = 2L.<br>" +
+                    "이미 보유중인 아이템이라면 이미보유중이라는 오류메세지 반환" +
+                    "이 외의 경우 아이템 정상 구매", example = "1L")
+            @PathVariable("id") Long id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String memberId = userDetails.getUsername();
@@ -149,11 +155,11 @@ public class ItemController {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-        if (!itemKey.equals("top_item_01") && !itemKey.equals("top_item_02")) {
+        if (!(id==1L) && !(id== 2L)) {
             return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
         }
-        if (memberId.equals("user01@test.com") && itemKey.equals("top_item_02")) {
+        if (memberId.equals("user01@test.com") && (id==2L)) {
             return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_ITEM.status())
                     .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_ITEM));
         }
