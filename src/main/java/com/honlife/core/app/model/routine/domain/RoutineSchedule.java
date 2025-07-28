@@ -11,7 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,7 +45,7 @@ public class RoutineSchedule extends BaseEntity {
     private Routine routine;
 
     @Column
-    private LocalDate scheduleDate;
+    private LocalDate scheduledDate;
 
     @Column
     @Builder.Default
