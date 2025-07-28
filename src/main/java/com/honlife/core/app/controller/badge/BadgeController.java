@@ -41,7 +41,7 @@ public class BadgeController {
      * @param userDetails 인증된 사용자 정보
      * @return 페이지네이션된 배지 정보
      */
-    @Operation(summary = "업적 조회 (페이지네이션)",
+    @Operation(summary = "✅ 업적 조회 (페이지네이션)",
         description = "모든 업적의 정보를 페이지네이션으로 조회합니다. " +
             "각각의 배지 상태(LOCKED/ACHIEVABLE/OWNED/EQUIPPED)와 진행률을 확인할 수 있습니다.")
     @GetMapping
@@ -221,7 +221,7 @@ public class BadgeController {
      * @param userDetails 인증된 사용자 정보
      * @return BadgeRewardResponse 완료한 업적에 대한 정보 및 포인트 획득 내역
      */
-    @Operation(summary = "업적 보상 수령",
+    @Operation(summary = "✅ 업적 보상 수령",
         description = "badge_key 값을 통해 특정 업적의 보상을 획득합니다. " +
             "<br> COOK_BRONZE 입력 시 200 코드가 반환됩니다. (포인트: 100)" +
             "<br> CLEAN_BRONZE 입력 시 달성 조건 미충족 에러가 반환됩니다." +
