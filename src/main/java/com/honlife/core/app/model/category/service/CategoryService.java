@@ -1,6 +1,8 @@
 package com.honlife.core.app.model.category.service;
 
+import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.ArrayList;
 import java.util.List;
@@ -195,32 +197,28 @@ public class CategoryService {
         return categories;
     }
 
-
     /**
-     * 특정 카테고리의 하위 카테고리 조회
-     * @param userEmail
-     * @param majorName 하위 카테고리를 조회할 major 카테고리의 이름
-     * @return List<CategoryDTO>
+     * id를 통해 카테고리 정보를 검색합니다.
+     * @param categoryId 카테고리 아이디
+     * @param userEmail 유저 이메일
+     * @return {@link CategoryDTO}
      */
-    public List<CategoryDTO> getSubCategories(String userEmail, String majorName) {
+    public CategoryDTO findCategoryById(Long categoryId, String userEmail) {
+        Category category = categoryRepository.findCategoryById(categoryId, userEmail)
+            .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
-        // 커스텀 카테고리에서 찾지 못하면 기본 카테고리에서 찾음
-        Category majorCategory = categoryRepository.findCustomCategoryByName(majorName, userEmail)
-            .orElseGet(()->categoryRepository.findDefaultCategoryByName(majorName, userEmail)
-                .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY)));
+        return CategoryDTO.builder()
+            .id(category.getId())
+            .children(category.getChildren().stream().map(
+                ChildCategoryDTO::fromEntity
+            ).toList())
+            .name(category.getName())
+            .type(category.getType())
+            .parent(category.getType()== CategoryType.SUB? category.getParent().getId() : null)
+            .member(category.getMember().getId())
+            .emoji(category.getEmoji())
+            .build();
 
-        return List.of(
-            CategoryDTO.builder()
-                    .id(majorCategory.getId())
-                    .children(majorCategory.getChildren().stream().map(
-                        ChildCategoryDTO::fromEntity
-                    ).toList())
-                    .name(majorCategory.getName())
-                    .type(majorCategory.getType())
-                    .member(majorCategory.getMember().getId())
-                    .emoji(majorCategory.getEmoji())
-                    .build()
-            );
+
     }
-
 }
