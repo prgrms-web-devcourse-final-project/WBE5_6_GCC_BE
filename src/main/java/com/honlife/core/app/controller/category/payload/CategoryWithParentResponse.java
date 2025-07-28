@@ -5,12 +5,10 @@ import com.honlife.core.app.model.category.dto.CategoryDTO;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Builder
-public class CategoryResponse {
+@Getter
+public class CategoryWithParentResponse {
 
     private Long categoryId;
 
@@ -20,17 +18,22 @@ public class CategoryResponse {
 
     private String emoji;
 
+    private Long parentId;
+
     private List<ChildCategoryResponse> children;
 
 
-    public static CategoryResponse fromDTO(CategoryDTO categoryDTO) {
-        return CategoryResponse.builder()
+
+    public static CategoryWithParentResponse fromDTO(CategoryDTO categoryDTO) {
+        return CategoryWithParentResponse.builder()
             .categoryId(categoryDTO.getId())
             .categoryName(categoryDTO.getName())
             .categoryType(categoryDTO.getType())
             .emoji(categoryDTO.getEmoji())
+            .parentId(categoryDTO.getParent())
             .children(ChildCategoryResponse.fromDTO(categoryDTO.getChildren()))
             .build();
     }
+
 
 }
