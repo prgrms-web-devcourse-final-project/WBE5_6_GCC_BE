@@ -1,5 +1,6 @@
 package com.honlife.core.infra.config.security;
 
+import com.honlife.core.infra.oauth2.handler.CustomOAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.honlife.core.infra.auth.jwt.JwtAuthenticationEntryPoint;
 import com.honlife.core.infra.auth.jwt.filter.JwtAuthenticationFilter;
@@ -28,6 +30,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final AuthenticationSuccessHandler CustomOAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,10 +46,13 @@ public class SecurityConfig {
                 (requests) -> requests
                     .requestMatchers("/favicon.ico", "/img/**", "/js/**", "/css/**").permitAll()
                     .requestMatchers("/", "/error", "/api/v1/check/**", "/api/v1/signin",
-                        "/api/v1/signup", "api/v1/auth/**", "/login/oauth2/code/**").permitAll()
+                        "/api/v1/signup", "api/v1/auth/**").permitAll()
+                    .requestMatchers("/login/oauth2/code/**", "/oauth2/authorization/**").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().authenticated()
             )
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler(CustomOAuth2SuccessHandler))
             // jwtAuthenticationEntryPoint 는 oauth 인증을 사용할 경우 제거
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,11 +1,11 @@
-package com.honlife.core.app.model.oauth2;
+package com.honlife.core.infra.oauth2;
 
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.app.model.oauth2.dto.GoogleUserDetails;
-import com.honlife.core.app.model.oauth2.dto.KakaoUserDetails;
-import com.honlife.core.app.model.oauth2.dto.OAuth2UserInfo;
+import com.honlife.core.infra.oauth2.dto.GoogleUserDetails;
+import com.honlife.core.infra.oauth2.dto.KakaoUserDetails;
+import com.honlife.core.infra.oauth2.dto.OAuth2UserInfo;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

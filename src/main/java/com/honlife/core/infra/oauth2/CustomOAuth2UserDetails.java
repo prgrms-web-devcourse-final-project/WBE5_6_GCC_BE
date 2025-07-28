@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.oauth2;
+package com.honlife.core.infra.oauth2;
 
 import com.honlife.core.app.model.member.domain.Member;
 import java.util.ArrayList;
