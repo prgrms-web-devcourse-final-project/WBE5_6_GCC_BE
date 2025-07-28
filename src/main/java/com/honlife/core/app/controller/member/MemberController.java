@@ -41,7 +41,7 @@ import com.honlife.core.infra.response.ResponseCode;
 
 
 @Slf4j
-@Tag(name = "✅ [회원] 회원 정보 및 관리", description = "회원관련 API 입니다.")
+@Tag(name = "🔄 [회원] 회원 정보 및 관리", description = "회원관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -62,7 +62,7 @@ public class MemberController {
      * @param userDetails 유저 인증 정보 객체
      * @return 조회 성공시 {@code CommonApiResponse<}{@link MemberPayload}{@code >}형태로 사용자의 정보를 반한홥니다.
      */
-    @Operation(summary = "로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "🔄 로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
     public ResponseEntity<CommonApiResponse<MemberResponseWrapper>> getCurrentMember(
         @AuthenticationPrincipal UserDetails userDetails
@@ -97,7 +97,7 @@ public class MemberController {
      * @param updatePasswordRequest 현재 비밀번호와 변경할 비밀번호를 담은 객체
      * @return 변경 처리 성공시 {@code 200}을 반환합니다. 이메일 인증이 되지 않은 경우, {@code 401}을 반환합니다.
      */
-    @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
+    @Operation(summary = "✅ 비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
         + "변경할 비밀번호만 받습니다.<br>"
         + "사전에 이메일 인증이 되지 않은 회원의 경우, 401응답이 반환됩니다.")
     @PatchMapping("/password")
@@ -115,7 +115,7 @@ public class MemberController {
      * @return 변경에 성공하면 {@code 200}을 반환합니다.
      * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
-    @Operation(summary="회원정보 업데이트", description="회원정보를 업데이트 합니다.<br>"
+    @Operation(summary="✅ 회원정보 업데이트", description="회원정보를 업데이트 합니다.<br>"
         + "이름, 닉네임은 필수 정보입니다. 나머지 정보는 비어있어도 되지만, 요청에는 포함되어있어야 합니다.")
     @PatchMapping
     public ResponseEntity<CommonApiResponse<Void>> updateMember(
@@ -137,7 +137,7 @@ public class MemberController {
      * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
     @DeleteMapping
-    @Operation(summary = "회원 탈퇴", description = "회원탈퇴를 처리합니다.<br>"
+    @Operation(summary = "✅ 회원 탈퇴", description = "회원탈퇴를 처리합니다.<br>"
         + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요.<br>"
         + "~ WithdrawType ~<br>"
         + "TOO_MUCH_EFFORT<br>"
@@ -171,7 +171,7 @@ public class MemberController {
      * @param userDetails 유저 인증 정보
      * @return 확인 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
      */
-    @Operation(summary = "비밀번호 확인", description = "사용자의 비밀번호가 맞는지 확인합니다.<br>"
+    @Operation(summary = "✅ 비밀번호 확인", description = "사용자의 비밀번호가 맞는지 확인합니다.<br>"
         + "현재 비밀번호를 받으며, 일치하지 않을 경우 401 응답이 반환됩니다.<br>")
     @PostMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> checkPassword(
