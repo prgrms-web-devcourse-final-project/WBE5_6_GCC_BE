@@ -12,10 +12,8 @@ import com.honlife.core.app.model.quest.router.QuestProgressProcessorRouter;
 import com.honlife.core.infra.event.CommonEvent;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
-import java.time.DayOfWeek;
+import com.honlife.core.infra.utils.DateUtils;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -46,6 +44,14 @@ public class WeeklyQuestProgressService {
     @Transactional(readOnly = true)
     public List<MemberWeeklyQuestDTO> getMemberWeeklyQuestsProgress(String userEmail) {
         List<WeeklyQuestProgress> memberWeeklyQuestProgressList = weeklyQuestProgressRepository.findAllByMember_EmailAndIsActive(userEmail, true);
+
+        // 주간 퀘스트 조회시 퀘스트가 존재하지 않는 경우(0시 이후 초기화가 된 경우 등)
+        // 새로운 주간퀘스트로 갱신
+        if (memberWeeklyQuestProgressList.isEmpty()) {
+            createNewWeeklyQuestProgress(userEmail, LocalDateTime.now());
+            memberWeeklyQuestProgressList = weeklyQuestProgressRepository.findAllByMember_EmailAndIsActive(userEmail, true);
+        }
+
         return memberWeeklyQuestProgressList.stream().map(MemberWeeklyQuestDTO::fromEntity).collect(
             Collectors.toList());
     }
@@ -124,29 +130,15 @@ public class WeeklyQuestProgressService {
         LocalDateTime now = LocalDateTime.now();
 
         // 이번주 월요일 00:00:00
-        LocalDateTime monday = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-            .with(LocalTime.MIN);
+        LocalDateTime monday = DateUtils.getMondayOfWeek(now);
         // 이번주 일요일 23:59:59
-        LocalDateTime sunday = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
-            .with(LocalTime.MAX);
+        LocalDateTime sunday = DateUtils.getSundayOfWeek(now);
 
         // 이번주 주간 퀘스트를 받지 못한 경우
         List<WeeklyQuestProgress> weeklyQuests = weeklyQuestProgressRepository.findByMemberEmailAndStartAtAndEndAt(userEmail, monday, sunday);
         if (weeklyQuests.isEmpty()) {
             // 새로운 주간 퀘스트 부여
-            List<WeeklyQuest> newWeeklyQuests = weeklyQuestService.getRandomQuests(5);
-            Member member = memberRepository.findByEmailIgnoreCase(userEmail);
-            List<WeeklyQuestProgress> progresses = new ArrayList<>();
-            for(WeeklyQuest quest : newWeeklyQuests) {
-                WeeklyQuestProgress progress = WeeklyQuestProgress.builder()
-                    .startAt(monday)
-                    .endAt(sunday)
-                    .member(member)
-                    .weeklyQuest(quest)
-                    .build();
-                progresses.add(progress);
-            }
-            weeklyQuestProgressRepository.saveAll(progresses);
+            createNewWeeklyQuestProgress(userEmail, now);
         }
 
         return CompletableFuture.completedFuture(null);
@@ -158,5 +150,32 @@ public class WeeklyQuestProgressService {
     @Transactional
     public void deactivatePreviousWeeklyQuests() {
         weeklyQuestProgressRepository.deactivateAllActiveWeeklyQuests();
+    }
+
+    /**
+     * 새로운 주간퀘스트를 진행도 테이블에 추가
+     * @param email 사용자 이메일
+     * @param dateTime 기준이 되는 날
+     */
+    public void createNewWeeklyQuestProgress(String email, LocalDateTime dateTime) {
+        List<WeeklyQuest> newWeeklyQuests = weeklyQuestService.getRandomQuests(5);
+        Member member = memberRepository.findByEmailIgnoreCase(email);
+
+        // 이번주 월요일 00:00:00
+        LocalDateTime monday = DateUtils.getMondayOfWeek(dateTime);
+        // 이번주 일요일 23:59:59
+        LocalDateTime sunday = DateUtils.getSundayOfWeek(dateTime);
+
+        List<WeeklyQuestProgress> progresses = new ArrayList<>();
+        for(WeeklyQuest quest : newWeeklyQuests) {
+            WeeklyQuestProgress progress = WeeklyQuestProgress.builder()
+                .startAt(monday)
+                .endAt(sunday)
+                .member(member)
+                .weeklyQuest(quest)
+                .build();
+            progresses.add(progress);
+        }
+        weeklyQuestProgressRepository.saveAll(progresses);
     }
 }
