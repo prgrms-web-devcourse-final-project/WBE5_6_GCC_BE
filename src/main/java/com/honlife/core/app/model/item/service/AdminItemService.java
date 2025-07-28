@@ -26,12 +26,12 @@ public class AdminItemService {
     /**
      * 관리자 - 아이템 수정 서비스
      *
-     * @param itemKey 수정 대상 아이템의 고유 키
+     * @param itemId 수정 대상 아이템의 고유 id
      * @param request 수정할 값이 담긴 요청 DTO (이름, 설명, 가격, 타입)
      *
      * <p><b>[설명]</b></p>
-     * - itemKey로 아이템을 조회한 후, 전달받은 값으로 필드를 갱신합니다.
-     * - 수정 대상 필드: name, description, price, type
+     * - itemI로 아이템을 조회한 후, 전달받은 값으로 필드를 갱신합니다.
+     * - 수정 대상 필드: name, description, price, type ,key
      * - 존재하지 않는 아이템일 경우 NOT_FOUND 예외 발생
      */
     @Transactional
@@ -42,8 +42,14 @@ public class AdminItemService {
         item.setDescription(request.getItemDescription());
         item.setPrice(request.getPrice());
         item.setType(request.getItemType());
-        item.setKey(request.getKey());
 
+        if(request.getKey() != null && !request.getKey().equals(item.getKey())){
+            // 해당 key가 이미 다른 아이템에서 사용 중이라면 중복
+            if(itemService.itemKeyExists(request.getKey())){
+                throw new CommonException(ResponseCode.DUPLICATE_ITEM_KEY);
+            }
+            item.setKey(request.getKey());
+        }
         if (request.getIsListed() != null) {
             item.setIsListed(request.getIsListed());
         }
