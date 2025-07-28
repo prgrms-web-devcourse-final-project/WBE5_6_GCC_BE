@@ -7,8 +7,9 @@ import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 import com.honlife.core.app.model.badge.dto.BadgeRewardDTO;
 import com.honlife.core.app.model.badge.dto.BadgeStatusDTO;
 import com.honlife.core.app.model.badge.service.BadgeService;
-import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.payload.PageParam;
 import com.honlife.core.infra.response.CommonApiResponse;
+import jakarta.validation.Valid;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -39,40 +40,30 @@ public class BadgeController {
 
     /**
      * 업적 조회 API (페이지네이션)
-     * @param page 페이지 번호 (1부터 시작)
-     * @param size 페이지 크기 (기본값: 12)
+     * @param pageParam 페이지 번호/크기
      * @param userDetails 인증된 사용자 정보
      * @return 페이지네이션된 배지 정보
      */
     @GetMapping
     public ResponseEntity<CommonApiResponse<BadgePageResponse>> getAllBadges(
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "12") int size,
+        @Valid PageParam pageParam,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 1. 페이지 검증
-        if (page < 1) {
-            throw new CommonException(ResponseCode.BAD_REQUEST);
-        }
-        if (size < 1 || size > 100) {  // 최대 100개로 제한
-            throw new CommonException(ResponseCode.BAD_REQUEST);
-        }
-
-        // 2. 사용자 이메일 추출
+        // 1. 사용자 이메일 추출
         String email = userDetails.getUsername();
 
-        // 3. Pageable 생성 (1-based → 0-based 변환)
-        Pageable pageable = PageRequest.of(page - 1, size);
+        // 2. Pageable 생성 (1-based → 0-based 변환)
+        Pageable pageable = PageRequest.of(pageParam.getPage() - 1, pageParam.getSize());
 
-        // 4. Service에서 페이지네이션된 배지 조회
+        // 3. Service에서 페이지네이션된 배지 조회
         Page<BadgeStatusDTO> badgePage = badgeService.getAllBadgesWithStatus(email, pageable);
 
-        // 5. DTO → Response 변환
+        // 4. DTO → Response 변환
         List<BadgeResponse> badgeResponses = badgePage.getContent().stream()
             .map(BadgeResponse::fromDto)
             .toList();
 
-        // 6. PageResponse 생성
+        // 5. PageResponse 생성
         BadgePageResponse pageResponse = BadgePageResponse.from(badgePage, badgeResponses);
 
         return ResponseEntity.ok(CommonApiResponse.success(pageResponse));

@@ -4,6 +4,8 @@ import com.honlife.core.app.model.item.domain.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
@@ -16,5 +18,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     //Key 값의 Unique함을 보장하기 위함
     boolean existsByKeyIgnoreCase(String key);
+
+    // Item 테이블의 모든 데이터를 조회합니다.
+    List<Item> findAllByIsActiveTrue();
 
 }

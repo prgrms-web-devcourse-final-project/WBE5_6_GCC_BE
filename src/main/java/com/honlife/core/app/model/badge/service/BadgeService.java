@@ -57,7 +57,7 @@ public class BadgeService {
     @Transactional(readOnly = true)
     public Page<BadgeStatusDTO> getAllBadgesWithStatus(String email, Pageable pageable) {
         // 1. 페이지네이션으로 활성 배지 조회
-        Page<Badge> badgePage = badgeRepository.findAllByIsActiveTrue(pageable);
+        Page<Badge> badgePage = badgeRepository.findPagedByIsActiveTrue(pageable);
 
         // 2. Member 조회
         MemberDTO memberDTO = memberService.findMemberByEmail(email);
