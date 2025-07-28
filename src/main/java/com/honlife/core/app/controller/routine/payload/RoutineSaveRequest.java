@@ -22,7 +22,7 @@ public class RoutineSaveRequest {
 
 
     @NotNull(message = "루틴 시작 날짜는 필수입니다")
-    private LocalDate startRoutineDate;
+    private LocalDate initDate;
 
     @Size(max = 255, message = "트리거 시간은 255자를 초과할 수 없습니다")
     private String triggerTime;

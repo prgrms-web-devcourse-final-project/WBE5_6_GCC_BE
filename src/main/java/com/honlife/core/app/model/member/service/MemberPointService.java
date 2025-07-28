@@ -141,4 +141,20 @@ public class MemberPointService {
         // Save Log
         pointLogService.saveLog(userEmail, PointLogType.GET, key);
     }
+
+    @Transactional
+    public void subtractPoint(String userEmail, String key, PointSourceType type) {
+
+        Integer points = pointPolicyService.getPoint(key, type);
+
+        MemberPoint memberPoint = memberPointRepository.findByMember_EmailAndIsActive(userEmail, true)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
+
+        Integer CurrentPoints = memberPoint.getPoint();
+        memberPoint.setPoint(CurrentPoints - points);
+        memberPointRepository.save(memberPoint);
+
+        // Save Log
+        pointLogService.saveLog(userEmail, PointLogType.GET, key);
+    }
 }

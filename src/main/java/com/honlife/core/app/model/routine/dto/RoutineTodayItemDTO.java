@@ -36,4 +36,9 @@ public class RoutineTodayItemDTO {
 
   private String repeatValue;
 
+  private LocalDate initDate;
+
+  private String emoji;
+
+
 }

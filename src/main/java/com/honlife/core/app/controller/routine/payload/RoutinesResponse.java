@@ -47,7 +47,7 @@ public class RoutinesResponse {
     private Boolean isDone;
     private Boolean isImportant;
     private LocalDate date;
-    private LocalDate startInitDate;
+    private LocalDate initDate;
     private RepeatType repeatType;
     private String repeatValue;
 
@@ -63,7 +63,7 @@ public class RoutinesResponse {
           .isDone(dto.getIsDone())
           .isImportant(dto.getIsImportant())
           .date(dto.getDate())
-          .startInitDate(dto.getStartInitDate())
+          .initDate(dto.getInitDate())
           .repeatType(dto.getRepeatType())
           .repeatValue(dto.getRepeatValue())
           .build();

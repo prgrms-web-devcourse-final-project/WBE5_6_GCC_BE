@@ -30,11 +30,13 @@ public class RoutineItemDTO {
 
     private LocalDate date;
 
-    private LocalDate startInitDate;
+    private LocalDate initDate;
 
     private RepeatType repeatType;
 
     private String repeatValue;
+
+    private String emoji;
 
   }
 

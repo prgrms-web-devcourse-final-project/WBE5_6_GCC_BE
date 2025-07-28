@@ -5,6 +5,7 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberPoint;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.app.model.point.domain.PointPolicy;
 import com.honlife.core.app.model.point.repos.PointPolicyRepository;
@@ -37,7 +38,7 @@ public class RoutineScheduleService {
     private final RoutineScheduleRepository routineScheduleRepository;
     private final RoutineRepository routineRepository;
     private final PointPolicyRepository pointPolicyRepository;
-    private final MemberRepository memberRepository;
+    private final MemberPointService memberPointService;
     private final MemberPointRepository memberPointRepository;
 
 
@@ -95,6 +96,7 @@ public class RoutineScheduleService {
     /** 루틴중에서 완료처리와 완료한거 취소하는 처리 포인트 처리
      * 아직 포인트 업적 수령 pr이 머지가 안되서 머지되면 반영해서 다시 작성하겠습니다 */
 
+    @Async
     @Transactional
     public void completeRoutineSchedule(Long scheduleId, RoutineScheduleCompleteRequest request, String userEmail) {
 
@@ -107,10 +109,6 @@ public class RoutineScheduleService {
 
         RoutineSchedule routineSchedule = routineScheduleRepository.findWithRoutineAndMemberById(scheduleId);
 
-        Optional<MemberPoint> member = memberPointRepository.findByMember_Email(userEmail);
-
-        MemberPoint memberPoint = member.get();
-
         if(routineSchedule == null){
            throw new CommonException(ResponseCode.NOT_FOUND_ROUTINE);
         }
@@ -122,24 +120,16 @@ public class RoutineScheduleService {
         if(routineSchedule.getIsDone().equals(false)){
             routineSchedule.setIsDone(request.getIsDone());
 
-            // 포인트 회수 로직
-            PointPolicy policy = pointPolicyRepository.findByType(PointSourceType.ROUTINE);
-            int reversePoint = policy.getPoint();
-
-            int point = memberPoint.getPoint() - reversePoint;
-            memberPoint.setPoint(point);
+            memberPointService.subtractPoint(userEmail, null, PointSourceType.ROUTINE );
 
 
         }else{
             /** true라구 하고 포인트 적립한다 ~ */
             routineSchedule.setIsDone(request.getIsDone());
 
-            // 포인트 추가 로직
-            PointPolicy policy = pointPolicyRepository.findByType(PointSourceType.ROUTINE);
-            int addPoint = policy.getPoint();
+            memberPointService.addPoint(userEmail, null, PointSourceType.ROUTINE );
 
-            int point = memberPoint.getPoint() + addPoint;
-            memberPoint.setPoint(point);
+
         }
 
         /** 루틴 완료시 이제 완료율로 뱃지 체크  어떤 뱃지 할건지 논의 해봐야함 */
@@ -156,9 +146,9 @@ public class RoutineScheduleService {
 
 
         for (Routine routine : routines) {
-            if (!today.isBefore(routine.getStartInitDate())
+            if (!today.isBefore(routine.getInitDate())
                 && routine.getRepeatType().isMatched(today, routine.getRepeatValue())
-                && ChronoUnit.WEEKS.between(routine.getStartInitDate(), today) % routine.getRepeatTerm() == 0) {
+                && ChronoUnit.WEEKS.between(routine.getInitDate(), today) % routine.getRepeatTerm() == 0) {
 
                 log.info("✅ [Scheduler] 루틴 ID {} 에 대한 스케줄 생성", routine.getId());
 

@@ -107,7 +107,7 @@ INSERT INTO ROUTINE_PRESET (id, category_id, content, is_active, created_at, upd
 INSERT INTO ROUTINE (
     id, member_id, category_id, content, trigger_time, is_important,
     repeat_type, repeat_value, is_active,
-    start_init_date, repeat_term,
+    init_date, repeat_term,
     created_at, updated_at
 ) VALUES
       (1, 2, 7, '물 마시기', '눈 뜨자마자', true, 'DAILY', null, true, '2025-06-01', 1, '2025-07-23 04:21:56', '2025-07-23 04:21:56'),

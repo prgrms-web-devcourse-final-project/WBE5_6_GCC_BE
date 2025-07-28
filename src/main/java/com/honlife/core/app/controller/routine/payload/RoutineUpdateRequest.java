@@ -21,7 +21,7 @@ public class RoutineUpdateRequest {
 
   private Long categoryid;
 
-  private LocalDate startInitDate;
+  private LocalDate initDate;
 
   private String triggerTime;
 
