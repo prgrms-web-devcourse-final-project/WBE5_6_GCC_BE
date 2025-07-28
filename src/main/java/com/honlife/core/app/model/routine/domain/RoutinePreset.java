@@ -56,6 +56,7 @@ public class RoutinePreset extends BaseEntity {
 
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private RepeatType repeatType = RepeatType.DAILY;
 
     @Column(length = 100)
@@ -65,6 +66,7 @@ public class RoutinePreset extends BaseEntity {
     private String triggerTime;
 
     @Column
+    @Builder.Default
     private Integer repeatTerm = 1 ;
 
     @Column
