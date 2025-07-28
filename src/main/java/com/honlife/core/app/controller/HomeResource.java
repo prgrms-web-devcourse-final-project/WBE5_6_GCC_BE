@@ -9,7 +9,8 @@ public class HomeResource {
 
     @GetMapping("/")
     public String index() {
-        return "\"Hello World!\"";
+//        return "\"Hello World!\"";
+        return "<a href=\"/oauth2/authorization/google\">구글 로그인</a>";
     }
 
 }

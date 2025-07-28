@@ -1,6 +1,5 @@
 package com.honlife.core.app.model.member.domain;
 
-import com.honlife.core.app.model.oauth2.code.Provider;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,8 +51,7 @@ public class Member extends BaseEntity {
     private String password;
 
     @Column
-    @Enumerated(EnumType.STRING)
-    private Provider provider;
+    private String provider;
 
     @Column
     private String providerId;
