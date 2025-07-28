@@ -1,6 +1,5 @@
 package com.honlife.core.app.controller.badge;
 
-import com.honlife.core.app.controller.badge.payload.BadgeEquipRequest;
 import com.honlife.core.app.controller.badge.payload.BadgePageResponse;
 import com.honlife.core.app.controller.badge.payload.BadgeResponse;
 import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
@@ -21,9 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -99,23 +96,18 @@ public class BadgeController {
     }
 
     /**
-     * 배지 장착 상태 변경 API
+     * 배지 장착/해제 토글 API
      * @param badgeKey 배지 키
-     * @param request 장착 상태 요청 (isEquipped: true=장착, false=해제)
      * @param userDetails 인증된 사용자 정보
      * @return 성공 응답
      */
-    @PatchMapping("/{badgeKey}/equipped")
+    @PatchMapping("/equip")
     public ResponseEntity<CommonApiResponse<Void>> updateBadgeEquipStatus(
-        @PathVariable String badgeKey,
-        @RequestBody @Valid BadgeEquipRequest request,
+        @RequestParam String badgeKey,
         @AuthenticationPrincipal UserDetails userDetails) {
 
-        // 1. 사용자 이메일 추출
         String email = userDetails.getUsername();
-
-        // 2. 서비스 호출
-        badgeService.updateBadgeEquipStatus(badgeKey, email, request.getIsEquipped());
+        badgeService.updateBadgeEquipStatus(badgeKey, email);
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }

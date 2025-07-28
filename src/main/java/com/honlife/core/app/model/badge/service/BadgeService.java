@@ -26,6 +26,7 @@ import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -197,56 +198,37 @@ public class BadgeService {
         }
     }
 
-    /**
-     * 배지 장착 상태 변경
-     * @param badgeKey 배지 키
-     * @param email 사용자 이메일
-     * @param isEquipped 장착 여부 (true: 장착, false: 해제)
-     */
     @Transactional
-    public void updateBadgeEquipStatus(String badgeKey, String email, boolean isEquipped) {
-        // 1. 배지 조회
-        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey)
-            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
-
-        // 2. 사용자 조회
+    public void updateBadgeEquipStatus(String badgeKey, String email) {
+        // 1. 사용자 조회
         MemberDTO memberDTO = memberService.findMemberByEmail(email);
         Long memberId = memberDTO.getId();
 
-        // 3. 해당 배지를 보유하고 있는지 확인
-        MemberBadge memberBadge = memberBadgeRepository.findByMemberIdAndBadge(memberId, badge)
+        // 2. 요청한 배지 조회 (보유 여부 확인)
+        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
+
+        MemberBadge targetBadge = memberBadgeRepository.findByMemberIdAndBadge(memberId, badge)
             .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_BADGE));
 
-        if (isEquipped) {
-            // 장착 로직
-            // 4-1. 이미 장착 중인지 확인
-            if (Boolean.TRUE.equals(memberBadge.getIsEquipped())) {
-                throw new CommonException(ResponseCode.BAD_REQUEST); // 이미 장착됨
-            }
+        // 3. 현재 장착된 배지 조회
+        Optional<MemberBadge> currentEquipped = memberBadgeRepository.findByMemberIdAndIsEquippedTrue(memberId);
 
-            // 4-2. 기존에 장착된 배지가 있다면 해제
-            memberBadgeRepository.findByMemberIdAndIsEquippedTrue(memberId)
-                .ifPresent(equippedBadge -> {
-                    equippedBadge.setIsEquipped(false);
-                    memberBadgeRepository.save(equippedBadge);
-                });
-
-            // 4-3. 새 배지 장착
-            memberBadge.setIsEquipped(true);
-
+        if (currentEquipped.isPresent() &&
+            currentEquipped.get().getBadge().getKey().equals(badgeKey)) {
+            // 케이스 1: 같은 배지가 장착됨 → 해제
+            currentEquipped.get().setIsEquipped(false);
+            memberBadgeRepository.save(currentEquipped.get());
         } else {
-            // 해제 로직
-            // 4-4. 현재 장착 중인지 확인
-            if (!Boolean.TRUE.equals(memberBadge.getIsEquipped())) {
-                throw new CommonException(ResponseCode.BAD_REQUEST); // 장착되지 않음
+            // 케이스 2: 다른 배지 장착 중 → 교체
+            // 케이스 3: 아무것도 미장착 → 새로 장착
+            if (currentEquipped.isPresent()) {
+                currentEquipped.get().setIsEquipped(false);
+                memberBadgeRepository.save(currentEquipped.get());
             }
-
-            // 4-5. 배지 해제
-            memberBadge.setIsEquipped(false);
+            targetBadge.setIsEquipped(true);
+            memberBadgeRepository.save(targetBadge);
         }
-
-        // 5. 변경사항 저장
-        memberBadgeRepository.save(memberBadge);
     }
 
     // === 기존 매핑 메서드들 ===
