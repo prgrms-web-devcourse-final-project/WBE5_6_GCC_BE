@@ -141,4 +141,47 @@ public class MemberPointService {
         // Save Log
         pointLogService.saveLog(userEmail, PointLogType.GET, key);
     }
+
+    @Transactional
+    public void subtractPoint(String userEmail, String key, PointSourceType type) {
+
+        Integer points = pointPolicyService.getPoint(key, type);
+
+        MemberPoint memberPoint = memberPointRepository.findByMember_EmailAndIsActive(userEmail, true)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
+
+        Integer CurrentPoints = memberPoint.getPoint();
+        memberPoint.setPoint(CurrentPoints - points);
+        memberPointRepository.save(memberPoint);
+
+        // Save Log
+        pointLogService.saveLog(userEmail, PointLogType.GET, key);
+    }
+
+    /**
+     * 회원에게 포인트 추가 지급
+     * @param memberId 회원 ID
+     * @param pointToAdd 추가할 포인트
+     * @return 업데이트 후 총 포인트
+     */
+    @Transactional
+    public int addPointToMember(Long memberId, int pointToAdd) {
+        Optional<MemberPoint> memberPoint = getPointByMemberId(memberId)
+            .filter(mp -> Boolean.TRUE.equals(mp.getIsActive()));
+
+        if (memberPoint.isEmpty()) {
+            throw new NotFoundException(ResponseCode.NOT_FOUND_POINT);
+        }
+
+        MemberPoint point = memberPoint.get();
+        int currentPoint = point.getPoint();
+        int newTotalPoint = currentPoint + pointToAdd;
+
+        // 포인트 업데이트
+        MemberPointDTO pointDTO = get(point.getId());
+        pointDTO.setPoint(newTotalPoint);
+        update(point.getId(), pointDTO);
+
+        return newTotalPoint;
+    }
 }

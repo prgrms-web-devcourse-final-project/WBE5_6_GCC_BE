@@ -20,6 +20,7 @@ public class RoutineDetailDTO {
   private Boolean isImportant;
   private RepeatType repeatType;
   private String repeatValue;
-  private LocalDate startRoutineDate;
+  private LocalDate initDate;
+  private String emoji;
 
 }

@@ -2,9 +2,7 @@ package com.honlife.core.app.controller.routine.payload;
 
 
 import com.honlife.core.app.model.routine.code.RepeatType;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import lombok.Getter;
@@ -19,13 +17,9 @@ public class RoutineUpdateRequest {
   @Size(max = 255, message = "루틴 내용은 255자를 초과할 수 없습니다")
   private String name;
 
-  private Long categoryid;
+  private Long categoryId;
 
-  private String majorCategory;
-
-  private String subCategory;
-
-  private LocalDate startRoutineDate;
+  private LocalDate initDate;
 
   private String triggerTime;
 
@@ -36,5 +30,5 @@ public class RoutineUpdateRequest {
   @Size(max = 100, message = "반복 값은 100자를 초과할 수 없습니다")
   private String repeatValue;
 
-  private Integer repeatInterval = 1;
+  private Integer repeatTerm = 1;
 }

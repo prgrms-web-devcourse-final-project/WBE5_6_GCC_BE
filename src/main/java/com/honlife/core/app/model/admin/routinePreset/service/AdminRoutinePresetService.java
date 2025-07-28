@@ -120,6 +120,7 @@ public class AdminRoutinePresetService {
         .startRoutineDate(routinePreset.getStartDate())
         .repeatType(routinePreset.getRepeatType())
         .repeatValue(routinePreset.getRepeatValue())
+        .emoji(routinePreset.getCategory().getEmoji())
         .build();
 
     return dto;

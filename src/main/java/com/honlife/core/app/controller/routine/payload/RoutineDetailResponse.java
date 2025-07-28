@@ -33,6 +33,8 @@ public class RoutineDetailResponse {
 
     private String repeatValue;
 
+    private String emoji;
+
 
     public static RoutineDetailResponse fromDto(RoutineDetailDTO dto) {
 
@@ -46,6 +48,7 @@ public class RoutineDetailResponse {
             .isImportant(dto.getIsImportant())
             .repeatType(dto.getRepeatType())
             .repeatValue(dto.getRepeatValue())
+            .emoji(dto.getEmoji())
             .build();
     }
 }

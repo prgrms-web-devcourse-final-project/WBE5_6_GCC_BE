@@ -2,13 +2,18 @@ package com.honlife.core.app.model.quest.service;
 
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.quest.code.QuestDomain;
+import com.honlife.core.app.model.quest.code.QuestType;
 import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
 import com.honlife.core.app.model.quest.dto.MemberWeeklyQuestDTO;
+import com.honlife.core.app.model.quest.router.QuestProgressProcessorRouter;
+import com.honlife.core.infra.event.CommonEvent;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestProgressRepository;
@@ -20,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WeeklyQuestProgressService {
 
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
+    private final QuestProgressProcessorRouter questProgressProcessorRouter;
     private final MemberPointService memberPointService;
 
     /**
@@ -76,5 +82,24 @@ public class WeeklyQuestProgressService {
         // check as done
         weeklyQuestProgress.setIsDone(true);
         weeklyQuestProgressRepository.save(weeklyQuestProgress);
+    }
+
+    @Async
+    @Transactional
+    public void processWeeklyQuestProgress(CommonEvent event) {
+        String userEmail = event.getMemberEmail();
+
+        // 보상수령 되지 않은 퀘스트만 검색
+        List<WeeklyQuestProgress> weeklyQuests = weeklyQuestProgressRepository
+            .findAllByMember_EmailAndIsActiveAndIsDone(userEmail, true, false);
+
+        // 처리해야할 퀘스트가 없다면 return
+        if (weeklyQuests.isEmpty()) return;
+
+        for(WeeklyQuestProgress questProgress : weeklyQuests) {
+            QuestType questType = questProgress.getWeeklyQuest().getType();
+            Long progressId = questProgress.getId();
+            questProgressProcessorRouter.routeAndProcess(QuestDomain.WEEKLY, questType, event, progressId);
+        }
     }
 }

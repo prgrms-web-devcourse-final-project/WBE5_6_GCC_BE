@@ -35,11 +35,12 @@ public class RoutinePresetViewDTO {
 
   private LocalDateTime updatedAt;
 
-  private int repeatInterval;
-
-  private LocalDate startRoutineDate;
+  private String emoji;
 
   private RepeatType repeatType;
 
   private String repeatValue;
+
+  private LocalDate initDate;
+
 }

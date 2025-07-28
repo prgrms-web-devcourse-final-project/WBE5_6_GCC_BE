@@ -37,27 +37,18 @@ public class RoutineScheduleController {
      * @param scheduleId 완료/취소할 스케줄 ID
      * @param request 완료/취소 요청 정보
      * @param userDetails 로그인된 사용자 정보
-     * @param bindingResult validation
      * @return
      */
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> completeRoutineSchedule(
         @PathVariable(name = "id") final Long scheduleId,
         @RequestBody @Valid final RoutineScheduleCompleteRequest request,
-        @AuthenticationPrincipal UserDetails userDetails,
-        BindingResult bindingResult
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
-
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.status())
-                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-        }
 
             String userEmail = userDetails.getUsername();
 
             routineScheduleService.completeRoutineSchedule(scheduleId, request, userEmail);
-
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }

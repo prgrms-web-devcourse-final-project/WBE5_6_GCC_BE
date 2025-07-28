@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 public class AdminRoutinePresetsResponse {
 
-  @Schema(description = "프리셋 목록")
   private List<RoutinePresetViewDTO> presets;
 
 

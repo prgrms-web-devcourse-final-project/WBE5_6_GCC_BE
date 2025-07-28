@@ -56,7 +56,7 @@ public class RoutineController {
             String userEmail = userDetails.getUsername();
 
             Map<LocalDate, List<RoutineItemDTO>> routines = routineService.getUserWeeklyRoutines(userEmail, date);
-            RoutinesResponse response = new RoutinesResponse(routines);
+            RoutinesResponse response = RoutinesResponse.fromDTO(routines);
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
 
@@ -125,7 +125,7 @@ public class RoutineController {
     /**
      * 루틴 수정 API
      * @param routineId 수정할 루틴 ID
-     * @param userDetails 로그인된 사용자 정보
+     * @param routineUpdateRequest 수정할 루틴의 정보
      * @return
      */
 
@@ -133,12 +133,10 @@ public class RoutineController {
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateRoutine(
         @PathVariable(name = "id") final Long routineId,
-        @RequestBody @Valid final RoutineUpdateRequest routineUpdateRequest,
-        @AuthenticationPrincipal UserDetails userDetails
+        @RequestBody @Valid final RoutineUpdateRequest routineUpdateRequest
     ) {
 
 
-            String userEmail = userDetails.getUsername();
             routineService.updateRoutine(routineId, routineUpdateRequest);
             return ResponseEntity.ok(CommonApiResponse.noContent());
 

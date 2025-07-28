@@ -68,8 +68,7 @@ public class RoutinePreset extends BaseEntity {
     private Integer repeatTerm = 1 ;
 
     @Column
-    private LocalDate startDate;
-
+    private LocalDate initDate;
 
 
 
