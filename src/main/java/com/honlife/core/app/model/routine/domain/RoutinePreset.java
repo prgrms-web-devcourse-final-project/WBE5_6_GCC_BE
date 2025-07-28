@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.routine.domain;
 
+import com.honlife.core.app.model.routine.code.RepeatType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import com.honlife.core.app.model.category.domain.Category;
@@ -46,6 +48,15 @@ public class RoutinePreset extends BaseEntity {
 
     @Column
     private boolean isImportant;
+
+    @Column
+    private RepeatType repeatType;
+
+    @Column
+    private String repeatValue;
+
+    @Column
+    private LocalDate initDate;
 
 
 

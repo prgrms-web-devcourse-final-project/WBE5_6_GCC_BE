@@ -3,7 +3,6 @@ package com.honlife.core.app.model.admin.routinePreset.service;
 import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.domain.Category;
-import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -67,6 +66,9 @@ public class AdminRoutinePresetService {
               .isImportant(routinePreset.isImportant())
               .createdAt(routinePreset.getCreatedAt())
               .updatedAt(routinePreset.getUpdatedAt())
+              .repeatType(routinePreset.getRepeatType())
+              .repeatValue(routinePreset.getRepeatValue())
+              .initDate(routinePreset.getInitDate())
               .build();
         })
         .collect(Collectors.toList());
@@ -107,6 +109,10 @@ public class AdminRoutinePresetService {
         .isImportant(routinePreset.isImportant())
         .createdAt(routinePreset.getCreatedAt())
         .updatedAt(routinePreset.getUpdatedAt())
+        .emoji(routinePreset.getCategory().getEmoji())
+        .repeatType(routinePreset.getRepeatType())
+        .repeatValue(routinePreset.getRepeatValue())
+        .initDate(routinePreset.getInitDate())
         .build();
 
     return dto;
