@@ -43,4 +43,7 @@ public class RoutinePresetViewDTO {
 
   private LocalDate initDate;
 
+  private int repeatTerm;
+
+
 }

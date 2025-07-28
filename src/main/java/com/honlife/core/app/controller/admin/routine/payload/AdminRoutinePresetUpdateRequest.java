@@ -27,11 +27,11 @@ public class AdminRoutinePresetUpdateRequest {
 
   private String repeatValue;
 
-  private LocalDate startRoutineDate;
+  private LocalDate initDate;
 
   @Size(max = 50, message = "루틴 내용은 50자를 초과할 수 없습니다")
   private String name;
 
-  private Integer repeatInterval ;
+  private Integer repeatTerm ;
 
 }

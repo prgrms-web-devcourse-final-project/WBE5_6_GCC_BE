@@ -72,9 +72,9 @@ public class AdminRoutinePresetService {
               .isImportant(routinePreset.getIsImportant())
               .createdAt(routinePreset.getCreatedAt())
               .updatedAt(routinePreset.getUpdatedAt())
-              .repeatInterval(routinePreset.getRepeatTerm())
-              .startRoutineDate(routinePreset.getStartDate())
+              .initDate(routinePreset.getInitDate())
               .repeatType(routinePreset.getRepeatType())
+              .repeatTerm(routinePreset.getRepeatTerm())
               .repeatValue(routinePreset.getRepeatValue())
               .build();
         })
@@ -116,8 +116,8 @@ public class AdminRoutinePresetService {
         .isImportant(routinePreset.getIsImportant())
         .createdAt(routinePreset.getCreatedAt())
         .updatedAt(routinePreset.getUpdatedAt())
-        .repeatInterval(routinePreset.getRepeatTerm())
-        .startRoutineDate(routinePreset.getStartDate())
+        .repeatTerm(routinePreset.getRepeatTerm())
+        .initDate(routinePreset.getInitDate())
         .repeatType(routinePreset.getRepeatType())
         .repeatValue(routinePreset.getRepeatValue())
         .emoji(routinePreset.getCategory().getEmoji())
@@ -139,9 +139,11 @@ public class AdminRoutinePresetService {
         .content(request.getName())
         .repeatType(request.getRepeatType())
         .repeatValue(request.getRepeatValue())
-        .repeatTerm(request.getRepeatInterval())
-        .startDate(request.getStartRoutineDate())
+        .repeatTerm(request.getRepeatTerm())
+        .initDate(request.getInitDate())
         .build();
+
+    routinePreset.setCreatedAt(LocalDateTime.now());
 
     routinePresetRepository.save(routinePreset);
 
@@ -155,40 +157,16 @@ public class AdminRoutinePresetService {
     RoutinePreset routinePreset = routinePresetRepository.findById(presetId)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ROUTINE));
 
-    if (request.getName() != null) {
       routinePreset.setContent(request.getName());
-    }
-
-    if (request.getTriggerTime() != null) {
       routinePreset.setTriggerTime(request.getTriggerTime());
-    }
-
-    if (request.getIsImportant() != null) {
       routinePreset.setIsImportant(request.getIsImportant());
-    }
-
-    if (request.getRepeatType() != null) {
       routinePreset.setRepeatType(request.getRepeatType());
-    }
-
-    if (request.getRepeatValue() != null) {
       routinePreset.setRepeatValue(request.getRepeatValue());
-    }
-
-    if (request.getRepeatInterval() != null) {
-      routinePreset.setRepeatTerm(request.getRepeatInterval());
-    }
-
-    if (request.getStartRoutineDate() != null) {
-      routinePreset.setStartDate(request.getStartRoutineDate());
-    }
-
-    if (request.getCategoryId() != null) {
+      routinePreset.setRepeatTerm(request.getRepeatTerm());
+      routinePreset.setInitDate(request.getInitDate());
       Category category = categoryRepository.findById(request.getCategoryId())
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
       routinePreset.setCategory(category);
-    }
-
     routinePreset.setUpdatedAt(LocalDateTime.now());
 
 

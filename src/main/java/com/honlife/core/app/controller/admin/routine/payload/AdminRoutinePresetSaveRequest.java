@@ -30,11 +30,11 @@ public class AdminRoutinePresetSaveRequest {
   private String repeatValue;
 
   @NotNull(message = "루틴 시작 날짜는 필수입니다")
-  private LocalDate startRoutineDate;
+  private LocalDate initDate;
 
   @NotBlank(message = "루틴 내용은 필수입니다")
   @Size(max = 50, message = "루틴 내용은 50자를 초과할 수 없습니다")
   private String name;
 
-  private int repeatInterval = 1;
+  private int repeatTerm = 1;
 }
