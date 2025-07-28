@@ -6,12 +6,12 @@ import com.honlife.core.app.controller.category.payload.CategoryWithParentRespon
 import com.honlife.core.app.controller.category.wrapper.CategoryWrapper;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
-import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,37 +29,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.category.service.CategoryService;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/v1/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    public CategoryController(final CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
     /**
      * 카테고리 조회 API
-     * @param majorName 카테고리 이름이 넘어오지 않으면 소분류 카테고리를, 넘어온다면 해당하는 이름의 카테고리를 전달합니다.
-     * @return List<CategoryResponse>
+     * 전체 조회 시 대분류 카테고리와 동시에 해당 카테고리의 소분류 카테고리도 함께 반환됩니다.
+     * @return CategoryWrapper
      */
     @GetMapping
     public ResponseEntity<CommonApiResponse<CategoryWrapper>> getCategories(
-        @RequestParam(required = false) String majorName,
         @AuthenticationPrincipal UserDetails userDetails
 
     ) {
         String userEmail = userDetails.getUsername();
-        List<CategoryDTO> categories = new ArrayList<>();
 
-        if(majorName == null) {
-            // 전체 카테고리 찾기
-            categories = categoryService.getCategories(userEmail);
-        }else{
-            // 소분류 카테고리 찾기
-            categories = categoryService.getSubCategories(userEmail, majorName);
-        }
+        // 전체 카테고리 찾기
+        List<CategoryDTO> categories = categoryService.getCategories(userEmail);
 
         List<CategoryResponse> categoryResponses = categories.stream().map(
             CategoryResponse::fromDTO
@@ -70,12 +60,13 @@ public class CategoryController {
 
 
     /**
-     * 카테고리 특정 조회 API
+     * 카테고리 단건 조회 API
+     * 대분류 카테고리 조회 시 이를 참조하는 소분류 카테고리도 함께 조회 가능합니다.
      * @param categoryId 카테고리 아이디.
-     * @return CategoryResponse
+     * @return CategoryWithParentResponse
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<CategoryWithParentResponse>> getCategory(
+    public ResponseEntity<CommonApiResponse<CategoryWithParentResponse>> getCategoryById(
         @PathVariable(name="id")
         final Long categoryId,
         @AuthenticationPrincipal UserDetails userDetails
@@ -95,15 +86,9 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createCategory(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestBody @Valid final CategorySaveRequest categorySaveRequest,
-        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.status())
-                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-        }
+        @RequestBody @Valid final CategorySaveRequest categorySaveRequest) {
         // SUB 카테고리지만 부모 카테고리 정보가 없는 경우
-        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && (categorySaveRequest.getParentName() == null|| categorySaveRequest.getParentName().isEmpty())) {
+        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && categorySaveRequest.getParentId() == null) {
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
