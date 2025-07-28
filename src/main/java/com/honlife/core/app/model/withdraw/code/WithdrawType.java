@@ -1,6 +1,5 @@
 package com.honlife.core.app.model.withdraw.code;
 
-
 public enum WithdrawType {
 
     TOO_MUCH_EFFORT("기록하는 게 귀찮아요"),
@@ -17,7 +16,4 @@ public enum WithdrawType {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
 }
