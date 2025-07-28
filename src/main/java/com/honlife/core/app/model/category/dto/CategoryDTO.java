@@ -44,4 +44,5 @@ public class CategoryDTO {
     private Long member;
 
     private String emoji;
+
 }
