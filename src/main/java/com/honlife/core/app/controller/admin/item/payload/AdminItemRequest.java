@@ -14,6 +14,8 @@ public class AdminItemRequest {
   @NotNull
   private Integer price;
 
+  private String key;
+
   private String itemDescription;
 
   private Boolean isListed;

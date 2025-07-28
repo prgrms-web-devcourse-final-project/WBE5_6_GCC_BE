@@ -41,6 +41,7 @@ public class AdminItemService {
         item.setDescription(request.getItemDescription());
         item.setPrice(request.getPrice());
         item.setType(request.getItemType());
+        item.setKey(request.getKey());
 
         if (request.getIsListed() != null) {
             item.setIsListed(request.getIsListed());
