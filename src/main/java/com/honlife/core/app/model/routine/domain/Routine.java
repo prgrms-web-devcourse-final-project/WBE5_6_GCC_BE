@@ -65,6 +65,7 @@ public class Routine extends BaseEntity {
     private LocalDate initDate;
 
     @Column
+    @Builder.Default
     private Integer repeatTerm = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)

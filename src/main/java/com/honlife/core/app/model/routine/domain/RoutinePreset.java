@@ -52,7 +52,7 @@ public class RoutinePreset extends BaseEntity {
     private Category category;
 
     @Column
-    private Boolean isImportant;
+    private boolean isImportant;
 
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
