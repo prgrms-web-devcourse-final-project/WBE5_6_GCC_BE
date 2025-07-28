@@ -56,7 +56,7 @@ public class Member extends BaseEntity {
     @Column
     private String providerId;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 50)
     private String name;
 
     @Column(unique = true, length = 50)
