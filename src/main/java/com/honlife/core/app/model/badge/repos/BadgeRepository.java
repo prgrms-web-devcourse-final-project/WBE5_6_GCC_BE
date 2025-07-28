@@ -21,7 +21,7 @@ public interface BadgeRepository extends JpaRepository<Badge, Long> {
     /**
      * 활성화된 모든 배지 조회 (페이지네이션)
      */
-    Page<Badge> findAllByIsActiveTrue(Pageable pageable);
+    Page<Badge> findPagedByIsActiveTrue(Pageable pageable);
 
     /**
      * 활성화된 모든 배지 조회
