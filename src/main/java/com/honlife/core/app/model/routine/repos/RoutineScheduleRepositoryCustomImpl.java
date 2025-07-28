@@ -31,7 +31,9 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
     private final JPAQueryFactory queryFactory;
 
     private final QRoutineSchedule routineSchedule=QRoutineSchedule.routineSchedule;
+    private final QRoutineSchedule qRoutineSchedule=QRoutineSchedule.routineSchedule;
     private final QRoutine routine=QRoutine.routine;
+    private final QRoutine qRoutine=QRoutine.routine;
     QMember qMember = QMember.member;
     private final QCategory category=QCategory.category;
 
