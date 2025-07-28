@@ -18,7 +18,7 @@ public class BadgeWithMemberInfoDTO {
     private String badgeKey;
     private String badgeName;
     private BadgeTier tier;
-    private String how;
+    private String message;
     private Integer requirement;
     private String info;
 
