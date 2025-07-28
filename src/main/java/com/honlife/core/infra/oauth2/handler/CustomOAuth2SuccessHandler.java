@@ -1,6 +1,7 @@
 package com.honlife.core.infra.oauth2.handler;
 
 import com.honlife.core.app.model.auth.token.RefreshTokenService;
+import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.infra.auth.jwt.JwtTokenProvider;
 import com.honlife.core.infra.auth.jwt.dto.AccessTokenDto;
 import com.honlife.core.infra.oauth2.CustomOAuth2UserDetails;
@@ -26,6 +27,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final LoginLogService loginLogService;
 
     @Value("${front-server.domain}")
     private String frontDomain;
@@ -88,6 +90,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         String targetUrl = UriComponentsBuilder.fromUriString(frontDomain + targetPath)
             .build().toUriString();
+
+        loginLogService.newLog(oAuth2User.getUsername());
 
         // 리다이렉트
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
