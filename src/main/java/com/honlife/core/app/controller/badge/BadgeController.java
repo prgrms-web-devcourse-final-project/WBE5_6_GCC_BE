@@ -10,8 +10,6 @@ import com.honlife.core.app.model.badge.service.BadgeService;
 import com.honlife.core.infra.payload.PageParam;
 import com.honlife.core.infra.response.CommonApiResponse;
 import jakarta.validation.Valid;
-import com.honlife.core.infra.response.ResponseCode;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
