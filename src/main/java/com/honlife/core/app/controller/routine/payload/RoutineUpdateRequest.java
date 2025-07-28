@@ -1,0 +1,34 @@
+package com.honlife.core.app.controller.routine.payload;
+
+
+import com.honlife.core.app.model.routine.code.RepeatType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class RoutineUpdateRequest {
+
+
+  @NotBlank(message = "루틴 이름은 필수입니다")
+  @Size(max = 255, message = "루틴 내용은 255자를 초과할 수 없습니다")
+  private String name;
+
+  private Long categoryId;
+
+  private LocalDate initDate;
+
+  private String triggerTime;
+
+  private Boolean isImportant = false;
+
+  private RepeatType repeatType = RepeatType.DAILY;
+
+  @Size(max = 100, message = "반복 값은 100자를 초과할 수 없습니다")
+  private String repeatValue;
+
+  private Integer repeatTerm = 1;
+}

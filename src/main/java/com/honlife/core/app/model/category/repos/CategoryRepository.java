@@ -1,6 +1,7 @@
 package com.honlife.core.app.model.category.repos;
 
-import java.util.Collection;
+import com.honlife.core.app.model.category.code.CategoryType;
+import com.honlife.core.app.model.category.dto.CategoryDTO;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @return
      */
     Category findFirstByMemberAndIsActive(Member member, Boolean isActive);
-
     /**
      * 카테고리 이름과 이메일을 통해 카테고리 조회
      * @param name 카테고리 이름
@@ -28,4 +28,18 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      */
     Optional<Category> findCategoryByNameAndMember_Email(String name, String memberEmail);
 
+    /**
+     * 타입을 통해 카테고리를 조회
+     * @param type 카테고리 타입
+     * @return List<Category>
+     */
+    List<Category> findCategoriesByTypeAndIsActive(CategoryType type, Boolean isActive);
+
+    /**
+     * id와 타입을 통해 카테고리를 조회
+     * @param id 카테고리 id
+     * @param type 타입
+     * @return Optional<Category>
+     */
+    Optional<Category> findByIdAndTypeAndIsActive(Long id, CategoryType type, Boolean isActive);
 }
