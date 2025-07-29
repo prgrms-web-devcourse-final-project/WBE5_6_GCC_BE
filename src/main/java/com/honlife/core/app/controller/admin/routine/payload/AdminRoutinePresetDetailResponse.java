@@ -1,35 +1,66 @@
 package com.honlife.core.app.controller.admin.routine.payload;
 
+import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Builder
-@Schema(description = "추천 루틴 프리셋 상세 조회 응답")
+@AllArgsConstructor
+@NoArgsConstructor
 public class AdminRoutinePresetDetailResponse {
 
-    @Schema(description = "프리셋 ID", example = "1")
     private Long presetId;
 
-    @Schema(description = "카테고리 ID", example = "1")
     private Long categoryId;
 
-    @Schema(description = "카테고리 이름", example = "청소")
-    private String categoryName;
+    private String majorCategory;
 
-    @Schema(description = "루틴 내용", example = "아침 스트레칭 하기")
-    private String content;
+    private String name;
 
-    @Schema(description = "활성화 여부", example = "true")
-    private Boolean isActive;
+    private String triggerTime;
 
-    @Schema(description = "생성일시", example = "2025-01-15T10:30:00")
+    private Boolean isImportant;
+
     private LocalDateTime createdAt;
 
-    @Schema(description = "수정일시", example = "2025-01-15T14:20:00")
     private LocalDateTime updatedAt;
+
+    private String emoji;
+
+    private RepeatType repeatType;
+
+    private String repeatValue;
+
+    private LocalDate initDate;
+
+    private Integer repeatTerm;
+
+
+    public static AdminRoutinePresetDetailResponse fromDto(RoutinePresetViewDTO dto) {
+        return AdminRoutinePresetDetailResponse.builder()
+            .presetId(dto.getPresetId())
+            .categoryId(dto.getCategoryId())
+            .majorCategory(dto.getMajorCategory())
+            .name(dto.getName())
+            .triggerTime(dto.getTriggerTime())
+            .isImportant(dto.getIsImportant())
+            .createdAt(dto.getCreatedAt())
+            .updatedAt(dto.getUpdatedAt())
+            .emoji(dto.getEmoji())
+            .repeatType(dto.getRepeatType())
+            .repeatValue(dto.getRepeatValue())
+            .initDate(dto.getInitDate())
+            .repeatTerm(dto.getRepeatTerm())
+            .build();
+    }
+
 }
