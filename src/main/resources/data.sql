@@ -398,7 +398,9 @@ INSERT INTO WEEKLY_QUEST (id, category_id, key, name, type, target, created_at, 
 (1, 1, 'weekly_clean_count_1', '청소 루틴 1번 이상 완료', 'CATEGORY_COUNT', 1, NOW(), NOW(), true),
 (2, 2, 'weekly_clothes_count_2', '세탁 루틴 2번 이상 완료', 'CATEGORY_COUNT', 2, NOW(), NOW(), true),
 (3, null, 'weekly_login_streak_3', '연속 3일 로그인', 'LOGIN_STREAK', 3, NOW(), NOW(), true),
-(4, null, 'weekly_complete', '하루 이상 루틴 완료율 100% 달성', 'COMPLETE_COUNT', 1, NOW(), NOW(), true);
+(4, null, 'weekly_complete', '하루 이상 루틴 완료율 100% 달성', 'COMPLETE_COUNT', 1, NOW(), NOW(), true),
+(5, 7, 'weekly_health_count_3', '건강 루틴 3번 완료', 'CATEGORY_COUNT', 3, NOW(), NOW(), true),
+(6, 2, 'weekly_clothes_count_4', '세탁/의류 루틴 4번 완료', 'CATEGORY_COUNT', 4, NOW(), NOW(), true);
 
 
 INSERT INTO EVENT_QUEST (id, category_id, key, name, type, target, start_date, end_date, created_at, updated_at, is_active) VALUES
@@ -406,15 +408,15 @@ INSERT INTO EVENT_QUEST (id, category_id, key, name, type, target, start_date, e
 (2, 1, 'event_summer_icebox', '여름철 식중독 예방을 위한 냉장고 정리 미션!', 'CATEGORY_COUNT', 7, '2025-07-24', '2025-07-31', NOW(), NOW(), true);
 
 
-INSERT INTO WEEKLY_QUEST_PROGRESS (id, member_id, weekly_quest_id, progress, is_done, start_at, end_at, created_at, updated_at, is_active) VALUES
-(1, 2, 1, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
-(2, 2, 2, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
-(3, 2, 3, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
-(4, 2, 4, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
-
-(5, 3, 1, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
-(6, 3, 2, 0, true, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
-(7, 3, 3, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true);
+--INSERT INTO WEEKLY_QUEST_PROGRESS (id, member_id, weekly_quest_id, progress, is_done, start_at, end_at, created_at, updated_at, is_active) VALUES
+--(1, 2, 1, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
+--(2, 2, 2, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
+--(3, 2, 3, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
+--(4, 2, 4, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
+--
+--(5, 3, 1, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
+--(6, 3, 2, 0, true, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true),
+--(7, 3, 3, 0, false, '2025-07-21 00:00:00', '2025-07-27 23:59:59', NOW(), NOW(), true);
 
 INSERT INTO EVENT_QUEST_PROGRESS (id, member_id, event_quest_id, progress, is_done, created_at, updated_at, is_active) VALUES
 (1, 2, 1, 0, false, '2025-07-27 23:59:59', '2025-07-27 23:59:59', true);

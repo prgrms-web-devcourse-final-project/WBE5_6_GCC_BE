@@ -1,16 +1,22 @@
 package com.honlife.core.app.model.quest.service;
 
+import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.app.model.quest.code.QuestDomain;
 import com.honlife.core.app.model.quest.code.QuestType;
+import com.honlife.core.app.model.quest.domain.WeeklyQuest;
 import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
 import com.honlife.core.app.model.quest.dto.MemberWeeklyQuestDTO;
 import com.honlife.core.app.model.quest.router.QuestProgressProcessorRouter;
 import com.honlife.core.infra.event.CommonEvent;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import com.honlife.core.infra.utils.DateUtils;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -27,6 +33,8 @@ public class WeeklyQuestProgressService {
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
     private final QuestProgressProcessorRouter questProgressProcessorRouter;
     private final MemberPointService memberPointService;
+    private final WeeklyQuestService weeklyQuestService;
+    private final MemberRepository memberRepository;
 
     /**
      * 회원에게 할당되고, 활성화 상태인 주간 퀘스트 목록 검색
@@ -36,6 +44,14 @@ public class WeeklyQuestProgressService {
     @Transactional(readOnly = true)
     public List<MemberWeeklyQuestDTO> getMemberWeeklyQuestsProgress(String userEmail) {
         List<WeeklyQuestProgress> memberWeeklyQuestProgressList = weeklyQuestProgressRepository.findAllByMember_EmailAndIsActive(userEmail, true);
+
+        // 주간 퀘스트 조회시 퀘스트가 존재하지 않는 경우(0시 이후 초기화가 된 경우 등)
+        // 새로운 주간퀘스트로 갱신
+        if (memberWeeklyQuestProgressList.isEmpty()) {
+            createNewWeeklyQuestProgress(userEmail, LocalDateTime.now());
+            memberWeeklyQuestProgressList = weeklyQuestProgressRepository.findAllByMember_EmailAndIsActive(userEmail, true);
+        }
+
         return memberWeeklyQuestProgressList.stream().map(MemberWeeklyQuestDTO::fromEntity).collect(
             Collectors.toList());
     }
@@ -101,5 +117,65 @@ public class WeeklyQuestProgressService {
             Long progressId = questProgress.getId();
             questProgressProcessorRouter.routeAndProcess(QuestDomain.WEEKLY, questType, event, progressId);
         }
+    }
+
+    /**
+     * 사용자가 이번주의 주간퀘스트를 받았는지 확인하고, 아니라면 주간 퀘스트 부여
+     * @param event 이벤트 객체
+     */
+    @Async
+    @Transactional
+    public CompletableFuture<Void> renewWeeklyQuests(CommonEvent event) {
+        String userEmail = event.getMemberEmail();
+        LocalDateTime now = LocalDateTime.now();
+
+        // 이번주 월요일 00:00:00
+        LocalDateTime monday = DateUtils.getMondayOfWeek(now);
+        // 이번주 일요일 23:59:59
+        LocalDateTime sunday = DateUtils.getSundayOfWeek(now);
+
+        // 이번주 주간 퀘스트를 받지 못한 경우
+        List<WeeklyQuestProgress> weeklyQuests = weeklyQuestProgressRepository.findByMemberEmailAndStartAtAndEndAt(userEmail, monday, sunday);
+        if (weeklyQuests.isEmpty()) {
+            // 새로운 주간 퀘스트 부여
+            createNewWeeklyQuestProgress(userEmail, now);
+        }
+
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * 모든 활성화되어있던 주간퀘스트를 비활성화 처리
+     */
+    @Transactional
+    public void deactivatePreviousWeeklyQuests() {
+        weeklyQuestProgressRepository.deactivateAllActiveWeeklyQuests();
+    }
+
+    /**
+     * 새로운 주간퀘스트를 진행도 테이블에 추가
+     * @param email 사용자 이메일
+     * @param dateTime 기준이 되는 날
+     */
+    public void createNewWeeklyQuestProgress(String email, LocalDateTime dateTime) {
+        List<WeeklyQuest> newWeeklyQuests = weeklyQuestService.getRandomQuests(5);
+        Member member = memberRepository.findByEmailIgnoreCase(email);
+
+        // 이번주 월요일 00:00:00
+        LocalDateTime monday = DateUtils.getMondayOfWeek(dateTime);
+        // 이번주 일요일 23:59:59
+        LocalDateTime sunday = DateUtils.getSundayOfWeek(dateTime);
+
+        List<WeeklyQuestProgress> progresses = new ArrayList<>();
+        for(WeeklyQuest quest : newWeeklyQuests) {
+            WeeklyQuestProgress progress = WeeklyQuestProgress.builder()
+                .startAt(monday)
+                .endAt(sunday)
+                .member(member)
+                .weeklyQuest(quest)
+                .build();
+            progresses.add(progress);
+        }
+        weeklyQuestProgressRepository.saveAll(progresses);
     }
 }
