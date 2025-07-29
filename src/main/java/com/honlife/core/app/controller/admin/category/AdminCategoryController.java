@@ -108,9 +108,6 @@ public class AdminCategoryController {
         @PathVariable(name = "id")
         final Long categoryId) {
 
-        // 삭제하려는 기본 카테고리를 참조하는 카테고리들 정리
-        adminCategoryService.removeCategoryReference(categoryId);
-
         // 기본 카테고리 삭제
         adminCategoryService.softDropDefaultCategory(categoryId);
 

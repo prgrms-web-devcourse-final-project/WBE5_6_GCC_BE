@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AdminCategoryService {
     private final CategoryRepository categoryRepository;
-    private final ModelMapper mapper;
     private final MemberRepository memberRepository;
 
     /**
@@ -129,6 +128,10 @@ public class AdminCategoryService {
      */
     @Transactional
     public void softDropDefaultCategory(Long categoryId) {
+
+        // 삭제하려는 기본 카테고리를 참조하는 카테고리들 정리
+        removeCategoryReference(categoryId);
+
         Category targetCategory = categoryRepository.findByIdAndTypeAndIsActive(categoryId, CategoryType.DEFAULT, true).orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
         targetCategory.setIsActive(false);
