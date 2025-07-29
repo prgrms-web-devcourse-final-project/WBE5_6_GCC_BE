@@ -1,28 +1,30 @@
 package com.honlife.core.app.model.point.service;
 
-import com.honlife.core.infra.response.ResponseCode;
-import java.util.List;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.app.model.member.service.MemberService;
+import com.honlife.core.app.model.point.code.PointLogType;
 import com.honlife.core.app.model.point.domain.PointLog;
 import com.honlife.core.app.model.point.dto.PointLogDTO;
 import com.honlife.core.app.model.point.repos.PointLogRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.response.ResponseCode;
+import java.time.LocalDateTime;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class PointLogService {
 
+    private final MemberService memberService;
     private final PointLogRepository pointLogRepository;
     private final MemberRepository memberRepository;
-
-    public PointLogService(final PointLogRepository pointLogRepository,
-            final MemberRepository memberRepository) {
-        this.pointLogRepository = pointLogRepository;
-        this.memberRepository = memberRepository;
-    }
 
     public List<PointLogDTO> findAll() {
         final List<PointLog> pointLogs = pointLogRepository.findAll(Sort.by("id"));
@@ -54,6 +56,28 @@ public class PointLogService {
         pointLogRepository.deleteById(id);
     }
 
+    /**
+     * 포인트 로그 기록
+     * @param email 회원 이메일
+     * @param point 포인트 양
+     * @param reason 지급/사용 사유
+     * @param type 포인트 타입 (GET/USE)
+     */
+    @Transactional
+    public void recordPointLog(String email, int point, String reason, PointLogType type) {
+        Member member = memberService.getMemberByEmail(email);
+
+        PointLog pointLog = PointLog.builder()
+            .member(member)
+            .type(type)
+            .point(point)
+            .reason(reason)
+            .time(LocalDateTime.now())
+            .build();
+
+        pointLogRepository.save(pointLog);
+    }
+
     private PointLogDTO mapToDTO(final PointLog pointLog, final PointLogDTO pointLogDTO) {
         pointLogDTO.setId(pointLog.getId());
         pointLogDTO.setType(pointLog.getType());
@@ -75,4 +99,23 @@ public class PointLogService {
         return pointLog;
     }
 
+    /**
+     * Save point get or consume log
+     * @param userEmail
+     * @param pointLogType
+     * @param key {@code Quest} or {@code Item} or {@code Badge} key value
+     */
+    @Async
+    @Transactional
+    public void saveLog(String userEmail, PointLogType pointLogType, String key) {
+        Member member = memberRepository.findByEmailIgnoreCase(userEmail);
+        pointLogRepository.save(
+            PointLog.builder()
+                .member(member)
+                .type(pointLogType)
+                .reason(key)
+                .time(LocalDateTime.now())
+                .build()
+        );
+    }
 }

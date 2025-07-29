@@ -28,8 +28,8 @@ import com.honlife.core.app.model.member.domain.Member;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Category extends BaseEntity {
 
     @Id
@@ -50,6 +50,7 @@ public class Category extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
+    @Builder.Default
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Category> children = new ArrayList<Category>();
 
@@ -66,5 +67,4 @@ public class Category extends BaseEntity {
 
     @Column
     private String emoji;
-
 }

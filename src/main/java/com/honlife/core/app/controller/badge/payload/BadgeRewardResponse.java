@@ -21,6 +21,8 @@ public class BadgeRewardResponse {
 
     private String badgeName;
 
+    private String message;
+
     private Long pointAdded;
 
     private Long totalPoint;

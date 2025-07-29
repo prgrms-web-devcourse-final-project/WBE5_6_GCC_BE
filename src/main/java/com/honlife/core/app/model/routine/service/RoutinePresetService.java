@@ -1,8 +1,8 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse.PresetItem;
-import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -85,14 +85,41 @@ public class RoutinePresetService {
      * @return {@link PresetItem} 의 리스트
      */
     public List<PresetItem> getRoutinePresets(Long categoryId) {
-        List<RoutinePreset> routinePresets = routinePresetRepository.getRoutinePresetByCategoryId(categoryId);
+        List<RoutinePreset> routinePresets = routinePresetRepository.getRoutinePresetByCategoryId(
+            categoryId);
 
         // RoutinePreset 엔티티를 PresetItem로 변환해 리스트로 반환
-        return routinePresets.stream().map(
-            routinePreset -> PresetItem.builder()
+        return routinePresets.stream().map(routinePreset -> {
+            Category category = routinePreset.getCategory();
+            CategoryType type = category.getType();
+
+            Category parentCategory = null;
+            if (type == CategoryType.DEFAULT || type == CategoryType.MAJOR) {
+                parentCategory = category;
+            } else {
+                parentCategory = category.getParent();
+            }
+
+            return PresetItem.builder()
                 .presetId(routinePreset.getId())
-                .categoryId(categoryId)
-                .content(routinePreset.getContent())
-                .build()).toList();
+                .categoryId(category.getId())
+                .majorCategory(parentCategory != null ? parentCategory.getName() : null)
+                .name(routinePreset.getContent())
+                .triggerTime(routinePreset.getTriggerTime())
+                .isImportant(routinePreset.getIsImportant())
+                .createdAt(routinePreset.getCreatedAt())
+                .updatedAt(routinePreset.getUpdatedAt())
+                .emoji(category.getEmoji())
+                .repeatType(
+                    routinePreset.getRepeatType() != null ? routinePreset.getRepeatType().name()
+                        : null)
+                .repeatValue(routinePreset.getRepeatValue())
+                .initDate(routinePreset.getInitDate())
+                .build();
+        }).toList();
     }
+
+
+
+
 }
