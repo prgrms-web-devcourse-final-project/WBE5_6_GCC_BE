@@ -33,7 +33,7 @@ public class MemberPointController {
      * @return MemberPointPayload 멤버의 아이디와 현재 보유한 포인트를 담음
      */
     @GetMapping
-    @Operation(summary = "로그인된 회원의 보유 포인트 조회", description = "로그인된 사용자의 보유 포인트를 조회합니다.")
+    @Operation(summary = "✅ 로그인된 회원의 보유 포인트 조회", description = "로그인된 사용자의 보유 포인트를 조회합니다.")
     public ResponseEntity<CommonApiResponse<Map<String, Integer>>> getMemberPoint(
         @AuthenticationPrincipal UserDetails userDetails) {
 
