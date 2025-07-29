@@ -19,6 +19,7 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
 
     QCategory category = QCategory.category;
     QCategory children = new QCategory("children");
+    QCategory parent = new QCategory("parent");
 
     @Override
     public void softDropByMemberId(Long memberId) {
@@ -54,29 +55,25 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
     }
 
     @Override
-    public Optional<Category> findDefaultCategoryByName(String majorName, String userEmail) {
-        Category result = queryFactory
-            .select(category).distinct()
+    public Optional<Category> findCategoryById(Long categoryId, String userEmail) {
+        Optional<Category> targetCategory
+            = Optional.ofNullable(queryFactory
+            .select(category)
             .from(category)
+            .leftJoin(category.parent, parent)
             .leftJoin(category.children, children).fetchJoin()
             .leftJoin(children.member, member).fetchJoin()
-            .where(
-                category.type.eq(CategoryType.DEFAULT),
-                category.name.eq(majorName),
-                category.isActive.isTrue()
-            )
-            .fetchOne();
+            .where((category.isActive).and(category.id.eq(categoryId)))
+            .fetchOne());
 
-        // 자식 필터링
-        if (result != null) {
-            result.getChildren().removeIf(child ->
-                !userEmail.equals(child.getMember().getEmail()) || !child.getIsActive()
-            );
-        }
+        // 조건에 맞지 않는 자식 필터링
+        targetCategory.ifPresent(target -> {
+            target.getChildren().removeIf(
+                child -> !userEmail.equals(child.getMember().getEmail()) || !child.getIsActive());
+        });
 
-        return Optional.ofNullable(result);
+        return targetCategory;
     }
-
 
 
     @Override
@@ -101,26 +98,4 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
         return categories;
     }
 
-    @Override
-    public Optional<Category> findCustomCategoryByName(String majorName, String userEmail) {
-        Category result = queryFactory
-            .select(category)
-            .from(category)
-            .leftJoin(category.children, children).fetchJoin()
-            .leftJoin(children.member, member).fetchJoin()
-            .where(category.type.ne(CategoryType.DEFAULT)
-                .and(category.member.email.eq(userEmail))
-                .and(category.isActive)
-                .and(category.name.eq(majorName)))
-            .fetchOne();
-
-        // 자식 필터링
-        if (result != null) {
-            result.getChildren().removeIf(child ->
-                !userEmail.equals(child.getMember().getEmail()) || !child.getIsActive()
-            );
-        }
-
-        return Optional.ofNullable(result);
-    }
 }
