@@ -1,12 +1,12 @@
 package com.honlife.core.app.model.dashboard.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -16,6 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DayRoutineCountDTO {
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime date;
     // 그 날 총 루틴 개수
     private Long totalCount;
