@@ -56,6 +56,7 @@ public class Routine extends BaseEntity {
 
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private RepeatType repeatType = RepeatType.DAILY;
 
     @Column(length = 100)

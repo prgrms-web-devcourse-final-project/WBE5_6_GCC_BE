@@ -14,7 +14,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.common.BaseEntity;
@@ -24,6 +27,9 @@ import com.honlife.core.app.model.member.domain.Member;
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category extends BaseEntity {
 
     @Id
@@ -44,6 +50,7 @@ public class Category extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
+    @Builder.Default
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Category> children = new ArrayList<Category>();
 
@@ -60,5 +67,4 @@ public class Category extends BaseEntity {
 
     @Column
     private String emoji;
-
 }

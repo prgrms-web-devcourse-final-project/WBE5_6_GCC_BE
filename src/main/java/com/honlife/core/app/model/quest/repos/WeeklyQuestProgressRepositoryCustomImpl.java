@@ -23,4 +23,15 @@ public class WeeklyQuestProgressRepositoryCustomImpl implements
             .where(weeklyQuestProgress.member.id.eq(memberId))
             .execute();
     }
+
+    @Override
+    public void deactivateAllActiveWeeklyQuests() {
+        queryFactory
+            .update(weeklyQuestProgress)
+            .set(weeklyQuestProgress.isActive, false)
+            .where(weeklyQuestProgress.isActive.isTrue())
+            .execute();
+    }
+
+
 }

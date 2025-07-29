@@ -4,12 +4,14 @@ import com.honlife.core.app.controller.routine.payload.RoutineScheduleCompleteRe
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.event.CommonEvent;
 import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.routine.domain.Routine;
@@ -27,7 +29,7 @@ public class RoutineScheduleService {
     private final RoutineScheduleRepository routineScheduleRepository;
     private final RoutineRepository routineRepository;
     private final MemberPointService memberPointService;
-
+    private final ApplicationEventPublisher eventPublisher;
 
 
     /** 루틴중에서 완료처리와 완료한거 취소하는 처리 포인트 처리
@@ -69,9 +71,14 @@ public class RoutineScheduleService {
 
         }
 
-        /** 루틴 완료시 이제 완료율로 뱃지 체크  어떤 뱃지 할건지 논의 해봐야함 */
-
-
+        // 루틴 완료 이벤트 발행
+        eventPublisher.publishEvent(
+            CommonEvent.builder()
+                .memberEmail(userEmail)
+                .routineScheduleId(scheduleId)
+                .routineId(routineSchedule.getRoutine().getId())
+                .isDone(request.getIsDone())
+        );
     }
 
     /** DB에 해당 루틴에 관련된 거 DB에 저장하는 로직 구현*/
@@ -89,10 +96,10 @@ public class RoutineScheduleService {
 
                 log.info("✅ [Scheduler] 루틴 ID {} 에 대한 스케줄 생성", routine.getId());
 
-                boolean exists = routineScheduleRepository.existsByRoutineAndScheduleDate(routine, today);
+                boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, today);
                 if (!exists) {
                     RoutineSchedule schedule = RoutineSchedule.builder()
-                        .scheduleDate(today)
+                        .scheduledDate(today)
                         .isDone(false)
                         .routine(routine)
                         .build();

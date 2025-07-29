@@ -8,8 +8,6 @@ import com.honlife.core.app.model.item.service.AdminItemService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,40 +57,24 @@ public class AdminItemController {
     }
 
     /**
-     * 아이템 수정 처리 API
-     * @param id 아이템 식별 id
-     * @param request 아이템 정보 객체
-     * @return 성공시 {@code 200}을 반환합니다.
+     * 관리자 - 아이템 수정 API
+     *
+     * @param itemId 수정 대상 아이템의 고유 키
+     * @param request 수정할 아이템 정보 (이름,설명,타입,[선택](설명,활성/비 활성화))
+     * @return 204 No Content
+     * <p><b>[설명]</b></p>
+     * - 관리자 페이지에서 아이템을 수정할 때 사용됩니다.
+     * - 수정 가능한 항목: 아이템 이름, 설명, 가격, 타입,활성화,비활성화
+     * - 아이템 고유키(itemKey)를 기준으로 기존 데이터를 조회한 후 값 갱신
+     * - isActive 상태 필드는 별도 API에서 관리
      */
-    @Operation(
-            summary = "아이템 수정",
-            description = "아이템을 수정합니다.",
-            parameters = {
-                    @Parameter(
-                            name = "id",
-                            description = "수정할 아이템의 ID",
-                            required = true,
-                            example = "10"
-                    )
-            },
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = AdminItemRequest.class)
-                    )
-            )
-    )
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateItem(
-            @PathVariable Long id,
-            @RequestBody @Valid AdminItemRequest request
+        @PathVariable("id") Long itemId,
+        @RequestBody AdminItemRequest request
     ) {
-        if (id == 10L) {
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
+        adminItemService.updateItem(itemId, request);
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
     /**
@@ -100,13 +82,13 @@ public class AdminItemController {
      * 해당 itemKey를 가진 아이템의 isActive 값을 false로 변경하여
      * 사용자 단에서는 보이지 않도록 처리합니다.
      *
-     * @param itemKey 삭제할 아이템의 고유 키
+     * @param itemId 삭제할 아이템의 고유 키
      */
-    @DeleteMapping("/{key}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> deleteItem(
-            @PathVariable("key") String itemKey
+            @PathVariable("id") Long itemId
     ) {
-        adminItemService.softDeleteItem(itemKey);
+        adminItemService.softDeleteItem(itemId);
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }

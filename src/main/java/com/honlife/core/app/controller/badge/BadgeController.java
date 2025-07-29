@@ -1,20 +1,25 @@
 package com.honlife.core.app.controller.badge;
 
+import com.honlife.core.app.controller.badge.payload.BadgePageResponse;
 import com.honlife.core.app.controller.badge.payload.BadgeResponse;
 import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 import com.honlife.core.app.model.badge.dto.BadgeRewardDTO;
-import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
+import com.honlife.core.app.model.badge.dto.BadgeStatusDTO;
 import com.honlife.core.app.model.badge.service.BadgeService;
+import com.honlife.core.infra.payload.PageParam;
 import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.ResponseCode;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,52 +34,34 @@ public class BadgeController {
     private final BadgeService badgeService;
 
     /**
-     * 업적 조회 API
-     * @return List<BadgePayload> 모든 업적에 대한 정보
+     * 업적 조회 API (페이지네이션)
+     * @param pageParam 페이지 번호/크기
+     * @param userDetails 인증된 사용자 정보
+     * @return 페이지네이션된 배지 정보
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges(
+    public ResponseEntity<CommonApiResponse<BadgePageResponse>> getAllBadges(
+        @Valid PageParam pageParam,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         // 1. 사용자 이메일 추출
         String email = userDetails.getUsername();
 
-        // 2. Service에서 모든 배지 정보 조회
-        List<BadgeWithMemberInfoDTO> dtos = badgeService.getAllBadgesWithMemberInfo(email);
+        // 2. Pageable 생성 (1-based → 0-based 변환)
+        Pageable pageable = PageRequest.of(pageParam.getPage() - 1, pageParam.getSize());
 
-        // 3. DTO → Response 변환
-        List<BadgeResponse> responses = dtos.stream()
+        // 3. Service에서 페이지네이션된 배지 조회
+        Page<BadgeStatusDTO> badgePage = badgeService.getAllBadgesWithStatus(email, pageable);
+
+        // 4. DTO → Response 변환
+        List<BadgeResponse> badgeResponses = badgePage.getContent().stream()
             .map(BadgeResponse::fromDto)
             .toList();
 
-        return ResponseEntity.ok(CommonApiResponse.success(responses));
-    }
+        // 5. PageResponse 생성
+        BadgePageResponse pageResponse = BadgePageResponse.from(badgePage, badgeResponses);
 
-    /**
-     * 업적 단건 조회 API
-     * @return BadgePayload 특정 업적에 대한 정보
-     */
-    @GetMapping("/{key}")
-    public ResponseEntity<CommonApiResponse<BadgeResponse>> getBadge(
-        @PathVariable(name="key") String badgeKey,
-        @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        // 1. 사용자 이메일 추출
-        String email = userDetails.getUsername();
-
-        // 2. Service에서 배지 정보 조회
-        BadgeWithMemberInfoDTO dto = badgeService.getBadgeWithMemberInfo(badgeKey, email);
-
-        // 3. Badge가 없을 때 에러 처리
-        if (dto == null) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
-        }
-
-        // 4. DTO → Response 변환
-        BadgeResponse response = BadgeResponse.fromDto(dto);
-
-        return ResponseEntity.ok(CommonApiResponse.success(response));
+        return ResponseEntity.ok(CommonApiResponse.success(pageResponse));
     }
 
     /**
@@ -106,5 +93,22 @@ public class BadgeController {
             .build();
 
         return ResponseEntity.ok(CommonApiResponse.success(response));
+    }
+
+    /**
+     * 배지 장착/해제 토글 API
+     * @param badgeKey 배지 키
+     * @param userDetails 인증된 사용자 정보
+     * @return 성공 응답
+     */
+    @PatchMapping
+    public ResponseEntity<CommonApiResponse<Void>> updateBadgeEquipStatus(
+        @RequestParam String badgeKey,
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        String email = userDetails.getUsername();
+        badgeService.updateBadgeEquipStatus(badgeKey, email);
+
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }

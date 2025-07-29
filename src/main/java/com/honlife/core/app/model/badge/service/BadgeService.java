@@ -1,10 +1,11 @@
 package com.honlife.core.app.model.badge.service;
 
+import com.honlife.core.app.model.badge.code.BadgeStatus;
 import com.honlife.core.app.model.badge.code.ProgressType;
 import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.badge.dto.BadgeDTO;
 import com.honlife.core.app.model.badge.dto.BadgeRewardDTO;
-import com.honlife.core.app.model.badge.dto.BadgeWithMemberInfoDTO;
+import com.honlife.core.app.model.badge.dto.BadgeStatusDTO;
 import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
@@ -25,9 +26,11 @@ import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,87 +49,80 @@ public class BadgeService {
     private final PointPolicyService pointPolicyService;
     private final PointLogService pointLogService;
 
-    // === 사용자별 조회 메서드들 ===
-
     /**
-     * 특정 배지를 사용자 정보와 함께 조회
-     * @param badgeKey 배지 키
+     * 모든 배지를 사용자 상태와 함께 페이지네이션으로 조회
      * @param email 사용자 이메일
-     * @return 배지 정보 + 사용자 획득 여부, 배지가 없으면 null 반환
+     * @param pageable 페이지 정보
+     * @return 페이지네이션된 배지 상태 정보
      */
     @Transactional(readOnly = true)
-    public BadgeWithMemberInfoDTO getBadgeWithMemberInfo(String badgeKey, String email) {
-        // 1. Badge 조회 (없으면 null 반환)
-        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey).orElse(null);
-        if (badge == null) return null;
+    public Page<BadgeStatusDTO> getAllBadgesWithStatus(String email, Pageable pageable) {
+        // 1. 페이지네이션으로 활성 배지 조회
+        Page<Badge> badgePage = badgeRepository.findPagedByIsActiveTrue(pageable);
 
         // 2. Member 조회
         MemberDTO memberDTO = memberService.findMemberByEmail(email);
+        Long memberId = memberDTO.getId();
 
-        // 3. 사용자 배지 획득 여부 확인
-        MemberBadge memberBadge = memberBadgeRepository.findByMemberIdAndBadge(memberDTO.getId(), badge)
-            .orElse(null);
+        // 3. 회원이 획득한 배지들 조회
+        List<MemberBadge> memberBadges = memberBadgeRepository.findByMemberId(memberId);
+        Map<Long, MemberBadge> memberBadgeMap = memberBadges.stream()
+            .collect(Collectors.toMap(
+                mb -> mb.getBadge().getId(),
+                mb -> mb
+            ));
 
-        // 4. BadgeWithMemberInfoDTO 생성
-        return BadgeWithMemberInfoDTO.builder()
-            .badgeId(badge.getId())
-            .badgeKey(badge.getKey())
-            .badgeName(badge.getName())
-            .tier(badge.getTier())
-            .message(badge.getMessage())
-            .requirement(badge.getRequirement())
-            .info(badge.getInfo())
-            .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
-            .isReceived(memberBadge != null)
-            .receivedDate(memberBadge != null ? memberBadge.getCreatedAt() : null)
-            .build();
+        // 4. Page<Badge> → Page<BadgeStatusDTO> 변환
+        return badgePage.map(badge -> {
+            MemberBadge memberBadge = memberBadgeMap.get(badge.getId());
+
+            // 진행률 계산
+            int currentProgress = calculateBadgeProgress(badge, memberId);
+
+            // 배지 상태 결정
+            BadgeStatus status = determineBadgeStatus(badge, memberBadge, currentProgress);
+
+            return BadgeStatusDTO.builder()
+                .badgeId(badge.getId())
+                .badgeKey(badge.getKey())
+                .badgeName(badge.getName())
+                .tier(badge.getTier())
+                .message(badge.getMessage())
+                .info(badge.getInfo())
+                .requirement(badge.getRequirement())
+                .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
+                .status(status)
+                .currentProgress(shouldShowProgress(status) ? currentProgress : null)
+                .receivedDate(memberBadge != null ? memberBadge.getCreatedAt() : null)
+                .isEquipped(memberBadge != null && Boolean.TRUE.equals(memberBadge.getIsEquipped()))
+                .build();
+        });
     }
 
     /**
-     * 모든 배지를 사용자 정보와 함께 조회
-     * @param email 사용자 이메일
-     * @return 모든 배지 정보 + 사용자 획득 여부 리스트
+     * 배지 상태 결정 (LOCKED, ACHIEVABLE, OWNED, EQUIPPED)
+     * @param badge 배지 정보
+     * @param memberBadge 회원 배지 정보 (null 가능)
+     * @param currentProgress 현재 진행률
+     * @return 배지 상태
      */
-    @Transactional(readOnly = true)
-    public List<BadgeWithMemberInfoDTO> getAllBadgesWithMemberInfo(String email) {
-        // 1. 모든 활성 배지 조회
-        List<Badge> badges = badgeRepository.findAllByIsActiveTrue();
+    private BadgeStatus determineBadgeStatus(Badge badge, MemberBadge memberBadge, int currentProgress) {
+        if (memberBadge != null) {
+            // 이미 획득한 배지
+            return Boolean.TRUE.equals(memberBadge.getIsEquipped()) ? BadgeStatus.EQUIPPED : BadgeStatus.OWNED;
+        } else {
+            // 미획득 배지 - 달성 조건 확인
+            return currentProgress >= badge.getRequirement() ? BadgeStatus.ACHIEVABLE : BadgeStatus.LOCKED;
+        }
+    }
 
-        // 2. Member 조회
-        MemberDTO memberDTO = memberService.findMemberByEmail(email);
-
-        // 3. 회원이 획득한 배지들 조회
-        List<MemberBadge> memberBadges = memberBadgeRepository.findByMemberId(memberDTO.getId());
-        Set<Long> receivedBadgeIds = memberBadges.stream()
-            .map(mb -> mb.getBadge().getId())
-            .collect(Collectors.toSet());
-
-        // 4. 획득 일시 맵 생성
-        Map<Long, LocalDateTime> receivedDateMap = memberBadges.stream()
-            .collect(Collectors.toMap(
-                mb -> mb.getBadge().getId(),
-                MemberBadge::getCreatedAt
-            ));
-
-        // 5. DTO 변환
-        return badges.stream()
-            .map(badge -> {
-                boolean isReceived = receivedBadgeIds.contains(badge.getId());
-
-                return BadgeWithMemberInfoDTO.builder()
-                    .badgeId(badge.getId())
-                    .badgeKey(badge.getKey())
-                    .badgeName(badge.getName())
-                    .tier(badge.getTier())
-                    .message(badge.getMessage())
-                    .requirement(badge.getRequirement())
-                    .info(badge.getInfo())
-                    .categoryName(badge.getCategory() != null ? badge.getCategory().getName() : null)
-                    .isReceived(isReceived)
-                    .receivedDate(isReceived ? receivedDateMap.get(badge.getId()) : null)
-                    .build();
-            })
-            .toList();
+    /**
+     * 진행률을 표시해야 하는 상태인지 확인
+     * @param status 배지 상태
+     * @return 진행률 표시 여부
+     */
+    private boolean shouldShowProgress(BadgeStatus status) {
+        return status == BadgeStatus.LOCKED || status == BadgeStatus.ACHIEVABLE;
     }
 
     /**
@@ -199,6 +195,39 @@ public class BadgeService {
             return badgeProgressService.getCurrentProgress(
                 memberId, ProgressType.CATEGORY, badge.getCategory().getId().toString()
             );
+        }
+    }
+
+    @Transactional
+    public void updateBadgeEquipStatus(String badgeKey, String email) {
+        // 1. 사용자 조회
+        MemberDTO memberDTO = memberService.findMemberByEmail(email);
+        Long memberId = memberDTO.getId();
+
+        // 2. 요청한 배지 조회 (보유 여부 확인)
+        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
+
+        MemberBadge targetBadge = memberBadgeRepository.findByMemberIdAndBadge(memberId, badge)
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_BADGE));
+
+        // 3. 현재 장착된 배지 조회
+        Optional<MemberBadge> currentEquipped = memberBadgeRepository.findByMemberIdAndIsEquippedTrue(memberId);
+
+        if (currentEquipped.isPresent() &&
+            currentEquipped.get().getBadge().getKey().equals(badgeKey)) {
+            // 케이스 1: 같은 배지가 장착됨 → 해제
+            currentEquipped.get().setIsEquipped(false);
+            memberBadgeRepository.save(currentEquipped.get());
+        } else {
+            // 케이스 2: 다른 배지 장착 중 → 교체
+            // 케이스 3: 아무것도 미장착 → 새로 장착
+            if (currentEquipped.isPresent()) {
+                currentEquipped.get().setIsEquipped(false);
+                memberBadgeRepository.save(currentEquipped.get());
+            }
+            targetBadge.setIsEquipped(true);
+            memberBadgeRepository.save(targetBadge);
         }
     }
 

@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.category;
 
 import com.honlife.core.app.controller.category.payload.CategoryResponse;
 import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
+import com.honlife.core.app.controller.category.payload.CategoryWithParentResponse;
 import com.honlife.core.app.controller.category.wrapper.CategoryWrapper;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
@@ -58,56 +59,21 @@ public class CategoryController {
 
 
     /**
-     * 카테고리 특정 조회 API
+     * 카테고리 단건 조회 API
+     * 대분류 카테고리 조회 시 이를 참조하는 소분류 카테고리도 함께 조회 가능합니다.
      * @param categoryId 카테고리 아이디.
-     * @return CategoryResponse
+     * @return CategoryWithParentResponse
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<CategoryResponse>> getCategory(
+    public ResponseEntity<CommonApiResponse<CategoryWithParentResponse>> getCategoryById(
         @PathVariable(name="id")
-        final Long categoryId
+        final Long categoryId,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
-//        if(categoryId ==1L){
-//            CategoryResponse response = CategoryResponse.builder()
-//                .categoryId(1L)
-//                .memberId(null)
-//                .categoryName("청소 / 정리")
-//                .emoji("")
-//                .categoryType(CategoryType.MAJOR)
-//                .parentId(null)
-//                .parentName(null)
-//                .build();
-//            return ResponseEntity.ok(CommonApiResponse.success(response));
-//        }
-//        if(categoryId ==2L){
-//            CategoryResponse response = CategoryResponse.builder()
-//                .categoryId(2L)
-//                .memberId(null)
-//                .categoryName("요리")
-//                .emoji("\uD83C\uDF73")
-//                .categoryType(CategoryType.MAJOR)
-//                .parentId(null)
-//                .parentName(null)
-//                .build();
-//            return ResponseEntity.ok(CommonApiResponse.success(response));
-//        }
-//        if(categoryId ==3L){
-//            CategoryResponse response = CategoryResponse.builder()
-//                .categoryId(3L)
-//                .memberId(1L)
-//                .categoryName("화장실 청소")
-//                .emoji("\uD83D\uDEBD")
-//                .categoryType(CategoryType.SUB)
-//                .parentId(1L)
-//                .parentName("청소 / 정리")
-//                .build();
-//            return ResponseEntity.ok(CommonApiResponse.success(response));
-//        }
-//        // 해당하는 카테고리가 없을 경우
-//        else{
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
-//        }
+        String userEmail = userDetails.getUsername();
+        CategoryDTO category = categoryService.findCategoryById(categoryId, userEmail);
+
+        return ResponseEntity.ok(CommonApiResponse.success(CategoryWithParentResponse.fromDTO(category)));
 
     }
 
@@ -117,20 +83,20 @@ public class CategoryController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<CommonApiResponse<Void>> createCategory(@RequestBody @Valid final CategorySaveRequest categorySaveRequest,
-        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.status())
-                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-        }
-        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && categorySaveRequest.getParentName() == null){
+    public ResponseEntity<CommonApiResponse<Void>> createCategory(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody @Valid final CategorySaveRequest categorySaveRequest) {
+        // SUB 카테고리지만 부모 카테고리 정보가 없는 경우
+        if(categorySaveRequest.getCategoryType() == CategoryType.SUB && categorySaveRequest.getParentId() == null) {
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
 
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+        String userEmail = userDetails.getUsername();
+        categoryService.createCategory(categorySaveRequest, userEmail);
+
+        return ResponseEntity.ok(CommonApiResponse.success(ResponseCode.CATEGORY_CREATED));
     }
 
     /**
@@ -174,7 +140,7 @@ public class CategoryController {
 //        if (referencedWarning != null) {
 //            throw new ReferencedException(referencedWarning);
 //        }
-        categoryService.delete(categoryId);
+//        categoryService.delete(categoryId);
         // 존재하지 않는 카테고리 아이디로 접근
         if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
             return ResponseEntity

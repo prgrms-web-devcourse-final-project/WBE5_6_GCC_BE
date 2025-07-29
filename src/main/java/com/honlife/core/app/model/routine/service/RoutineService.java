@@ -89,7 +89,7 @@ public class RoutineService {
 
 
                   RoutineSchedule routineSchedule = routineScheduleRepository
-                      .findByRoutineAndScheduleDate(routine, currentDate);
+                      .findByRoutineAndScheduledDate(routine, currentDate);
 
                   return RoutineItemDTO.builder()
                       .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
@@ -197,7 +197,7 @@ public class RoutineService {
           }
 
           RoutineSchedule routineSchedule = routineScheduleRepository
-              .findByRoutineAndScheduleDate(routine, LocalDate.now());
+              .findByRoutineAndScheduledDate(routine, LocalDate.now());
 
           return RoutineTodayItemDTO.builder()
               .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
@@ -255,10 +255,10 @@ public class RoutineService {
 
     routineRepository.save(routine);
 
-  boolean exists = routineScheduleRepository.existsByRoutineAndScheduleDate(routine, LocalDate.now());
+  boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, LocalDate.now());
     if (!exists) {
     RoutineSchedule schedule = RoutineSchedule.builder()
-        .scheduleDate(LocalDate.now())
+        .scheduledDate(LocalDate.now())
         .isDone(false)
         .routine(routine)
         .build();
