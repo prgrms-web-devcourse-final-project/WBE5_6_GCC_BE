@@ -120,6 +120,7 @@ public class AdminRoutinePresetService {
 
   }
 
+  @Transactional
   public void createRoutinePreset(AdminRoutinePresetSaveRequest request) {
 
     Category category = categoryRepository.findById(request.getCategoryId())
