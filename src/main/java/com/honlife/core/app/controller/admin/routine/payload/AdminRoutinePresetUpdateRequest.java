@@ -17,7 +17,6 @@ public class AdminRoutinePresetUpdateRequest {
   @NotNull
   private Long categoryId;
 
-  @NotNull
   private String triggerTime;
 
   @NotNull
@@ -26,11 +25,7 @@ public class AdminRoutinePresetUpdateRequest {
   @NotNull
   private RepeatType repeatType;
 
-  @NotNull
   private String repeatValue;
-
-  @NotNull
-  private LocalDate initDate;
 
   @Size(max = 50, message = "루틴 내용은 50자를 초과할 수 없습니다")
   private String name;
