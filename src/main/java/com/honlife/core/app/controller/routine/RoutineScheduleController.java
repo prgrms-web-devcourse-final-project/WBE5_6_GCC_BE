@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "[회원] 루틴 스케줄", description = "루틴 스케줄 관련 API 입니다.")
+@Tag(name = "✅ [회원] 루틴 스케줄", description = "루틴 스케줄 관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/routines/schedules", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -42,7 +42,7 @@ public class RoutineScheduleController {
      * @return
      */
     @Operation(
-        summary = "루틴 스케줄 완료/취소",
+        summary = "✅ 루틴 스케줄 완료/취소",
         description = "특정 날짜의 루틴 스케줄을 완료하거나 취소합니다.<br><br>" +
             "<strong>사용 시나리오:</strong><br>" +
             "• 사용자가 특정 날짜의 루틴 목록을 조회 후, 각 루틴의 scheduleId를 사용<br>" +
