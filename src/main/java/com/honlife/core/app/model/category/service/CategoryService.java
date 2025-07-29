@@ -4,9 +4,11 @@ import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.app.model.member.service.MemberService;
+import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.error.exceptions.ReferencedException;
+import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.category.domain.Category;
-import com.honlife.core.app.model.category.domain.InterestCategory;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
 import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
@@ -26,7 +27,6 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
-import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.error.exceptions.ReferencedWarning;
@@ -39,11 +39,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final RoutineRepository routineRepository;
-    private final RoutinePresetRepository routinePresetRepository;
-    private final BadgeRepository badgeRepository;
-    private final InterestCategoryRepository interestCategoryRepository;
-    private final ModelMapper mapper;
-    private final MemberService memberService;
+    private final RoutineService routineService;
 
     public List<CategoryDTO> findAll() {
         final List<Category> categories = categoryRepository.findAll(Sort.by("id"));
@@ -102,6 +98,11 @@ public class CategoryService {
         return category;
     }
 
+    /**
+     * 참조 무결성을 점검하고, 경고 메시지를 제공하는 사전 검증용 로직
+     * @param id 카테고리 아이디
+     * @return {@link ReferencedWarning}
+     */
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Category category = categoryRepository.findById(id)
@@ -110,24 +111,6 @@ public class CategoryService {
         if (categoryRoutine != null) {
             referencedWarning.setKey("category.routine.category.referenced");
             referencedWarning.addParam(categoryRoutine.getId());
-            return referencedWarning;
-        }
-        final RoutinePreset categoryRoutinePreset = routinePresetRepository.findFirstByCategory(category);
-        if (categoryRoutinePreset != null) {
-            referencedWarning.setKey("category.routinePreset.category.referenced");
-            referencedWarning.addParam(categoryRoutinePreset.getId());
-            return referencedWarning;
-        }
-        final Badge categoryBadge = badgeRepository.findFirstByCategory(category);
-        if (categoryBadge != null) {
-            referencedWarning.setKey("category.badge.category.referenced");
-            referencedWarning.addParam(categoryBadge.getId());
-            return referencedWarning;
-        }
-        final InterestCategory categoryInterestCategory = interestCategoryRepository.findFirstByCategory(category);
-        if (categoryInterestCategory != null) {
-            referencedWarning.setKey("category.interestCategory.category.referenced");
-            referencedWarning.addParam(categoryInterestCategory.getId());
             return referencedWarning;
         }
         return null;
@@ -284,5 +267,37 @@ public class CategoryService {
         }
         categoryRepository.save(targetCategory);
 
+    }
+
+    /**
+     * 아이디를 통해 카테고리를 소프트 드랍합니다.
+     * @param categoryId 해당 카테고리 아이디
+     */
+    @Transactional
+    public void softDrop(Long categoryId, String userEmail) {
+
+        Category targetCategory = categoryRepository.findCategoryById(categoryId).orElseThrow(()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        if(targetCategory.getType()==CategoryType.DEFAULT)
+            throw new CommonException(ResponseCode.BAD_REQUEST);
+
+        // 해당 카테고리를 참조하는 루틴 전부 null을 참조하도록 함.
+        routineService.removeCategoryReference(categoryId, userEmail);
+        // 제대로 삭제 되었는지 확인
+        final ReferencedWarning referencedWarning = getReferencedWarning(categoryId);
+        if (referencedWarning != null) {
+            throw new ReferencedException(referencedWarning);
+        }
+
+        if(targetCategory.getType() == CategoryType.MAJOR){
+            targetCategory.getChildren().forEach(
+                child ->{
+                    child.setIsActive(false);
+                }
+            );
+        }
+
+        targetCategory.setIsActive(false);
+        categoryRepository.save(targetCategory);
     }
 }
