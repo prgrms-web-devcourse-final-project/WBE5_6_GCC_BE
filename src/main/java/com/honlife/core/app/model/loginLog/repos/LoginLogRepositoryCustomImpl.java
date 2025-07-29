@@ -34,7 +34,12 @@ public class LoginLogRepositoryCustomImpl implements LoginLogRepositoryCustom {
             .orderBy(dateFunc.asc())
             .fetch()
             .stream()
-            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .map(tuple -> {
+                java.sql.Date sqlDate = tuple.get(0, java.sql.Date.class);
+                LocalDate localDate = sqlDate != null ? sqlDate.toLocalDate() : null;
+                Long count = tuple.get(1, Long.class);
+                return new Object[]{localDate, count};
+            })
             .toList();
     }
 
@@ -42,7 +47,7 @@ public class LoginLogRepositoryCustomImpl implements LoginLogRepositoryCustom {
     @Override
     public List<Object[]> findVisitorsByWeek(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         DateTemplate<LocalDate> weekStartFunc = Expressions.dateTemplate(LocalDate.class,
-            "DATE_TRUNC('week', {0})::date", loginLog.time);
+            "CAST(DATE_TRUNC('week', {0}) AS date)", loginLog.time);
 
         return queryFactory.select(
                 weekStartFunc,
@@ -54,7 +59,12 @@ public class LoginLogRepositoryCustomImpl implements LoginLogRepositoryCustom {
             .orderBy(weekStartFunc.asc())
             .fetch()
             .stream()
-            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .map(tuple -> {
+                java.sql.Date sqlDate = tuple.get(0, java.sql.Date.class);
+                LocalDate localDate = sqlDate != null ? sqlDate.toLocalDate() : null;
+                Long count = tuple.get(1, Long.class);
+                return new Object[]{localDate, count};
+            })
             .toList();
     }
 
@@ -62,7 +72,7 @@ public class LoginLogRepositoryCustomImpl implements LoginLogRepositoryCustom {
     @Override
     public List<Object[]> findVisitorsByMonth(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         DateTemplate<LocalDate> monthStartFunc = Expressions.dateTemplate(LocalDate.class,
-            "DATE_TRUNC('month', {0})::date", loginLog.time);
+            "CAST(DATE_TRUNC('month', {0}) AS date)", loginLog.time);
 
         return queryFactory.select(
                 monthStartFunc,
@@ -74,7 +84,12 @@ public class LoginLogRepositoryCustomImpl implements LoginLogRepositoryCustom {
             .orderBy(monthStartFunc.asc())
             .fetch()
             .stream()
-            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .map(tuple -> {
+                java.sql.Date sqlDate = tuple.get(0, java.sql.Date.class);
+                LocalDate localDate = sqlDate != null ? sqlDate.toLocalDate() : null;
+                Long count = tuple.get(1, Long.class);
+                return new Object[]{localDate, count};
+            })
             .toList();
     }
 }

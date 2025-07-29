@@ -102,7 +102,12 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
             .orderBy(dateFunc.asc())
             .fetch()
             .stream()
-            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .map(tuple -> {
+                java.sql.Date sqlDate = tuple.get(0, java.sql.Date.class);
+                LocalDate localDate = sqlDate != null ? sqlDate.toLocalDate() : null;
+                Long count = tuple.get(1, Long.class);
+                return new Object[]{localDate, count};
+            })
             .toList();
     }
 
@@ -110,7 +115,7 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
     @Override
     public List<Object[]> findWithdrawalsByWeek(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         DateTemplate<LocalDate> weekStartFunc = Expressions.dateTemplate(LocalDate.class,
-            "DATE_TRUNC('week', {0})::date", withdrawReason.createdAt);
+            "CAST(DATE_TRUNC('week', {0}) AS date)", withdrawReason.createdAt);
 
         return queryFactory.select(
                 weekStartFunc,
@@ -122,7 +127,12 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
             .orderBy(weekStartFunc.asc())
             .fetch()
             .stream()
-            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .map(tuple -> {
+                java.sql.Date sqlDate = tuple.get(0, java.sql.Date.class);
+                LocalDate localDate = sqlDate != null ? sqlDate.toLocalDate() : null;
+                Long count = tuple.get(1, Long.class);
+                return new Object[]{localDate, count};
+            })
             .toList();
     }
 
@@ -130,7 +140,7 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
     @Override
     public List<Object[]> findWithdrawalsByMonth(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         DateTemplate<LocalDate> monthStartFunc = Expressions.dateTemplate(LocalDate.class,
-            "DATE_TRUNC('month', {0})::date", withdrawReason.createdAt);
+            "CAST(DATE_TRUNC('month', {0}) AS date)", withdrawReason.createdAt);
 
         return queryFactory.select(
                 monthStartFunc,
@@ -142,7 +152,12 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
             .orderBy(monthStartFunc.asc())
             .fetch()
             .stream()
-            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .map(tuple -> {
+                java.sql.Date sqlDate = tuple.get(0, java.sql.Date.class);
+                LocalDate localDate = sqlDate != null ? sqlDate.toLocalDate() : null;
+                Long count = tuple.get(1, Long.class);
+                return new Object[]{localDate, count};
+            })
             .toList();
     }
 }
