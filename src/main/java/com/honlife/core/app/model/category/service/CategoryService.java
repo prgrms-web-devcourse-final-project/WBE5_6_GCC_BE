@@ -278,8 +278,8 @@ public class CategoryService {
 
         Category targetCategory = categoryRepository.findCategoryById(categoryId).orElseThrow(()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
-        if(targetCategory.getType()!=CategoryType.DEFAULT)
-            throw new CommonException(ResponseCode.NOT_FOUND_CATEGORY);
+        if(targetCategory.getType()==CategoryType.DEFAULT)
+            throw new CommonException(ResponseCode.BAD_REQUEST);
 
         // 해당 카테고리를 참조하는 루틴 전부 null을 참조하도록 함.
         routineService.removeCategoryReference(categoryId, userEmail);
