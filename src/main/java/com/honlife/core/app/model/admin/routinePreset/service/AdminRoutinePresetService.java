@@ -47,23 +47,19 @@ public class AdminRoutinePresetService {
           CategoryType type = category.getType();
 
           Category parentCategory = null;
-          Category childCategory = null;
 
           if (type == CategoryType.DEFAULT || type == CategoryType.MAJOR) {
             parentCategory = category; // 이미 연관된 엔티티
-            childCategory = null;
           } else {
-            childCategory = category;
             parentCategory = category.getParent();// 연관관계로 접근 가능해야 함
           }
           return RoutinePresetViewDTO.builder()
               .presetId(routinePreset.getId())
               .categoryId(routinePreset.getCategory().getId())
               .majorCategory(parentCategory != null ? parentCategory.getName() : null)
-              .subCategory(childCategory != null ? childCategory.getName() : null)
               .name(routinePreset.getContent())
               .triggerTime(routinePreset.getTriggerTime())
-              .isImportant(routinePreset.isImportant())
+              .isImportant(routinePreset.getIsImportant())
               .createdAt(routinePreset.getCreatedAt())
               .updatedAt(routinePreset.getUpdatedAt())
               .repeatType(routinePreset.getRepeatType())
@@ -89,13 +85,10 @@ public class AdminRoutinePresetService {
     CategoryType type = category.getType();
 
     Category parentCategory = null;
-    Category childCategory = null;
 
     if (type == CategoryType.DEFAULT || type == CategoryType.MAJOR) {
       parentCategory = category; // 이미 연관된 엔티티
-      childCategory = null;
     } else {
-      childCategory = category;
       parentCategory = category.getParent();// 연관관계로 접근 가능해야 함
     }
 
@@ -104,17 +97,15 @@ public class AdminRoutinePresetService {
         .presetId(routinePreset.getId())
         .categoryId(routinePreset.getCategory().getId())
         .majorCategory(parentCategory != null ? parentCategory.getName() : null)
-        .subCategory(childCategory != null ? childCategory.getName() : null)
         .name(routinePreset.getContent())
         .triggerTime(routinePreset.getTriggerTime())
-        .isImportant(routinePreset.isImportant())
+        .isImportant(routinePreset.getIsImportant())
         .createdAt(routinePreset.getCreatedAt())
         .updatedAt(routinePreset.getUpdatedAt())
         .emoji(routinePreset.getCategory().getEmoji())
         .repeatType(routinePreset.getRepeatType())
         .repeatValue(routinePreset.getRepeatValue())
         .initDate(routinePreset.getInitDate())
-        .emoji(routinePreset.getCategory().getEmoji())
         .build();
 
     return dto;
