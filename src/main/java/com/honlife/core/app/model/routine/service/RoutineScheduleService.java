@@ -92,7 +92,7 @@ public class RoutineScheduleService {
                 boolean exists = routineScheduleRepository.existsByRoutineAndScheduleDate(routine, today);
                 if (!exists) {
                     RoutineSchedule schedule = RoutineSchedule.builder()
-                        .scheduleDate(today)
+                        .scheduledDate(today)
                         .isDone(false)
                         .routine(routine)
                         .build();

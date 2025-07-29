@@ -49,6 +49,7 @@ public enum ResponseCode {
   GRANT_CONFLICT_BADGE("4092", HttpStatus.CONFLICT, "Badge Already granted."),
   GRANT_CONFLICT_POINT("4098", HttpStatus.CONFLICT, "Point Already granted."),
   GRANT_CONFLICT_ITEM("4094", HttpStatus.CONFLICT, "Item Already granted."),
+  DUPLICATE_ITEM_KEY("4095", HttpStatus.CONFLICT, "Item key already exists."),
   ASSIGN_CONFLICT_QUEST("4096", HttpStatus.CONFLICT, "Quest Already assigned."),
 
   INTERNAL_SERVER_ERROR("5000", HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),

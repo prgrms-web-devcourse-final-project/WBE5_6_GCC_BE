@@ -46,11 +46,8 @@ public class MemberItemService {
     @Transactional
     public void switchItemEquip(Long memberId, String key) {
 
-        Item item = itemService.getItemByKey(key);
-
-        if (item == null) {
-            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
-        }
+        Item item = itemService.getItemByKey(key)
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
 
         // 해당 itemId과 일치하는 회원 보유 아이템 정보 가져옴
         MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
