@@ -89,7 +89,7 @@ public class RoutineScheduleService {
 
                 log.info("✅ [Scheduler] 루틴 ID {} 에 대한 스케줄 생성", routine.getId());
 
-                boolean exists = routineScheduleRepository.existsByRoutineAndScheduleDate(routine, today);
+                boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, today);
                 if (!exists) {
                     RoutineSchedule schedule = RoutineSchedule.builder()
                         .scheduledDate(today)
