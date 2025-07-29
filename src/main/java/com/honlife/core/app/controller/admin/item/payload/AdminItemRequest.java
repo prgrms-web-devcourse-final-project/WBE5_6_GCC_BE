@@ -27,13 +27,12 @@ public class AdminItemRequest {
   @Schema
   private String key;
 
-  @NotNull
   @Schema(description = "아이템 타입", example = "TOP")
   private ItemType itemType;
 
-  @NotNull
   @Schema(description = "아이템 설명", example = "청소가 빨라집니다.")
   private String itemDescription;
 
+  @Schema(description = "아이템 활성화/비활성화 여부", example = "true")
   private Boolean isListed;
 }
