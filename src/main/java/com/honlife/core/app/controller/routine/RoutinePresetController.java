@@ -39,7 +39,7 @@ public class RoutinePresetController {
      * @return RoutinePresetsResponse
      */
     @Operation(
-        summary = "추천 루틴 불러오기",
+        summary = "✅ 추천 루틴 불러오기",
         description = "사용자에게 추천할 루틴 프리셋 목록을 조회합니다.<br><br>" +
             "<strong>사용 시나리오:</strong><br>" +
             "• 루틴 생성 시 카테고리 선택 후 해당 카테고리의 추천 루틴 표시<br>" +
