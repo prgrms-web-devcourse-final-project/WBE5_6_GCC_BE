@@ -1,6 +1,14 @@
 package com.honlife.core.app.model.auth;
 
+import com.honlife.core.app.controller.auth.payload.LoginRequest;
+import com.honlife.core.app.model.auth.dto.TokenDto;
+import com.honlife.core.app.model.auth.token.RefreshTokenService;
+import com.honlife.core.app.model.auth.token.UserBlackListRepository;
+import com.honlife.core.app.model.auth.token.entity.RefreshToken;
+import com.honlife.core.app.model.badge.event.LoginEvent;
 import com.honlife.core.app.model.loginLog.service.LoginLogService;
+import com.honlife.core.infra.auth.jwt.JwtTokenProvider;
+import com.honlife.core.infra.auth.jwt.dto.AccessTokenDto;
 import com.honlife.core.infra.event.CommonEvent;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +24,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.honlife.core.app.controller.auth.payload.LoginRequest;
-import com.honlife.core.app.model.auth.dto.TokenDto;
-import com.honlife.core.app.model.auth.token.RefreshTokenService;
-import com.honlife.core.app.model.auth.token.UserBlackListRepository;
-import com.honlife.core.app.model.auth.token.entity.RefreshToken;
-import com.honlife.core.infra.auth.jwt.JwtTokenProvider;
-import com.honlife.core.infra.auth.jwt.dto.AccessTokenDto;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +55,14 @@ public class AuthService {
             new CommonEvent(
                 loginRequest.getEmail()
             )
+        );
+
+        // 배지용 로그인 완료 이벤트 발행
+        log.info("🔥 LoginEvent 발행 - memberEmail: {}", loginRequest.getEmail());
+        eventPublisher.publishEvent(
+            LoginEvent.builder()
+                .memberEmail(loginRequest.getEmail())
+                .build()
         );
 
         return processSignin(authentication);

@@ -3,9 +3,11 @@ package com.honlife.core.app.model.badge.listener;
 import com.honlife.core.app.model.badge.event.LoginEvent;
 import com.honlife.core.app.model.badge.service.BadgeProgressService;
 import com.honlife.core.app.model.category.service.CategoryService;
+import com.honlife.core.app.model.member.model.MemberDTO;
+import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.app.model.routine.dto.RoutineScheduleInfo;
 import com.honlife.core.app.model.routine.service.RoutineScheduleService;
-import com.honlife.core.infra.event.CommonEvent;
+import com.honlife.core.infra.event.RoutineProgressEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -22,6 +24,7 @@ public class BadgeEventListener {
     private final BadgeProgressService badgeProgressService;
     private final RoutineScheduleService routineScheduleService;
     private final CategoryService categoryService;
+    private final MemberService memberService;
 
     /**
      * 루틴 진행률 변경 이벤트 처리 (완료/취소 통합)
@@ -31,7 +34,7 @@ public class BadgeEventListener {
      */
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
-    public void onRoutineProgress(CommonEvent event) {
+    public void onRoutineProgress(RoutineProgressEvent event) {
 
         log.info("🚀 onRoutineProgress 호출됨! - routineScheduleId: {}", event.getRoutineScheduleId());
 
@@ -78,15 +81,16 @@ public class BadgeEventListener {
     @Async
     public void onMemberLogin(LoginEvent event) {
         try {
-            log.debug("Processing login event - memberId: {}", event.getMemberId());
+            log.debug("Processing login event - memberId: {}", event.getMemberEmail());
 
-            badgeProgressService.updateLoginStreak(event.getMemberId());
+            MemberDTO memberDTO = memberService.findMemberByEmail(event.getMemberEmail());
+            badgeProgressService.updateLoginStreak(memberDTO.getId());
 
-            log.debug("Successfully updated login streak for member: {}", event.getMemberId());
+            log.debug("Successfully updated login streak for member: {}", event.getMemberEmail());
 
         } catch (Exception e) {
             log.error("Failed to process login event - memberId: {}, error: {}",
-                event.getMemberId(), e.getMessage(), e);
+                event.getMemberEmail(), e.getMessage(), e);
             // 이벤트 처리 실패해도 원본 로직에는 영향 없음
         }
     }

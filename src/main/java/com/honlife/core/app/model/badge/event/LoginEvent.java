@@ -1,10 +1,12 @@
 package com.honlife.core.app.model.badge.event;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginEvent {
@@ -12,5 +14,5 @@ public class LoginEvent {
     /**
      * 로그인한 회원 ID
      */
-    private Long memberId;
+    private String memberEmail;
 }

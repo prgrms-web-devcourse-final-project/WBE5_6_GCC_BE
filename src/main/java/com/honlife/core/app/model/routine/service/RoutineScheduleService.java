@@ -6,6 +6,7 @@ import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.app.model.routine.dto.RoutineScheduleInfo;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.event.CommonEvent;
+import com.honlife.core.infra.event.RoutineProgressEvent;
 import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -79,6 +80,15 @@ public class RoutineScheduleService {
                 .memberEmail(userEmail)
                 .routineScheduleId(scheduleId)
                 .routineId(routineSchedule.getRoutine().getId())
+                .isDone(request.getIsDone())
+                .build()
+        );
+
+        // 배지용 루틴 완료 이벤트 발행
+        log.info("🔥 RoutineProgressEvent 발행 - routineScheduleId: {}, isDone: {}", scheduleId, request.getIsDone());
+        eventPublisher.publishEvent(
+            RoutineProgressEvent.builder()
+                .routineScheduleId(scheduleId)
                 .isDone(request.getIsDone())
                 .build()
         );
