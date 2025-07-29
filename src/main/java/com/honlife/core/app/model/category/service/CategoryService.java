@@ -1,9 +1,12 @@
 package com.honlife.core.app.model.category.service;
 
+import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
+import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +42,7 @@ public class CategoryService {
     private final BadgeRepository badgeRepository;
     private final InterestCategoryRepository interestCategoryRepository;
     private final ModelMapper mapper;
+    private final MemberService memberService;
 
     public List<CategoryDTO> findAll() {
         final List<Category> categories = categoryRepository.findAll(Sort.by("id"));
@@ -220,5 +224,33 @@ public class CategoryService {
             .build();
 
 
+    }
+
+    /**
+     * 카테고리를 생성합니다.
+     * @param categorySaveRequest 카테고리 생성 시 필요한 정보
+     * @param userEmail 멤버 이메일
+     */
+    @Transactional
+    public void createCategory(CategorySaveRequest categorySaveRequest, String userEmail) {
+        // 부모 카테고리 정보 가져오기
+        Category majorCategory = null;
+
+        if(categorySaveRequest.getCategoryType() == CategoryType.SUB){
+            majorCategory = categoryRepository.findCategoryById(categorySaveRequest.getParentId(), userEmail)
+                    .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
+        }
+
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
+
+        Category category = Category.builder()
+            .name(categorySaveRequest.getCategoryName())
+            .emoji(categorySaveRequest.getEmoji())
+            .type(categorySaveRequest.getCategoryType())
+            .parent(majorCategory)
+            .member(member)
+            .build();
+
+        categoryRepository.save(category);
     }
 }
