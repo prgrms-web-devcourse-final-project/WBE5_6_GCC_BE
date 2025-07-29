@@ -283,7 +283,7 @@ public class RoutineService {
       else if(routine.getRepeatType() == RepeatType.WEEKLY)
           return ChronoUnit.WEEKS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
       else if(routine.getRepeatType() == RepeatType.MONTHLY)
-          return ChronoUnit.WEEKS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
+          return ChronoUnit.MONTHS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
       else{
           return false;
       }
