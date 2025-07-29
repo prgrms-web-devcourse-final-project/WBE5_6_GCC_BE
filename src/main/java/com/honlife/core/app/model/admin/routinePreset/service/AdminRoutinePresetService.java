@@ -10,7 +10,6 @@ import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,7 +80,7 @@ public class AdminRoutinePresetService {
   }
 
   /**
-   * 추천 루틴 프리셋 단건 조회 조회 service
+   * 추천 루틴 프리셋 단건 조회 service
    * @return RoutinePresetViewDTO
    */
   public RoutinePresetViewDTO getRoutinePreset(Long presetId) {
