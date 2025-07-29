@@ -270,29 +270,16 @@ public class CategoryService {
     }
 
     /**
-     * 해당 카테고리가 기본 카테고리인지 확인합니다.
-     * @param categoryId 해당 카테고리 아이디
-     * @return boolean
-     */
-    public boolean isDefault(Long categoryId) {
-        Category targetCategory = categoryRepository.findCategoryById(categoryId).orElseThrow(()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
-
-        return targetCategory.getType()==CategoryType.DEFAULT;
-
-    }
-
-    /**
      * 아이디를 통해 카테고리를 소프트 드랍합니다.
      * @param categoryId 해당 카테고리 아이디
      */
     @Transactional
     public void softDrop(Long categoryId, String userEmail) {
 
-        // 사용자는 기본 카테고리 삭제가 불가능
-        if(isDefault(categoryId))
-            throw new CommonException(ResponseCode.NOT_FOUND_CATEGORY);
-
         Category targetCategory = categoryRepository.findCategoryById(categoryId).orElseThrow(()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        if(targetCategory.getType()!=CategoryType.DEFAULT)
+            throw new CommonException(ResponseCode.NOT_FOUND_CATEGORY);
 
         // 해당 카테고리를 참조하는 루틴 전부 null을 참조하도록 함.
         routineService.removeCategoryReference(categoryId, userEmail);
