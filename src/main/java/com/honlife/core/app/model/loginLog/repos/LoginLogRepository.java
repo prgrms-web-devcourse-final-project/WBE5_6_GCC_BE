@@ -7,7 +7,7 @@ import com.honlife.core.app.model.loginLog.domain.LoginLog;
 import com.honlife.core.app.model.member.domain.Member;
 
 
-public interface LoginLogRepository extends JpaRepository<LoginLog, Long> {
+public interface LoginLogRepository extends JpaRepository<LoginLog, Long>, LoginLogRepositoryCustom {
 
     LoginLog findFirstByMember(Member member);
 

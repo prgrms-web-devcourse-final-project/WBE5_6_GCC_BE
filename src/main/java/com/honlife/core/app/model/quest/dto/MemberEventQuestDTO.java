@@ -19,6 +19,7 @@ public class MemberEventQuestDTO {
     private String questName;
     private Integer target;
     private Integer progress;
+    private Integer points;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
 
@@ -28,7 +29,7 @@ public class MemberEventQuestDTO {
      * @param eventQuestProgress 주간 퀘스트 진행도 엔티티
      * @return {@code EventWeeklyQuestDTO}
      */
-    public static MemberEventQuestDTO fromEntity(EventQuestProgress eventQuestProgress) {
+    public static MemberEventQuestDTO fromEntity(EventQuestProgress eventQuestProgress, Integer points) {
         Category category = eventQuestProgress.getEventQuest().getCategory();
         return MemberEventQuestDTO.builder()
             .questId(eventQuestProgress.getEventQuest().getId())
@@ -38,6 +39,7 @@ public class MemberEventQuestDTO {
             .questName(eventQuestProgress.getEventQuest().getName())
             .target(eventQuestProgress.getEventQuest().getTarget())
             .progress(eventQuestProgress.getProgress())
+            .points(points)
             .startAt(eventQuestProgress.getEventQuest().getStartDate())
             .endAt(eventQuestProgress.getEventQuest().getEndDate())
             .build();

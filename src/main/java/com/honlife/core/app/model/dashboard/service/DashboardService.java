@@ -3,6 +3,7 @@ package com.honlife.core.app.model.dashboard.service;
 import com.honlife.core.app.model.dashboard.dto.CategoryRankDTO;
 import com.honlife.core.app.model.dashboard.dto.CategoryCountDTO;
 import com.honlife.core.app.model.dashboard.dto.CategoryTotalCountDTO;
+import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
 import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
 import com.honlife.core.app.model.dashboard.dto.RoutineTotalCountDTO;
 import com.honlife.core.app.model.point.code.PointLogType;
@@ -120,4 +121,24 @@ public class DashboardService {
         // 얻은 누적 포인트량 (주)
         return pointLogRepository.getTotalPointByDateBetween(startDate.atStartOfDay(), endDate.atStartOfDay(), PointLogType.GET, userEmail);
     }
+
+    /**
+     * 대시보드 데이터를 계산하여 wrapperDTO로 감싸 반환합니다.
+     * ai 조언 생성 시에 사용할 메소드
+     * @param userEmail 유저 이메일
+     * @param startDate 조회 시작일
+     * @param endDate 조회 종료일
+     * @return DashboardWrapperDTO
+     */
+    public DashboardWrapperDTO getDashboardData(String userEmail, LocalDate startDate, LocalDate endDate) {
+        return DashboardWrapperDTO.builder()
+            .routineCount(getRoutineTotalCount(userEmail, startDate, endDate))
+            .dayRoutineCount(getDayRoutineCounts(userEmail, startDate, endDate))
+            .categoryCount(getCategoryTotalCounts(userEmail, startDate, endDate))
+            .top5(getCategoryRanks(userEmail, startDate, endDate))
+            .totalPoint(getTotalPoint(userEmail, startDate, endDate))
+            .build();
+    }
+
+
 }

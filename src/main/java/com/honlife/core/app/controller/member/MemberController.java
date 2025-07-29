@@ -1,9 +1,13 @@
 package com.honlife.core.app.controller.member;
 
+import com.honlife.core.app.controller.member.payload.MemberBadgeResponse;
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
+import com.honlife.core.app.model.badge.service.BadgeService;
 import com.honlife.core.app.model.category.service.CategoryService;
 import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.app.model.member.model.MemberBadgeDTO;
+import com.honlife.core.app.model.member.model.MemberBadgeDetailDTO;
 import com.honlife.core.app.model.member.service.MemberBadgeService;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.app.model.member.service.MemberPointService;
@@ -42,6 +46,7 @@ import com.honlife.core.infra.response.ResponseCode;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberBadgeService memberBadgeService;
 
     /**
      * 로그인된 회원의 정보 조회
@@ -49,7 +54,7 @@ public class MemberController {
      * @return 조회 성공시 {@code CommonApiResponse<}{@link MemberPayload}{@code >}형태로 사용자의 정보를 반한홥니다.
      */
     @GetMapping
-    public ResponseEntity<CommonApiResponse<MemberPayload>> getCurrentMember(
+    public ResponseEntity<CommonApiResponse<MemberResponseWrapper>> getCurrentMember(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userEmail = userDetails.getUsername();
@@ -61,7 +66,11 @@ public class MemberController {
                 .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
 
-        MemberPayload response = MemberPayload.fromDTO(targetMember);
+        MemberPayload member = MemberPayload.fromDTO(targetMember);
+
+        MemberBadgeDetailDTO badge = memberBadgeService.getEquippedBadge(userEmail);
+
+        MemberResponseWrapper response = new MemberResponseWrapper(member, MemberBadgeResponse.fromDTO(badge));
 
         return ResponseEntity.ok(CommonApiResponse.success(response));
     }

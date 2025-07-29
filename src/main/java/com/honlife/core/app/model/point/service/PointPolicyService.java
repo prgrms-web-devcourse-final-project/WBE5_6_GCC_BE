@@ -18,36 +18,6 @@ public class PointPolicyService {
 
     private final PointPolicyRepository pointPolicyRepository;
 
-    public List<PointPolicyDTO> findAll() {
-        final List<PointPolicy> pointPolicies = pointPolicyRepository.findAll(Sort.by("id"));
-        return pointPolicies.stream()
-                .map(pointPolicy -> mapToDTO(pointPolicy, new PointPolicyDTO()))
-                .toList();
-    }
-
-    public PointPolicyDTO get(final Long id) {
-        return pointPolicyRepository.findById(id)
-                .map(pointPolicy -> mapToDTO(pointPolicy, new PointPolicyDTO()))
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POLICY));
-    }
-
-    public Long create(final PointPolicyDTO pointPolicyDTO) {
-        final PointPolicy pointPolicy = new PointPolicy();
-        mapToEntity(pointPolicyDTO, pointPolicy);
-        return pointPolicyRepository.save(pointPolicy).getId();
-    }
-
-    public void update(final Long id, final PointPolicyDTO pointPolicyDTO) {
-        final PointPolicy pointPolicy = pointPolicyRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POLICY));
-        mapToEntity(pointPolicyDTO, pointPolicy);
-        pointPolicyRepository.save(pointPolicy);
-    }
-
-    public void delete(final Long id) {
-        pointPolicyRepository.deleteById(id);
-    }
-
     /**
      * referenceKey로 포인트 정책 조회
      * @param referenceKey 참조 키 (배지 키 등)
@@ -69,17 +39,6 @@ public class PointPolicyService {
         pointPolicyDTO.setReferenceKey(pointPolicy.getReferenceKey());
         pointPolicyDTO.setPoint(pointPolicy.getPoint());
         return pointPolicyDTO;
-    }
-
-    private PointPolicy mapToEntity(final PointPolicyDTO pointPolicyDTO,
-            final PointPolicy pointPolicy) {
-        pointPolicy.setCreatedAt(pointPolicyDTO.getCreatedAt());
-        pointPolicy.setUpdatedAt(pointPolicyDTO.getUpdatedAt());
-        pointPolicy.setIsActive(pointPolicyDTO.getIsActive());
-        pointPolicy.setType(pointPolicyDTO.getType());
-        pointPolicy.setReferenceKey(pointPolicyDTO.getReferenceKey());
-        pointPolicy.setPoint(pointPolicyDTO.getPoint());
-        return pointPolicy;
     }
 
     /**

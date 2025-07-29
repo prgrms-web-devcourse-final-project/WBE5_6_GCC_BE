@@ -21,6 +21,7 @@ public class WeeklyQuestProgressResponse {
     private String questName;
     private Integer target;
     private Integer progress;
+    private Integer points;
 
     public static WeeklyQuestProgressResponse fromDTO(MemberWeeklyQuestDTO weeklyQuest) {
         return WeeklyQuestProgressResponse.builder()
@@ -31,6 +32,7 @@ public class WeeklyQuestProgressResponse {
             .questName(weeklyQuest.getQuestName())
             .target(weeklyQuest.getTarget())
             .progress(weeklyQuest.getProgress())
+            .points(weeklyQuest.getPoints())
             .build();
     }
 

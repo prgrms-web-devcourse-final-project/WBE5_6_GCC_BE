@@ -3,6 +3,7 @@ package com.honlife.core.app.model.routine.service;
 import com.honlife.core.app.controller.routine.payload.RoutineScheduleCompleteRequest;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.routine.dto.RoutineSummaryDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.event.CommonEvent;
 import com.honlife.core.infra.response.ResponseCode;
@@ -109,6 +110,22 @@ public class RoutineScheduleService {
                 }
             }
         }
+
+    }
+
+    public List<RoutineSummaryDTO> getRoutineSummary(String userEmail, LocalDate startDate,
+        LocalDate endDate) {
+
+        List<RoutineSchedule> routineSchedules = routineScheduleRepository.findAllByDateBetween(userEmail, startDate, endDate);
+
+        return routineSchedules.stream().map(routineSchedule -> {
+            return RoutineSummaryDTO.builder()
+                .scheduledDate(routineSchedule.getScheduledDate())
+                .routineContent(routineSchedule.getRoutine().getContent())
+                .categoryName(routineSchedule.getRoutine().getCategory().getName())
+                .isDone(routineSchedule.getIsDone())
+                .build();
+        }).toList();
 
     }
 }

@@ -7,9 +7,12 @@ import com.honlife.core.app.controller.dashboard.payload.RoutineTotalCountRespon
 import com.honlife.core.app.controller.dashboard.warpper.DashboardWrapper;
 import com.honlife.core.app.model.dashboard.dto.CategoryRankDTO;
 import com.honlife.core.app.model.dashboard.dto.CategoryTotalCountDTO;
+import com.honlife.core.app.model.dashboard.dto.DashboardWrapperDTO;
 import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
 import com.honlife.core.app.model.dashboard.dto.RoutineTotalCountDTO;
+import com.honlife.core.app.model.dashboard.service.AICommentService;
 import com.honlife.core.app.model.dashboard.service.DashboardService;
+import com.honlife.core.app.model.dashboard.service.MemberDashBoardAIService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -34,6 +37,8 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
     private final ModelMapper mapper;
+    private final MemberDashBoardAIService memberDashBoardAIService;
+    private final AICommentService aiService;
 
     /**
      * 멤버 대시보드의 데이터를 조회하는 API 입니다.
@@ -57,7 +62,6 @@ public class DashboardController {
             endDate = startDate.plusDays(7);
 
         // 데이터를 가져옴
-
         RoutineTotalCountDTO routineTotalCountDTO = dashboardService.getRoutineTotalCount(userEmail, startDate, endDate);
 
         List<DayRoutineCountDTO> dayRoutineCountDTOS = dashboardService.getDayRoutineCounts(userEmail, startDate, endDate);
@@ -68,7 +72,18 @@ public class DashboardController {
 
         Integer totalPoint = dashboardService.getTotalPoint(userEmail, startDate, endDate);
 
+        DashboardWrapperDTO dashboardWrapperDTO = DashboardWrapperDTO.builder()
+            .routineCount(routineTotalCountDTO)
+            .dayRoutineCount(dayRoutineCountDTOS)
+            .categoryCount(categoryTotalCountDTOS)
+            .top5(categoryRankDTOS)
+            .totalPoint(totalPoint)
+            .build();
+
         String aiComment = null;
+        
+        if(!endDate.equals(LocalDate.now()))
+            aiComment = aiService.getOrCreateAIComment(userEmail,startDate, endDate, dashboardWrapperDTO);
 
 
         // response에 맞게 매핑
@@ -89,5 +104,4 @@ public class DashboardController {
 
         return ResponseEntity.ok(CommonApiResponse.success(wrapper));
     }
-
 }
