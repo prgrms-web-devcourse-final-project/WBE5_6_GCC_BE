@@ -6,6 +6,7 @@ import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -252,5 +253,36 @@ public class CategoryService {
             .build();
 
         categoryRepository.save(category);
+    }
+
+    /**
+     * 카테고리를 업데이트 합니다.
+     * @param categoryId 업데이트할 카테고리
+     * @param userEmail 유저 이메일
+     * @param categorySaveRequest 업데이트할 카테고리 정보
+     */
+    @Transactional
+    public void updateCategory(Long categoryId, String userEmail, CategorySaveRequest categorySaveRequest) {
+        // 부모 카테고리 정보 가져오기
+        Category majorCategory = null;
+
+        if(categorySaveRequest.getCategoryType()==CategoryType.SUB && categorySaveRequest.getParentId() != null){
+            // 커스텀 카테고리에서 찾지 못하면 기본 카테고리에서 찾음
+            majorCategory = categoryRepository.findCategoryById(categorySaveRequest.getParentId(), userEmail)
+                    .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
+        }
+
+        Category targetCategory = categoryRepository.findCategoryById(categoryId, userEmail)
+            .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        targetCategory.setName(categorySaveRequest.getCategoryName());
+        targetCategory.setType(categorySaveRequest.getCategoryType());
+        targetCategory.setParent(majorCategory);
+
+        if(categorySaveRequest.getEmoji() != null && !categorySaveRequest.getEmoji().isBlank()){
+            targetCategory.setEmoji(categorySaveRequest.getEmoji());
+        }
+        categoryRepository.save(targetCategory);
+
     }
 }
