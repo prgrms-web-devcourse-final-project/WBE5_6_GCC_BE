@@ -1,22 +1,24 @@
 package com.honlife.core.infra.response;
 
 import java.util.List;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 
+@Getter
 @RequiredArgsConstructor
 public class PageResponse<T> {
-    
+
     private final String url;
     private final Page<T> page;
     private final int pageButtonCnt;
-    
+
     public String url(){
         return url;
     }
-    
+
     public int currentNumber(){
-        return page.getNumber() + 1;
+    return page.getNumber() + 1;
     }
     
     public int prevPage(){
