@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.member.repos;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.member.domain.Member;
@@ -40,4 +41,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
      * @return {@code Boolean}
      */
     Boolean existsByEmailIgnoreCaseAndIsActive(String email, Boolean isActive);
+
+    List<Member> findAllByIsActive(Boolean isActive);
 }

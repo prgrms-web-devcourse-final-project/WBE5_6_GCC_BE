@@ -6,6 +6,9 @@ import com.honlife.core.app.controller.category.payload.CategoryWithParentRespon
 import com.honlife.core.app.controller.category.wrapper.CategoryWrapper;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
+import com.honlife.core.app.model.routine.service.RoutineService;
+import com.honlife.core.infra.error.exceptions.ReferencedException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
@@ -19,9 +22,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +37,7 @@ import com.honlife.core.app.model.category.service.CategoryService;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final RoutineService routineService;
 
     /**
      * 카테고리 조회 API
@@ -105,24 +109,29 @@ public class CategoryController {
      * @param bindingResult validation
      * @return
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
         final Long categoryId,
         @RequestBody @Valid final CategorySaveRequest categorySaveRequest,
-        BindingResult bindingResult
+        BindingResult bindingResult,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
-        // 존재하지 않는 카테고리 아이디로 접근
-        if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
+
+        // SUB 카테고리지만 부모 카테고리 정보가 없는 경우
+        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && (categorySaveRequest.getParentId() == null)) {
             return ResponseEntity
-                .status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
+                .status(ResponseCode.BAD_REQUEST.status())
+                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
         }
+
+        String userEmail = userDetails.getUsername();
+        categoryService.updateCategory(categoryId, userEmail,categorySaveRequest);
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
@@ -135,18 +144,13 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
         @PathVariable(name="id")
-        final Long categoryId){
-//        final ReferencedWarning referencedWarning = categoryService.getReferencedWarning(id);
-//        if (referencedWarning != null) {
-//            throw new ReferencedException(referencedWarning);
-//        }
-//        categoryService.delete(categoryId);
-        // 존재하지 않는 카테고리 아이디로 접근
-        if(categoryId != 1L && categoryId != 2L && categoryId != 3L){
-            return ResponseEntity
-                .status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
-        }
+        final Long categoryId,
+        @AuthenticationPrincipal UserDetails userDetails
+        ){
+
+        String userEmail = userDetails.getUsername();
+
+        categoryService.softDrop(categoryId, userEmail);
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }

@@ -3,7 +3,8 @@ package com.honlife.core.app.controller.admin.routine;
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetDetailResponse;
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetSaveRequest;
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetsResponse;
-import com.honlife.core.app.model.routine.service.RoutinePresetService;
+import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
+import com.honlife.core.app.model.admin.routinePreset.service.AdminRoutinePresetService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,8 +13,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,97 +30,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "[관리자] 추천 루틴", description = "관리자용 추천 루틴 관리 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/routines/presets", produces = MediaType.APPLICATION_JSON_VALUE)
-@SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class AdminRoutinePresetController {
 
-  private final RoutinePresetService routinePresetService;
+  private final AdminRoutinePresetService adminRoutinePresetService;
 
-  public AdminRoutinePresetController(final RoutinePresetService routinePresetService) {
-    this.routinePresetService = routinePresetService;
-  }
 
   /**
    * 추천 루틴 프리셋 목록 조회 API
    * @return AdminRoutinePresetsResponse
    */
-  @Operation(
-      summary = "추천 루틴 프리셋 목록 조회",
-      description = "관리자가 등록한 모든 추천 루틴 프리셋 목록을 조회합니다.<br><br>" +
-          "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
-          "<strong>응답 데이터:</strong><br>" +
-          "• 모든 프리셋 목록 (활성/비활성 포함)<br>" +
-          "• 카테고리 이름 포함<br>" +
-          "• 생성/수정 일시 포함<br>" +
-          "• 활성화 상태 표시<br><br>" +
-          "*실제 DB에 반영되지 않음*"
-  )
   @GetMapping
   public ResponseEntity<CommonApiResponse<AdminRoutinePresetsResponse>> getAllRoutinePresets(
-      @RequestParam(value = "id", required = false)
-      @Schema(description = "카테고리 ID (선택사항)", example = "1") Long categoryId
+      @RequestParam(value = "id", required = false) Long categoryId
   ) {
-    // 모킹 데이터 생성
+
+    List<RoutinePresetViewDTO> routineDetailDTO = adminRoutinePresetService.getAllRoutinePresets(categoryId);
+
     AdminRoutinePresetsResponse response = new AdminRoutinePresetsResponse();
-    List<AdminRoutinePresetsResponse.PresetItem> presets = new ArrayList<>();
-
-    if (categoryId == null) {
-      // 전체 카테고리 프리셋 반환
-      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-          .presetId(1L)
-          .categoryId(1L)
-          .categoryName("청소")
-          .content("화장실 청소하기")
-          .isActive(true)
-          .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
-          .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
-          .build());
-      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-          .presetId(2L)
-          .categoryId(2L)
-          .categoryName("건강")
-          .content("자기 전 명상 10분")
-          .isActive(true)
-          .createdAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-          .updatedAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-          .build());
-    } else if (categoryId == 1L) {
-      // 청소 카테고리 프리셋만
-      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-          .presetId(1L)
-          .categoryId(1L)
-          .categoryName("청소")
-          .content("화장실 청소하기")
-          .isActive(true)
-          .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
-          .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
-          .build());
-    } else if (categoryId == 2L) {
-      // 건강 카테고리 프리셋만
-      presets.add(AdminRoutinePresetsResponse.PresetItem.builder()
-          .presetId(2L)
-          .categoryId(2L)
-          .categoryName("건강")
-          .content("자기 전 명상 10분")
-          .isActive(true)
-          .createdAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-          .updatedAt(LocalDateTime.of(2025, 1, 11, 10, 15))
-          .build());
-    }
-
-    response.setPresets(presets);
-
-    // 실제 구현 시에는 다음과 같은 로직 수행:
-    // 1. categoryId가 있으면 해당 카테고리의 프리셋만 조회
-    // 2. categoryId가 없으면 모든 프리셋 조회 (활성/비활성 포함)
-    // 3. Category 정보 조인하여 카테고리명 조회
-    // 4. 생성일시 기준 정렬
-    // 5. DTO 변환하여 반환
+    response.setPresets(routineDetailDTO);
 
     return ResponseEntity.ok(CommonApiResponse.success(response));
+
   }
 
   /**
@@ -127,36 +62,18 @@ public class AdminRoutinePresetController {
    * @param presetId 프리셋 ID
    * @return AdminRoutinePresetDetailResponse
    */
-  @Operation(
-      summary = "특정 추천 루틴 프리셋 조회",
-      description = "특정 추천 루틴 프리셋의 상세 정보를 조회합니다.<br><br>" +
-          "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
-          "*실제 DB에 반영되지 않음*"
-  )
   @GetMapping("/{id}")
   public ResponseEntity<CommonApiResponse<AdminRoutinePresetDetailResponse>> getRoutinePreset(
-      @PathVariable(name = "id")
-      @Schema(description = "프리셋 ID", example = "1") final Long presetId
+      @PathVariable(name = "id") final Long presetId
   ) {
-    // 존재하지 않는 프리셋 ID로 접근
-    if (presetId != 1L && presetId != 2L && presetId != 3L) {
-      return ResponseEntity.status(ResponseCode.NOT_FOUND.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND));
-    }
 
-    // 모킹 데이터 생성
-    AdminRoutinePresetDetailResponse response = AdminRoutinePresetDetailResponse.builder()
-        .presetId(presetId)
-        .categoryId(1L)
-        .categoryName("청소")
-        .content("화장실 청소하기")
-        .isActive(true)
-        .createdAt(LocalDateTime.of(2025, 1, 10, 9, 0))
-        .updatedAt(LocalDateTime.of(2025, 1, 12, 14, 30))
-        .build();
+    RoutinePresetViewDTO routineDetailDTO = adminRoutinePresetService.getRoutinePreset(presetId);
+
+    AdminRoutinePresetDetailResponse response = AdminRoutinePresetDetailResponse.fromDto(routineDetailDTO);
 
     return ResponseEntity.ok(CommonApiResponse.success(response));
   }
+
 
   /**
    * 추천 루틴 프리셋 생성 API

@@ -50,4 +50,10 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> , Routin
     Routine findByIdAndMember_email(Long id, String memberEmail);
 
     List<Routine> findAllByIsActiveTrue();
+    /**
+     * category 아이디를 통해 해당 카테고리를 참조하는 루틴을 조회합니다.
+     * @param categoryId 카테고리 아이디
+     * @return {@link Routine} 를 리스트로 반환
+     */
+    List<Routine> findAllByCategory_Id(Long categoryId);
 }
