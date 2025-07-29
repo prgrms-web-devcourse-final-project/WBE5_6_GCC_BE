@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "🔄 [관리자] 카테고리", description = "관리자가 사용하는 카테고리 관리용 API입니다.")
+@Tag(name = "✅ [관리자] 카테고리", description = "관리자가 사용하는 카테고리 관리용 API입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminCategoryController {
@@ -75,7 +75,7 @@ public class AdminCategoryController {
      * @param request    생성할 카테고리의 정보
      * @return
      */
-    @Operation(summary = "🔄 카테고리 수정", description = "카테고리 이름 또는 타입을 수정합니다. id는 1,2,3 중 하나만 가능합니다.")
+    @Operation(summary = "✅ 카테고리 수정", description = "카테고리 이름 또는 타입을 수정합니다. id는 1,2,3 중 하나만 가능합니다.")
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
@@ -95,7 +95,7 @@ public class AdminCategoryController {
      * @param categoryId 삭제할 카테고리 id
      * @return
      */
-    @Operation(summary = "🔄 카테고리 삭제", description = "카테고리를 삭제합니다. id는 1,2,3 중 하나만 가능합니다.")
+    @Operation(summary = "✅ 카테고리 삭제", description = "카테고리를 삭제합니다. id는 1,2,3 중 하나만 가능합니다.")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
         @PathVariable(name = "id")

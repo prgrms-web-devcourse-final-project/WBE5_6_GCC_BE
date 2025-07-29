@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@Tag(name="🔄 [관리자] 대시보드", description = "관리자 대시보드 통계 API입니다.")
+@Tag(name="✅ [관리자] 대시보드", description = "관리자 대시보드 통계 API입니다.")
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
@@ -37,7 +37,7 @@ public class AdminDashboardController {
      * @return 대시보드 통계 데이터
      */
     @Operation(
-        summary = "🔄 관리자 대시보드 통계 조회",
+        summary = "✅ 관리자 대시보드 통계 조회",
         description = "관리자 대시보드에서 사용할 통계 데이터를 조회합니다. " +
             "<br><br>**📊 제공하는 통계:**" +
             "<br>• **총 회원 수**: 해당 날짜까지의 누적 활성 회원 수" +
