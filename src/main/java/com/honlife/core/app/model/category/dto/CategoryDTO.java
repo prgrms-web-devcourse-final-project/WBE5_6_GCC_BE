@@ -33,6 +33,7 @@ public class CategoryDTO {
 
     private Long parent;
 
+    @Builder.Default
     private List<ChildCategoryDTO> children = new ArrayList<>();
 
     @Size(max = 25)
