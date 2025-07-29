@@ -28,7 +28,4 @@ public class NotifyListDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    private Boolean isActive;
-
 }

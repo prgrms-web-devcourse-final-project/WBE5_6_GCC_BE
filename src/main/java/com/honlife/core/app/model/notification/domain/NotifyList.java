@@ -1,5 +1,6 @@
 package com.honlife.core.app.model.notification.domain;
 
+import com.honlife.core.app.model.common.BaseEntity;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.notification.code.NotificationType;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NotifyList {
+public class NotifyList extends BaseEntity {
   @Id
   @Column(nullable = false, updatable = false)
   @SequenceGenerator(
@@ -41,12 +42,4 @@ public class NotifyList {
   @Column(name = "is_read")
   @Builder.Default
   private Boolean isRead = false;
-
-  @Column(name = "is_active")
-  private Boolean isActive = true;
-
-  private LocalDateTime createdAt;
-
-  private LocalDateTime updatedAt;
-
 }
