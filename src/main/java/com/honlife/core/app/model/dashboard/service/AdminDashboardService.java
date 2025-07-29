@@ -30,6 +30,25 @@ public class AdminDashboardService {
      * @return AdminDashboardStatsDTO
      */
     public AdminDashboardStatsDTO getDashboardStats(LocalDate startDate, LocalDate endDate, PeriodType periodType) {
+        // 기본값 처리
+        if (startDate == null || endDate == null) {
+            LocalDate today = LocalDate.now();
+            switch (periodType) {
+                case WEEKLY -> {
+                    startDate = today.minusWeeks(4);  // 최근 4주
+                    endDate = today;
+                }
+                case MONTHLY -> {
+                    startDate = today.minusMonths(6); // 최근 6개월
+                    endDate = today;
+                }
+                default -> {
+                    startDate = today.minusDays(7);   // 최근 7일
+                    endDate = today;
+                }
+            }
+        }
+
         return AdminDashboardStatsDTO.builder()
             .totalMembers(getTotalMembersStats(startDate, endDate, periodType))
             .newMembers(getNewMembersStats(startDate, endDate, periodType))
