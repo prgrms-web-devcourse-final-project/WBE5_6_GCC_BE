@@ -2,7 +2,6 @@ package com.honlife.core.app.controller.category.payload;
 
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
-import com.honlife.core.app.model.category.dto.CategoryUserViewDTO;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,7 @@ public class CategoryResponse {
 
     private String emoji;
 
-    private List<ChildCategoryPayload> children;
+    private List<ChildCategoryResponse> children;
 
 
     public static CategoryResponse fromDTO(CategoryDTO categoryDTO) {
@@ -30,7 +29,7 @@ public class CategoryResponse {
             .categoryName(categoryDTO.getName())
             .categoryType(categoryDTO.getType())
             .emoji(categoryDTO.getEmoji())
-            .children(ChildCategoryPayload.fromDTO(categoryDTO.getChildren()))
+            .children(ChildCategoryResponse.fromDTO(categoryDTO.getChildren()))
             .build();
     }
 

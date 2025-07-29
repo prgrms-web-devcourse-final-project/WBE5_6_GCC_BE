@@ -1,12 +1,29 @@
 package com.honlife.core.app.model.routine.repos;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.domain.RoutineSchedule;
+import org.springframework.data.jpa.repository.Query;
 
 
-public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule, Long> {
+public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule, Long>, RoutineScheduleRepositoryCustom {
 
     RoutineSchedule findFirstByRoutine(Routine routine);
 
+
+
+
+  List<RoutineSchedule> findByRoutine(Routine routine);
+
+
+  @Query("SELECT rs FROM RoutineSchedule rs JOIN FETCH rs.routine r JOIN FETCH r.member WHERE rs.id = :id")
+  RoutineSchedule findWithRoutineAndMemberById(Long id);
+
+
+  RoutineSchedule findByRoutineAndScheduleDate(Routine routine, LocalDate now);
+
+  boolean existsByRoutineAndScheduleDate(Routine routine, LocalDate today);
 }

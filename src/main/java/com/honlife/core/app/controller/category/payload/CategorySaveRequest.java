@@ -18,7 +18,7 @@ public class CategorySaveRequest {
     @NotNull
     private CategoryType categoryType;
 
-    private String parentName;
+    private Long parentId;
 
     private String emoji;
 

@@ -20,6 +20,9 @@ public class MemberBadgeDTO {
     @JsonProperty("isActive")
     private Boolean isActive;
 
+    @JsonProperty("isEquipped")
+    private Boolean isEquipped;
+
     @NotNull
     private Long member;
 
