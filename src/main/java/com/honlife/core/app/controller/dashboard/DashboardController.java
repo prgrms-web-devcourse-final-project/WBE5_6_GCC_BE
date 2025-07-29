@@ -52,7 +52,7 @@ public class DashboardController {
         @AuthenticationPrincipal UserDetails userDetails
     ){
         if(date.isBefore(LocalDateTime.parse("2025-07-01T00:00:00")) || date.isAfter(LocalDateTime.parse("2025-07-06T23:59:59"))){
-            return ResponseEntity.ok(CommonApiResponse.success(new DashboardWrapper(new RoutineTotalCountResponse(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, null)));
+            return ResponseEntity.ok(CommonApiResponse.success(new DashboardWrapper(new RoutineTotalCountResponse(0L,0L), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, null)));
         }
 
         // 데이터를 가져옴
