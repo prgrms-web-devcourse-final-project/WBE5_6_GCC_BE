@@ -60,7 +60,7 @@ public class AdminCategoryController {
      * @param request 생성할 카테고리의 정보
      * @return
      */
-    @Operation(summary = "🔄 기본 카테고리 생성", description = "기본 카테고리를 생성합니다.")
+    @Operation(summary = "✅ 기본 카테고리 생성", description = "기본 카테고리를 생성합니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createCategory(
         @RequestBody @Valid AdminCategoryRequest request
@@ -75,7 +75,7 @@ public class AdminCategoryController {
      * @param request    생성할 카테고리의 정보
      * @return
      */
-    @Operation(summary = "❌ 카테고리 수정", description = "카테고리 이름 또는 타입을 수정합니다. id는 1,2,3 중 하나만 가능합니다.")
+    @Operation(summary = "🔄 카테고리 수정", description = "카테고리 이름 또는 타입을 수정합니다. id는 1,2,3 중 하나만 가능합니다.")
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
@@ -95,7 +95,7 @@ public class AdminCategoryController {
      * @param categoryId 삭제할 카테고리 id
      * @return
      */
-    @Operation(summary = "❌ 카테고리 삭제", description = "카테고리를 삭제합니다. id는 1,2,3 중 하나만 가능합니다.")
+    @Operation(summary = "🔄 카테고리 삭제", description = "카테고리를 삭제합니다. id는 1,2,3 중 하나만 가능합니다.")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
         @PathVariable(name = "id")
