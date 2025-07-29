@@ -24,19 +24,15 @@ public class AdminItemRequest {
   @Schema(description = "아이템 가격", example = "300")
   private Integer price;
 
-  @NotNull
+  @Schema
+  private String key;
+
   @Schema(description = "아이템 타입", example = "TOP")
   private ItemType itemType;
 
-  @NotNull
-  @Schema(example = "cleaner_top")
-  private String key;
-
-  @NotNull
   @Schema(description = "아이템 설명", example = "청소가 빨라집니다.")
   private String itemDescription;
 
-  @NotNull
-  @Schema(description = "활성화 여부", example = "true")
+  @Schema(description = "아이템 활성화/비활성화 여부", example = "true")
   private Boolean isListed;
 }

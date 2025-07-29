@@ -44,42 +44,13 @@ public class AdminItemController {
     /**
      * 모든 아이템 조회 요청 처리 API
      *
-     * @param itemType 아이템 타입
      * @return 모든 아이템에 대한 리스트를 반환합니다. 만약 특정 타입이 함께 넘어온 경우, 해당 타입의 모든 아이템 리스트가 반환됩니다.
      */
     @Operation(summary = "✅ 아이템 전체 조회", description = "아이템의 전체 목록을 조회합니다.")
     @GetMapping
-    public ResponseEntity<CommonApiResponse<List<AdminItemResponse>>> getItems(
-            @Schema(description = "아이템 타입 입니다.", example = "TOP")
-            @RequestParam(value = "type", required = false) final ItemType itemType
-    ) {
-        // TODO: 반환 값 확인 필요
+    public ResponseEntity<CommonApiResponse<?>> getItems() {
         List<AdminItemResponse> items = new ArrayList<>();
-        if (itemType != null && itemType.name().equals("TOP")) {
-            items.add(AdminItemResponse.builder()
-                    .itemId(1L)
-                    .itemKey("top_item_01")
-                    .itemName("청소 상의")
-                    .itemPrice(100)
-                    .itemType(ItemType.TOP)
-                    .itemDescription("청소에 도움됩니다.")
-                    .isListed(true)
-                    .isActive(true)
-                    .build());
-            items.add(AdminItemResponse.builder()
-                    .itemId(2L)
-                    .itemKey("top_item_02")
-                    .itemName("요리 상의")
-                    .itemPrice(101)
-                    .itemType(ItemType.TOP)
-                    .itemDescription("청소에 도움됩니다.")
-                    .isListed(true)
-                    .isActive(true)
-                    .build());
-            return ResponseEntity.ok(CommonApiResponse.success(items));
-        } else if (itemType != null) {
-            return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
-        }
+
         items.add(AdminItemResponse.builder()
                 .itemId(1L)
                 .itemKey("top_item_01")
@@ -91,19 +62,22 @@ public class AdminItemController {
                 .isActive(true)
                 .build());
         items.add(AdminItemResponse.builder()
-                .itemId(3L)
-                .itemKey("bottom_item_01")
-                .itemName("러닝 바지")
+                .itemId(2L)
+                .itemKey("top_item_02")
+                .itemName("요리 상의")
                 .itemPrice(101)
-                .itemType(ItemType.BOTTOM)
+                .itemType(ItemType.TOP)
                 .itemDescription("청소에 도움됩니다.")
                 .isListed(true)
                 .isActive(true)
                 .build());
         return ResponseEntity.ok(CommonApiResponse.success(items));
     }
+
     /**
      * 아이템 추가 요청 처리 API
+     *
+     * @param adminCreateItemRequeset 아이템 정보 객체
      * @return 성공시 {@code 200}을 반환합니다.
      */
     @Operation(
@@ -126,6 +100,8 @@ public class AdminItemController {
 
     /**
      * 아이템 수정 처리 API
+     *
+     * @param id 아이템 식별 id
      * @param request 아이템 정보 객체
      * @return 성공시 {@code 200}을 반환합니다.
      */
@@ -134,10 +110,10 @@ public class AdminItemController {
             description = "아이템을 수정합니다.",
             parameters = {
                     @Parameter(
-                            name = "itemKey",
-                            description = "수정할 아이템의 key값",
+                            name = "id",
+                            description = "수정할 아이템의 id값",
                             required = true,
-                            example = "top_item_01"
+                            example = "1L"
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -150,15 +126,20 @@ public class AdminItemController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateItem(
-            @PathVariable("id") Long itemId,
+            @PathVariable("id") Long id,
             @RequestBody @Valid AdminItemRequest request
     ) {
-        // TODO: 반환 값 확인 필요
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+        if (id == 1L) {
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
+        }
     }
 
     /**
      * 아이템 삭제 요청 처리 API
+     * 아이템 ID 기반으로 삭제합니다
+     * @param id 아이템 id값
      * @return 성공시 {@code 200}을 반환합니다.
      */
     @Operation(
@@ -166,18 +147,22 @@ public class AdminItemController {
             description = "아이템을 삭제합니다.",
             parameters = {
                     @Parameter(
-                            name = "itemKey",
-                            description = "삭제할 아이템의 itemKey값",
+                            name = "id",
+                            description = "삭제할 아이템의 id값",
                             required = true,
-                            example = "top_item_01"
+                            example = "1L"
                     )
             }
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> deleteItem(
-            @PathVariable("id") Long itemId
+            @PathVariable("id") Long id
     ) {
-        // TODO: 반환 값 확인 필요
-        return ResponseEntity.ok(CommonApiResponse.noContent());
+        if (id == 1L) {
+            return ResponseEntity.ok(CommonApiResponse.noContent());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
+        }
     }
 }
