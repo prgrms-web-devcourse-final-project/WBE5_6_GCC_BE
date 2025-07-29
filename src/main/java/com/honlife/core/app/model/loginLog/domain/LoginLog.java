@@ -40,6 +40,7 @@ public class LoginLog {
     )
     private Long id;
 
+    @Builder.Default
     @Column
     private LocalDateTime time = LocalDateTime.now();
 
