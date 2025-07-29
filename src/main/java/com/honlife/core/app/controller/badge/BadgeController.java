@@ -269,7 +269,7 @@ public class BadgeController {
      * @param userDetails 인증된 사용자 정보
      * @return 성공 응답
      */
-    @Operation(summary = "배지 장착/해제",
+    @Operation(summary = "✅ 배지 장착/해제",
         description = "보유한 배지의 장착 상태를 토글합니다. " +
             "<br> HEALTH_BRONZE: 미장착 → 장착" +
             "<br> STREAK_BRONZE: 장착 중 → 해제" +
