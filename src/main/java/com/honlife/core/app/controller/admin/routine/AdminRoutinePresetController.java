@@ -49,7 +49,7 @@ public class AdminRoutinePresetController {
    * @return AdminRoutinePresetsResponse
    */
   @Operation(
-      summary = "🔄 추천 루틴 프리셋 목록 조회",
+      summary = "✅ 추천 루틴 프리셋 목록 조회",
       description = "관리자가 등록한 모든 추천 루틴 프리셋 목록을 조회합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "<strong>응답 데이터:</strong><br>" +
@@ -222,7 +222,7 @@ public class AdminRoutinePresetController {
    * @return AdminRoutinePresetDetailResponse
    */
   @Operation(
-      summary = "🔄 특정 추천 루틴 프리셋 조회",
+      summary = "✅ 특정 추천 루틴 프리셋 조회",
       description = "특정 추천 루틴 프리셋의 상세 정보를 조회합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "*실제 DB에 반영되지 않음*"
