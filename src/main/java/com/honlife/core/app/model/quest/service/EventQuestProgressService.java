@@ -2,6 +2,7 @@ package com.honlife.core.app.model.quest.service;
 
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.point.service.PointPolicyService;
 import com.honlife.core.app.model.quest.code.QuestDomain;
 import com.honlife.core.app.model.quest.code.QuestType;
 import com.honlife.core.app.model.quest.domain.EventQuestProgress;
@@ -25,17 +26,21 @@ public class EventQuestProgressService {
     private final EventQuestProgressRepository eventQuestProgressRepository;
     private final MemberPointService memberPointService;
     private final QuestProgressProcessorRouter questProgressProcessorRouter;
+    private final PointPolicyService pointPolicyService;
 
     /**
      * 회원에게 할당되었고, 활성화 상태인 이벤트 퀘스트 목록 검색
      * @param userEmail 회원 이메일
      * @return List of {@link MemberEventQuestDTO}
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public List<MemberEventQuestDTO> getMemberEventQuestsProgress(String userEmail) {
         List<EventQuestProgress> memberEventQuestProgressList = eventQuestProgressRepository.findAllByMember_EmailAndIsActive(userEmail,true);
-        return memberEventQuestProgressList.stream().map(MemberEventQuestDTO::fromEntity).collect(
-            Collectors.toList());
+        return memberEventQuestProgressList
+            .stream()
+            .map(progress ->
+                MemberEventQuestDTO.fromEntity(progress, pointPolicyService.getPoint(progress.getEventQuest().getKey(), PointSourceType.EVENT)))
+            .collect(Collectors.toList());
     }
 
     /**
