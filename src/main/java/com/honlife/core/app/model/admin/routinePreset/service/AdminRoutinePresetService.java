@@ -68,10 +68,11 @@ public class AdminRoutinePresetService {
               .isImportant(routinePreset.getIsImportant())
               .createdAt(routinePreset.getCreatedAt())
               .updatedAt(routinePreset.getUpdatedAt())
-              .initDate(routinePreset.getInitDate())
               .repeatType(routinePreset.getRepeatType())
-              .repeatTerm(routinePreset.getRepeatTerm())
               .repeatValue(routinePreset.getRepeatValue())
+              .initDate(routinePreset.getInitDate())
+              .repeatTerm(routinePreset.getRepeatTerm())
+              .emoji(routinePreset.getCategory().getEmoji())
               .build();
         })
         .collect(Collectors.toList());
@@ -108,11 +109,11 @@ public class AdminRoutinePresetService {
         .isImportant(routinePreset.getIsImportant())
         .createdAt(routinePreset.getCreatedAt())
         .updatedAt(routinePreset.getUpdatedAt())
-        .repeatTerm(routinePreset.getRepeatTerm())
-        .initDate(routinePreset.getInitDate())
+        .emoji(routinePreset.getCategory().getEmoji())
         .repeatType(routinePreset.getRepeatType())
         .repeatValue(routinePreset.getRepeatValue())
-        .emoji(routinePreset.getCategory().getEmoji())
+        .initDate(routinePreset.getInitDate())
+        .repeatTerm(routinePreset.getRepeatTerm())
         .build();
 
     return dto;

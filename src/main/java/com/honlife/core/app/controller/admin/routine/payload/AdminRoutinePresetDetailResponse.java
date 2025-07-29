@@ -24,8 +24,6 @@ public class AdminRoutinePresetDetailResponse {
 
     private String majorCategory;
 
-    private String subCategory;
-
     private String name;
 
     private String triggerTime;
@@ -36,13 +34,15 @@ public class AdminRoutinePresetDetailResponse {
 
     private LocalDateTime updatedAt;
 
-    private int repeatInterval;
-
-    private LocalDate startRoutineDate;
+    private String emoji;
 
     private RepeatType repeatType;
 
     private String repeatValue;
+
+    private LocalDate initDate;
+
+    private Integer repeatTerm;
 
 
     public static AdminRoutinePresetDetailResponse fromDto(RoutinePresetViewDTO dto) {
@@ -50,16 +50,16 @@ public class AdminRoutinePresetDetailResponse {
             .presetId(dto.getPresetId())
             .categoryId(dto.getCategoryId())
             .majorCategory(dto.getMajorCategory())
-            .subCategory(dto.getSubCategory())
             .name(dto.getName())
             .triggerTime(dto.getTriggerTime())
             .isImportant(dto.getIsImportant())
             .createdAt(dto.getCreatedAt())
             .updatedAt(dto.getUpdatedAt())
-            .repeatInterval(dto.getRepeatInterval())
-            .startRoutineDate(dto.getStartRoutineDate())
+            .emoji(dto.getEmoji())
             .repeatType(dto.getRepeatType())
             .repeatValue(dto.getRepeatValue())
+            .initDate(dto.getInitDate())
+            .repeatTerm(dto.getRepeatTerm())
             .build();
     }
 

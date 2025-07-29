@@ -23,7 +23,6 @@ public class RoutinePresetViewDTO {
 
   private String majorCategory;
 
-
   private String name;
 
   private String triggerTime;
@@ -42,7 +41,6 @@ public class RoutinePresetViewDTO {
 
   private LocalDate initDate;
 
-  private int repeatTerm;
-
+  private Integer repeatTerm;
 
 }
