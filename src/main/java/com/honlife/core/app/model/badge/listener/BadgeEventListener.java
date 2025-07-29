@@ -1,8 +1,11 @@
 package com.honlife.core.app.model.badge.listener;
 
 import com.honlife.core.app.model.badge.event.LoginEvent;
-import com.honlife.core.app.model.badge.event.RoutineProgressEvent;
 import com.honlife.core.app.model.badge.service.BadgeProgressService;
+import com.honlife.core.app.model.category.service.CategoryService;
+import com.honlife.core.app.model.routine.dto.RoutineScheduleInfo;
+import com.honlife.core.app.model.routine.service.RoutineScheduleService;
+import com.honlife.core.infra.event.CommonEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -17,39 +20,53 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class BadgeEventListener {
 
     private final BadgeProgressService badgeProgressService;
+    private final RoutineScheduleService routineScheduleService;
+    private final CategoryService categoryService;
 
     /**
      * 루틴 진행률 변경 이벤트 처리 (완료/취소 통합)
-     * @param event 루틴 진행률 변경 이벤트
+     * CommonEvent를 통해 루틴 완료/취소 시 배지 진행률 업데이트
+     *
+     * @param event 루틴 진행률 변경 이벤트 (CommonEvent)
      */
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
-    public void onRoutineProgress(RoutineProgressEvent event) {
-        try {
-            log.debug("Processing routine progress event after transaction commit - memberId: {}, categoryId: {}, isDone: {}",
-                event.getMemberId(), event.getCategoryId(), event.getIsDone());
+    public void onRoutineProgress(CommonEvent event) {
 
+        log.info("🚀 onRoutineProgress 호출됨! - routineScheduleId: {}", event.getRoutineScheduleId());
+
+        try {
+            log.debug("Processing routine progress event after transaction commit - routineScheduleId: {}, isDone: {}",
+                event.getRoutineScheduleId(), event.getIsDone());
+
+            // 1. 루틴 스케줄 정보 조회 (Service를 통한 안전한 접근)
+            RoutineScheduleInfo scheduleInfo = routineScheduleService
+                .getRoutineScheduleInfoForBadge(event.getRoutineScheduleId());
+
+            if (scheduleInfo == null) {
+                log.warn("RoutineSchedule not found - routineScheduleId: {}", event.getRoutineScheduleId());
+                return;
+            }
+
+            // 2. 상위 카테고리 찾기 (SUB → 부모, DEFAULT/MAJOR → 자기 자신)
+            Long topLevelCategoryId = categoryService.findTopLevelCategoryIdForBadge(scheduleInfo.getCategoryId());
+
+            // 3. 배지 진행률 업데이트
             if (event.getIsDone()) {
                 // 루틴 완료
-                badgeProgressService.incrementCategoryProgress(
-                    event.getMemberId(),
-                    event.getCategoryId()
-                );
+                badgeProgressService.incrementCategoryProgress(scheduleInfo.getMemberId(), topLevelCategoryId);
                 log.debug("Successfully incremented badge progress - memberId: {}, categoryId: {}",
-                    event.getMemberId(), event.getCategoryId());
+                    scheduleInfo.getMemberId(), topLevelCategoryId);
             } else {
                 // 루틴 완료 취소
-                badgeProgressService.decrementCategoryProgress(
-                    event.getMemberId(),
-                    event.getCategoryId()
-                );
+                badgeProgressService.decrementCategoryProgress(scheduleInfo.getMemberId(), topLevelCategoryId);
                 log.debug("Successfully decremented badge progress - memberId: {}, categoryId: {}",
-                    event.getMemberId(), event.getCategoryId());
+                    scheduleInfo.getMemberId(), topLevelCategoryId);
             }
 
         } catch (Exception e) {
-            log.error("Failed to process routine progress event - memberId: {}, categoryId: {}, isDone: {}, error: {}",
-                event.getMemberId(), event.getCategoryId(), event.getIsDone(), e.getMessage(), e);
+            log.error("Failed to process routine progress event - routineScheduleId: {}, isDone: {}, error: {}",
+                event.getRoutineScheduleId(), event.getIsDone(), e.getMessage(), e);
         }
     }
 
