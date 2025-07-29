@@ -20,6 +20,7 @@ public class MemberEventQuestDTO {
     private Integer target;
     private Integer progress;
     private Integer points;
+    private Boolean isDone;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
 
@@ -40,6 +41,7 @@ public class MemberEventQuestDTO {
             .target(eventQuestProgress.getEventQuest().getTarget())
             .progress(eventQuestProgress.getProgress())
             .points(points)
+            .isDone(eventQuestProgress.getIsDone())
             .startAt(eventQuestProgress.getEventQuest().getStartDate())
             .endAt(eventQuestProgress.getEventQuest().getEndDate())
             .build();

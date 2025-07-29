@@ -20,6 +20,7 @@ public class MemberWeeklyQuestDTO {
     private Integer target;
     private Integer progress;
     private Integer points;
+    private Boolean isDone;
 
     /**
      * 엔티티를 DTO로 변환<br>
@@ -38,6 +39,7 @@ public class MemberWeeklyQuestDTO {
             .target(weeklyQuestProgress.getWeeklyQuest().getTarget())
             .progress(weeklyQuestProgress.getProgress())
             .points(points)
+            .isDone(weeklyQuestProgress.getIsDone())
             .build();
     }
 }
