@@ -41,7 +41,6 @@ import com.honlife.core.infra.error.exceptions.NotFoundException;
 
 @RequiredArgsConstructor
 @Service
-@Slf4j
 public class MemberService {
 
     private final ModelMapper modelMapper;

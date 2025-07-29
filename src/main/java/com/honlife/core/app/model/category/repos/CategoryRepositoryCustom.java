@@ -27,4 +27,11 @@ public interface CategoryRepositoryCustom {
      */
     List<Category> findCustomCategory(String userEmail);
 
+    /**
+     * 카테고리 아이디와 이메일을 통해 카테고리를 검색합니다.
+     * @param categoryId 카테고리 아이디
+     * @param userEmail 멤버 이메일
+     * @return {@link CategoryDTO}를 Optional로 반환
+     */
+    Optional<Category> findCategoryById(Long categoryId, String userEmail);
 }
