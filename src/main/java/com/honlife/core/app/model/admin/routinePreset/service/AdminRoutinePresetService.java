@@ -6,6 +6,9 @@ import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
+import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
+import com.honlife.core.app.model.category.code.CategoryType;
+import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -18,12 +21,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 @RequiredArgsConstructor
 public class AdminRoutinePresetService {
 
   private final RoutinePresetRepository routinePresetRepository;
   private final CategoryRepository categoryRepository;
+
 
   /**
    * 추천 루틴 프리셋 목록 조회 service
@@ -81,7 +86,7 @@ public class AdminRoutinePresetService {
   }
 
   /**
-   * 추천 루틴 프리셋 단건 조회 조회 service
+   * 추천 루틴 프리셋 단건 조회 service
    * @return RoutinePresetViewDTO
    */
   public RoutinePresetViewDTO getRoutinePreset(Long presetId) {
@@ -119,6 +124,7 @@ public class AdminRoutinePresetService {
     return dto;
 
   }
+
 
   public void createRoutinePreset(AdminRoutinePresetSaveRequest request) {
 
@@ -171,4 +177,5 @@ public class AdminRoutinePresetService {
     routinePreset.setIsActive(false);
 
   }
+
 }

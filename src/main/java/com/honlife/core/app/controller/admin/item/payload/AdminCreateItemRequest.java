@@ -9,11 +9,11 @@ import lombok.Data;
 public class AdminCreateItemRequest {
     @NotEmpty
     private String itemKey;
-    @NotEmpty
+    @NotNull
     private ItemType itemType;
     @NotEmpty
     private String itemName;
-    @NotEmpty
+    @NotNull
     private Integer itemPrice;
 
     @NotNull

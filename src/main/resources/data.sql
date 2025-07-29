@@ -32,6 +32,7 @@ INSERT INTO CATEGORY (id, member_id, parent_id, name, type, created_at, updated_
 
 -- ROUTINE_PRESET 테스트 데이터 (PostgreSQL)
 -- 카테고리: 1=청소/정리, 2=세탁/의류, 3=쓰레기/환경, 4=요리, 5=소비, 6=행정, 7=건강, 8=외출, 9=기타
+
 INSERT INTO ROUTINE_PRESET (
     id, category_id, content, is_active, created_at, updated_at,
     is_important, trigger_time, repeat_term, repeat_type, repeat_value, init_date
@@ -81,6 +82,7 @@ INSERT INTO ROUTINE_PRESET (
       (43, 9, '취미 활동하기', true, '2025-01-01 00:00:00', '2025-01-01 00:00:00', false, '08:00', 1, 'DAILY', '1', '2025-07-26'),
       (44, 9, '명상하기', true, '2025-01-01 00:00:00', '2025-01-01 00:00:00', false, '08:00', 1, 'DAILY', '1', '2025-07-26'),
       (45, 9, '친구와 연락하기', true, '2025-01-01 00:00:00', '2025-01-01 00:00:00', false, '08:00', 1, 'DAILY', '1', '2025-07-26');
+
 
 -- ROUTINE 테스트 데이터 (PostgreSQL)
 -- member_id: 10000, 10001
