@@ -15,10 +15,6 @@ public class AdminRoutinePresetUpdateRequest {
 
   private Long categoryId;
 
-  private String majorCategory;
-
-  private String subCategory;
-
   private String triggerTime;
 
   private Boolean isImportant;
