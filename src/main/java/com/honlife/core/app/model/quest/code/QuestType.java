@@ -2,15 +2,15 @@ package com.honlife.core.app.model.quest.code;
 
 public enum QuestType {
     /**
-     * 연속<br>
-     * ex) 루틴 1개 이상 연속 3일 동안 하기
+     * 루틴 누적<br>
+     * ex) 이번주 아무 루틴 n회 이상
      */
-    STREAK,
+    ROUTINE_COUNT,
     /**
      * 누적<br>
      * ex) 이번주 ㅇㅇ카테고리 누적 n회
      */
-    COUNT,
+    CATEGORY_COUNT,
     /**
      * 완료 누적<br>
      * ex) 이번주 루틴 100% 달성 n회
@@ -22,8 +22,12 @@ public enum QuestType {
      */
     COMPLETE_STREAK,
     /**
-     * 완료<br>
-     * ex) 이번 주 하루 루틴 100% 달성
+     * 누적 로그인
+     * ex) 이벤트 기간동안 누적 n회 로그인
      */
-    COMPLETE
+    LOGIN_COUNT,
+    /**
+     * 연속 로그인 ex) 이벤트 기간동안 연속 로그인
+     */
+    LOGIN_STREAK
 }

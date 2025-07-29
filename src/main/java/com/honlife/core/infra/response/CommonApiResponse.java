@@ -14,9 +14,13 @@ public record CommonApiResponse<T>(
     public static <T> CommonApiResponse<T> success(ResponseCode code) {
         return new CommonApiResponse<>(code.code(), code.message(), null);
     }
-    
+
     public static <T> CommonApiResponse<T> noContent() {
         return new CommonApiResponse<>(ResponseCode.OK.code(), ResponseCode.OK.message(), null);
+    }
+
+    public static <T> CommonApiResponse<T> noContent(ResponseCode code) {
+        return new CommonApiResponse<>(code.code(), code.message(), null);
     }
     
     public static <T> CommonApiResponse<T> error(ResponseCode code) {

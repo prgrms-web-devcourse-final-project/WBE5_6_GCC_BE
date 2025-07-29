@@ -2,7 +2,8 @@ package com.honlife.core.app.model.item.service;
 
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
-import org.springframework.data.domain.Sort;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
@@ -21,13 +22,9 @@ import com.honlife.core.app.model.member.repos.MemberPointRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.error.exceptions.CommonException;
-import com.honlife.core.infra.response.ResponseCode;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
@@ -60,12 +57,13 @@ public class ItemService {
 
                     return ItemDTO.builder()
                             .id(i.getId())
-                            .itemKey(i.getItemKey())
+                            .itemKey(i.getKey())
                             .name(i.getName())
                             .description(i.getDescription())
                             .type(i.getType())
                             .price(i.getPrice())
                             .isOwned(isOwned)
+                            .isListed(i.getIsListed())
                             .build();
                 })
                 .toList();
@@ -75,12 +73,12 @@ public class ItemService {
      * 회원 ID와 아이템 key를 기준으로 해당 아이템 정보를 조회하고,
      * 회원의 보유 여부를 포함한 ItemResponse DTO로 반환합니다.
      *
-     * @param itemKey   조회할 아이템의 고유 키
+     * @param key   조회할 아이템의 고유 키
      * @param memberId  현재 로그인한 회원의 ID
      * @return          아이템 정보 및 보유 여부를 담은 ItemResponse
      */
-    public ItemDTO getItemResponseByKey(String itemKey, Long memberId) {
-        Tuple tuple = itemRepositoryCustom.findItemWithOwnership(itemKey, memberId);
+    public ItemDTO getItemResponseByKey(String key, Long memberId) {
+        Tuple tuple = itemRepositoryCustom.findItemWithOwnership(key, memberId);
         if (tuple == null) {
             throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
         }
@@ -90,23 +88,33 @@ public class ItemService {
 
         return ItemDTO.builder()
                 .id(i.getId())
-                .itemKey(i.getItemKey())
+                .itemKey(i.getKey())
                 .name(i.getName())
                 .description(i.getDescription())
                 .type(i.getType())
                 .price(i.getPrice())
                 .isOwned(isOwned)
+                .isListed(i.getIsListed())
                 .build();
     }
 
 
     /**
      * itemKey로 단일 아이템 조회
-     * @param itemKey
+     * @param key
      * return Optional<Item></Item>
      */
-    public Item getItemByKey(String itemKey) {
-        return itemRepository.findByItemKeyAndIsActiveTrue(itemKey);
+    public Optional<Item> getItemByKey(String key) {
+        return itemRepository.findByKeyAndIsActiveTrue(key);
+    }
+
+    /**
+     * itemId로 단일 아이템 조회
+     * @param id
+     * return Optional<Item></Item>
+     */
+    public Optional<Item>  getItemById(Long id) {
+        return itemRepository.findByIdAndIsActiveTrue(id);
     }
 
     /**
@@ -139,8 +147,8 @@ public class ItemService {
      * itemKeyExists,mapToDTO,mapToEntity,get,getReferencedWarning
      * Item Unique 보장을 위함
      */
-    public boolean itemKeyExists(final String itemKey) {
-        return itemRepository.existsByItemKeyIgnoreCase(itemKey);
+    public boolean itemKeyExists(final String key) {
+        return itemRepository.existsByKeyIgnoreCase(key);
     }
 
     private ItemDTO mapToDTO(final Item item, final ItemDTO itemDTO) {
@@ -148,7 +156,7 @@ public class ItemService {
         itemDTO.setUpdatedAt(item.getUpdatedAt());
         itemDTO.setIsActive(item.getIsActive());
         itemDTO.setId(item.getId());
-        itemDTO.setItemKey(item.getItemKey());
+        itemDTO.setItemKey(item.getKey());
         itemDTO.setName(item.getName());
         itemDTO.setPrice(item.getPrice());
         itemDTO.setType(item.getType());
@@ -159,7 +167,7 @@ public class ItemService {
         item.setCreatedAt(itemDTO.getCreatedAt());
         item.setUpdatedAt(itemDTO.getUpdatedAt());
         item.setIsActive(itemDTO.getIsActive());
-        item.setItemKey(itemDTO.getItemKey());
+        item.setKey(itemDTO.getItemKey());
         item.setName(itemDTO.getName());
         item.setPrice(itemDTO.getPrice());
         item.setType(itemDTO.getType());
