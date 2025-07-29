@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 public class MemberItemResponse {
 
+    private Long id;
     private String itemKey;
     private String itemName;
     private ItemType itemtype;
@@ -19,6 +20,7 @@ public class MemberItemResponse {
 
     public static MemberItemResponse fromDTO(MemberItemDTOCustom dto) {
         return MemberItemResponse.builder()
+                .id(dto.getId())
                 .itemKey(dto.getItemKey())
                 .itemName(dto.getItemName())
                 .itemtype(dto.getItemtype())
