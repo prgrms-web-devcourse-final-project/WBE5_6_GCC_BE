@@ -22,14 +22,14 @@ public class PointPolicy extends BaseEntity {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-            name = "primary_sequence",
-            sequenceName = "primary_sequence",
+            name = "point_policy_sequence",
+            sequenceName = "point_policy_sequence",
             allocationSize = 1,
             initialValue = 10000
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "primary_sequence"
+            generator = "point_policy_sequence"
     )
     private Long id;
 

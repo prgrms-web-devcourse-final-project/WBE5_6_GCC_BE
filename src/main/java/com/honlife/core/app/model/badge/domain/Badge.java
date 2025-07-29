@@ -48,7 +48,7 @@ public class Badge extends BaseEntity {
     private BadgeTier tier;
 
     @Column(length = 100)
-    private String how;
+    private String message;
 
     @Column
     private Integer requirement;

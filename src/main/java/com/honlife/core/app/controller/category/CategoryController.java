@@ -88,7 +88,7 @@ public class CategoryController {
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody @Valid final CategorySaveRequest categorySaveRequest) {
         // SUB 카테고리지만 부모 카테고리 정보가 없는 경우
-        if(categorySaveRequest.getCategoryType().equals(CategoryType.SUB) && categorySaveRequest.getParentId() == null) {
+        if(categorySaveRequest.getCategoryType() == CategoryType.SUB && categorySaveRequest.getParentId() == null) {
             return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.status())
                 .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
