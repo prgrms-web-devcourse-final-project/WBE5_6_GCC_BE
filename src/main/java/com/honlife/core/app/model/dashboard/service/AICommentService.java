@@ -42,6 +42,11 @@ public class AICommentService {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 날짜 포맷 지정
 
         List<RoutineSchedule> routineSchedules = routineScheduleRepository.findAllByDateBetween(userEmail, startDate, endDate);
+        
+        // 루틴 데이터가 없을 경우 빠른 리턴 
+        if(dashboardDTO.getRoutineCount().getTotalCount()==0) {
+            return null;
+        }
 
         // 이 데이터를 안 보내주니까 완료율 같은 걸 지멋대로 계산하길래 더 정확한 데이터를 위해 추가하였습니다.
         for (DayRoutineCountDTO dayData : dashboardDTO.getDayRoutineCount()) {
@@ -57,7 +62,7 @@ public class AICommentService {
         String dayRoutine = stringBuilder.toString();
 
         for (RoutineSchedule routineSchedule : routineSchedules) {
-            String formattedDate = routineSchedule.getDate().format(dateFormatter);
+            String formattedDate = routineSchedule.getScheduledDate().format(dateFormatter);
 
             stringBuilder.append(String.format("  - %s : %s 카테고리에 해당하는 %s라는 루틴 수행, 완료 여부 = %b",
                 formattedDate,
@@ -86,6 +91,12 @@ public class AICommentService {
         String dayRoutine) {
         String allRoutineData = stringBuilder.toString();
 
+        // 혹시나 데이터가 비어있을 때를 대비
+        String topCategory = "없음";
+        if (dashboardDTO.getTop5() != null && !dashboardDTO.getTop5().isEmpty()) {
+            topCategory = dashboardDTO.getTop5().getFirst().getCategoryName();
+        }
+
         return String.format("""          
             [이번 주 루틴 데이터]
             총_루틴_개수: %d
@@ -98,7 +109,7 @@ public class AICommentService {
             dashboardDTO.getRoutineCount().getTotalCount(),
             dashboardDTO.getRoutineCount().getCompletedCount(),
             dashboardDTO.getTotalPoint(),
-            dashboardDTO.getTop5().getFirst().getCategoryName(),
+            topCategory,
             dayRoutine,
             allRoutineData
         );
