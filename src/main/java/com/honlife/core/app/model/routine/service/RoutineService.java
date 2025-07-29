@@ -24,7 +24,6 @@ import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.domain.RoutineSchedule;
-import com.honlife.core.app.model.routine.dto.RoutineDTO;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +92,7 @@ public class RoutineService {
 
 
                   RoutineSchedule routineSchedule = routineScheduleRepository
-                      .findByRoutineAndScheduleDate(routine, currentDate);
+                      .findByRoutineAndScheduledDate(routine, currentDate);
 
                   return RoutineItemDTO.builder()
                       .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
@@ -201,7 +200,7 @@ public class RoutineService {
           }
 
           RoutineSchedule routineSchedule = routineScheduleRepository
-              .findByRoutineAndScheduleDate(routine, LocalDate.now());
+              .findByRoutineAndScheduledDate(routine, LocalDate.now());
 
           return RoutineTodayItemDTO.builder()
               .scheduleId(routineSchedule != null ? routineSchedule.getId() : null)
@@ -259,7 +258,7 @@ public class RoutineService {
 
     routineRepository.save(routine);
 
-  boolean exists = routineScheduleRepository.existsByRoutineAndScheduleDate(routine, LocalDate.now());
+  boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, LocalDate.now());
     if (!exists) {
     RoutineSchedule schedule = RoutineSchedule.builder()
         .scheduledDate(LocalDate.now())
