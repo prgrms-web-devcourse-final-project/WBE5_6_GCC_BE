@@ -2,6 +2,7 @@ package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.model.category.dto.CategoryDTO;
 import com.honlife.core.app.model.category.service.CategoryService;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.app.controller.routine.payload.RoutineUpdateRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
@@ -72,7 +73,7 @@ public class RoutineService {
                     !routine.getInitDate().isAfter(LocalDate.now()) &&
                         routine.getRepeatType().isMatched(currentDate, routine.getRepeatValue()) &&
                         // 달마다 차이나는 것을 무시하고 순수한 주차 사이 값을 돌려준다는 메서드인데 진짜 너무 대박이네요
-                        ChronoUnit.WEEKS.between(routine.getInitDate(), currentDate) % routine.getRepeatTerm() == 0
+                        isToday(routine, currentDate)
                 )
 
                 .map(currentDate -> {
@@ -181,7 +182,7 @@ public class RoutineService {
         .filter(routine ->
             !routine.getInitDate().isAfter(LocalDate.now()) &&
                 routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
-                ChronoUnit.WEEKS.between(routine.getInitDate(), LocalDate.now()) % routine.getRepeatTerm() == 0
+                isToday(routine, LocalDate.now())
         )
 
         .map(routine -> {
@@ -239,10 +240,6 @@ public class RoutineService {
     Category category = categoryRepository.findById(routineSaveRequest.getCategoryId())
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
-
-
-
-
     /** 간단한 로직이라 DTO를 사용할 필요 없을거같아 바로 Routine으로 넣어줬습니다*/
     Routine routine = new Routine();
 
@@ -258,20 +255,41 @@ public class RoutineService {
 
     routineRepository.save(routine);
 
-  boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, LocalDate.now());
-    if (!exists) {
-    RoutineSchedule schedule = RoutineSchedule.builder()
-        .scheduledDate(LocalDate.now())
-        .isDone(false)
-        .routine(routine)
-        .build();
-    routineScheduleRepository.save(schedule);;
-    }
-
-
+    // 오늘이 루틴에 해당하는 날짜인지 확인
+  if(!routineSaveRequest.getInitDate().isAfter(LocalDate.now()) && routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
+      isToday(routine, LocalDate.now())){
+      boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, LocalDate.now());
+        if (!exists) {
+        RoutineSchedule schedule = RoutineSchedule.builder()
+            .scheduledDate(LocalDate.now())
+            .isDone(false)
+            .routine(routine)
+            .build();
+        routineScheduleRepository.save(schedule);
   }
 
-  /**
+    }
+  }
+
+    /**
+     * term 을 확인해서 오늘이 루틴을 행하는 날인지 확인합니다.
+     * @param routine 루틴 정보
+     * @return Boolean
+     */
+  // todo 이름 바꾸기
+    private boolean isToday(Routine routine, LocalDate date) {
+      if(routine.getRepeatType() == RepeatType.DAILY)
+          return ChronoUnit.DAYS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
+      else if(routine.getRepeatType() == RepeatType.WEEKLY)
+          return ChronoUnit.WEEKS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
+      else if(routine.getRepeatType() == RepeatType.MONTHLY)
+          return ChronoUnit.MONTHS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
+      else{
+          return false;
+      }
+    }
+
+    /**
    * 사용자 루틴 수정 입니다
    * return void
    * 수정도 카테고리 Id롤 받습니다
