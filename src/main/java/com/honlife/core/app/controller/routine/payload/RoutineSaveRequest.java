@@ -34,5 +34,6 @@ public class RoutineSaveRequest {
     @Size(max = 100, message = "반복 값은 100자를 초과할 수 없습니다")
     private String repeatValue;
 
+    @NotNull(message = "repeatTerm must be Not Null")
     private Integer repeatTerm = 1;
 }
