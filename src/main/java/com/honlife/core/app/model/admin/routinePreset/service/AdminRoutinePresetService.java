@@ -136,7 +136,6 @@ public class AdminRoutinePresetService {
         .initDate(request.getInitDate())
         .build();
 
-    routinePreset.setCreatedAt(LocalDateTime.now());
 
     routinePresetRepository.save(routinePreset);
 
@@ -160,7 +159,6 @@ public class AdminRoutinePresetService {
       Category category = categoryRepository.findById(request.getCategoryId())
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
       routinePreset.setCategory(category);
-    routinePreset.setUpdatedAt(LocalDateTime.now());
 
 
   }
