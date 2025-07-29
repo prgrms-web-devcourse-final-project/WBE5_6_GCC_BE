@@ -70,6 +70,7 @@ public class RoutineController {
 
         routines.add(RoutineItemDTO.builder()
             .scheduleId(3L)
+            .categoryId(1L)
             .routineId(3L)
             .majorCategory("업무")
             .subCategory("회의")
@@ -79,6 +80,8 @@ public class RoutineController {
             .isImportant(true)
             .repeatType(RepeatType.WEEKLY)
             .repeatValue("1,2,3")
+            .initDate("2025-11-12")
+            .emoji("✅")
             .build());
 
         routines.add(RoutineItemDTO.builder()
@@ -92,6 +95,8 @@ public class RoutineController {
             .isImportant(false)
             .repeatType(RepeatType.DAILY)
             .repeatValue(null)
+            .initDate("2025-11-12")
+            .emoji("✅")
             .build());
 
         routines.add(RoutineItemDTO.builder()
@@ -105,6 +110,8 @@ public class RoutineController {
             .isImportant(true)
             .repeatType(RepeatType.WEEKLY)
             .repeatValue("5,4")
+            .initDate("2025-11-12")
+            .emoji("✅")
             .build());
 
         return ResponseEntity.ok(CommonApiResponse.success(routines));
@@ -152,9 +159,10 @@ public class RoutineController {
                     .isDone(false)
                     .isImportant(true)
                     .date(targetDate)
-                    .startRoutineDate(startRoutineDate)
+                    .initDate(startRoutineDate)
                     .repeatType(RepeatType.WEEKLY)
                     .repeatValue("1,2,3")
+                    .emoji("✅")
                     .build());
 
                 routinesMap.put(key, items);
@@ -193,7 +201,8 @@ public class RoutineController {
                 .isImportant(false)
                 .repeatType(RepeatType.WEEKLY)
                 .repeatValue("1,3,5")
-                .startRoutineDate(LocalDate.of(2025, 7, 1))
+                .initDate(LocalDate.of(2025, 7, 1))
+                .emoji("✅")
                 .build();
 
             return ResponseEntity.ok(CommonApiResponse.success(response));
