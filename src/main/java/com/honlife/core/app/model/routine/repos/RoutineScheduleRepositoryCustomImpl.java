@@ -6,6 +6,7 @@ import com.honlife.core.app.model.dashboard.dto.DayRoutineCountDTO;
 import com.honlife.core.app.model.dashboard.dto.RoutineTotalCountDTO;
 import com.honlife.core.app.model.routine.domain.QRoutine;
 import com.honlife.core.app.model.routine.domain.QRoutineSchedule;
+import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -105,5 +106,17 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
             .groupBy(category, parent)
             .orderBy(qRoutineSchedule.count().desc())
             .fetch();
+    }
+
+    @Override
+    public List<RoutineSchedule> findAllByDateBetween(String userEmail, LocalDate startDate, LocalDate endDate) {
+        return queryFactory.select(qRoutineSchedule)
+            .from(qRoutineSchedule)
+            .leftJoin(qRoutineSchedule.routine, qRoutine).fetchJoin()
+            .leftJoin(qRoutine.category, category).fetchJoin()
+            .where((qRoutine.member.email.eq(userEmail))
+                .and(qRoutineSchedule.scheduledDate.goe(startDate))
+                .and(qRoutineSchedule.scheduledDate.lt(endDate))
+            ).fetch();
     }
 }
