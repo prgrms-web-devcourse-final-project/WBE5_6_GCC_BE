@@ -153,12 +153,26 @@ public class MemberBadgeService {
     }
 
     /**
-     * 해당 멤버와 연관된 활성화된 첫번째 멤버 뱃지를 조회합니다.
-     * @param member 멤버
-     * @param isActive 활성화 상태
-     * @return {@link MemberBadge}
+     * 장착한 뱃지 정보를 가져옵니다.
+     * @param userEmail 멤버 이메일
+     * @return MemberBadgeDetailDTO
      */
-    public MemberBadge findFirstMemberBadgeByMemberAndIsActive(Member member, boolean isActive) {
-        return memberBadgeRepository.findFirstByMemberAndIsActive(member, isActive);
+    public MemberBadgeDetailDTO getEquippedBadge(String userEmail) {
+        MemberBadge equippedBadge = memberBadgeRepository.findByMemberIsEquipped(userEmail, true).orElse(null);
+        if(equippedBadge == null){
+            return null;
+        }
+
+        Badge badge = equippedBadge.getBadge();
+
+        return MemberBadgeDetailDTO.builder()
+            .memberBadgeId(equippedBadge.getId())
+            .receivedDate(equippedBadge.getCreatedAt())
+            .badgeId(badge.getId())
+            .badgeKey(badge.getKey())
+            .badgeName(badge.getName())
+            .badgeTier(badge.getTier())
+            .badgeInfo(badge.getInfo())
+            .build();
     }
 }
