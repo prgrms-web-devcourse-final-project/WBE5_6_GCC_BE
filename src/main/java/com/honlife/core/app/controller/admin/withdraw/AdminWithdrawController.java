@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name="🔄 [관리자] 회원 탈퇴 사유", description = "관리자용 회원 탈퇴 사유 관련 API 입니다.")
+@Tag(name="✅ [관리자] 회원 탈퇴 사유", description = "관리자용 회원 탈퇴 사유 관련 API 입니다.")
 @RequestMapping(value = "/api/v1/admin/withdraw", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
@@ -68,7 +68,7 @@ public class AdminWithdrawController {
     }
 
 
-    @Operation(summary = "🔄 회원 탈퇴 사유 조회")
+    @Operation(summary = "✅ 회원 탈퇴 사유 조회")
     @GetMapping("/reasons")
     public ResponseEntity<CommonApiResponse<Page<AdminWithdrawResponse>>> getAllWithdrawReason(
         @RequestParam(required = false)
