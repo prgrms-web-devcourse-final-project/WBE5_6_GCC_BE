@@ -9,14 +9,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface ItemRepository extends JpaRepository<Item, Long> {
-
-    /**
-     * ItemKey의 정보로 IsActive가 True 인 값을 조회합니다.
-     * @param key item에 대한 key 값
-     * @return Optional<Item>
-     */
-    Optional<Item> findByKeyAndIsActiveTrue(String key);
+public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositoryCustom {
 
     /**
      * itemId의 정보로 IsActive가 True 인 값을 조회합니다.

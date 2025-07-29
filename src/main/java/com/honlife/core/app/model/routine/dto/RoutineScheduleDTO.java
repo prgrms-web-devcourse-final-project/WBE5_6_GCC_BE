@@ -20,7 +20,7 @@ public class RoutineScheduleDTO {
 
     private Long id;
 
-    private LocalDate scheduleDate;
+    private LocalDate scheduledDate;
 
     @JsonProperty("isDone")
     private Boolean isDone;

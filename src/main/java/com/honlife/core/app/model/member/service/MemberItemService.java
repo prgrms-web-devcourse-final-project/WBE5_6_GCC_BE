@@ -41,16 +41,16 @@ public class MemberItemService {
       - 이후 클릭한 아이템을 장착 처리합니다.
 
       @param memberId 사용자 ID
-     * @param key  장착 또는 해제할 아이템의 고유 키
+     * @param itemId  장착 또는 해제할 아이템의 고유 키
      */
     @Transactional
-    public void switchItemEquip(Long memberId, String key) {
+    public void switchItemEquip(Long memberId, Long itemId) {
 
-        Item item = itemService.getItemByKey(key)
+        Item item = itemService.getItemById(itemId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
 
         // 해당 itemId과 일치하는 회원 보유 아이템 정보 가져옴
-        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, item.getId())
+        MemberItem target = memberItemRepository.findByMemberIdAndItemId(memberId, itemId)
                 // 회원이 해당 아이템을 보유하지 않았을 때
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
 
