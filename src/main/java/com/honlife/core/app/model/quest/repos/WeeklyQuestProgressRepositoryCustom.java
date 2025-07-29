@@ -7,4 +7,9 @@ public interface WeeklyQuestProgressRepositoryCustom {
      * @param memberId 멤버 식별 아이디
      */
     void softDropByMemberId(Long memberId);
+
+    /**
+     * 모든 활성화된 주간 퀘스트를 비활성화
+     */
+    void deactivateAllActiveWeeklyQuests();
 }
