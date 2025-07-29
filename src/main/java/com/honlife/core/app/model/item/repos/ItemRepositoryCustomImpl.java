@@ -29,15 +29,4 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                        itemType != null ? item.type.eq(itemType) : null)
                 .fetch();
     }
-
-    @Override
-    public Tuple findItemWithOwnership(Long itemId, Long memberId) {
-        return queryFactory
-                .select(item, mi.id)
-                .from(item)
-                .leftJoin(mi).on(mi.item.id.eq(item.id).and(mi.member.id.eq(memberId)))
-                .where(item.id.eq(itemId),
-                       item.isActive.eq(true))
-                .fetchOne();
-    }
 }

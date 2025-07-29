@@ -12,13 +12,6 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositoryCustom {
 
     /**
-     * ItemKey의 정보로 IsActive가 True 인 값을 조회합니다.
-     * @param key item에 대한 key 값
-     * @return Optional<Item>
-     */
-    Optional<Item> findByKeyAndIsActiveTrue(String key);
-
-    /**
      * itemId의 정보로 IsActive가 True 인 값을 조회합니다.
      * @param id item에 대한 id 값
      * @return Optional<Item>
