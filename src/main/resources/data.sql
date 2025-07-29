@@ -1,15 +1,8 @@
-INSERT INTO MEMBER (id, role, email, password, name, nickname, residence_experience, region1dept, region2dept, region3dept, is_verified, created_at, updated_at, is_active) VALUES
-(1, 'ROLE_ADMIN', 'admin@test.com', '{bcrypt}$2a$10$iC0JoLYyZ1kflTuNTtVsr.3rKS0Hl7jaCe4xjSxMWbFcYd0DOb0AO', '관리자', '관리자', null, null, null, null, true, null, null, true),
-(2, 'ROLE_USER', 'user01@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '홍길동', '닉네임1', 'OVER_10Y', '서울특별시', '강북구', '미아동', true, '2025-06-01 10:15:00', '2025-06-01 10:15:00', true),
-(3, 'ROLE_USER', 'user02@test.com', '{bcrypt}$2a$10$4dTVUJL9Rp/b8.q3upjZIuIewKcu6cBTlzskYQnasQZfZoI5RtgMK', '김영희', '닉네임2', 'Y1_TO_3', '서울특별시', '강북구', '수유1동', true, '2025-06-03 09:00:00', '2025-06-05 18:30:00', true),
-(4, 'ROLE_USER', 'user03@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '박철수', '닉네임3', 'UNDER_1Y', '서울특별시', '강남구', '역삼동', true, '2025-07-14 10:00:00', '2025-07-14 10:00:00', true),
--- 더미 멤버
-(5, 'ROLE_USER', 'user04@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '이영수', '닉네임4', 'Y3_TO_5', '부산광역시', '해운대구', '우동', true, '2025-07-02 11:30:00', '2025-07-02 11:30:00', true),
-(6, 'ROLE_USER', 'user05@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '박민지', '닉네임5', 'Y1_TO_3', '대구광역시', '중구', '동성로', true, '2025-07-03 16:45:00', '2025-07-03 16:45:00', true),
-(7, 'ROLE_USER', 'user06@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '최준호', '닉네임6', 'UNDER_1Y', '광주광역시', '서구', '상무동', true, '2025-07-25 09:20:00', '2025-07-25 09:20:00', true),
-(8, 'ROLE_USER', 'user07@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '신현아', '닉네임7', 'Y5_TO_10', '인천광역시', '연수구', '송도동', true, '2025-07-26 14:35:00', '2025-07-26 14:35:00', true),
-(9, 'ROLE_USER', 'user08@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '강태윤', '닉네임8', 'OVER_10Y', '울산광역시', '남구', '삼산동', true, '2025-07-27 18:50:00', '2025-07-27 18:50:00', true),
-(10, 'ROLE_USER', 'user09@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '윤서연', '닉네임9', 'Y1_TO_3', '세종특별자치시', '조치원읍', '신안리', true, '2025-07-28 10:15:00', '2025-07-28 10:15:00', true);
+INSERT INTO MEMBER (id, role, email, password, provider, provider_id, name, nickname, residence_experience, region1dept, region2dept, region3dept, is_verified, created_at, updated_at, is_active) VALUES
+(1, 'ROLE_ADMIN', 'admin@test.com', '{bcrypt}$2a$10$iC0JoLYyZ1kflTuNTtVsr.3rKS0Hl7jaCe4xjSxMWbFcYd0DOb0AO', null, null, '관리자', '관리자', null, null, null, null, true, null, null, true),
+(2, 'ROLE_USER', 'user01@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', null, null, '홍길동', '닉네임1', 'OVER_10Y', '서울특별시', '강북구', '미아동', true, '2025-06-01 10:15:00', '2025-06-01 10:15:00', true),
+(3, 'ROLE_USER', 'user02@test.com', '{bcrypt}$2a$10$4dTVUJL9Rp/b8.q3upjZIuIewKcu6cBTlzskYQnasQZfZoI5RtgMK', null, null, '김영희', '닉네임2', 'Y1_TO_3', '서울특별시', '강북구', '수유1동', true, '2025-06-03 09:00:00', '2025-06-05 18:30:00', true),
+(4, 'ROLE_USER', 'user03@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', null, null, '박철수', '닉네임3', 'UNDER_1Y', '서울특별시', '강남구', '역삼동', true, '2025-07-14 10:00:00', '2025-07-14 10:00:00', true);
 
 -- 카테고리 insert
 INSERT INTO CATEGORY (id, member_id, parent_id, emoji, name, type, created_at, updated_at, is_active) VALUES

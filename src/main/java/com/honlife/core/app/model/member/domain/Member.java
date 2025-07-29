@@ -8,7 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.common.BaseEntity;
@@ -18,6 +21,9 @@ import com.honlife.core.app.model.member.code.ResidenceExperience;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Member extends BaseEntity {
 
     @Id
@@ -38,16 +44,22 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(unique = true, length = 50)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
-    @Column(nullable = false, length = 10)
+    @Column
+    private String provider;
+
+    @Column
+    private String providerId;
+
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(unique = true, length = 50)
     private String nickname;
 
     @Column
@@ -63,6 +75,7 @@ public class Member extends BaseEntity {
     @Column
     private String region3Dept;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isVerified = false; // init value
 

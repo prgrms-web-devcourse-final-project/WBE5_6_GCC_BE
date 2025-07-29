@@ -143,7 +143,10 @@ public class MemberController {
             throw new CommonException(ResponseCode.INTERNAL_SERVER_ERROR);
         }
 
+        // OAuth2 연결 해제 후, providerId 데이터 말소
+        // 이후 멤버 소프트 딜리트
         memberService.softDropMember(userEmail);
+
         // 탈퇴 사유 저장
         memberService.saveWithdrawReason(withdrawRequest);
 
