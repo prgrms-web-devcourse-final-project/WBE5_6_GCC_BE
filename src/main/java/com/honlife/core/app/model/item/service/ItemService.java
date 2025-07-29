@@ -64,36 +64,6 @@ public class ItemService {
                 })
                 .toList();
     }
-
-    /**
-     * 회원 ID와 아이템 ID를 기준으로 해당 아이템 정보를 조회하고,
-     * 회원의 보유 여부를 포함한 ItemResponse DTO로 반환합니다.
-     *
-     * @param itemId   조회할 아이템의 고유 ID
-     * @param memberId  현재 로그인한 회원의 ID
-     * @return          아이템 정보 및 보유 여부를 담은 ItemResponse
-     */
-    public ItemDTO getItemResponseById(Long itemId, Long memberId) {
-        Tuple tuple = itemRepository.findItemWithOwnership(itemId, memberId);
-        if (tuple == null) {
-            throw new CommonException(ResponseCode.NOT_FOUND_ITEM);
-        }
-
-        Item i = tuple.get(QItem.item);
-        Boolean isOwned = tuple.get(QMemberItem.memberItem.id) != null;
-
-        return ItemDTO.builder()
-                .id(i.getId())
-                .itemKey(i.getKey())
-                .name(i.getName())
-                .description(i.getDescription())
-                .type(i.getType())
-                .price(i.getPrice())
-                .isOwned(isOwned)
-                .isListed(i.getIsListed())
-                .build();
-    }
-
     /**
      * itemId로 단일 아이템 조회
      * @param id
