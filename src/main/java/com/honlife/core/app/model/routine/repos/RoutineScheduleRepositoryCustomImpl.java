@@ -110,13 +110,13 @@ public class RoutineScheduleRepositoryCustomImpl implements RoutineScheduleRepos
 
     @Override
     public List<RoutineSchedule> findAllByDateBetween(String userEmail, LocalDate startDate, LocalDate endDate) {
-        return queryFactory.select(routineSchedule)
-            .from(routineSchedule)
-            .leftJoin(routineSchedule.routine, routine).fetchJoin()
-            .leftJoin(routine.category, category).fetchJoin()
-            .where((routine.member.email.eq(userEmail))
-                .and(routineSchedule.date.goe(startDate))
-                .and(routineSchedule.date.lt(endDate))
+        return queryFactory.select(qRoutineSchedule)
+            .from(qRoutineSchedule)
+            .leftJoin(qRoutineSchedule.routine, qRoutine).fetchJoin()
+            .leftJoin(qRoutine.category, category).fetchJoin()
+            .where((qRoutine.member.email.eq(userEmail))
+                .and(qRoutineSchedule.scheduledDate.goe(startDate))
+                .and(qRoutineSchedule.scheduledDate.lt(endDate))
             ).fetch();
     }
 }
