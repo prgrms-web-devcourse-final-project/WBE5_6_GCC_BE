@@ -518,7 +518,7 @@ VALUES (1, 1, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
        (5, 5, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
 
 -- NOTIFICATION 테스트 데이터 (PostgreSQL)
-INSERT INTO NOTIFICATION(id, member_id, is_email, is_routine, is_badge)
+INSERT INTO NOTIFICATION(id, member_id, is_quest, is_routine, is_badge)
 VALUES (1, 2, true, true, true),
        (2, 3, true, true, true);
 
