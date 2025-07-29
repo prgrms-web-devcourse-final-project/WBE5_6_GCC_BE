@@ -4,7 +4,6 @@ import com.honlife.core.app.controller.notification.payload.NotificationPayload;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.infra.response.ResponseCode;
 import org.springframework.stereotype.Service;
-import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.dto.NotificationDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -30,22 +29,11 @@ public class NotificationService {
     private NotificationDTO mapToDTO(final Notification notification,
         final NotificationDTO notificationDTO) {
         notificationDTO.setId(notification.getId());
-        notificationDTO.setIsEmail(notification.getIsEmail());
+        notificationDTO.setIsQuest(notification.getIsQuest());
         notificationDTO.setIsRoutine(notification.getIsRoutine());
         notificationDTO.setIsBadge(notification.getIsBadge());
         notificationDTO.setMember(notification.getMember() == null ? null : notification.getMember().getId());
         return notificationDTO;
-    }
-
-    private Notification mapToEntity(final NotificationDTO notificationDTO,
-        final Notification notification) {
-        notification.setIsEmail(notificationDTO.getIsEmail());
-        notification.setIsRoutine(notificationDTO.getIsRoutine());
-        notification.setIsBadge(notificationDTO.getIsBadge());
-        final Member member = notificationDTO.getMember() == null ? null : memberRepository.findById(notificationDTO.getMember())
-            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
-        notification.setMember(member);
-        return notification;
     }
 
     public boolean memberExists(final Long id) {
@@ -62,7 +50,7 @@ public class NotificationService {
     public void updateNotification(String userEmail, NotificationPayload notificationPayload) {
         Notification notification = notificationRepository.findByMember_Email(userEmail)
             .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
-        notification.setIsEmail(notificationPayload.getIsEmail());
+        notification.setIsQuest(notificationPayload.getIsQuest());
         notification.setIsRoutine(notificationPayload.getIsRoutine());
         notification.setIsBadge(notificationPayload.getIsBadge());
     }
@@ -78,7 +66,7 @@ public class NotificationService {
         return NotificationDTO.builder()
             .isRoutine(notification.getIsRoutine())
             .isBadge(notification.getIsBadge())
-            .isEmail(notification.getIsEmail())
+            .isQuest(notification.getIsQuest())
             .build();
     }
 }
