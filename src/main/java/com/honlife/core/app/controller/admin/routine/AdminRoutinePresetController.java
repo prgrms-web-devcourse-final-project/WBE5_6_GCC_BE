@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "[관리자] 추천 루틴", description = "관리자용 추천 루틴 관리 API 입니다.")
+@Tag(name = "🔄 [관리자] 추천 루틴", description = "관리자용 추천 루틴 관리 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/routines/presets", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -49,7 +49,7 @@ public class AdminRoutinePresetController {
    * @return AdminRoutinePresetsResponse
    */
   @Operation(
-      summary = "추천 루틴 프리셋 목록 조회",
+      summary = "🔄 추천 루틴 프리셋 목록 조회",
       description = "관리자가 등록한 모든 추천 루틴 프리셋 목록을 조회합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "<strong>응답 데이터:</strong><br>" +
@@ -222,7 +222,7 @@ public class AdminRoutinePresetController {
    * @return AdminRoutinePresetDetailResponse
    */
   @Operation(
-      summary = "특정 추천 루틴 프리셋 조회",
+      summary = "🔄 특정 추천 루틴 프리셋 조회",
       description = "특정 추천 루틴 프리셋의 상세 정보를 조회합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "*실제 DB에 반영되지 않음*"
@@ -265,7 +265,7 @@ public class AdminRoutinePresetController {
    * @return
    */
   @Operation(
-      summary = "추천 루틴 프리셋 생성",
+      summary = "🔄 추천 루틴 프리셋 생성",
       description = "새로운 추천 루틴 프리셋을 생성합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "<strong>필수 필드:</strong><br>" +
@@ -304,7 +304,7 @@ public class AdminRoutinePresetController {
    * @return
    */
   @Operation(
-      summary = "추천 루틴 프리셋 수정",
+      summary = "🔄 추천 루틴 프리셋 수정",
       description = "특정 추천 루틴 프리셋을 수정합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "<strong>수정 가능 필드:</strong><br>" +
@@ -347,7 +347,7 @@ public class AdminRoutinePresetController {
    * @return
    */
   @Operation(
-      summary = "추천 루틴 프리셋 삭제",
+      summary = "🔄 추천 루틴 프리셋 삭제",
       description = "특정 추천 루틴 프리셋을 삭제합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "<strong>주의사항:</strong><br>" +

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "✅ 회원 보유 아이템", description = "현재 로그인한 회원이 보유하고 있는 아이템 관련 API 입니다.")
+@Tag(name = "✅ [회원] 아이템", description = "현재 로그인한 회원이 보유하고 있는 아이템 관련 API 입니다.")
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping(value = "/api/v1/members/items", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +40,7 @@ public class MemberItemController {
      * @return List<MemberItemResponse>
      */
     @GetMapping
-    @Operation(summary = "로그인된 회원의 보유 아이템 조회", description = "로그인된 사용자의 보유 아이템을 조회합니다. <br>type 작성 시 해당 타입에 대한 아이템만 조회됩니다.")
+    @Operation(summary = "✅ 로그인된 회원의 보유 아이템 조회", description = "로그인된 사용자의 보유 아이템을 조회합니다. <br>type 작성 시 해당 타입에 대한 아이템만 조회됩니다.")
     public ResponseEntity<CommonApiResponse<List<MemberItemResponse>>> getMemberItems(
             @Parameter(description = "아이템 타입", example = "TOP")
             @RequestParam(name = "type", required = false) ItemType itemType,
@@ -105,7 +105,7 @@ public class MemberItemController {
      * @return 유효하지 않은 사용자 요청 또는 존재하지 않는 아이템 키에 대해서는 <code>UNAUTHORIZED (401)</code> 또는 <code>NOT_FOUND_ITEM (404)</code> 상태 코드를 반환합니다.
      */
     @PatchMapping
-    @Operation(summary = "아이템 장착 상태 변경",
+    @Operation(summary = "✅ 아이템 장착 상태 변경",
             description = "로그인된 사용자의 아이템 장착상태 변경 요청을 처리합니다. <br>" +
                     "<strong>~사용 시나리오~</strong><br>" +
                     "1. 아이템 바꿔 착용하기 <br>" +

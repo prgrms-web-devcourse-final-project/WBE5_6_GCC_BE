@@ -28,7 +28,7 @@ import java.util.List;
 
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "✅ [일반] 아이템", description = "아이템 관련 api 입니다.")
+@Tag(name = "🔄 [일반] 아이템", description = "아이템 관련 api 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemController {
@@ -46,7 +46,7 @@ public class ItemController {
      * @return List<ItemResponse> 모든 아이템에 대한 정보
      */
     @GetMapping
-    @Operation(summary = "아이템 조회", description = "전체 아이템 조회 또는 type 값을 통해 특정 아이템만 조회할 수 있습니다.")
+    @Operation(summary = "🔄 아이템 조회", description = "전체 아이템 조회 또는 type 값을 통해 특정 아이템만 조회할 수 있습니다.")
     public ResponseEntity<CommonApiResponse<List<ItemResponse>>> getAllItems(
             @Parameter(description = "조회할 아이템 타입", example = "TOP")
             @RequestParam(value = "type", required = false) ItemType itemType,
@@ -111,7 +111,7 @@ public class ItemController {
      * @param itemKey 아이템 고유 아이다
      * @return ItemResponse itemKey 값과 일치하는 아이템 정보 반환
      */
-    @Operation(summary = "아이템 단건 조회", description = "아이템 key 값을 통해 특정 아이템을 조회합니다.")
+    @Operation(summary = "🔄 아이템 단건 조회", description = "아이템 key 값을 통해 특정 아이템을 조회합니다.")
     @GetMapping("/{key}")
     public ResponseEntity<CommonApiResponse<ItemResponse>> getItemByKey(
             @Parameter(description = "아이템 Key 값", example = "top_item_01")
@@ -137,7 +137,7 @@ public class ItemController {
      *
      * @param itemKey 아이템 고유 아이다
      */
-    @Operation(summary = "아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
+    @Operation(summary = "🔄 아이템 구매", description = "포인트를 차감하고 아이템을 구매합니다.")
     @PostMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> getItem(
             @Parameter(name = "key", description = "구매할 아이템의 key", example = "top_item_01")
