@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class NotifyController {
      * @return 처리 성공 시 204 No Content
      */
     @Operation(summary = "모든 알림 읽음 처리", description = "회원이 보유한 모든 알림을 읽음 처리합니다.")
-    @PatchMapping("/all/read")
+    @PatchMapping("/all")
     public ResponseEntity<CommonApiResponse<Void>> readAllNotification(){
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
@@ -67,8 +68,8 @@ public class NotifyController {
                         .id(1L)
                         .name("아직 끝내지 않은 루틴이 있어요.힘내서 마무리 해볼까요?")
                         .type(NotificationType.ROUTINE)
-                        .isRead(false)
-                        .createdAt(LocalDate.now())
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.of(2025, 7, 30, 0, 0))
                 .build());
         return ResponseEntity.ok(CommonApiResponse.success(response));
     }

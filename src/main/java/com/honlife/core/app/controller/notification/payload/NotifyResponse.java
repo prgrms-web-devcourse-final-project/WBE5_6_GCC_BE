@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -22,10 +23,10 @@ public class NotifyResponse {
     @Schema(description = "알림 종류 (ROUTINE, QUEST, BADGE 중 하나)", example = "ROUTINE")
     private NotificationType type;
 
-    @Schema(description = "알림 읽음 여부", example = "false")
-    private Boolean isRead;
-
     @Schema(description = "알림 생성일", example = "2025-07-29")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
+
+    @Schema(description = "알림 상태 변경 시점" ,example = "2025-07-30")
+    private LocalDateTime updatedAt;
 
 }
