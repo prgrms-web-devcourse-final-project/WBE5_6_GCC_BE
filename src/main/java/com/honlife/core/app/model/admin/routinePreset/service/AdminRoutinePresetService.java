@@ -65,6 +65,7 @@ public class AdminRoutinePresetService {
               .repeatType(routinePreset.getRepeatType())
               .repeatValue(routinePreset.getRepeatValue())
               .initDate(routinePreset.getInitDate())
+              .repeatTerm(routinePreset.getRepeatTerm())
               .emoji(routinePreset.getCategory().getEmoji())
               .build();
         })
@@ -106,6 +107,7 @@ public class AdminRoutinePresetService {
         .repeatType(routinePreset.getRepeatType())
         .repeatValue(routinePreset.getRepeatValue())
         .initDate(routinePreset.getInitDate())
+        .repeatTerm(routinePreset.getRepeatTerm())
         .build();
 
     return dto;

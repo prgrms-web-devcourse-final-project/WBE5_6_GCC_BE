@@ -42,6 +42,8 @@ public class AdminRoutinePresetDetailResponse {
 
     private LocalDate initDate;
 
+    private Integer repeatTerm;
+
 
     public static AdminRoutinePresetDetailResponse fromDto(RoutinePresetViewDTO dto) {
         return AdminRoutinePresetDetailResponse.builder()
@@ -57,6 +59,7 @@ public class AdminRoutinePresetDetailResponse {
             .repeatType(dto.getRepeatType())
             .repeatValue(dto.getRepeatValue())
             .initDate(dto.getInitDate())
+            .repeatTerm(dto.getRepeatTerm())
             .build();
     }
 
