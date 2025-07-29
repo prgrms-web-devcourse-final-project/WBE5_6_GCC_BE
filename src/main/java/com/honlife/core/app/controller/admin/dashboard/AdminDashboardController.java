@@ -23,7 +23,6 @@ public class AdminDashboardController {
     private final AdminDashboardService adminDashboardService;
 
     @GetMapping("/dashboard/stats")
-    @PreAuthorize("hasRole('ADMIN')")
     public CommonApiResponse<AdminDashboardStatsResponse> getDashboardStats(
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
