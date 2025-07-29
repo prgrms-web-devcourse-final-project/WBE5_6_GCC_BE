@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "[회원] 주간 리포트", description = "주간 리포트 관련 api 입니다.")
+@Tag(name = "🔄 [회원] 주간 리포트", description = "주간 리포트 관련 api 입니다.")
 @RequestMapping(value = "/api/v1/members/dashboard", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DashboardController {
 
@@ -43,7 +43,7 @@ public class DashboardController {
      * @return DashboardWrapper
      */
     @GetMapping
-    @Operation(summary = "주간 리포트 조회", description = "특정 날짜를 입력시 해당 날짜가 속하는 주의 리포트 정보를 조회할 수 있습니다.")
+    @Operation(summary = "🔄 주간 리포트 조회", description = "특정 날짜를 입력시 해당 날짜가 속하는 주의 리포트 정보를 조회할 수 있습니다.")
     public ResponseEntity<CommonApiResponse<DashboardWrapper>> getDashboardData(
         @Parameter(description = "조회할 날짜", example = "2025-07-06T00:00:00")
         @RequestParam
