@@ -4,7 +4,6 @@ import com.honlife.core.app.model.notification.dto.NotificationDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Setter
@@ -13,7 +12,7 @@ import lombok.Setter;
 public class NotificationPayload {
 
     @NotNull
-    private Boolean isEmail;
+    private Boolean isQuest;
     @NotNull
     private Boolean isRoutine;
     @NotNull
@@ -23,7 +22,7 @@ public class NotificationPayload {
         return NotificationPayload.builder()
             .isRoutine(dto.getIsRoutine())
             .isBadge(dto.getIsBadge())
-            .isEmail(dto.getIsEmail())
+            .isQuest(dto.getIsQuest())
             .build();
     }
 }

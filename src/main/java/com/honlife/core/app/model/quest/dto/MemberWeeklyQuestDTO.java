@@ -19,6 +19,7 @@ public class MemberWeeklyQuestDTO {
     private String questName;
     private Integer target;
     private Integer progress;
+    private Integer points;
 
     /**
      * 엔티티를 DTO로 변환<br>
@@ -26,7 +27,7 @@ public class MemberWeeklyQuestDTO {
      * @param weeklyQuestProgress 주간 퀘스트 진행도 엔티티
      * @return {@code MemberWeeklyQuestDTO}
      */
-    public static MemberWeeklyQuestDTO fromEntity(WeeklyQuestProgress weeklyQuestProgress) {
+    public static MemberWeeklyQuestDTO fromEntity(WeeklyQuestProgress weeklyQuestProgress, Integer points) {
         Category category = weeklyQuestProgress.getWeeklyQuest().getCategory();
         return MemberWeeklyQuestDTO.builder()
             .questId(weeklyQuestProgress.getWeeklyQuest().getId())
@@ -36,6 +37,7 @@ public class MemberWeeklyQuestDTO {
             .questName(weeklyQuestProgress.getWeeklyQuest().getName())
             .target(weeklyQuestProgress.getWeeklyQuest().getTarget())
             .progress(weeklyQuestProgress.getProgress())
+            .points(points)
             .build();
     }
 }

@@ -3,6 +3,7 @@ package com.honlife.core.app.model.quest.service;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.point.service.PointPolicyService;
 import com.honlife.core.app.model.quest.code.QuestDomain;
 import com.honlife.core.app.model.quest.code.QuestType;
 import com.honlife.core.app.model.quest.domain.WeeklyQuest;
@@ -35,13 +36,14 @@ public class WeeklyQuestProgressService {
     private final MemberPointService memberPointService;
     private final WeeklyQuestService weeklyQuestService;
     private final MemberRepository memberRepository;
+    private final PointPolicyService pointPolicyService;
 
     /**
      * 회원에게 할당되고, 활성화 상태인 주간 퀘스트 목록 검색
      * @param userEmail 회원 이메일
      * @return List of {@link MemberWeeklyQuestDTO}
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public List<MemberWeeklyQuestDTO> getMemberWeeklyQuestsProgress(String userEmail) {
         List<WeeklyQuestProgress> memberWeeklyQuestProgressList = weeklyQuestProgressRepository.findAllByMember_EmailAndIsActive(userEmail, true);
 
@@ -52,8 +54,10 @@ public class WeeklyQuestProgressService {
             memberWeeklyQuestProgressList = weeklyQuestProgressRepository.findAllByMember_EmailAndIsActive(userEmail, true);
         }
 
-        return memberWeeklyQuestProgressList.stream().map(MemberWeeklyQuestDTO::fromEntity).collect(
-            Collectors.toList());
+        return memberWeeklyQuestProgressList.stream()
+            .map(progress ->
+                MemberWeeklyQuestDTO.fromEntity(progress, pointPolicyService.getPoint(progress.getWeeklyQuest().getKey(), PointSourceType.WEEKLY)))
+            .collect(Collectors.toList());
     }
 
     /**

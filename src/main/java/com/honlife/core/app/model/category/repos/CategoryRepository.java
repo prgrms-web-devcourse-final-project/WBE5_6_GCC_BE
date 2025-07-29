@@ -56,4 +56,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @return Boolean
      */
     boolean existsCategoryByTypeAndName(CategoryType type, String name);
+
+    /**
+     * id를 통해 카테고리를 조회합니다.
+     * @param id 카테고리 아이디
+     * @return Category
+     */
+    Optional<Category> findCategoryById(Long id);
 }

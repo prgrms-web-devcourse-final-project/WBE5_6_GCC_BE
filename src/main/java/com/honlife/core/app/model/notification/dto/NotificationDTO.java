@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 
@@ -19,7 +18,7 @@ public class NotificationDTO {
 
     private Long id;
 
-    private Boolean isEmail;
+    private Boolean isQuest;
 
     private Boolean isRoutine;
 

@@ -307,8 +307,9 @@ public class MemberService {
 
         // 요청에 반드시 포함되는 필드
         targetMember.setName(updatedMemberDTO.getName());
+        if(isNicknameExists(updatedMemberDTO.getNickname()))
+            throw new CommonException(ResponseCode.CONFLICT_EXIST_MEMBER);
         targetMember.setNickname(updatedMemberDTO.getNickname());
-
         // 관련 정보가 null로 넘어온 경우 기존의 데이터 유지
         if(updatedMemberDTO.getResidenceExperience()!=null){
             targetMember.setResidenceExperience(updatedMemberDTO.getResidenceExperience());
