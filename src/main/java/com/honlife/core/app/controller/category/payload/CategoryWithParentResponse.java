@@ -18,7 +18,7 @@ public class CategoryWithParentResponse {
 
     private String emoji;
 
-    private Long parent;
+    private Long parentId;
 
     private List<ChildCategoryResponse> children;
 

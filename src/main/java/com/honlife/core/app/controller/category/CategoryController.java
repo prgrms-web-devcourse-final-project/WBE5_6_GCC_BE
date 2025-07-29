@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.category.service.CategoryService;
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name="[일반] 카테고리", description = "카테고리 관련 API 입니다. <br>요청 바디 중 type에는 MAJOR, SUB가 들어갈 수 있습니다.")
+@Tag(name="✅ [일반] 카테고리", description = "카테고리 관련 API 입니다. <br>요청 바디 중 type에는 MAJOR, SUB가 들어갈 수 있습니다.")
 @RestController
 @RequestMapping(value = "/api/v1/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
@@ -47,7 +49,7 @@ public class CategoryController {
      * 전체 조회 시 대분류 카테고리와 동시에 해당 카테고리의 소분류 카테고리도 함께 반환됩니다.
      * @return CategoryWrapper
      */
-    @Operation(summary = "카테고리 조회", description = "모든 카테고리를 조회합니다. 해당 카테고리를 찹조하는 소분류 카테고리가 있을 경우 함께 반환됩니다.")
+    @Operation(summary = "✅ 카테고리 조회", description = "모든 카테고리를 조회합니다. 해당 카테고리를 찹조하는 소분류 카테고리가 있을 경우 함께 반환됩니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<CategoryWrapper>> getCategories(
     ) {
@@ -84,12 +86,13 @@ public class CategoryController {
      * @param categoryId 카테고리 아이디.
      * @return CategoryResponse
      */
-    @Operation(summary = "특정 카테고리 조회", description = "카테고리 id를 통해 카테고리에 대한 정보를 조회합니다.")
+    @Operation(summary = "✅ 특정 카테고리 조회", description = "카테고리 id를 통해 카테고리에 대한 정보를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<CategoryWithParentResponse>> getCategory(
         @PathVariable(name="id")
         @Schema(description="카테고리 id", example = "1")
-        final Long categoryId
+        final Long categoryId,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
         if(categoryId ==1L){
             CategoryWithParentResponse response = CategoryWithParentResponse.builder()
@@ -104,7 +107,7 @@ public class CategoryController {
                     .categoryType(CategoryType.SUB)
                     .parentId(1L)
                     .build()))
-                .parent(null)
+                .parentId(null)
                 .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
@@ -114,7 +117,7 @@ public class CategoryController {
                 .categoryName("요리")
                 .emoji("\uD83C\uDF73")
                 .categoryType(CategoryType.MAJOR)
-                .parent(null)
+                .parentId(null)
                 .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
@@ -124,7 +127,7 @@ public class CategoryController {
                 .categoryName("화장실 청소")
                 .emoji("\uD83D\uDEBD")
                 .categoryType(CategoryType.SUB)
-                .parent(1L)
+                .parentId(1L)
                 .build();
             return ResponseEntity.ok(CommonApiResponse.success(response));
         }
@@ -141,7 +144,7 @@ public class CategoryController {
      * @param categorySaveRequest 생성할 카테고리의 정보
      * @return
      */
-    @Operation(summary = "카테고리 생성", description = "카테고리를 생성합니다. <br>이름과 type은 무조건 작성하여야 합니다. 만약 type이 SUB일 시, 대분류 카테고리에 대한 정보도 필수로 작성하여야 합니다. <br>*실제 DB에 반영되지 않음*")
+    @Operation(summary = "✅ 카테고리 생성", description = "카테고리를 생성합니다. <br>이름과 type은 무조건 작성하여야 합니다. 만약 type이 SUB일 시, 대분류 카테고리에 대한 정보도 필수로 작성하여야 합니다. <br>*실제 DB에 반영되지 않음*")
     @PostMapping
     public ResponseEntity<CommonApiResponse<ResponseCode>> createCategory(@RequestBody @Valid final CategorySaveRequest categorySaveRequest,
         BindingResult bindingResult) {
@@ -165,7 +168,7 @@ public class CategoryController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "카테고리 수정", description = "특정 카테고리를 수정합니다. <br>id가 1,2,3 인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
+    @Operation(summary = "✅ 카테고리 수정", description = "특정 카테고리를 수정합니다. <br>id가 1,2,3 인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
@@ -195,7 +198,7 @@ public class CategoryController {
      * @return
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "카테고리 삭제", description = "특정 카테고리를 삭제합니다. <br>id가 1,2,3 인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
+    @Operation(summary = "✅ 카테고리 삭제", description = "특정 카테고리를 삭제합니다. <br>id가 1,2,3 인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
         @PathVariable(name="id")
         @Schema(description = "카테고리 id", example = "1") final Long categoryId){

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "[관리자] 카테고리", description = "관리자가 사용하는 카테고리 관리용 API입니다.")
+@Tag(name = "🔄 [관리자] 카테고리", description = "관리자가 사용하는 카테고리 관리용 API입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminCategoryController {
@@ -30,7 +30,7 @@ public class AdminCategoryController {
      * 기본 카테고리 수정 API
      * @return List<CategoryResponse>
      */
-    @Operation(summary = "카테고리 목록 조회", description = "모든 기본 카테고리를 조회합니다.")
+    @Operation(summary = "✅ 기본 카테고리 조회", description = "모든 기본 카테고리를 조회합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<List<AdminCategoryResponse>>> getAllCategories() {
         List<AdminCategoryResponse> response = new ArrayList<>();
@@ -38,7 +38,7 @@ public class AdminCategoryController {
             .categoryId(1L)
             .categoryName("청소")
             .emoji("🧹")
-            .categoryType(CategoryType.MAJOR)
+            .categoryType(CategoryType.DEFAULT)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
             .build());
@@ -46,7 +46,7 @@ public class AdminCategoryController {
             .categoryId(2L)
             .categoryName("요리")
             .emoji("\uD83C\uDF73")
-            .categoryType(CategoryType.MAJOR)
+            .categoryType(CategoryType.DEFAULT)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
             .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
             .build());
@@ -60,7 +60,7 @@ public class AdminCategoryController {
      * @param request 생성할 카테고리의 정보
      * @return
      */
-    @Operation(summary = "카테고리 생성", description = "기본 카테고리를 생성합니다.")
+    @Operation(summary = "🔄 기본 카테고리 생성", description = "기본 카테고리를 생성합니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<Void>> createCategory(
         @RequestBody @Valid AdminCategoryRequest request
@@ -75,7 +75,7 @@ public class AdminCategoryController {
      * @param request    생성할 카테고리의 정보
      * @return
      */
-    @Operation(summary = "카테고리 수정", description = "카테고리 이름 또는 타입을 수정합니다. id는 1,2,3 중 하나만 가능합니다.")
+    @Operation(summary = "❌ 카테고리 수정", description = "카테고리 이름 또는 타입을 수정합니다. id는 1,2,3 중 하나만 가능합니다.")
     @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
@@ -95,7 +95,7 @@ public class AdminCategoryController {
      * @param categoryId 삭제할 카테고리 id
      * @return
      */
-    @Operation(summary = "카테고리 삭제", description = "카테고리를 삭제합니다. id는 1,2,3 중 하나만 가능합니다.")
+    @Operation(summary = "❌ 카테고리 삭제", description = "카테고리를 삭제합니다. id는 1,2,3 중 하나만 가능합니다.")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> deleteCategory(
         @PathVariable(name = "id")
@@ -107,7 +107,7 @@ public class AdminCategoryController {
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 
-    @Operation(summary = "카테고리 단건 상세 조회", description = "특정 카테고리에 대한 상세 정보를 조회합니다.")
+    @Operation(summary = "✅ 카테고리 단건 상세 조회", description = "특정 카테고리에 대한 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<AdminCategoryResponse>> getCategory(
         @PathVariable(name = "id") @Schema(description = "카테고리 id", example = "1") final Long categoryId
@@ -118,7 +118,7 @@ public class AdminCategoryController {
                 .categoryId(1L)
                 .categoryName("청소")
                 .emoji("🧹")
-                .categoryType(CategoryType.MAJOR)
+                .categoryType(CategoryType.DEFAULT)
                 .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
                 .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
                 .build();
