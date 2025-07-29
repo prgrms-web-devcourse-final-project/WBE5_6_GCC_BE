@@ -15,9 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,16 +85,15 @@ public class AdminCategoryController {
      * @param request    생성할 카테고리의 정보
      * @return
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommonApiResponse<Void>> updateCategory(
         @PathVariable(name = "id")
         final Long categoryId,
         @RequestBody @Valid final AdminCategoryRequest request
     ) {
-        if (categoryId != 1L && categoryId != 2L && categoryId != 3L) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_CATEGORY.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_CATEGORY));
-        }
+
+        adminCategoryService.updateDefaultCategory(categoryId, request);
+
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 

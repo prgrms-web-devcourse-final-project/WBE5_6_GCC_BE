@@ -1,5 +1,8 @@
 package com.honlife.core.app.model.routine.service;
 
+import com.honlife.core.app.model.category.dto.CategoryDTO;
+import com.honlife.core.app.model.category.service.CategoryService;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.app.controller.routine.payload.RoutineUpdateRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.routine.dto.RoutineTodayItemDTO;
@@ -340,6 +343,30 @@ public class RoutineService {
         return routineRepository.findFirstByMemberAndIsActive(member, isActive);
     }
 
+    /**
+     * 해당 카테고리를 참조 중인 모든 루틴에서 카테고리 참조를 제거합니다. 루틴의 category 필드를 null로 설정합니다.
+     * @param categoryId 카테고리 아이디
+     */
+    @Transactional
+    public void removeCategoryReference(Long categoryId, String userEmail) {
 
+        Category category = categoryRepository.findCategoryById(categoryId, userEmail).orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
+        if(category.getType() == CategoryType.MAJOR){
+            category.getChildren().forEach(child -> {
+                List<Routine> routines = routineRepository.findAllByCategory_Id(child.getId());
+
+                routines.forEach(routine -> {
+                    routine.setCategory(null);
+                });
+            });
+        }
+
+        List<Routine> routines = routineRepository.findAllByCategory_Id(categoryId);
+
+        routines.forEach(routine -> {
+            routine.setCategory(null);
+        });
+
+    }
 }

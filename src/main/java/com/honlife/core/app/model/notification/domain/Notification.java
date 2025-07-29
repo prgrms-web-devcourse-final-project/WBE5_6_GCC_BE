@@ -34,7 +34,7 @@ public class Notification {
     private Long id;
 
     @Column
-    private Boolean isEmail = true; // 초기값
+    private Boolean isQuest = true; // 초기값
 
     @Column
     private Boolean isRoutine = true;   // 초기값

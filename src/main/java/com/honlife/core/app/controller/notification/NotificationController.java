@@ -19,7 +19,7 @@ import com.honlife.core.app.model.notification.service.NotificationService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/api/v1/notifications", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/settings/notifications", produces = MediaType.APPLICATION_JSON_VALUE)
 public class NotificationController {
 
     private final NotificationService notificationService;

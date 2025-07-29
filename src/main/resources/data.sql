@@ -370,18 +370,15 @@ INSERT INTO POINT_POLICY (id, reference_key, type, point, created_at, updated_at
 (37, 'STREAK_PLATINUM', 'BADGE', 500, '2025-07-01 00:00:00', '2025-07-01 00:00:00', true),
 
 -- 주간퀘
-(38, 'weekly_team_play', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(39, 'weekly_dungeon_clear', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(40, 'weekly_pvp_win', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(41, 'weekly_coin_collect', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(42, 'weekly_monster_hunt', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(38, 'weekly_clean_count_1', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(39, 'weekly_clothes_count_2', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(40, 'weekly_login_streak_3', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(41, 'weekly_complete', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(42, 'weekly_health_count_3', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(43, 'weekly_clothes_count_4', 'WEEKLY', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 --이벤퀘
-(43, 'event_autumn_harvest', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(44, 'event_spring_flower', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(45, 'event_winter_gift', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(46, 'event_winter_snowman', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(47, 'event_summer_fireworks', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(48, 'event_summer_login', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
+(44, 'event_2025_summer_login', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
+(45, 'event_summer_icebox', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
 
 INSERT INTO WEEKLY_QUEST (id, category_id, key, name, type, target, created_at, updated_at, is_active) VALUES
 (1, 1, 'weekly_clean_count_1', '청소 루틴 1번 이상 완료', 'CATEGORY_COUNT', 1, NOW(), NOW(), true),
@@ -518,7 +515,7 @@ VALUES (1, 1, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
        (5, 5, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
 
 -- NOTIFICATION 테스트 데이터 (PostgreSQL)
-INSERT INTO NOTIFICATION(id, member_id, is_email, is_routine, is_badge)
+INSERT INTO NOTIFICATION(id, member_id, is_quest, is_routine, is_badge)
 VALUES (1, 2, true, true, true),
        (2, 3, true, true, true);
 

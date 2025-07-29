@@ -83,4 +83,19 @@ public class AdminCategoryService {
 
         categoryRepository.save(newDefaultCategory);
     }
+
+    /**
+     * 기본 카테고리를 수정합니다.
+     * @param categoryId 수정할 카테고리
+     * @param request 수정할 카테고리 정보
+     */
+    public void updateDefaultCategory(Long categoryId, AdminCategoryRequest request) {
+        Category targetCategory = categoryRepository.findByIdAndTypeAndIsActive(categoryId, CategoryType.DEFAULT, true).orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        targetCategory.setName(request.getCategoryName());
+        targetCategory.setEmoji(request.getEmoji());
+
+        categoryRepository.save(targetCategory);
+
+    }
 }
