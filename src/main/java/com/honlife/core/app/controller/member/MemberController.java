@@ -41,7 +41,7 @@ import com.honlife.core.infra.response.ResponseCode;
 
 
 @Slf4j
-@Tag(name = "🔄 [회원] 회원 정보 및 관리", description = "회원관련 API 입니다.")
+@Tag(name = "✅ [회원] 회원 정보 및 관리", description = "회원관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -62,7 +62,7 @@ public class MemberController {
      * @param userDetails 유저 인증 정보 객체
      * @return 조회 성공시 {@code CommonApiResponse<}{@link MemberPayload}{@code >}형태로 사용자의 정보를 반한홥니다.
      */
-    @Operation(summary = "🔄 로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "✅ 로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
     public ResponseEntity<CommonApiResponse<MemberResponseWrapper>> getCurrentMember(
         @AuthenticationPrincipal UserDetails userDetails
