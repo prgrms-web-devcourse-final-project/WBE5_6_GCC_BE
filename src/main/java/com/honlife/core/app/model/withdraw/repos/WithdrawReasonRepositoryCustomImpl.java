@@ -5,8 +5,11 @@ import com.honlife.core.app.model.withdraw.domain.QWithdrawReason;
 import com.honlife.core.app.model.withdraw.domain.WithdrawReason;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.DateTemplate;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -81,5 +84,65 @@ public class WithdrawReasonRepositoryCustomImpl implements WithdrawReasonReposit
                 tuple -> tuple.get(withdrawReason.type),
                 tuple -> Optional.ofNullable(tuple.get(withdrawReason.count())).orElse(0L)
             ));
+    }
+
+    // === 일간 통계 ===
+    @Override
+    public List<Object[]> findWithdrawalsByDateRange(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        DateTemplate<LocalDate> dateFunc = Expressions.dateTemplate(LocalDate.class,
+            "DATE({0})", withdrawReason.createdAt);
+
+        return queryFactory.select(
+                dateFunc,
+                withdrawReason.count()
+            )
+            .from(withdrawReason)
+            .where(withdrawReason.createdAt.between(startDateTime, endDateTime))
+            .groupBy(dateFunc)
+            .orderBy(dateFunc.asc())
+            .fetch()
+            .stream()
+            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .toList();
+    }
+
+    // === 주간 통계 ===
+    @Override
+    public List<Object[]> findWithdrawalsByWeek(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        DateTemplate<LocalDate> weekStartFunc = Expressions.dateTemplate(LocalDate.class,
+            "DATE_TRUNC('week', {0})::date", withdrawReason.createdAt);
+
+        return queryFactory.select(
+                weekStartFunc,
+                withdrawReason.count()
+            )
+            .from(withdrawReason)
+            .where(withdrawReason.createdAt.between(startDateTime, endDateTime))
+            .groupBy(weekStartFunc)
+            .orderBy(weekStartFunc.asc())
+            .fetch()
+            .stream()
+            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .toList();
+    }
+
+    // === 월간 통계 ===
+    @Override
+    public List<Object[]> findWithdrawalsByMonth(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        DateTemplate<LocalDate> monthStartFunc = Expressions.dateTemplate(LocalDate.class,
+            "DATE_TRUNC('month', {0})::date", withdrawReason.createdAt);
+
+        return queryFactory.select(
+                monthStartFunc,
+                withdrawReason.count()
+            )
+            .from(withdrawReason)
+            .where(withdrawReason.createdAt.between(startDateTime, endDateTime))
+            .groupBy(monthStartFunc)
+            .orderBy(monthStartFunc.asc())
+            .fetch()
+            .stream()
+            .map(tuple -> new Object[]{tuple.get(0, LocalDate.class), tuple.get(1, Long.class)})
+            .toList();
     }
 }
