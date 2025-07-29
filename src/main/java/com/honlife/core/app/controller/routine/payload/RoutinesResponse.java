@@ -57,12 +57,15 @@ public class RoutinesResponse {
         private LocalDate date;
 
         @Schema(description = "루틴 시작 날짜", example = "2025-11-10")
-        private LocalDate startRoutineDate;
+        private LocalDate initDate;
 
         @Schema(description = "반복 타입", example = "WEEKLY")
         private RepeatType repeatType;
 
         @Schema(description = "반복 값", example = "1,3,5")
         private String repeatValue;
+
+        @Schema(description = "카테고리 이모지")
+        private String emoji;
     }
 }

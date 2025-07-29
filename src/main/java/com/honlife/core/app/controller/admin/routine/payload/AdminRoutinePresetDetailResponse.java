@@ -24,12 +24,6 @@ public class AdminRoutinePresetDetailResponse {
     @Schema(description = "대분류 카테고리", example = "청소")
     private String majorCategory;
 
-    @Schema(description = "카테고리 이름", example = "청소")
-    private String categoryName;
-
-    @Schema(description = "소분류 카테고리", example = "화장실 청소")
-    private String subCategory;
-
     @Schema(description = "루틴 이름", example = "변기 청소하기")
     private String name;
 
@@ -53,10 +47,13 @@ public class AdminRoutinePresetDetailResponse {
     private LocalDateTime updatedAt;
 
     @Schema(description = "주 반복 간격 (1 = 매주, 2 = 격주 등)", example = "1")
-    private Integer repeatInterval;
+    private Integer repeatTerm;
 
     @NotNull(message = "루틴 시작 날짜는 필수입니다")
     @Schema(description = "루틴 시작 날짜", example = "2025-07-01")
-    private LocalDate startRoutineDate;
+    private LocalDate initDate;
+
+    @Schema(description = "카테고리 이모지")
+    private String emoji;
 
 }

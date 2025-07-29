@@ -31,7 +31,7 @@ public class RoutineSaveRequest {
 
     @NotNull(message = "루틴 시작 날짜는 필수입니다")
     @Schema(description = "루틴 시작 날짜", example = "2025-07-01")
-    private LocalDate startRoutineDate;
+    private LocalDate initDate;
 
 
     @Size(max = 255, message = "트리거 시간은 255자를 초과할 수 없습니다")
@@ -47,7 +47,7 @@ public class RoutineSaveRequest {
     private String repeatValue;
 
     @Schema(description = "주 반복 간격 (1 = 매주, 2 = 격주 등)", example = "1")
-    private Integer repeatInterval = 1;  // 기본값: 매주
+    private Integer repeatTerm = 1;  // 기본값: 매주
 
 
 
