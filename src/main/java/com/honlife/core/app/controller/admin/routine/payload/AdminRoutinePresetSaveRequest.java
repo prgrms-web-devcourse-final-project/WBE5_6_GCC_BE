@@ -21,7 +21,7 @@ public class AdminRoutinePresetSaveRequest {
   private Boolean isImportant;
 
   @NotNull(message = "반복 유형은 필수입니다")
-  private RepeatType repeatType;
+  private RepeatType repeatType = RepeatType.DAILY;
 
   private String repeatValue;
 
