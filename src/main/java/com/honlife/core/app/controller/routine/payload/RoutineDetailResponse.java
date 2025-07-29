@@ -41,5 +41,8 @@ public class RoutineDetailResponse {
     private String repeatValue;
 
     @Schema(description = "루틴 시작 날짜", example = "2025-11-10")
-    private LocalDate startRoutineDate;
+    private LocalDate initDate;
+
+    @Schema(description = "카테고리 이모지")
+    private String emoji;
 }
