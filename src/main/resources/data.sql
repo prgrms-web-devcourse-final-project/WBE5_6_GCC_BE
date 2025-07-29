@@ -158,7 +158,7 @@ INSERT INTO ROUTINE (
 -- repeat_type과 repeat_value에 따라 자동 생성된 스케줄들
 
 
-INSERT INTO ROUTINE_SCHEDULE (id, routine_id, schedule_date, is_done) VALUES
+INSERT INTO ROUTINE_SCHEDULE (id, routine_id, scheduled_date, is_done) VALUES
 
 -- 10000 멤버의 매일 루틴들 (routine_id: 1,2,3,4)
 -- routine_id=1: 물 마시기 (DAILY)

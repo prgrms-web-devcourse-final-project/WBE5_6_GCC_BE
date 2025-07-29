@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -92,5 +93,22 @@ public class BadgeController {
             .build();
 
         return ResponseEntity.ok(CommonApiResponse.success(response));
+    }
+
+    /**
+     * 배지 장착/해제 토글 API
+     * @param badgeKey 배지 키
+     * @param userDetails 인증된 사용자 정보
+     * @return 성공 응답
+     */
+    @PatchMapping
+    public ResponseEntity<CommonApiResponse<Void>> updateBadgeEquipStatus(
+        @RequestParam String badgeKey,
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        String email = userDetails.getUsername();
+        badgeService.updateBadgeEquipStatus(badgeKey, email);
+
+        return ResponseEntity.ok(CommonApiResponse.noContent());
     }
 }
