@@ -5,7 +5,6 @@ import com.honlife.core.app.model.auth.dto.TokenDto;
 import com.honlife.core.app.model.auth.token.RefreshTokenService;
 import com.honlife.core.app.model.auth.token.UserBlackListRepository;
 import com.honlife.core.app.model.auth.token.entity.RefreshToken;
-import com.honlife.core.app.model.badge.event.LoginEvent;
 import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.infra.auth.jwt.JwtTokenProvider;
 import com.honlife.core.infra.auth.jwt.dto.AccessTokenDto;
@@ -52,15 +51,7 @@ public class AuthService {
             .authenticate(authenticationToken);
 
         eventPublisher.publishEvent(
-            new CommonEvent(
-                loginRequest.getEmail()
-            )
-        );
-
-        // 배지용 로그인 완료 이벤트 발행
-        log.info("🔥 LoginEvent 발행 - memberEmail: {}", loginRequest.getEmail());
-        eventPublisher.publishEvent(
-            LoginEvent.builder()
+            CommonEvent.builder()
                 .memberEmail(loginRequest.getEmail())
                 .build()
         );

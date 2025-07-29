@@ -3,10 +3,13 @@ package com.honlife.core.app.model.routine.service;
 import com.honlife.core.app.controller.routine.payload.RoutineScheduleCompleteRequest;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.routine.domain.Routine;
+import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import com.honlife.core.app.model.routine.dto.RoutineScheduleInfo;
+import com.honlife.core.app.model.routine.repos.RoutineRepository;
+import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.event.CommonEvent;
-import com.honlife.core.infra.event.RoutineProgressEvent;
 import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -16,10 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import com.honlife.core.app.model.routine.domain.Routine;
-import com.honlife.core.app.model.routine.domain.RoutineSchedule;
-import com.honlife.core.app.model.routine.repos.RoutineRepository;
-import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -74,21 +73,11 @@ public class RoutineScheduleService {
         }
 
         // 루틴 완료 이벤트 발행
-        log.info("🔥 CommonEvent 발행 - routineScheduleId: {}, isDone: {}", scheduleId, request.getIsDone());
         eventPublisher.publishEvent(
             CommonEvent.builder()
                 .memberEmail(userEmail)
                 .routineScheduleId(scheduleId)
                 .routineId(routineSchedule.getRoutine().getId())
-                .isDone(request.getIsDone())
-                .build()
-        );
-
-        // 배지용 루틴 완료 이벤트 발행
-        log.info("🔥 RoutineProgressEvent 발행 - routineScheduleId: {}, isDone: {}", scheduleId, request.getIsDone());
-        eventPublisher.publishEvent(
-            RoutineProgressEvent.builder()
-                .routineScheduleId(scheduleId)
                 .isDone(request.getIsDone())
                 .build()
         );
