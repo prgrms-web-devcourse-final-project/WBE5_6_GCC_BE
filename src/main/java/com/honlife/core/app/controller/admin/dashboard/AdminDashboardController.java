@@ -1,5 +1,6 @@
 package com.honlife.core.app.controller.admin.dashboard;
 
+import com.honlife.core.app.controller.admin.dashboard.payload.AdminDashboardStatsResponse;
 import com.honlife.core.app.model.dashboard.code.PeriodType;
 import com.honlife.core.app.model.dashboard.dto.AdminDashboardStatsDTO;
 import com.honlife.core.app.model.dashboard.service.AdminDashboardService;
@@ -23,12 +24,17 @@ public class AdminDashboardController {
 
     @GetMapping("/dashboard/stats")
     @PreAuthorize("hasRole('ADMIN')")
-    public CommonApiResponse<AdminDashboardStatsDTO> getDashboardStats(
+    public CommonApiResponse<AdminDashboardStatsResponse> getDashboardStats(
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
         @RequestParam(defaultValue = "DAILY") PeriodType periodType
     ) {
-        AdminDashboardStatsDTO stats = adminDashboardService.getDashboardStats(startDate, endDate, periodType);
-        return CommonApiResponse.success(stats);
+        // Service에서 DTO 받기
+        AdminDashboardStatsDTO statsDTO = adminDashboardService.getDashboardStats(startDate, endDate, periodType);
+
+        // DTO → Response 변환 (Payload에서 처리)
+        AdminDashboardStatsResponse response = AdminDashboardStatsResponse.fromDto(statsDTO);
+
+        return CommonApiResponse.success(response);
     }
 }
