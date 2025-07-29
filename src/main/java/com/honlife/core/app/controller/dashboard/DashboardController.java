@@ -80,7 +80,10 @@ public class DashboardController {
             .totalPoint(totalPoint)
             .build();
 
-        String aiComment = aiService.getOrCreateAIComment(userEmail,startDate, endDate, dashboardWrapperDTO);
+        String aiComment = null;
+        
+        if(!endDate.equals(LocalDate.now()))
+            aiComment = aiService.getOrCreateAIComment(userEmail,startDate, endDate, dashboardWrapperDTO);
 
 
         // response에 맞게 매핑
