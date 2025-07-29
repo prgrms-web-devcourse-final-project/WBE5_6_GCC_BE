@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.Key;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,24 +55,22 @@ public class ItemController {
     /**
      * 아이템 key값을 통한 단건 조회 API
      *
-     * @param itemKey 아이템 고유 아이다
-     * @return ItemResponse itemKey 값과 일치하는 아이템 정보 반환
+     * @param key 아이템 고유 아이다
+     * @return ItemResponse key 값과 일치하는 아이템 정보 반환
      */
     @GetMapping("/{key}")
     public ResponseEntity<CommonApiResponse<ItemDTO>> getItemByKey(
-            @PathVariable("key") String itemKey,
+            @PathVariable("key") String key,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         // 아이템 조회
-        Item item = itemService.getItemByKey(itemKey);
-        if (item == null) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
+        Item item = itemService.getItemByKey(key)
+                .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_ITEM));
+
         // 사용자 정보 조회
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
         // itemKey값을 통한 해당 item 정보 조회
-        ItemDTO itemResponse = itemService.getItemResponseByKey(itemKey, member.getId());
+        ItemDTO itemResponse = itemService.getItemResponseByKey(key, member.getId());
 
         return ResponseEntity.ok(CommonApiResponse.success(itemResponse));
 
@@ -80,19 +79,17 @@ public class ItemController {
     /**
      * 아이템 구매 API
      *
-     * @param itemKey 아이템 고유 아이다
+     * @param key 아이템 고유 아이다
      **/
     @PostMapping("/{key}")
     public ResponseEntity<CommonApiResponse<Void>> buyItem(
-            @PathVariable("key") String itemKey,
+            @PathVariable("key") String key,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         // 아이템 키값으로 Item 정보 가져옴
-        Item item = itemService.getItemByKey(itemKey);
-        if (item == null) {
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_ITEM.status())
-                    .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ITEM));
-        }
+        Item item = itemService.getItemByKey(key)
+                .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
+
         Member member = memberService.getMemberByEmail(userDetails.getUsername());
 
         // 회원이 이미 보유한 아이템인지 확인
