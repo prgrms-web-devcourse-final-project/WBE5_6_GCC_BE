@@ -26,6 +26,7 @@ import com.honlife.core.infra.response.ResponseCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -194,6 +195,39 @@ public class BadgeService {
             return badgeProgressService.getCurrentProgress(
                 memberId, ProgressType.CATEGORY, badge.getCategory().getId().toString()
             );
+        }
+    }
+
+    @Transactional
+    public void updateBadgeEquipStatus(String badgeKey, String email) {
+        // 1. 사용자 조회
+        MemberDTO memberDTO = memberService.findMemberByEmail(email);
+        Long memberId = memberDTO.getId();
+
+        // 2. 요청한 배지 조회 (보유 여부 확인)
+        Badge badge = badgeRepository.findByKeyAndIsActiveTrue(badgeKey)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_BADGE));
+
+        MemberBadge targetBadge = memberBadgeRepository.findByMemberIdAndBadge(memberId, badge)
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_BADGE));
+
+        // 3. 현재 장착된 배지 조회
+        Optional<MemberBadge> currentEquipped = memberBadgeRepository.findByMemberIdAndIsEquippedTrue(memberId);
+
+        if (currentEquipped.isPresent() &&
+            currentEquipped.get().getBadge().getKey().equals(badgeKey)) {
+            // 케이스 1: 같은 배지가 장착됨 → 해제
+            currentEquipped.get().setIsEquipped(false);
+            memberBadgeRepository.save(currentEquipped.get());
+        } else {
+            // 케이스 2: 다른 배지 장착 중 → 교체
+            // 케이스 3: 아무것도 미장착 → 새로 장착
+            if (currentEquipped.isPresent()) {
+                currentEquipped.get().setIsEquipped(false);
+                memberBadgeRepository.save(currentEquipped.get());
+            }
+            targetBadge.setIsEquipped(true);
+            memberBadgeRepository.save(targetBadge);
         }
     }
 
