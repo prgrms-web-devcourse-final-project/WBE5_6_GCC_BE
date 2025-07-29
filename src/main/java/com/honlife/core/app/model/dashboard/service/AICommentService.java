@@ -98,13 +98,13 @@ public class AICommentService {
         }
 
         return String.format("""          
-            [이번 주 루틴 데이터]
-            총_루틴_개수: %d
-            완료_루틴_개수: %d
-            획득_포인트: %d
-            가장_많이_완료한_카테고리: %s
-            일별 루틴 데이터: %s
-            모든 루틴 데이터: %s
+            [This Week's Routine Data]
+            Total Routines: %d
+            Completed Routines: %d
+            Points Earned: %d
+            Most Completed Category: %s
+            Daily Routine Data: %s
+            All Routine Data: %s
             """,
             dashboardDTO.getRoutineCount().getTotalCount(),
             dashboardDTO.getRoutineCount().getCompletedCount(),
