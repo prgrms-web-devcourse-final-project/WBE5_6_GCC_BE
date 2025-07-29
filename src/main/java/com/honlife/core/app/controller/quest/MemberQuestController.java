@@ -93,7 +93,8 @@ public class MemberQuestController {
     @PostMapping
     public ResponseEntity<CommonApiResponse<ResponseCode>> getReward(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestParam(name="type") PointSourceType sourceType,
+        @Schema(allowableValues = {"WEEKLY", "BADGE"})
+        @RequestParam(name="type") String sourceType,
         @RequestParam(name="id") Long progressId
     ) {
         return ResponseEntity.ok().body(CommonApiResponse.noContent());
