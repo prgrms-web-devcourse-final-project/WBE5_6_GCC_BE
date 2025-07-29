@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "[회원] 루틴", description = "루틴 관련 api 입니다.")
+@Tag(name = "✅ [회원] 루틴", description = "루틴 관련 api 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -59,7 +59,7 @@ public class RoutineController {
      * @return UserRoutinesPayload
      */
     @Operation(
-        summary = "사용자 오늘 루틴 조회",
+        summary = "✅ 사용자 오늘 루틴 조회",
         description = "사용자의 오늘 날짜 기준 루틴 목록을 조회합니다."
     )
     @GetMapping("/today")
@@ -118,7 +118,7 @@ public class RoutineController {
          * @param userDetails 로그인된 사용자 정보
          * @return UserRoutinesPayload
          */
-        @Operation(summary = "사용자 루틴 조회", description = "특정 날짜의 사용자 루틴 목록을 조회합니다. <br>date를 넣지 않으면 오늘 날짜 기준으로 조회됩니다.")
+        @Operation(summary = "✅ 사용자 루틴 조회", description = "특정 날짜의 사용자 루틴 목록을 조회합니다. <br>date를 넣지 않으면 오늘 날짜 기준으로 조회됩니다.")
         @GetMapping("/weekly")
         public ResponseEntity<CommonApiResponse<RoutinesResponse>> getWeeklyRoutines(
             @RequestParam(required = false)
@@ -173,7 +173,7 @@ public class RoutineController {
          * @param userDetails 로그인된 사용자 정보
          * @return RoutinePayload
          */
-    @Operation(summary = "특정 루틴 조회", description = "특정 루틴의 상세 정보를 조회합니다.")
+    @Operation(summary = "✅ 특정 루틴 조회", description = "특정 루틴의 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<CommonApiResponse<RoutineDetailResponse>> getRoutine(
         @PathVariable(name = "id")
@@ -211,7 +211,7 @@ public class RoutineController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "루틴 등록", description = "새로운 루틴을 등록합니다. <br>카테고리 ID와 루틴 내용은 필수입니다. <br><br>" +
+    @Operation(summary = "✅ 루틴 등록", description = "새로운 루틴을 등록합니다. <br>카테고리 ID와 루틴 내용은 필수입니다. <br><br>" +
         "<strong>RepeatType 설명:</strong><br>" +
         "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
         "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
@@ -250,7 +250,7 @@ public class RoutineController {
      * @param bindingResult validation
      * @return
      */
-    @Operation(summary = "루틴 수정", description = "특정 루틴을 수정합니다. <br>id가 1, 2인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br><br>" +
+    @Operation(summary = "✅ 루틴 수정", description = "특정 루틴을 수정합니다. <br>id가 1, 2인 데이터에 대해서만 수정 요청을 할 수 있도록 하였습니다. <br><br>" +
         "<strong>RepeatType 설명:</strong><br>" +
         "• DAILY: 매일 반복 (repeatValue 불필요)<br>" +
         "• WEEKLY: 매주 특정 요일 반복 (repeatValue 예시: '1,3,5' = 월,수,금)<br>" +
@@ -296,7 +296,7 @@ public class RoutineController {
      * @return
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "루틴 삭제", description = "특정 루틴을 삭제합니다. <br>id가 1, 2인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
+    @Operation(summary = "✅ 루틴 삭제", description = "특정 루틴을 삭제합니다. <br>id가 1, 2인 데이터에 대해서만 삭제 요청을 할 수 있도록 하였습니다. <br>*실제 DB에 반영되지 않음*")
     public ResponseEntity<CommonApiResponse<Void>> deleteRoutine(
         @PathVariable(name = "id")
         @Schema(description = "루틴 ID", example = "1") final Long routineId,
