@@ -1,6 +1,7 @@
 package com.honlife.core.app.controller.routine;
 
 import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.service.RoutinePresetService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
@@ -8,6 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.MediaType;
@@ -75,33 +78,51 @@ public class RoutinePresetController {
                 .presetId(1L)
                 .categoryId(1L)
                 .majorCategory("청소")
-                .subCategory("화장실 청소")
                 .name("화장실 청소하기")
                 .triggerTime("23:00")
                 .isDone(false)
                 .isImportant(true)
+                .repeatType(RepeatType.WEEKLY)
+                .repeatValue("월,수,금")
+                .repeatTerm(1)
+                .initDate(LocalDate.of(2025, 7, 1))
+                .createdAt(LocalDateTime.of(2025, 7, 20, 14, 0))
+                .updatedAt(LocalDateTime.of(2025, 7, 27, 8, 30))
+                .emoji("🧼")
                 .build());
 
             presets.add(RoutinePresetsResponse.PresetItem.builder()
                 .presetId(2L)
                 .categoryId(1L)
                 .majorCategory("청소")
-                .subCategory("거실 청소")
                 .name("청소기 돌리기")
                 .triggerTime("21:00")
                 .isDone(false)
                 .isImportant(true)
+                .repeatType(RepeatType.DAILY)
+                .repeatValue(null)
+                .repeatTerm(1)
+                .initDate(LocalDate.of(2025, 7, 2))
+                .createdAt(LocalDateTime.of(2025, 7, 20, 14, 10))
+                .updatedAt(LocalDateTime.of(2025, 7, 27, 8, 35))
+                .emoji("🧹")
                 .build());
 
             presets.add(RoutinePresetsResponse.PresetItem.builder()
                 .presetId(3L)
                 .categoryId(1L)
                 .majorCategory("청소")
-                .subCategory("주방 정리")
                 .name("식탁 닦기")
                 .triggerTime("20:00")
                 .isDone(false)
                 .isImportant(false)
+                .repeatType(RepeatType.DAILY)
+                .repeatValue(null)
+                .repeatTerm(1)
+                .initDate(LocalDate.of(2025, 7, 3))
+                .createdAt(LocalDateTime.of(2025, 7, 21, 10, 0))
+                .updatedAt(LocalDateTime.of(2025, 7, 27, 8, 50))
+                .emoji("🍽️")
                 .build());
 
         } else if (categoryId == 2L) {
@@ -110,22 +131,34 @@ public class RoutinePresetController {
                 .presetId(4L)
                 .categoryId(2L)
                 .majorCategory("건강")
-                .subCategory("명상")
                 .name("명상하기")
                 .triggerTime("22:00")
                 .isDone(false)
                 .isImportant(true)
+                .repeatType(RepeatType.WEEKLY)
+                .repeatValue("화,목")
+                .repeatTerm(1)
+                .initDate(LocalDate.of(2025, 7, 4))
+                .createdAt(LocalDateTime.of(2025, 7, 22, 9, 0))
+                .updatedAt(LocalDateTime.of(2025, 7, 27, 9, 30))
+                .emoji("🧘")
                 .build());
 
             presets.add(RoutinePresetsResponse.PresetItem.builder()
                 .presetId(5L)
                 .categoryId(2L)
                 .majorCategory("건강")
-                .subCategory("수분 보충")
                 .name("물 마시기")
                 .triggerTime("08:00")
                 .isDone(false)
                 .isImportant(true)
+                .repeatType(RepeatType.DAILY)
+                .repeatValue(null)
+                .repeatTerm(1)
+                .initDate(LocalDate.of(2025, 7, 5))
+                .createdAt(LocalDateTime.of(2025, 7, 22, 10, 0))
+                .updatedAt(LocalDateTime.of(2025, 7, 27, 10, 30))
+                .emoji("💧")
                 .build());
 
         } else if (categoryId == 4L) {
@@ -134,34 +167,53 @@ public class RoutinePresetController {
                 .presetId(6L)
                 .categoryId(4L)
                 .majorCategory("운동")
-                .subCategory("스트레칭")
                 .name("아침 스트레칭")
                 .triggerTime("07:30")
                 .isDone(false)
                 .isImportant(true)
+                .repeatType(RepeatType.DAILY)
+                .repeatValue(null)
+                .repeatTerm(1)
+                .initDate(LocalDate.of(2025, 7, 6))
+                .createdAt(LocalDateTime.of(2025, 7, 23, 8, 0))
+                .updatedAt(LocalDateTime.of(2025, 7, 27, 11, 0))
+                .emoji("🤸")
                 .build());
 
             presets.add(RoutinePresetsResponse.PresetItem.builder()
                 .presetId(7L)
                 .categoryId(4L)
                 .majorCategory("운동")
-                .subCategory("코어운동")
                 .name("플랭크")
                 .triggerTime("18:00")
                 .isDone(false)
                 .isImportant(false)
+                .repeatType(RepeatType.WEEKLY)
+                .repeatValue("월,수,금")
+                .repeatTerm(1)
+                .initDate(LocalDate.of(2025, 7, 7))
+                .createdAt(LocalDateTime.of(2025, 7, 23, 9, 0))
+                .updatedAt(LocalDateTime.of(2025, 7, 27, 11, 20))
+                .emoji("🏋️")
                 .build());
 
             presets.add(RoutinePresetsResponse.PresetItem.builder()
                 .presetId(8L)
                 .categoryId(4L)
                 .majorCategory("운동")
-                .subCategory("유산소")
                 .name("계단 오르기")
                 .triggerTime("출근시간")
                 .isDone(false)
                 .isImportant(false)
+                .repeatType(RepeatType.DAILY)
+                .repeatValue(null)
+                .repeatTerm(1)
+                .initDate(LocalDate.of(2025, 7, 8))
+                .createdAt(LocalDateTime.of(2025, 7, 24, 9, 0))
+                .updatedAt(LocalDateTime.of(2025, 7, 27, 11, 40))
+                .emoji("🚶")
                 .build());
+
         }
 
 
