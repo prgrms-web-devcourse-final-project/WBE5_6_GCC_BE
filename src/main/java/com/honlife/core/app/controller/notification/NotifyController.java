@@ -55,7 +55,7 @@ public class NotifyController {
   /**
    * 모두 읽음 api
    */
-  @PatchMapping("/all/read")
+  @PatchMapping("/all")
   public ResponseEntity<CommonApiResponse<Void>> readALlNotification(
       @AuthenticationPrincipal UserDetails userDetails
   ) {
@@ -70,7 +70,7 @@ public class NotifyController {
   /**
    * 알림 목록
    */
-  @GetMapping("/list")
+  @GetMapping
   public ResponseEntity<CommonApiResponse<List<NotifyListResponse>>> getALlNotification(
       @RequestBody @Valid final NotifyListRequest notifyListRequest,
       @AuthenticationPrincipal UserDetails userDetails
