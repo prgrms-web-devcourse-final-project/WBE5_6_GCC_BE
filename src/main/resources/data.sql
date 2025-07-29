@@ -373,10 +373,7 @@ INSERT INTO POINT_POLICY (id, reference_key, type, point, created_at, updated_at
 (45, 'event_winter_gift', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 (46, 'event_winter_snowman', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
 (47, 'event_summer_fireworks', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(48, 'event_summer_login', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-
-(49, null, 'ROUTINE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true),
-(50, null, 'ROUTINE', 50, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
+(48, 'event_summer_login', 'EVENT', 100, '2025-02-03 07:45:00', '2025-02-03 07:45:00', true);
 
 INSERT INTO WEEKLY_QUEST (id, category_id, key, name, type, target, created_at, updated_at, is_active) VALUES
 (1, 1, 'weekly_clean_count_1', '청소 루틴 1번 이상 완료', 'CATEGORY_COUNT', 1, NOW(), NOW(), true),
