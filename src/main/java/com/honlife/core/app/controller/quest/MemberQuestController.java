@@ -3,7 +3,9 @@ package com.honlife.core.app.controller.quest;
 import com.honlife.core.app.controller.quest.payload.EventQuestProgressResponse;
 import com.honlife.core.app.controller.quest.payload.WeeklyQuestProgressResponse;
 import com.honlife.core.app.controller.quest.wrapper.AllQuestsProgressWrapper;
+import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.infra.response.CommonApiResponse;
+import com.honlife.core.infra.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name="✅ [일반] 퀘스트", description = "퀘스트 관련 API")
@@ -87,10 +90,11 @@ public class MemberQuestController {
 
     @Operation(summary = "✅ 완료된 퀘스트의 보상을 수령", description = "사용자가 완료된 퀘스트의 보상받기 버튼을 눌렀을때, 보상을 지급합니다.<br>"
         + "보상 받기를 눌렀을 때, DB에 사용자의 퀘스트가 완료로 저장되며, 사용자의 포인트에 퀘스트 보상 포인트가 합산됩니다.")
-    @PostMapping("/{key}")
-    public ResponseEntity<CommonApiResponse<Void>> getReward (
+    @PostMapping
+    public ResponseEntity<CommonApiResponse<ResponseCode>> getReward(
         @AuthenticationPrincipal UserDetails userDetails,
-        @PathVariable(name="key") @Schema(description="퀘스트의 키값입니다.", example="weekly_quest_01") String questKey
+        @RequestParam(name="type") PointSourceType sourceType,
+        @RequestParam(name="id") Long progressId
     ) {
         return ResponseEntity.ok().body(CommonApiResponse.noContent());
     }
