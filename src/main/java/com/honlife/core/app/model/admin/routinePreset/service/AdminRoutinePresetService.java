@@ -69,7 +69,6 @@ public class AdminRoutinePresetService {
               .updatedAt(routinePreset.getUpdatedAt())
               .repeatType(routinePreset.getRepeatType())
               .repeatValue(routinePreset.getRepeatValue())
-              .initDate(routinePreset.getInitDate())
               .repeatTerm(routinePreset.getRepeatTerm())
               .emoji(routinePreset.getCategory().getEmoji())
               .build();
@@ -111,7 +110,6 @@ public class AdminRoutinePresetService {
         .emoji(routinePreset.getCategory().getEmoji())
         .repeatType(routinePreset.getRepeatType())
         .repeatValue(routinePreset.getRepeatValue())
-        .initDate(routinePreset.getInitDate())
         .repeatTerm(routinePreset.getRepeatTerm())
         .build();
 
@@ -133,7 +131,6 @@ public class AdminRoutinePresetService {
         .repeatType(request.getRepeatType())
         .repeatValue(request.getRepeatValue())
         .repeatTerm(request.getRepeatTerm())
-        .initDate(request.getInitDate())
         .build();
 
 
@@ -155,7 +152,6 @@ public class AdminRoutinePresetService {
       routinePreset.setRepeatType(request.getRepeatType());
       routinePreset.setRepeatValue(request.getRepeatValue());
       routinePreset.setRepeatTerm(request.getRepeatTerm());
-      routinePreset.setInitDate(request.getInitDate());
       Category category = categoryRepository.findById(request.getCategoryId())
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
       routinePreset.setCategory(category);

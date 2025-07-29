@@ -40,7 +40,6 @@ public class AdminRoutinePresetDetailResponse {
 
     private String repeatValue;
 
-    private LocalDate initDate;
 
     private Integer repeatTerm;
 
@@ -58,7 +57,6 @@ public class AdminRoutinePresetDetailResponse {
             .emoji(dto.getEmoji())
             .repeatType(dto.getRepeatType())
             .repeatValue(dto.getRepeatValue())
-            .initDate(dto.getInitDate())
             .repeatTerm(dto.getRepeatTerm())
             .build();
     }

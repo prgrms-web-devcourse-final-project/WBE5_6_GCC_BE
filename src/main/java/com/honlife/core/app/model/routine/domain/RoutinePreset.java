@@ -69,8 +69,6 @@ public class RoutinePreset extends BaseEntity {
     @Builder.Default
     private Integer repeatTerm = 1 ;
 
-    @Column
-    private LocalDate initDate;
 
 
 
