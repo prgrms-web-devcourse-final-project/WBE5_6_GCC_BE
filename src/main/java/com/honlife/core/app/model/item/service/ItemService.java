@@ -2,6 +2,7 @@ package com.honlife.core.app.model.item.service;
 
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.item.code.ItemType;
@@ -103,8 +104,17 @@ public class ItemService {
      * @param key
      * return Optional<Item></Item>
      */
-    public Item getItemByKey(String key) {
+    public Optional<Item> getItemByKey(String key) {
         return itemRepository.findByKeyAndIsActiveTrue(key);
+    }
+
+    /**
+     * itemId로 단일 아이템 조회
+     * @param id
+     * return Optional<Item></Item>
+     */
+    public Optional<Item>  getItemById(Long id) {
+        return itemRepository.findByIdAndIsActiveTrue(id);
     }
 
     /**
