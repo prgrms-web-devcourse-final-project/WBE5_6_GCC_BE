@@ -34,7 +34,7 @@ INSERT INTO CATEGORY (id, member_id, parent_id, name, type, created_at, updated_
 -- 카테고리: 1=청소/정리, 2=세탁/의류, 3=쓰레기/환경, 4=요리, 5=소비, 6=행정, 7=건강, 8=외출, 9=기타
 INSERT INTO ROUTINE_PRESET (
     id, category_id, content, is_active, created_at, updated_at,
-    is_important, trigger_time, repeat_term, repeat_type, repeat_value, start_date
+    is_important, trigger_time, repeat_term, repeat_type, repeat_value, init_date
 ) VALUES
       (1, 1, '방 청소하기', true, '2025-01-01 00:00:00', '2025-01-01 00:00:00', false, '08:00', 1, 'DAILY', '1', '2025-07-26'),
       (2, 1, '화장실 청소하기', true, '2025-01-01 00:00:00', '2025-01-01 00:00:00', false, '08:00', 1, 'DAILY', '1', '2025-07-26'),
