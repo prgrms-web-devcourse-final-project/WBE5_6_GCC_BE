@@ -2,7 +2,14 @@ INSERT INTO MEMBER (id, role, email, password, name, nickname, residence_experie
 (1, 'ROLE_ADMIN', 'admin@test.com', '{bcrypt}$2a$10$iC0JoLYyZ1kflTuNTtVsr.3rKS0Hl7jaCe4xjSxMWbFcYd0DOb0AO', '관리자', '관리자', null, null, null, null, true, null, null, true),
 (2, 'ROLE_USER', 'user01@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '홍길동', '닉네임1', 'OVER_10Y', '서울특별시', '강북구', '미아동', true, '2025-06-01 10:15:00', '2025-06-01 10:15:00', true),
 (3, 'ROLE_USER', 'user02@test.com', '{bcrypt}$2a$10$4dTVUJL9Rp/b8.q3upjZIuIewKcu6cBTlzskYQnasQZfZoI5RtgMK', '김영희', '닉네임2', 'Y1_TO_3', '서울특별시', '강북구', '수유1동', true, '2025-06-03 09:00:00', '2025-06-05 18:30:00', true),
-(4, 'ROLE_USER', 'user03@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '박철수', '닉네임3', 'UNDER_1Y', '서울특별시', '강남구', '역삼동', true, '2025-07-14 10:00:00', '2025-07-14 10:00:00', true);
+(4, 'ROLE_USER', 'user03@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '박철수', '닉네임3', 'UNDER_1Y', '서울특별시', '강남구', '역삼동', true, '2025-07-14 10:00:00', '2025-07-14 10:00:00', true),
+-- 더미 멤버
+(5, 'ROLE_USER', 'user04@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '이영수', '닉네임4', 'Y3_TO_5', '부산광역시', '해운대구', '우동', true, '2025-07-02 11:30:00', '2025-07-02 11:30:00', true),
+(6, 'ROLE_USER', 'user05@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '박민지', '닉네임5', 'Y1_TO_3', '대구광역시', '중구', '동성로', true, '2025-07-03 16:45:00', '2025-07-03 16:45:00', true),
+(7, 'ROLE_USER', 'user06@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '최준호', '닉네임6', 'UNDER_1Y', '광주광역시', '서구', '상무동', true, '2025-07-25 09:20:00', '2025-07-25 09:20:00', true),
+(8, 'ROLE_USER', 'user07@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '신현아', '닉네임7', 'Y5_TO_10', '인천광역시', '연수구', '송도동', true, '2025-07-26 14:35:00', '2025-07-26 14:35:00', true),
+(9, 'ROLE_USER', 'user08@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '강태윤', '닉네임8', 'OVER_10Y', '울산광역시', '남구', '삼산동', true, '2025-07-27 18:50:00', '2025-07-27 18:50:00', true),
+(10, 'ROLE_USER', 'user09@test.com', '{bcrypt}$2a$10$RScW/24nY32vqhHs6tlxYe7964v8rJLWPpnP1KSr6Np9oTfSYPd3C', '윤서연', '닉네임9', 'Y1_TO_3', '세종특별자치시', '조치원읍', '신안리', true, '2025-07-28 10:15:00', '2025-07-28 10:15:00', true);
 
 -- 카테고리 insert
 INSERT INTO CATEGORY (id, member_id, parent_id, name, type, created_at, updated_at, is_active) VALUES
@@ -551,4 +558,41 @@ values ('2025-05-25 18:30:44.000000',1,'1입니다','ETC'),
         ('2025-07-25 19:30:44.000000',17,null,'UX_ISSUE'),
         ('2025-07-25 19:30:44.000000',18,null,'MISSING_FEATURE'),
         ('2025-07-25 19:30:44.000000',19,null,'NO_MOTIVATION'),
-       ('2025-07-25 19:30:44.000000',20,null,'NO_MOTIVATION');
+       ('2025-07-25 19:30:44.000000',20,null,'NO_MOTIVATION'),
+       ('2025-07-01 10:30:00', 21, null, 'TOO_MUCH_EFFORT'),
+       ('2025-07-02 15:20:00', 22, '앱 사용이 복잡해요', 'ETC'),
+       ('2025-07-03 09:45:00', 23, null, 'UX_ISSUE'),
+       ('2025-07-26 11:30:00', 24, null, 'ROUTINE_MISMATCH'),
+       ('2025-07-27 16:20:00', 25, null, 'NO_MOTIVATION'),
+       ('2025-07-28 14:10:00', 26, '다른 앱을 사용하게 되었어요', 'ETC');
+
+-- 로그인 기록 (방문자 통계용)
+INSERT INTO LOGIN_LOG (id, member_id, time) VALUES
+-- 2025년 7월 데이터
+(1, 2, '2025-07-01 09:30:00'),
+(2, 3, '2025-07-01 14:20:00'),
+(3, 4, '2025-07-01 19:45:00'),
+(4, 2, '2025-07-02 08:15:00'),
+(5, 3, '2025-07-02 16:30:00'),
+(6, 2, '2025-07-03 10:45:00'),
+(7, 4, '2025-07-03 18:20:00'),
+(8, 2, '2025-07-04 11:30:00'),
+(9, 3, '2025-07-04 15:45:00'),
+(10, 4, '2025-07-04 20:10:00'),
+(11, 2, '2025-07-05 07:50:00'),
+(12, 3, '2025-07-05 13:25:00'),
+-- 6월 데이터 (월간 통계용)
+(13, 2, '2025-06-28 09:30:00'),
+(14, 3, '2025-06-29 14:20:00'),
+(15, 4, '2025-06-30 19:45:00'),
+-- 최근 몇일 더 추가
+(16, 2, '2025-07-25 09:30:00'),
+(17, 3, '2025-07-25 14:20:00'),
+(18, 4, '2025-07-25 19:45:00'),
+(19, 2, '2025-07-26 08:15:00'),
+(20, 3, '2025-07-26 16:30:00'),
+(21, 2, '2025-07-27 10:45:00'),
+(22, 4, '2025-07-27 18:20:00'),
+(23, 2, '2025-07-28 11:30:00'),
+(24, 3, '2025-07-28 15:45:00'),
+(25, 4, '2025-07-29 09:20:00');

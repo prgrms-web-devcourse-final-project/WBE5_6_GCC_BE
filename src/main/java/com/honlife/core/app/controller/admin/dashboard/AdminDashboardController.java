@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 public class AdminDashboardController {
 
