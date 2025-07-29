@@ -11,6 +11,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class MemberItemDTOCustom {
+    private Long id;
     private String itemKey;
     private String itemName;
     private ItemType itemtype;
