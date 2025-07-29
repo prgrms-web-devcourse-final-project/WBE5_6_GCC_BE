@@ -16,8 +16,6 @@ public class AdminRoutinePresetSaveRequest {
   @NotNull(message = "카테고리는 필수입니다")
   private Long categoryId;
 
-  private String majorCategory;
-
   private String triggerTime;
 
   private Boolean isImportant;
