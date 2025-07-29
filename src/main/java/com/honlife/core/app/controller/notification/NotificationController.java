@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.model.notification.service.NotificationService;
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "✅ [회원] 설정",description = "알림 설정관련 API")
+@Tag(name = "🔄 [회원] 설정",description = "알림 설정관련 API")
 @RestController
 @RequestMapping(value = "/api/v1/notifications", produces = MediaType.APPLICATION_JSON_VALUE)
 public class NotificationController {
@@ -37,7 +37,7 @@ public class NotificationController {
      * @param userDetails 인증 정보
      * @return {@code Void}
      */
-    @Operation(summary = "알림 설정 변경", description = "로그인한 유저의 알림 설정을 변경합니다."
+    @Operation(summary = "🔄 알림 설정 변경", description = "로그인한 유저의 알림 설정을 변경합니다."
         + "<br>특정 알림 설정만 변경되더라도, 모든 알림 설정 정보를 담아 요청해야 합니다.")
     @PutMapping
     public ResponseEntity<CommonApiResponse<Void>> onOffNotification(
@@ -52,7 +52,7 @@ public class NotificationController {
      * @param userDetails 유저의 인증정보
      * @return {@link NotificationWrapper}
      */
-    @Operation(summary = "알림 설정 조회", description = "로그인한 유저의 알림 설정을 조회합니다.")
+    @Operation(summary = "🔄 알림 설정 조회", description = "로그인한 유저의 알림 설정을 조회합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<NotificationWrapper>> getAllNotifications(
         @AuthenticationPrincipal UserDetails userDetails
