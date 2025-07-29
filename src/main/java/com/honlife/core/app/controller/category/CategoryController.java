@@ -148,23 +148,9 @@ public class CategoryController {
         @AuthenticationPrincipal UserDetails userDetails
         ){
 
-        // 사용자는 기본 카테고리 삭제가 불가능
-        if(categoryService.isDefault(categoryId))
-            return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.status())
-                .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-
-
         String userEmail = userDetails.getUsername();
 
-        // 해당 카테고리를 참조하는 루틴 전부 null을 참조하도록 함.
-        routineService.removeCategoryReference(categoryId, userEmail);
-
-        final ReferencedWarning referencedWarning = categoryService.getReferencedWarning(categoryId);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
-        categoryService.softDrop(categoryId);
+        categoryService.softDrop(categoryId, userEmail);
 
         return ResponseEntity.ok(CommonApiResponse.noContent());
     }

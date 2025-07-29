@@ -4,7 +4,10 @@ import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
 import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.app.model.member.service.MemberService;
+import com.honlife.core.app.model.routine.service.RoutineService;
 import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.error.exceptions.ReferencedException;
+import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.category.domain.Category;
@@ -35,11 +39,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final RoutineRepository routineRepository;
-    private final RoutinePresetRepository routinePresetRepository;
-    private final BadgeRepository badgeRepository;
-    private final InterestCategoryRepository interestCategoryRepository;
-    private final ModelMapper mapper;
-    private final MemberService memberService;
+    private final RoutineService routineService;
 
     public List<CategoryDTO> findAll() {
         final List<Category> categories = categoryRepository.findAll(Sort.by("id"));
@@ -113,25 +113,6 @@ public class CategoryService {
             referencedWarning.addParam(categoryRoutine.getId());
             return referencedWarning;
         }
-        // 사용자 카테고리만 삭제하기에 아래는 확인하지 않아도 괜찮음
-//        final RoutinePreset categoryRoutinePreset = routinePresetRepository.findFirstByCategory(category);
-//        if (categoryRoutinePreset != null) {
-//            referencedWarning.setKey("category.routinePreset.category.referenced");
-//            referencedWarning.addParam(categoryRoutinePreset.getId());
-//            return referencedWarning;
-//        }
-//        final Badge categoryBadge = badgeRepository.findFirstByCategory(category);
-//        if (categoryBadge != null) {
-//            referencedWarning.setKey("category.badge.category.referenced");
-//            referencedWarning.addParam(categoryBadge.getId());
-//            return referencedWarning;
-//        }
-//        final InterestCategory categoryInterestCategory = interestCategoryRepository.findFirstByCategory(category);
-//        if (categoryInterestCategory != null) {
-//            referencedWarning.setKey("category.interestCategory.category.referenced");
-//            referencedWarning.addParam(categoryInterestCategory.getId());
-//            return referencedWarning;
-//        }
         return null;
     }
 
@@ -305,8 +286,21 @@ public class CategoryService {
      * @param categoryId 해당 카테고리 아이디
      */
     @Transactional
-    public void softDrop(Long categoryId) {
+    public void softDrop(Long categoryId, String userEmail) {
+
+        // 사용자는 기본 카테고리 삭제가 불가능
+        if(isDefault(categoryId))
+            throw new CommonException(ResponseCode.NOT_FOUND_CATEGORY);
+
         Category targetCategory = categoryRepository.findCategoryById(categoryId).orElseThrow(()-> new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        // 해당 카테고리를 참조하는 루틴 전부 null을 참조하도록 함.
+        routineService.removeCategoryReference(categoryId, userEmail);
+        // 제대로 삭제 되었는지 확인
+        final ReferencedWarning referencedWarning = getReferencedWarning(categoryId);
+        if (referencedWarning != null) {
+            throw new ReferencedException(referencedWarning);
+        }
 
         if(targetCategory.getType() == CategoryType.MAJOR){
             targetCategory.getChildren().forEach(
