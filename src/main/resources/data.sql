@@ -547,8 +547,6 @@ values ('2025-05-25 18:30:44.000000',1,'1입니다','ETC'),
         ('2025-07-25 19:30:44.000000',17,null,'UX_ISSUE'),
         ('2025-07-25 19:30:44.000000',18,null,'MISSING_FEATURE'),
         ('2025-07-25 19:30:44.000000',19,null,'NO_MOTIVATION'),
-
-INSERT INTO notify_list (id, type, name, is_read, member_id, created_at, updated_at, is_active) VALUES
        ('2025-07-25 19:30:44.000000',20,null,'NO_MOTIVATION'),
        ('2025-07-01 10:30:00', 21, null, 'TOO_MUCH_EFFORT'),
        ('2025-07-02 15:20:00', 22, '앱 사용이 복잡해요', 'ETC'),
@@ -557,26 +555,15 @@ INSERT INTO notify_list (id, type, name, is_read, member_id, created_at, updated
        ('2025-07-27 16:20:00', 25, null, 'NO_MOTIVATION'),
        ('2025-07-28 14:10:00', 26, '다른 앱을 사용하게 되었어요', 'ETC');
        
-INSERT INTO notify_list (
-    type,
-    name,
-    is_read,
-    is_active,
-    created_at,
-    updated_at,
-    member_id
-) VALUES
+INSERT INTO notify_list (type, name, is_read, is_active, created_at, updated_at, member_id) VALUES
 -- 업적 알림
 (1,'BADGE', '물 30일 연속 마시기 업적을 달성했습니다!', false, 2,'2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
 
 -- 루틴 알림
 (2,'ROUTINE', '오늘 완료하지 않은 루틴이 2개 있습니다', false, 2, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
 
-
 -- 퀘스트 알림
 (3,'QUEST', '주간 퀘스트 "일찍 자기"를 완료했어요!', false, 2, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
-
-
 
 -- 로그인 기록 (방문자 통계용)
 INSERT INTO LOGIN_LOG (id, member_id, time) VALUES
