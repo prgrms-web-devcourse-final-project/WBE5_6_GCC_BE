@@ -2,8 +2,6 @@ package com.honlife.core.app.controller.admin.routine.payload;
 
 import com.honlife.core.app.model.admin.routinePreset.dto.RoutinePresetViewDTO;
 import com.honlife.core.app.model.routine.code.RepeatType;
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
