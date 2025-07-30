@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${front-server.prod-domain}")
     private String frontProdServer;
 
-    @Value("${fron-server.local-domain}")
+    @Value("${front-server.local-domain}")
     private String frontLocalServer;
 
 //    @Value("${app.domain}")
