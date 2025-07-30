@@ -25,7 +25,7 @@ public class NotificationSocketService {
 
     public void sendNotification(NotificationType type, String userEmail){
 
-          messageSendingOperations.convertAndSend("/topic/notify"+ userEmail,  "ping");
+          messageSendingOperations.convertAndSend("/topic/notify/"+ userEmail,  "ping");
 
     }
 
