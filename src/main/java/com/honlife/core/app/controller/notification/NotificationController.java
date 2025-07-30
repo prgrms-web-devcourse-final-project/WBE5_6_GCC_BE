@@ -61,7 +61,7 @@ public class NotificationController {
             return ResponseEntity.ok(CommonApiResponse.success(
                 new NotificationWrapper(
                     NotificationPayload.builder()
-                    .isEmail(true)
+                    .isQuest(true)
                     .isRoutine(false)
                     .isBadge(true).build()
                 )
