@@ -321,7 +321,7 @@ public class RoutineService {
         routine.setRepeatValue(request.getRepeatValue());
       }
       routine.setInitDate(request.getInitDate());
-      if(request.getRepeatTerm() != null){
+      if(request.getRepeatTerm() != null && request.getRepeatTerm() > 0){
         routine.setRepeatTerm(request.getRepeatTerm());
       }
       routineRepository.save(routine);
