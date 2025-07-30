@@ -151,6 +151,10 @@ public class MemberPointService {
             .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
 
         Integer CurrentPoints = memberPoint.getPoint();
+
+        if (CurrentPoints - points <= 0) {
+            throw new IllegalStateException("포인트가 0 이하가 될 수 없습니다.");
+        }
         memberPoint.setPoint(CurrentPoints - points);
         memberPointRepository.save(memberPoint);
 
