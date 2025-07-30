@@ -40,7 +40,7 @@ public class AdminCategoryController {
             .emoji("🧹")
             .categoryType(CategoryType.DEFAULT)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
-            .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+            .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
             .build());
         response.add(AdminCategoryResponse.builder()
             .categoryId(2L)
@@ -48,7 +48,7 @@ public class AdminCategoryController {
             .emoji("\uD83C\uDF73")
             .categoryType(CategoryType.DEFAULT)
             .createTime(LocalDateTime.parse("2025-07-09T21:30:00"))
-            .createTime(LocalDateTime.parse("2025-07-13T21:30:00"))
+            .updateTime(LocalDateTime.parse("2025-07-13T21:30:00"))
             .build());
 
         return ResponseEntity.ok(CommonApiResponse.success(response));
