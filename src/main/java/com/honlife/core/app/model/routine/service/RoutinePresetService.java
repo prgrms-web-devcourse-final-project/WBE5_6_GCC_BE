@@ -12,6 +12,7 @@ import com.honlife.core.app.model.routine.domain.RoutinePreset;
 import com.honlife.core.app.model.routine.dto.RoutinePresetDTO;
 import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -84,6 +85,7 @@ public class RoutinePresetService {
      * @param categoryId 조회 기준이 되는 카테고리 아이디
      * @return {@link PresetItem} 의 리스트
      */
+    @Transactional(readOnly = true)
     public List<PresetItem> getRoutinePresets(Long categoryId) {
         List<RoutinePreset> routinePresets = routinePresetRepository.getRoutinePresetByCategoryId(
             categoryId);
