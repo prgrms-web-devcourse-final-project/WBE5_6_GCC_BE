@@ -26,7 +26,7 @@ public class AdminCreateItemRequeset {
 
     @NotNull
     @Schema(description = "아이템 가격", example = "300")
-    private Integer price;
+    private Integer itemPrice;
 
     @NotNull
     @Schema(description = "아이템 타입", example = "TOP")

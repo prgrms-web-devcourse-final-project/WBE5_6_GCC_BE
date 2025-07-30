@@ -113,7 +113,7 @@ public class AdminItemController {
                             name = "id",
                             description = "수정할 아이템의 id값",
                             required = true,
-                            example = "1L"
+                            example = "1"
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -150,7 +150,7 @@ public class AdminItemController {
                             name = "id",
                             description = "삭제할 아이템의 id값",
                             required = true,
-                            example = "1L"
+                            example = "1"
                     )
             }
     )
