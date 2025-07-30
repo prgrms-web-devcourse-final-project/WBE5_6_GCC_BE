@@ -34,9 +34,6 @@ public class CommonQuestProcessor {
      */
     @Transactional
     public void updateQuestProgress(QuestDomain questDomain, Long progressId, Boolean isDone) {
-
-        log.info("updateQuestProgress :: progress_id: {}", progressId);
-
         if (questDomain.equals(QuestDomain.WEEKLY)) {
             WeeklyQuestProgress progress = weeklyQuestProgressRepository.findById(progressId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
@@ -63,9 +60,6 @@ public class CommonQuestProcessor {
     @Transactional
     public void updateCategoryQuestProgress(QuestDomain questDomain, Long progressId,
         Long routineCategoryId, Boolean isDone) {
-
-        log.info("updateCategoryQuestProgress :: progress_id: {}, routine_category_id: {}", progressId, routineCategoryId);
-
         if (questDomain.equals(QuestDomain.WEEKLY)) {
             WeeklyQuestProgress progress = weeklyQuestProgressRepository.findById(progressId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
@@ -155,6 +149,7 @@ public class CommonQuestProcessor {
         Consumer<Integer> setter) {
         // 이미 기준을 충족한 경우
         if (currentProgress >= target && isDone) {
+            log.info("updateProgress :: Abort update --- current_progress={}, target={}, is_done={}", currentProgress, target, isDone);
             return;
         }
 

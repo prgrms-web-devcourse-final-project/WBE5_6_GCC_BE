@@ -28,8 +28,6 @@ public class RoutineEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleRoutineCompletionChanged(CommonEvent event) {
 
-        log.info("handleRoutineCompletionChanged() :: [Quest] Routine event handler got event");
-
         // 루틴 관련 이벤트가 아닌 경우 리턴
         Long routineScheduleId = event.getRoutineScheduleId();
         if(routineScheduleId == null) {
