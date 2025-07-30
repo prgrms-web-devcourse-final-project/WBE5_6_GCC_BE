@@ -15,11 +15,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Value("${front-server.prod-domain}")
   private String frontProdServer;
 
+  @Value("${app.domain}")
+  private String appDomain;
+
+
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws/connect")//웹소켓 연결할때 사용할 api
         .setAllowedOriginPatterns(frontProdServer)
+        .setAllowedOrigins(appDomain)
         .withSockJS();
   }
 

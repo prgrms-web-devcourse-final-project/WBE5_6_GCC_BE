@@ -70,7 +70,7 @@ public class RoutineService {
             startDate.datesUntil(endDate.plusDays(1))
                 .filter(currentDate ->
                     //해당 날짜로부터 시작 날짜 포함해서 이후에 값만 들고오는거 입니다
-                    !routine.getInitDate().isAfter(LocalDate.now()) &&
+                    !routine.getInitDate().isAfter(currentDate)  &&
                         routine.getRepeatType().isMatched(currentDate, routine.getRepeatValue()) &&
                         // 달마다 차이나는 것을 무시하고 순수한 주차 사이 값을 돌려준다는 메서드인데 진짜 너무 대박이네요
                         isToday(routine, currentDate)
@@ -242,6 +242,13 @@ public class RoutineService {
 
     /** 간단한 로직이라 DTO를 사용할 필요 없을거같아 바로 Routine으로 넣어줬습니다*/
     Routine routine = new Routine();
+    int repeatTerm;
+    if(routineSaveRequest.getRepeatTerm() == null || routineSaveRequest.getRepeatTerm() == 0){
+        repeatTerm = 1;
+    }
+    else{
+      repeatTerm = routineSaveRequest.getRepeatTerm();
+    }
 
     routine.setCategory(category);
     routine.setContent(routineSaveRequest.getName());
@@ -250,7 +257,7 @@ public class RoutineService {
     routine.setRepeatType(routineSaveRequest.getRepeatType());
     routine.setRepeatValue(routineSaveRequest.getRepeatValue());
     routine.setInitDate(routineSaveRequest.getInitDate());
-    routine.setRepeatTerm(routineSaveRequest.getRepeatTerm());
+    routine.setRepeatTerm(repeatTerm);
     routine.setMember(member);
 
     routineRepository.save(routine);
