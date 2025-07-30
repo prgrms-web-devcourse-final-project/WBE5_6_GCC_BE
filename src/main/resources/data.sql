@@ -597,6 +597,25 @@ values ('2025-05-25 18:30:44.000000',1,'1입니다','ETC'),
        ('2025-07-26 11:30:00', 24, null, 'ROUTINE_MISMATCH'),
        ('2025-07-27 16:20:00', 25, null, 'NO_MOTIVATION'),
        ('2025-07-28 14:10:00', 26, '다른 앱을 사용하게 되었어요', 'ETC');
+       
+INSERT INTO notify_list (
+    type,
+    name,
+    is_read,
+    is_active,
+    created_at,
+    updated_at,
+    member_id
+) VALUES
+-- 업적 알림
+('BADGE', '물 30일 연속 마시기 업적을 달성했습니다!', false, true, '2025-07-28 10:00:00', '2025-07-28 10:00:00', 2),
+
+-- 루틴 알림
+('ROUTINE', '오늘 완료하지 않은 루틴이 2개 있습니다', false, true, '2025-07-28 12:00:00', '2025-07-28 12:00:00', 2),
+
+-- 퀘스트 알림
+('QUEST', '주간 퀘스트 "일찍 자기"를 완료했어요!', false, true, '2025-07-27 09:00:00', '2025-07-27 09:00:00', 2);
+
 
 -- 로그인 기록 (방문자 통계용)
 INSERT INTO LOGIN_LOG (id, member_id, time) VALUES
@@ -628,3 +647,4 @@ INSERT INTO LOGIN_LOG (id, member_id, time) VALUES
 (23, 2, '2025-07-28 11:30:00'),
 (24, 3, '2025-07-28 15:45:00'),
 (25, 4, '2025-07-29 09:20:00');
+
