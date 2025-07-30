@@ -28,8 +28,8 @@ public class NotifyList extends BaseEntity {
   @Column(nullable = false, updatable = false)
   private Long id;
 
-  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private NotificationType type;
 
   @Column
