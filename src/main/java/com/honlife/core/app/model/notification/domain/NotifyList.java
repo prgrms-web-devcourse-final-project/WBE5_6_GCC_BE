@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class NotifyList extends BaseEntity {
 
   @Id
+  @Column(nullable = false, updatable = false)
   @SequenceGenerator(
       name = "notify_sequence",
       sequenceName = "notify_sequence",
@@ -25,7 +26,6 @@ public class NotifyList extends BaseEntity {
       strategy = GenerationType.SEQUENCE,
       generator = "notify_sequence"
   )
-  @Column(nullable = false, updatable = false)
   private Long id;
 
   @Column(nullable = false)
