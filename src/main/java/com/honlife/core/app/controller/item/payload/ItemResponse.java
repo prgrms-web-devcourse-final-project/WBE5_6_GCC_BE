@@ -12,6 +12,7 @@ import java.util.List;
 public class ItemResponse {
 
     private Long itemId;
+    private String itemKey;
     private String itemName;
     private String itemDescription;
     private ItemType itemType;
@@ -22,6 +23,7 @@ public class ItemResponse {
     public static ItemResponse fromDTO(ItemDTO dto) {
         return ItemResponse.builder()
                 .itemId(dto.getId())
+                .itemKey(dto.getItemKey())
                 .itemName(dto.getName())
                 .itemDescription(dto.getDescription())
                 .itemType(dto.getType())
