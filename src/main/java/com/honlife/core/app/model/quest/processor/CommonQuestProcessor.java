@@ -12,11 +12,13 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommonQuestProcessor {
 
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
@@ -59,8 +61,13 @@ public class CommonQuestProcessor {
     @Transactional
     protected void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
         if(progress.getProgress().equals(target)) {
-            String userEmail = progress.getMember().getEmail();
-            notifyListService.saveNotifyAndSendSocket(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
+            try{
+                String userEmail = progress.getMember().getEmail();
+                notifyListService.saveNotifyAndSendSocket(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
+            }
+            catch(Exception e) {
+                log.error(e.getMessage(), e);
+            }
         }
     }
 
