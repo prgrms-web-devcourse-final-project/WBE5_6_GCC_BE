@@ -103,6 +103,7 @@ public class RoutineService {
                       .repeatType(routine.getRepeatType())
                       .repeatValue(routine.getRepeatValue())
                       .emoji(routine.getCategory().getEmoji())
+                      .repeatTerm(routine.getRepeatTerm())
                       .build();
                 })
         )
