@@ -8,8 +8,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     
-    @Value("${front-server.domain}")
-    private String frontServer;
+    @Value("${front-server.prod-domain}")
+    private String frontProdServer;
+
+    @Value("${fron-server.local-domain}")
+    private String frontLocalServer;
 
 //    @Value("${app.domain}")
 //    private String appDomain;
@@ -17,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins(frontServer, "http://localhost:3000")
+            .allowedOrigins(frontProdServer, frontLocalServer)
 //            .allowedOrigins(appDomain)
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
             .allowedHeaders("*")

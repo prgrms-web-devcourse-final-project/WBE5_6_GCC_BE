@@ -29,7 +29,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final RefreshTokenService refreshTokenService;
     private final LoginLogService loginLogService;
 
-    @Value("${front-server.domain}")
+    @Value("${front-server.prod-domain}")
     private String frontDomain;
 
     @Override
