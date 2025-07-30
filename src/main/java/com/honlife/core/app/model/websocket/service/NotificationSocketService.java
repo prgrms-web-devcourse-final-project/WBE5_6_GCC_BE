@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationSocketService {
 
-  private final NotificationRepository notificationRepository;
   private final SimpMessageSendingOperations messageSendingOperations;
 
   /**

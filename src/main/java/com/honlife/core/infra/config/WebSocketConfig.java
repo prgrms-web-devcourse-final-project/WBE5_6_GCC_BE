@@ -24,7 +24,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws/connect")//웹소켓 연결할때 사용할 api
         .setAllowedOriginPatterns("*")
-        .setAllowedOrigins(appDomain)
         .withSockJS();
   }
 
@@ -33,6 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
     config.enableSimpleBroker("/topic"); //구독 경록
+    config.setApplicationDestinationPrefixes("/app");
   }
 
 }
