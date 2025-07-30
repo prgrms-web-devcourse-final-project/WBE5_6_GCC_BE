@@ -208,6 +208,9 @@ public class CategoryService {
      */
     @Transactional
     public void createCategory(CategorySaveRequest categorySaveRequest, String userEmail) {
+        if(categorySaveRequest.getCategoryType()==CategoryType.DEFAULT)
+            throw new CommonException(ResponseCode.BAD_REQUEST);
+
         // 부모 카테고리 정보 가져오기
         Category majorCategory = null;
 
