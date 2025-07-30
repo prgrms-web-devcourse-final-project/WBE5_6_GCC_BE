@@ -7,7 +7,6 @@ import com.honlife.core.app.model.quest.domain.EventQuestProgress;
 import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
 import com.honlife.core.app.model.quest.repos.EventQuestProgressRepository;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestProgressRepository;
-import com.honlife.core.app.model.websocket.service.NotificationSocketService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.function.Consumer;
@@ -122,7 +121,7 @@ public class CommonQuestProcessor {
                 String userEmail = progress.getMember().getEmail();
                 notifyListService.saveNotifyAndSendSocket(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
             } catch (Exception e) {
-                log.error("[checkAndSendSocket] Exception occurred");
+                log.error("checkAndSendSocket :: Exception occurred");
             }
         }
     }
@@ -137,7 +136,7 @@ public class CommonQuestProcessor {
                 notifyListService.saveNotifyAndSendSocket(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
             }
             catch(Exception e) {
-                log.error("[checkAndSendSocket] Exception occurred");
+                log.error("checkAndSendSocket :: Exception occurred");
             }
         }
     }
