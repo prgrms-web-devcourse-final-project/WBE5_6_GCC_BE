@@ -256,20 +256,27 @@ public class RoutineService {
     routineRepository.save(routine);
 
     // 오늘이 루틴에 해당하는 날짜인지 확인
-  if(!routineSaveRequest.getInitDate().isAfter(LocalDate.now()) && routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
-      isToday(routine, LocalDate.now())){
-      boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, LocalDate.now());
-        if (!exists) {
-        RoutineSchedule schedule = RoutineSchedule.builder()
-            .scheduledDate(LocalDate.now())
-            .isDone(false)
-            .routine(routine)
-            .build();
-        routineScheduleRepository.save(schedule);
+      createTodayRoutine(routine);
   }
 
+    /**
+     * 생성 수정 시에 오늘 루틴이 추가되어야 할 경우 추가합니다.
+     * @param routine 루틴 데이터
+     */
+    private void createTodayRoutine(Routine routine) {
+        if(!routine.getInitDate().isAfter(LocalDate.now()) && routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
+            isToday(routine, LocalDate.now())){
+            boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, LocalDate.now());
+              if (!exists) {
+              RoutineSchedule schedule = RoutineSchedule.builder()
+                  .scheduledDate(LocalDate.now())
+                  .isDone(false)
+                  .routine(routine)
+                  .build();
+              routineScheduleRepository.save(schedule);
+              }
+          }
     }
-  }
 
     /**
      * term 을 확인해서 오늘이 루틴을 행하는 날인지 확인합니다.
@@ -315,7 +322,7 @@ public class RoutineService {
       routine.setRepeatTerm(request.getRepeatTerm());
       routineRepository.save(routine);
 
-
+      createTodayRoutine(routine);
   }
 
 
