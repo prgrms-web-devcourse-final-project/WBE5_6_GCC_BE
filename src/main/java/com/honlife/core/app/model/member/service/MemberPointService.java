@@ -151,12 +151,9 @@ public class MemberPointService {
         MemberPoint memberPoint = memberPointRepository.findByMember_EmailAndIsActive(userEmail, true)
             .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_POINT));
 
-        Integer CurrentPoints = memberPoint.getPoint();
+        int newPoints = memberPoint.getPoint() - points;
 
-        if (CurrentPoints - points <= 0) {
-            throw new CommonException(ResponseCode.NOT_ENOUGH_POINT);
-        }
-        memberPoint.setPoint(CurrentPoints - points);
+        memberPoint.setPoint(Math.max(newPoints, 0));
         memberPointRepository.save(memberPoint);
 
         // Save Log
