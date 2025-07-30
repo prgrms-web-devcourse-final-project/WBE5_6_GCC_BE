@@ -69,15 +69,15 @@ dependencies {
 
     // aws-secret-manager
     // https://mvnrepository.com/artifact/io.awspring.cloud/spring-cloud-aws-starter-secrets-manager
-    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.0")
-    implementation("io.awspring.cloud:spring-cloud-aws-starter-secrets-manager")
+//    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.0")
+//    implementation("io.awspring.cloud:spring-cloud-aws-starter-secrets-manager")
 
     //mail
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     // Swagger
-    implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6')
+//    implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6')
 
     compileOnly('org.projectlombok:lombok')
     annotationProcessor('org.projectlombok:lombok')
