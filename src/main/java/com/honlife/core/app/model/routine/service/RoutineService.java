@@ -314,10 +314,16 @@ public class RoutineService {
       routine.setContent(request.getName());
       routine.setTriggerTime(request.getTriggerTime());
       routine.setIsImportant(request.getIsImportant());
-      routine.setRepeatType(request.getRepeatType());
-      routine.setRepeatValue(request.getRepeatValue());
+      if(request.getRepeatType() != null){
+        routine.setRepeatType(request.getRepeatType());
+      }
+      if(request.getRepeatValue() != null && !request.getRepeatValue().isBlank()){
+        routine.setRepeatValue(request.getRepeatValue());
+      }
       routine.setInitDate(request.getInitDate());
-      routine.setRepeatTerm(request.getRepeatTerm());
+      if(request.getRepeatTerm() != null && request.getRepeatTerm() > 0){
+        routine.setRepeatTerm(request.getRepeatTerm());
+      }
       routineRepository.save(routine);
 
       createTodayRoutine(routine);
