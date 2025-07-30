@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class NotificationSocketService {
 
   private final NotificationRepository notificationRepository;
@@ -25,8 +24,6 @@ public class NotificationSocketService {
    */
 
     public void sendNotification(NotificationType type, String userEmail){
-      log.info("🔔 웹소켓 알림 전송 시작 - type={}, email={}", type, userEmail);
-
 
       Notification notification = notificationRepository.findByMember_Email(userEmail)
           .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
@@ -36,14 +33,13 @@ public class NotificationSocketService {
           String message = "새로운 " + type + "알림이 도착했습니다.";
 
           messageSendingOperations.convertAndSend("topic/notify",message);
-          log.info("✅ 웹소켓 알림 전송 완료: {}", notification);
         }
     }
 
     public Boolean isTypeTrue(NotificationType type, Notification notification){
         switch (type) {
           case NotificationType.QUEST:
-                return Boolean.TRUE.equals(notification.getIsEmail());
+                return Boolean.TRUE.equals(notification.getIsQuest());
           case NotificationType.ROUTINE:
                 return Boolean.TRUE.equals(notification.getIsRoutine());
           case NotificationType.BADGE:
