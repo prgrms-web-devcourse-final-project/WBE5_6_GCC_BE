@@ -8,6 +8,8 @@ import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.oauth2.service.GoogleUnlinkService;
+import com.honlife.core.app.model.oauth2.service.KakaoUnlinkService;
 import com.honlife.core.app.model.quest.repos.EventQuestProgressRepository;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestProgressRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
@@ -19,6 +21,7 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -58,35 +61,14 @@ public class MemberService {
     private final MemberBadgeRepository memberBadgeRepository;
     private final InterestCategoryRepository interestCategoryRepository;
     private final EventQuestProgressRepository eventQuestProgressRepository;
+    private final GoogleUnlinkService googleUnlinkService;
+    private final KakaoUnlinkService kakaoUnlinkService;
 
-    public List<MemberDTO> findAll() {
-        final List<Member> members = memberRepository.findAll(Sort.by("id"));
-        return members.stream()
-            .map(member -> mapToDTO(member, new MemberDTO()))
-            .toList();
-    }
 
     public MemberDTO get(final Long id) {
         return memberRepository.findById(id)
             .map(member -> mapToDTO(member, new MemberDTO()))
             .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
-    }
-
-    public Long create(final MemberDTO memberDTO) {
-        final Member member = new Member();
-        mapToEntity(memberDTO, member);
-        return memberRepository.save(member).getId();
-    }
-
-    public void update(final Long id, final MemberDTO memberDTO) {
-        final Member member = memberRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_MEMBER));
-        mapToEntity(memberDTO, member);
-        memberRepository.save(member);
-    }
-
-    public void delete(final Long id) {
-        memberRepository.deleteById(id);
     }
 
     private MemberDTO mapToDTO(final Member member, final MemberDTO memberDTO) {
@@ -104,22 +86,6 @@ public class MemberService {
         memberDTO.setRegion2Dept(member.getRegion2Dept());
         memberDTO.setRegion3Dept(member.getRegion3Dept());
         return memberDTO;
-    }
-
-    private Member mapToEntity(final MemberDTO memberDTO, final Member member) {
-        member.setCreatedAt(memberDTO.getCreatedAt());
-        member.setUpdatedAt(memberDTO.getUpdatedAt());
-        member.setIsActive(memberDTO.getIsActive());
-        member.setRole(memberDTO.getRole());
-        member.setEmail(memberDTO.getEmail());
-        member.setPassword(memberDTO.getPassword());
-        member.setName(memberDTO.getName());
-        member.setNickname(memberDTO.getNickname());
-        member.setResidenceExperience(memberDTO.getResidenceExperience());
-        member.setRegion1Dept(memberDTO.getRegion1Dept());
-        member.setRegion2Dept(memberDTO.getRegion2Dept());
-        member.setRegion3Dept(memberDTO.getRegion3Dept());
-        return member;
     }
 
     /**
@@ -342,8 +308,9 @@ public class MemberService {
 
         // 요청에 반드시 포함되는 필드
         targetMember.setName(updatedMemberDTO.getName());
-        if(isNicknameExists(updatedMemberDTO.getNickname()))
+        if(!targetMember.getNickname().equals(updatedMemberDTO.getNickname()) && isNicknameExists(updatedMemberDTO.getNickname())){
             throw new CommonException(ResponseCode.CONFLICT_EXIST_MEMBER);
+        }
         targetMember.setNickname(updatedMemberDTO.getNickname());
         // 관련 정보가 null로 넘어온 경우 기존의 데이터 유지
         if(updatedMemberDTO.getResidenceExperience()!=null){
@@ -384,6 +351,16 @@ public class MemberService {
      */
     @Transactional
     public void softDropMember(String userEmail) {
+        Member member = memberRepository.findByEmailAndIsActive(userEmail, true)
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
+
+        // 소셜 로그인 회원인 경우 연결 해체 진행
+        if(member.getProvider().equals("google")){
+            googleUnlinkService.unlink(member);
+        } else if (member.getProvider().equals("kakao")){
+            kakaoUnlinkService.unlink(member);
+        }
+
         memberRepository.softDropMember(userEmail);
     }
 

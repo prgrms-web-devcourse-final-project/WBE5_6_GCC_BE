@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @EnableScheduling
 @RequiredArgsConstructor
-@Slf4j
+
 public class Scheduler {
 
   private final RoutineScheduleService routineScheduleService;
@@ -30,7 +30,6 @@ public class Scheduler {
   @Transactional
   @Scheduled(cron = "0 0 0 * * ?")
   public void updateStatus() {
-    log.info("[Scheduler] 루틴 스케줄러 실행됨");
 
     LocalDate today = LocalDate.now();
 
@@ -40,13 +39,11 @@ public class Scheduler {
   @Scheduled(cron = "0 0 9,15,21 * * ?")// 오전 9시, 오후 3시, 밤 9시
   public void checkAndNotifyIncompleteRoutines() {
 
-    log.info("🔔 [Scheduler] 미완료 루틴 알림 스케줄러 실행됨");
     List<Member> members = memberRepository.findAll();
 
     for (Member member : members) {
       long count = routineScheduleRepository.countTodayIncompleteByMemberId(member.getId(), LocalDate.now());
 
-      log.info("👤 Member ID {} - 미완료 루틴 {}개", member.getId(), count);
 
       if (count > 0) {
         notifyService.notifyIncompleteRoutines(member, count);

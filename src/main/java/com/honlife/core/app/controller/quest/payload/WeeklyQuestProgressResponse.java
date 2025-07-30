@@ -22,6 +22,7 @@ public class WeeklyQuestProgressResponse {
     private Integer target;
     private Integer progress;
     private Integer points;
+    private Boolean isRewarded;
 
     public static WeeklyQuestProgressResponse fromDTO(MemberWeeklyQuestDTO weeklyQuest) {
         return WeeklyQuestProgressResponse.builder()
@@ -33,6 +34,7 @@ public class WeeklyQuestProgressResponse {
             .target(weeklyQuest.getTarget())
             .progress(weeklyQuest.getProgress())
             .points(weeklyQuest.getPoints())
+            .isRewarded(weeklyQuest.getIsDone())
             .build();
     }
 
