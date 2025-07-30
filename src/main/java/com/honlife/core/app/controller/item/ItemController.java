@@ -96,35 +96,6 @@ public class ItemController {
     }
 
     /**
-     * 아이템 key값을 통한 단건 조회 API
-     * - 회원이 보유 중인 아이템인지 여부 포함
-     * - 해당 아이템이 활성화/비활성화 여부 포함
-     *
-     * @param id 아이템 고유 아이다
-     * @return ItemResponse id 값과 일치하는 아이템 정보 반환
-     */
-    @Operation(summary = "✅아이템 단건 조회", description = "아이템 key 값을 통해 특정 아이템을 조회합니다.")
-    @GetMapping("/{id}")
-    public ResponseEntity<CommonApiResponse<ItemResponse>> getItemById(
-            @Parameter(description = "아이템 id 값", example = "1L")
-            @PathVariable("id") Long id) {
-
-        ItemResponse item = ItemResponse.builder()
-                .itemId(1L)
-                .itemType(ItemType.TOP)
-                .itemKey("top_item_01")
-                .itemName("청소 상의")
-                .itemDescription("먼지가 달라 붙지 않아요!")
-                .itemPoint(100)
-                .isOwned(true)
-                .isListed(true)
-                .build();
-
-        return ResponseEntity.ok(CommonApiResponse.success(item));
-    }
-
-
-    /**
      * 아이템 구매 API
      *
      * @param id 아이템 고유 아이다
