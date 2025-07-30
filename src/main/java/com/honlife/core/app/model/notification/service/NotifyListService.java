@@ -3,8 +3,10 @@ package com.honlife.core.app.model.notification.service;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.notification.code.NotificationType;
+import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.domain.NotifyList;
 import com.honlife.core.app.model.notification.dto.NotifyListDTO;
+import com.honlife.core.app.model.notification.repos.NotificationRepository;
 import com.honlife.core.app.model.notification.repos.NotifyListRepository;
 import com.honlife.core.app.model.websocket.service.NotificationSocketService;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -21,6 +23,7 @@ public class NotifyListService {
   private final NotifyListRepository notifyListRepository;
   private final MemberRepository memberRepository;
   private final NotificationSocketService notificationSocketService;
+  private final NotificationRepository notificationRepository;
 
 
   /**
@@ -75,34 +78,66 @@ public class NotifyListService {
   }
 
   @Transactional
-  public void saveNotify(String userEmail, String name, NotificationType type) {
+  public void saveNotifyAndSendSocket(String userEmail, String name, NotificationType type) {
     Member member = memberRepository.findByEmail(userEmail)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
-    NotifyList notifyList = NotifyList.builder()
-        .type(type)
-        .name(name + "를 완료하였습니다")
-        .isRead(false)
-        .member(member)
-        .build();
+    Notification notification = notificationRepository.findByMember_Email(member.getEmail())
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
 
-    notifyListRepository.save(notifyList);
+    if(isTypeTrue(type, notification)) {
+
+      NotifyList notifyList = NotifyList.builder()
+          .type(type)
+          .name(name + "를 완료하였습니다")
+          .isRead(false)
+          .member(member)
+          .build();
+
+      notifyListRepository.save(notifyList);
+
+      notificationSocketService.sendNotification(type, member.getEmail());
+
+
+    }
+
+
 
   }
 
+  @Transactional
   public void notifyIncompleteRoutines(Member member, long count) {
-    // 1. DB에 저장
-    notifyListRepository.save(
-        NotifyList.builder()
-            .type(NotificationType.ROUTINE)
-            .name("오늘 완료되지 않은 루틴이 " + count + "개 있습니다.")
-            .isRead(false)
-            .member(member)
-            .build()
-    );
 
 
-    notificationSocketService.sendNotification(NotificationType.ROUTINE, member.getEmail());
+    Notification notification = notificationRepository.findByMember_Email(member.getEmail())
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+
+    if(isTypeTrue(NotificationType.ROUTINE, notification)) {
+      // 1. DB에 저장
+      notifyListRepository.save(
+          NotifyList.builder()
+              .type(NotificationType.ROUTINE)
+              .name("오늘 완료되지 않은 루틴이 " + count + "개 있습니다.")
+              .isRead(false)
+              .member(member)
+              .build()
+      );
+
+      notificationSocketService.sendNotification(NotificationType.ROUTINE, member.getEmail());
+    }
+  }
+
+  public Boolean isTypeTrue(NotificationType type, Notification notification){
+    switch (type) {
+      case NotificationType.QUEST:
+        return Boolean.TRUE.equals(notification.getIsQuest());
+      case NotificationType.ROUTINE:
+        return Boolean.TRUE.equals(notification.getIsRoutine());
+      case NotificationType.BADGE:
+        return Boolean.TRUE.equals(notification.getIsBadge());
+      default:
+        return false;
+    }
   }
 
 }

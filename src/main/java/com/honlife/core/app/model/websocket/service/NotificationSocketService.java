@@ -25,27 +25,8 @@ public class NotificationSocketService {
 
     public void sendNotification(NotificationType type, String userEmail){
 
-      Notification notification = notificationRepository.findByMember_Email(userEmail)
-          .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
-
-        if(isTypeTrue(type, notification)){
-
-          String message = "새로운 " + type + "알림이 도착했습니다.";
-
-          messageSendingOperations.convertAndSend("topic/notify",message);
-        }
+          messageSendingOperations.convertAndSend("topic/notify");
     }
 
-    public Boolean isTypeTrue(NotificationType type, Notification notification){
-        switch (type) {
-          case NotificationType.QUEST:
-                return Boolean.TRUE.equals(notification.getIsQuest());
-          case NotificationType.ROUTINE:
-                return Boolean.TRUE.equals(notification.getIsRoutine());
-          case NotificationType.BADGE:
-                return Boolean.TRUE.equals(notification.getIsBadge());
-            default:
-                return false;
-        }
-    }
+
 }
