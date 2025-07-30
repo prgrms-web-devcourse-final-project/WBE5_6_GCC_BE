@@ -12,14 +12,14 @@ import org.springframework.beans.factory.annotation.Value;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-  @Value("${app.domain}")
-  private String appDomain;
+  @Value("${front-server.prod-domain}")
+  private String frontProdServer;
 
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws/connect")//웹소켓 연결할때 사용할 api
-        .setAllowedOrigins(appDomain)
+        .setAllowedOriginPatterns(frontProdServer)
         .withSockJS();
   }
 
