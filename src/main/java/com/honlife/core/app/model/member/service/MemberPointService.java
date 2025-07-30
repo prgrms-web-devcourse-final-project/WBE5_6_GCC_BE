@@ -4,6 +4,7 @@ import com.honlife.core.app.model.point.code.PointLogType;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.app.model.point.service.PointLogService;
 import com.honlife.core.app.model.point.service.PointPolicyService;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -153,7 +154,7 @@ public class MemberPointService {
         Integer CurrentPoints = memberPoint.getPoint();
 
         if (CurrentPoints - points <= 0) {
-            throw new IllegalStateException("포인트가 0 이하가 될 수 없습니다.");
+            throw new CommonException(ResponseCode.NOT_ENOUGH_POINT);
         }
         memberPoint.setPoint(CurrentPoints - points);
         memberPointRepository.save(memberPoint);
