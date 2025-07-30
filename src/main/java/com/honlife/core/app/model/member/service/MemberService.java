@@ -21,6 +21,7 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -307,8 +308,9 @@ public class MemberService {
 
         // 요청에 반드시 포함되는 필드
         targetMember.setName(updatedMemberDTO.getName());
-        if(isNicknameExists(updatedMemberDTO.getNickname()))
+        if(!targetMember.getNickname().equals(updatedMemberDTO.getNickname()) && isNicknameExists(updatedMemberDTO.getNickname())){
             throw new CommonException(ResponseCode.CONFLICT_EXIST_MEMBER);
+        }
         targetMember.setNickname(updatedMemberDTO.getNickname());
         // 관련 정보가 null로 넘어온 경우 기존의 데이터 유지
         if(updatedMemberDTO.getResidenceExperience()!=null){
