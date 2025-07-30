@@ -58,7 +58,7 @@ public class RoutineScheduleService {
             throw new CommonException(ResponseCode.NOT_FOUND_MEMBER);
         }
         /** false면 취소 버튼을 누른거므로 바꾸고 포인트 회수**/
-        if(routineSchedule.getIsDone().equals(false)){
+        if(request.getIsDone().equals(false)){
             routineSchedule.setIsDone(request.getIsDone());
 
             memberPointService.subtractPoint(userEmail, null, PointSourceType.ROUTINE );
