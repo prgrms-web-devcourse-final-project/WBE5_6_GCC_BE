@@ -599,7 +599,7 @@ values ('2025-05-25 18:30:44.000000',1,'1입니다','ETC'),
        ('2025-07-27 16:20:00', 25, null, 'NO_MOTIVATION'),
        ('2025-07-28 14:10:00', 26, '다른 앱을 사용하게 되었어요', 'ETC');
        
-INSERT INTO notify_list (type, name, is_read, is_active, created_at, updated_at, member_id) VALUES
+INSERT INTO notify_list (id, type, name, is_read, , member_id, created_at, updated_at, is_active) VALUES
 -- 업적 알림
 (1,'BADGE', '물 30일 연속 마시기 업적을 달성했습니다!', false, 2,'2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
 
