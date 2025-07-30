@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.admin.routine;
 
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetDetailResponse;
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetSaveRequest;
+import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetUpdateRequest;
 import com.honlife.core.app.controller.admin.routine.payload.AdminRoutinePresetsResponse;
 import com.honlife.core.app.controller.routine.payload.RoutinePresetsResponse;
 import com.honlife.core.app.model.routine.code.RepeatType;
@@ -31,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "🔄 [관리자] 추천 루틴", description = "관리자용 추천 루틴 관리 API 입니다.")
+@Tag(name = "✅ [관리자] 추천 루틴", description = "관리자용 추천 루틴 관리 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/admin/routines/presets", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearerAuth")
@@ -261,11 +262,10 @@ public class AdminRoutinePresetController {
   /**
    * 추천 루틴 프리셋 생성 API
    * @param request 프리셋 생성 요청 정보
-   * @param bindingResult validation
    * @return
    */
   @Operation(
-      summary = "🔄 추천 루틴 프리셋 생성",
+      summary = "✅ 추천 루틴 프리셋 생성",
       description = "새로운 추천 루틴 프리셋을 생성합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "<strong>필수 필드:</strong><br>" +
@@ -277,15 +277,8 @@ public class AdminRoutinePresetController {
   )
   @PostMapping
   public ResponseEntity<CommonApiResponse<Void>> createRoutinePreset(
-      @RequestBody @Valid final AdminRoutinePresetSaveRequest request,
-      BindingResult bindingResult
+      @RequestBody @Valid final AdminRoutinePresetSaveRequest request
   ) {
-    if (bindingResult.hasErrors()) {
-      return ResponseEntity
-          .status(ResponseCode.BAD_REQUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-    }
-
     // 실제 구현 시에는 다음과 같은 로직 수행:
     // 1. categoryId 존재 여부 검증
     // 2. RoutinePresetDTO 변환
@@ -300,11 +293,10 @@ public class AdminRoutinePresetController {
    * 추천 루틴 프리셋 수정 API
    * @param presetId 수정할 프리셋 ID
    * @param request 프리셋 수정 요청 정보
-   * @param bindingResult validation
    * @return
    */
   @Operation(
-      summary = "🔄 추천 루틴 프리셋 수정",
+      summary = "✅ 추천 루틴 프리셋 수정",
       description = "특정 추천 루틴 프리셋을 수정합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "<strong>수정 가능 필드:</strong><br>" +
@@ -317,19 +309,13 @@ public class AdminRoutinePresetController {
   public ResponseEntity<CommonApiResponse<Void>> updateRoutinePreset(
       @PathVariable(name = "id")
       @Schema(description = "프리셋 ID", example = "1") final Long presetId,
-      @RequestBody @Valid final AdminRoutinePresetSaveRequest request,
-      BindingResult bindingResult
+      @RequestBody @Valid final AdminRoutinePresetUpdateRequest request
   ) {
-    if (bindingResult.hasErrors()) {
-      return ResponseEntity
-          .status(ResponseCode.BAD_REQUEST.status())
-          .body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
-    }
 
     // 존재하지 않는 프리셋 ID로 접근
     if (presetId != 1L && presetId != 2L && presetId != 3L) {
-      return ResponseEntity.status(ResponseCode.NOT_FOUND.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_ROUTINE.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
     }
 
     // 실제 구현 시에는 다음과 같은 로직 수행:
@@ -347,7 +333,7 @@ public class AdminRoutinePresetController {
    * @return
    */
   @Operation(
-      summary = "🔄 추천 루틴 프리셋 삭제",
+      summary = "✅ 추천 루틴 프리셋 삭제",
       description = "특정 추천 루틴 프리셋을 삭제합니다.<br><br>" +
           "<strong>권한:</strong> 관리자만 접근 가능<br><br>" +
           "<strong>주의사항:</strong><br>" +
@@ -362,8 +348,8 @@ public class AdminRoutinePresetController {
   ) {
     // 존재하지 않는 프리셋 ID로 접근
     if (presetId != 1L && presetId != 2L && presetId != 3L) {
-      return ResponseEntity.status(ResponseCode.NOT_FOUND.status())
-          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND));
+      return ResponseEntity.status(ResponseCode.NOT_FOUND_ROUTINE.status())
+          .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_ROUTINE));
     }
 
     // 실제 구현 시에는 다음과 같은 로직 수행:
