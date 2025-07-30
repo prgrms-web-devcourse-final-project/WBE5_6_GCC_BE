@@ -2,23 +2,30 @@ package com.honlife.core.app.model.badge.service;
 
 import com.honlife.core.app.model.badge.code.CountType;
 import com.honlife.core.app.model.badge.code.ProgressType;
+import com.honlife.core.app.model.badge.domain.Badge;
 import com.honlife.core.app.model.badge.domain.BadgeProgress;
 import com.honlife.core.app.model.badge.repos.BadgeProgressRepository;
+import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.member.domain.Member;
+import com.honlife.core.app.model.member.service.MemberBadgeService;
 import com.honlife.core.app.model.member.service.MemberService;
+import com.honlife.core.app.model.notification.code.NotificationType;
+import com.honlife.core.app.model.notification.service.NotifyListService;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BadgeProgressService {
 
     private final BadgeProgressRepository badgeProgressRepository;
+    private final BadgeRepository badgeRepository;
+    private final MemberBadgeService memberBadgeService;
+    private final NotifyListService notifyListService;
     private final MemberService memberService;
 
     /**
@@ -28,16 +35,16 @@ public class BadgeProgressService {
      */
     @Transactional
     public void incrementCategoryProgress(Long memberId, Long categoryId) {
-        log.debug("Incrementing category progress for member: {}, category: {}", memberId, categoryId);
-
         BadgeProgress progress = findOrCreateCategoryProgress(memberId, categoryId);
-        progress.setCountValue(progress.getCountValue() + 1);
-        progress.setLastDate(LocalDate.now());
+        int oldCount = progress.getCountValue();
+        int newCount = oldCount + 1;
 
+        progress.setCountValue(newCount);
+        progress.setLastDate(LocalDate.now());
         badgeProgressRepository.save(progress);
 
-        log.debug("Category progress updated - member: {}, category: {}, new count: {}",
-            memberId, categoryId, progress.getCountValue());
+        // 🔔 배지 달성 체크 및 알림
+        checkAndNotifyBadgeAchievement(memberId, categoryId, oldCount, newCount);
     }
 
     /**
@@ -47,33 +54,22 @@ public class BadgeProgressService {
      */
     @Transactional
     public void decrementCategoryProgress(Long memberId, Long categoryId) {
-        log.debug("Decrementing category progress for member: {}, category: {}", memberId, categoryId);
 
         Optional<BadgeProgress> progressOpt = badgeProgressRepository
             .findByMemberIdAndProgressTypeAndProgressKey(
                 memberId, ProgressType.CATEGORY, categoryId.toString());
 
-        if (progressOpt.isEmpty()) {
-            log.warn("No progress found to decrement for member: {}, category: {}", memberId, categoryId);
-            return;
-        }
+        if (progressOpt.isEmpty()) return;
 
         BadgeProgress progress = progressOpt.get();
 
         // 0 이하로 내려가지 않도록 보호
-        if (progress.getCountValue() <= 0) {
-            log.warn("Progress already at 0, cannot decrement further - member: {}, category: {}",
-                memberId, categoryId);
-            return;
-        }
+        if (progress.getCountValue() <= 0) return;
 
         progress.setCountValue(progress.getCountValue() - 1);
         progress.setLastDate(LocalDate.now());
 
         badgeProgressRepository.save(progress);
-
-        log.debug("Category progress decremented - member: {}, category: {}, new count: {}",
-            memberId, categoryId, progress.getCountValue());
     }
 
     /**
@@ -82,28 +78,29 @@ public class BadgeProgressService {
      */
     @Transactional
     public void updateLoginStreak(Long memberId) {
-        log.debug("Updating login streak for member: {}", memberId);
 
         BadgeProgress progress = findOrCreateLoginProgress(memberId);
         LocalDate today = LocalDate.now();
         LocalDate yesterday = today.minusDays(1);
 
+        int oldStreak = progress.getCountValue();
+
         if (progress.getLastDate() != null && progress.getLastDate().equals(yesterday)) {
             // 연속 로그인 유지 - 카운트 증가
             progress.setCountValue(progress.getCountValue() + 1);
-            log.debug("Login streak continued - member: {}, new streak: {}", memberId, progress.getCountValue());
         } else if (progress.getLastDate() != null && progress.getLastDate().equals(today)) {
             // 오늘 이미 로그인함 - 아무것도 하지 않음
-            log.debug("Already logged in today - member: {}", memberId);
             return;
         } else {
             // 연속 끊어짐 또는 첫 로그인 - 1로 리셋
             progress.setCountValue(1);
-            log.debug("Login streak reset - member: {}, new streak: 1", memberId);
         }
 
         progress.setLastDate(today);
         badgeProgressRepository.save(progress);
+
+        // 🔔 로그인 배지 달성 체크 및 알림
+        checkAndNotifyLoginBadgeAchievement(memberId, oldStreak, progress.getCountValue());
     }
 
     /**
@@ -119,6 +116,52 @@ public class BadgeProgressService {
             .findByMemberIdAndProgressTypeAndProgressKey(memberId, progressType, progressKey)
             .map(BadgeProgress::getCountValue)
             .orElse(0);
+    }
+
+    /**
+     * 카테고리 배지 달성 체크 및 알림
+     */
+    private void checkAndNotifyBadgeAchievement(Long memberId, Long categoryId, int oldCount, int newCount) {
+        // 해당 카테고리의 배지들 조회
+        List<Badge> categoryBadges = badgeRepository.findByCategoryIdAndIsActiveTrue(categoryId);
+
+        for (Badge badge : categoryBadges) {
+            // 이전에는 달성 못했는데 이번에 달성한 경우
+            if (oldCount < badge.getRequirement() && newCount >= badge.getRequirement()) {
+                // 이미 획득한 배지인지 확인
+                boolean alreadyOwned = memberBadgeService.existsByMemberIdAndBadgeId(memberId, badge.getId());
+                if (!alreadyOwned) {
+                    // 🔔 배지 달성 알림 발송
+                    String userEmail = memberService.get(memberId).getEmail();
+                    String title = badge.getName() + " 배지 달성";
+
+                    notifyListService.saveNotifyAndSendSocket(userEmail, title, NotificationType.BADGE);
+                }
+            }
+        }
+    }
+
+    /**
+     * 로그인 배지 달성 체크 및 알림
+     */
+    private void checkAndNotifyLoginBadgeAchievement(Long memberId, int oldStreak, int newStreak) {
+        // 로그인 배지들 조회 (category_id가 null)
+        List<Badge> loginBadges = badgeRepository.findByCategoryIsNullAndIsActiveTrue();
+
+        for (Badge badge : loginBadges) {
+            // 이전에는 달성 못했는데 이번에 달성한 경우
+            if (oldStreak < badge.getRequirement() && newStreak >= badge.getRequirement()) {
+                // 이미 획득한 배지인지 확인
+                boolean alreadyOwned = memberBadgeService.existsByMemberIdAndBadgeId(memberId, badge.getId());
+                if (!alreadyOwned) {
+                    // 🔔 로그인 배지 달성 알림 발송
+                    String userEmail = memberService.get(memberId).getEmail();
+                    String title = badge.getName() + " 배지 달성";
+
+                    notifyListService.saveNotifyAndSendSocket(userEmail, title, NotificationType.BADGE);
+                }
+            }
+        }
     }
 
     /**

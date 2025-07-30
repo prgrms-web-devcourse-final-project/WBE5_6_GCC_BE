@@ -32,4 +32,14 @@ public interface BadgeRepository extends JpaRepository<Badge, Long> {
      * 키로 활성화된 배지 조회
      */
     Optional<Badge> findByKeyAndIsActiveTrue(String key);
+
+    /**
+     * 카테고리 id로 활성화된 배지 조회
+     */
+    List<Badge> findByCategoryIdAndIsActiveTrue(Long categoryId);
+
+    /**
+     * 카테고리 id가 null이면 로그인 배지
+     */
+    List<Badge> findByCategoryIsNullAndIsActiveTrue();
 }
