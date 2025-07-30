@@ -1,6 +1,13 @@
 package com.honlife.core.app.model.auth;
 
+import com.honlife.core.app.controller.auth.payload.LoginRequest;
+import com.honlife.core.app.model.auth.dto.TokenDto;
+import com.honlife.core.app.model.auth.token.RefreshTokenService;
+import com.honlife.core.app.model.auth.token.UserBlackListRepository;
+import com.honlife.core.app.model.auth.token.entity.RefreshToken;
 import com.honlife.core.app.model.loginLog.service.LoginLogService;
+import com.honlife.core.infra.auth.jwt.JwtTokenProvider;
+import com.honlife.core.infra.auth.jwt.dto.AccessTokenDto;
 import com.honlife.core.infra.event.CommonEvent;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +23,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.honlife.core.app.controller.auth.payload.LoginRequest;
-import com.honlife.core.app.model.auth.dto.TokenDto;
-import com.honlife.core.app.model.auth.token.RefreshTokenService;
-import com.honlife.core.app.model.auth.token.UserBlackListRepository;
-import com.honlife.core.app.model.auth.token.entity.RefreshToken;
-import com.honlife.core.infra.auth.jwt.JwtTokenProvider;
-import com.honlife.core.infra.auth.jwt.dto.AccessTokenDto;
 
 @Service
 @RequiredArgsConstructor
@@ -51,9 +51,9 @@ public class AuthService {
             .authenticate(authenticationToken);
 
         eventPublisher.publishEvent(
-            new CommonEvent(
-                loginRequest.getEmail()
-            )
+            CommonEvent.builder()
+                .memberEmail(loginRequest.getEmail())
+                .build()
         );
 
         return processSignin(authentication);

@@ -3,6 +3,7 @@ package com.honlife.core.app.model.routine.service;
 import com.honlife.core.app.controller.routine.payload.RoutineScheduleCompleteRequest;
 import com.honlife.core.app.model.member.service.MemberPointService;
 import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.routine.dto.RoutineScheduleInfo;
 import com.honlife.core.app.model.routine.dto.RoutineSummaryDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.event.CommonEvent;
@@ -127,5 +128,26 @@ public class RoutineScheduleService {
                 .build();
         }).toList();
 
+    }
+
+    /**
+     * 배지 진행률 업데이트를 위한 루틴 스케줄 정보 조회
+     *
+     * @param scheduleId 루틴 스케줄 ID
+     * @return 루틴 스케줄 정보 (memberId, categoryId 포함) 또는 null
+     */
+    @Transactional(readOnly = true)
+    public RoutineScheduleInfo getRoutineScheduleInfoForBadge(Long scheduleId) {
+        RoutineSchedule schedule = routineScheduleRepository.findWithRoutineAndMemberById(scheduleId);
+
+        if (schedule == null) {
+            log.warn("RoutineSchedule not found for badge update - scheduleId: {}", scheduleId);
+            return null;
+        }
+
+        return RoutineScheduleInfo.builder()
+            .memberId(schedule.getRoutine().getMember().getId())
+            .categoryId(schedule.getRoutine().getCategory().getId())
+            .build();
     }
 }

@@ -49,5 +49,6 @@ public class MemberBadge extends BaseEntity {
     private Badge badge;
 
     @Column
+    @Builder.Default
     private Boolean isEquipped = false;
 }

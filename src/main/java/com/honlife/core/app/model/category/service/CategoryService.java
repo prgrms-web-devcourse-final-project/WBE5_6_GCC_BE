@@ -2,34 +2,25 @@ package com.honlife.core.app.model.category.service;
 
 import com.honlife.core.app.controller.category.payload.CategorySaveRequest;
 import com.honlife.core.app.model.category.code.CategoryType;
-import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
-import com.honlife.core.app.model.member.service.MemberService;
-import com.honlife.core.app.model.routine.service.RoutineService;
-import com.honlife.core.infra.error.exceptions.CommonException;
-import com.honlife.core.infra.error.exceptions.ReferencedException;
-import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.ResponseCode;
-import jakarta.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import com.honlife.core.app.model.badge.repos.BadgeRepository;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.dto.CategoryDTO;
+import com.honlife.core.app.model.category.dto.ChildCategoryDTO;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
-import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.repos.RoutineRepository;
-import com.honlife.core.app.model.routine.repos.RoutinePresetRepository;
+import com.honlife.core.app.model.routine.service.RoutineService;
+import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedException;
 import com.honlife.core.infra.error.exceptions.ReferencedWarning;
+import com.honlife.core.infra.response.ResponseCode;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -299,5 +290,31 @@ public class CategoryService {
 
         targetCategory.setIsActive(false);
         categoryRepository.save(targetCategory);
+    }
+
+    /**
+     * 배지 진행률 업데이트용 상위 카테고리 찾기
+     * SUB 카테고리의 경우 부모 카테고리(DEFAULT/MAJOR) ID 반환
+     * DEFAULT/MAJOR 카테고리의 경우 자기 자신 ID 반환
+     *
+     * @param categoryId 카테고리 ID
+     * @return 상위 카테고리 ID (배지 진행률 업데이트에 사용)
+     */
+    public Long findTopLevelCategoryIdForBadge(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
+
+        // SUB 카테고리인 경우 부모 카테고리로 이동
+        if (category.getType() == CategoryType.SUB) {
+            if (category.getParent() != null) {
+                return category.getParent().getId();
+            } else {
+                // SUB 카테고리인데 부모가 없는 경우 (데이터 무결성 문제)
+                return categoryId;
+            }
+        }
+
+        // DEFAULT 또는 MAJOR 카테고리인 경우 자기 자신 반환
+        return categoryId;
     }
 }
