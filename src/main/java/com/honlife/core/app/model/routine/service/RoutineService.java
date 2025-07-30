@@ -1,7 +1,5 @@
 package com.honlife.core.app.model.routine.service;
 
-import com.honlife.core.app.model.category.dto.CategoryDTO;
-import com.honlife.core.app.model.category.service.CategoryService;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.app.controller.routine.payload.RoutineUpdateRequest;
@@ -11,13 +9,14 @@ import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
 import com.honlife.core.app.model.routine.dto.RoutineDetailDTO;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
-import com.honlife.core.infra.error.exceptions.CommonException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
@@ -31,21 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class RoutineService {
 
     private final RoutineRepository routineRepository;
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
     private final RoutineScheduleRepository routineScheduleRepository;
-
-    public RoutineService(final RoutineRepository routineRepository,
-            final MemberRepository memberRepository, final CategoryRepository categoryRepository,
-            final RoutineScheduleRepository routineScheduleRepository) {
-        this.routineRepository = routineRepository;
-        this.memberRepository = memberRepository;
-        this.categoryRepository = categoryRepository;
-        this.routineScheduleRepository = routineScheduleRepository;
-    }
 
   /**
    * 사용자 일주일 루틴 조회 입니다
