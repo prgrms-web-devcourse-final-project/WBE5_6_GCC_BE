@@ -524,7 +524,8 @@ VALUES (1, 1, 2, false, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
 -- NOTIFICATION 테스트 데이터 (PostgreSQL)
 INSERT INTO NOTIFICATION(id, member_id, is_email, is_routine, is_badge)
 VALUES (1, 2, true, true, true),
-       (2, 3, true, true, true);
+       (2, 3, true, true, true),
+       (3, 4, true, true, true);
 
 -- 배지 획득 가능한 경우 (진행률 >= requirement)
 INSERT INTO BADGE_PROGRESS(id, member_id, progress_type, progress_key, count_type, count_value, last_date, created_at, updated_at, is_active) VALUES
@@ -555,20 +556,12 @@ values ('2025-05-25 18:30:44.000000',1,'1입니다','ETC'),
         ('2025-07-25 19:30:44.000000',19,null,'NO_MOTIVATION'),
        ('2025-07-25 19:30:44.000000',20,null,'NO_MOTIVATION');
 
-INSERT INTO notify_list (
-    type,
-    name,
-    is_read,
-    is_active,
-    created_at,
-    updated_at,
-    member_id
-) VALUES
+INSERT INTO notify_list (id, type, name, is_read, member_id, created_at, updated_at, is_active) VALUES
 -- 업적 알림
-('BADGE', '물 30일 연속 마시기 업적을 달성했습니다!', false, true, '2025-07-28 10:00:00', '2025-07-28 10:00:00', 2),
+(1,'BADGE', '물 30일 연속 마시기 업적을 달성했습니다!', false, 2,'2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
 
 -- 루틴 알림
-('ROUTINE', '오늘 완료하지 않은 루틴이 2개 있습니다', false, true, '2025-07-28 12:00:00', '2025-07-28 12:00:00', 2),
+(2,'ROUTINE', '오늘 완료하지 않은 루틴이 2개 있습니다', false, 2, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
 
 -- 퀘스트 알림
-('QUEST', '주간 퀘스트 "일찍 자기"를 완료했어요!', false, true, '2025-07-27 09:00:00', '2025-07-27 09:00:00', 2);
+(3,'QUEST', '주간 퀘스트 "일찍 자기"를 완료했어요!', false, 2, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
