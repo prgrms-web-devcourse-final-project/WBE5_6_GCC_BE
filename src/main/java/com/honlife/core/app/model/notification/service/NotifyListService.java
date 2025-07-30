@@ -55,11 +55,10 @@ public class NotifyListService {
     }
 
   }
+
   /**
-   * 회원의 타입에 맞춰서 알람 목록 보여주기
+   * 회원의 이메일로 알림 전체 조회
    */
-
-
   public List<NotifyListDTO> getAllNotification(String userEmail) {
 
     List<NotifyList> notifyLists = notifyListRepository.findByMember_EmailAndIsReadFalse(userEmail);

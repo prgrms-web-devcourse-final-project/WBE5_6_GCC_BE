@@ -547,9 +547,25 @@ values ('2025-05-25 18:30:44.000000',1,'1입니다','ETC'),
         ('2025-07-25 19:30:44.000000',17,null,'UX_ISSUE'),
         ('2025-07-25 19:30:44.000000',18,null,'MISSING_FEATURE'),
         ('2025-07-25 19:30:44.000000',19,null,'NO_MOTIVATION'),
-       ('2025-07-25 19:30:44.000000',20,null,'NO_MOTIVATION');
 
 INSERT INTO notify_list (id, type, name, is_read, member_id, created_at, updated_at, is_active) VALUES
+       ('2025-07-25 19:30:44.000000',20,null,'NO_MOTIVATION'),
+       ('2025-07-01 10:30:00', 21, null, 'TOO_MUCH_EFFORT'),
+       ('2025-07-02 15:20:00', 22, '앱 사용이 복잡해요', 'ETC'),
+       ('2025-07-03 09:45:00', 23, null, 'UX_ISSUE'),
+       ('2025-07-26 11:30:00', 24, null, 'ROUTINE_MISMATCH'),
+       ('2025-07-27 16:20:00', 25, null, 'NO_MOTIVATION'),
+       ('2025-07-28 14:10:00', 26, '다른 앱을 사용하게 되었어요', 'ETC');
+       
+INSERT INTO notify_list (
+    type,
+    name,
+    is_read,
+    is_active,
+    created_at,
+    updated_at,
+    member_id
+) VALUES
 -- 업적 알림
 (1,'BADGE', '물 30일 연속 마시기 업적을 달성했습니다!', false, 2,'2025-04-04 21:30:00', '2025-04-10 06:15:00', true),
 
@@ -560,8 +576,6 @@ INSERT INTO notify_list (id, type, name, is_read, member_id, created_at, updated
 -- 퀘스트 알림
 (3,'QUEST', '주간 퀘스트 "일찍 자기"를 완료했어요!', false, 2, '2025-04-04 21:30:00', '2025-04-10 06:15:00', true);
 
--- 퀘스트 알림
-('QUEST', '주간 퀘스트 "일찍 자기"를 완료했어요!', false, true, '2025-07-27 09:00:00', '2025-07-27 09:00:00', 2);
 
 
 -- 로그인 기록 (방문자 통계용)
