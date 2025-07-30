@@ -24,11 +24,16 @@ public class LoginEventListener {
         // 루틴 관련 이벤트라면 return
         if(event.getRoutineScheduleId() != null) return;
 
-        // 로그인의 경우에는 이번주의 주간퀘스트 갱신이 제대로 이루어 졌는지 확인하고 퀘스트 진행도 업데이트를 진행하도록 강제
+        // 이번주의 주간퀘스트 갱신이 제대로 이루어 졌는지 확인하고 퀘스트 진행도 업데이트를 진행하도록 강제
         weeklyQuestProgressService.renewWeeklyQuests(event)
-                .thenRun(() -> {
-                    weeklyQuestProgressService.processWeeklyQuestProgress(event);
-                });
-        eventQuestProgressService.processEventQuestProgress(event);
+                .thenRun(() ->
+                    weeklyQuestProgressService.processWeeklyQuestProgress(event)
+                );
+
+        // 진행중인 이벤트 퀘스트 갱신을 강제
+        eventQuestProgressService.activateOnGoingEventQuests(event.getMemberEmail())
+            .thenRun(() ->
+                    eventQuestProgressService.processEventQuestProgress(event)
+            );
     }
 }
