@@ -1,10 +1,13 @@
 package com.honlife.core.app.model.quest.processor;
 
+import com.honlife.core.app.model.notification.code.NotificationType;
+import com.honlife.core.app.model.notification.service.NotifyListService;
 import com.honlife.core.app.model.quest.code.QuestDomain;
 import com.honlife.core.app.model.quest.domain.EventQuestProgress;
 import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
 import com.honlife.core.app.model.quest.repos.EventQuestProgressRepository;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestProgressRepository;
+import com.honlife.core.app.model.websocket.service.NotificationSocketService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.function.Consumer;
@@ -18,6 +21,8 @@ public class CommonQuestProcessor {
 
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
     private final EventQuestProgressRepository eventQuestProgressRepository;
+    private final NotifyListService notifyListService;
+    private final NotificationSocketService notificationSocketService;
 
     /**
      * 단순 진행도를 처리하는 매서드
@@ -33,11 +38,31 @@ public class CommonQuestProcessor {
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
             Integer target = progress.getWeeklyQuest().getTarget();
             updateProgress(progress.getProgress(), target, isDone, progress::setProgress);
+            checkAndSendSocket(progress, target);
         } else if (questDomain.equals(QuestDomain.EVENT)) {
             EventQuestProgress progress = eventQuestProgressRepository.findById(progressId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
             Integer target = progress.getEventQuest().getTarget();
             updateProgress(progress.getProgress(), target, isDone, progress::setProgress);
+            checkAndSendSocket(progress, target);
+        }
+    }
+
+    @Transactional
+    protected void checkAndSendSocket(EventQuestProgress progress, Integer target) {
+        if(progress.getProgress().equals(target)) {
+            String userEmail = progress.getMember().getEmail();
+            notifyListService.saveNotify(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
+            notificationSocketService.sendNotification(NotificationType.QUEST, userEmail);
+        }
+    }
+
+    @Transactional
+    protected void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
+        if(progress.getProgress().equals(target)) {
+            String userEmail = progress.getMember().getEmail();
+            notifyListService.saveNotify(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
+            notificationSocketService.sendNotification(NotificationType.QUEST, userEmail);
         }
     }
 
