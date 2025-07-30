@@ -22,6 +22,7 @@ public class EventQuestProgressResponse {
     private String questName;
     private Integer target;
     private Integer progress;
+    private Integer points;
     private Boolean isRewarded;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
@@ -37,6 +38,7 @@ public class EventQuestProgressResponse {
             .endAt(memberEventQuestDTO.getEndAt())
             .target(memberEventQuestDTO.getTarget())
             .progress(memberEventQuestDTO.getProgress())
+            .points(memberEventQuestDTO.getPoints())
             .isRewarded(memberEventQuestDTO.getIsDone())
             .build();
     }
