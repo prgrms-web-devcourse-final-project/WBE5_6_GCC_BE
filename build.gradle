@@ -98,13 +98,21 @@ dependencies {
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     annotationProcessor "jakarta.persistence:jakarta.persistence-api:3.1.0"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api:2.1.1"
-    implementation ("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
 
     // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
     implementation("org.modelmapper:modelmapper:3.2.2")
 
+    // LangChain4j
+    implementation("dev.langchain4j:langchain4j-google-ai-gemini-spring-boot-starter:1.0.0-beta3")
+    implementation("dev.langchain4j:langchain4j-spring-boot-starter:1.0.0-beta3")
+
+    // json
+    implementation("com.google.code.gson:gson:2.10.1")
+
 }
+
 
 test {
     useJUnitPlatform() // JUnit5 사용을 명시

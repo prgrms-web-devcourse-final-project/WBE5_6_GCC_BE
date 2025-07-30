@@ -16,5 +16,5 @@ public interface NotifyListRepository  extends JpaRepository<NotifyList, Long> {
 
   List<NotifyList> findByMember(Member member);
 
-  List<NotifyList> findByMember_EmailAndTypeAndIsReadFalse(String userEmail, NotificationType type);
+  List<NotifyList> findByMember_EmailAndIsReadFalse(String userEmail);
 }

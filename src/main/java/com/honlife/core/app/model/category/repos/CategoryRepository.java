@@ -11,8 +11,6 @@ import com.honlife.core.app.model.member.domain.Member;
 
 public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
 
-    Category findFirstByMember(Member member);
-
     /**
      * 해당 멤버와 연관된 첫번째 루틴을 조회
      * @param member
@@ -58,4 +56,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
      * @return Boolean
      */
     boolean existsCategoryByTypeAndName(CategoryType type, String name);
+
+    /**
+     * id를 통해 카테고리를 조회합니다.
+     * @param id 카테고리 아이디
+     * @return Category
+     */
+    Optional<Category> findCategoryById(Long id);
 }

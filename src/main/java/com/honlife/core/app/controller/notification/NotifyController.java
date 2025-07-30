@@ -1,20 +1,11 @@
 package com.honlife.core.app.controller.notification;
 
-import com.honlife.core.app.controller.category.payload.UpdateInterestCategoryRequest;
-import com.honlife.core.app.controller.notification.payload.NotificationPayload;
-import com.honlife.core.app.controller.notification.payload.NotifyListRequest;
 import com.honlife.core.app.controller.notification.payload.NotifyListResponse;
-import com.honlife.core.app.controller.notification.wrapper.NotificationWrapper;
-import com.honlife.core.app.model.notification.domain.NotifyList;
 import com.honlife.core.app.model.notification.dto.NotifyListDTO;
-import com.honlife.core.app.model.notification.service.NotificationService;
 import com.honlife.core.app.model.notification.service.NotifyListService;
 import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.ResponseCode;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -55,7 +46,7 @@ public class NotifyController {
   /**
    * 모두 읽음 api
    */
-  @PatchMapping("/all/read")
+  @PatchMapping("/all")
   public ResponseEntity<CommonApiResponse<Void>> readALlNotification(
       @AuthenticationPrincipal UserDetails userDetails
   ) {
@@ -68,15 +59,14 @@ public class NotifyController {
   }
 
   /**
-   * 알림 목록
+   * 알림 전체 목록 조회
    */
-  @GetMapping("/list")
+  @GetMapping
   public ResponseEntity<CommonApiResponse<List<NotifyListResponse>>> getALlNotification(
-      @RequestBody @Valid final NotifyListRequest notifyListRequest,
       @AuthenticationPrincipal UserDetails userDetails
   ) {
     String userEmail = userDetails.getUsername();
-    List<NotifyListDTO> dto = notifyListService.getAllNotification(userEmail,notifyListRequest);
+    List<NotifyListDTO> dto = notifyListService.getAllNotification(userEmail);
 
     List<NotifyListResponse> responses = dto.stream()
         .map(NotifyListResponse::fromDto)

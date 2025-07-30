@@ -1,6 +1,5 @@
 package com.honlife.core.app.model.notification.service;
 
-import com.honlife.core.app.controller.notification.payload.NotifyListRequest;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.notification.code.NotificationType;
@@ -61,9 +60,9 @@ public class NotifyListService {
    */
 
 
-  public List<NotifyListDTO> getAllNotification(String userEmail, NotifyListRequest notifyListRequest) {
+  public List<NotifyListDTO> getAllNotification(String userEmail) {
 
-    List<NotifyList> notifyLists = notifyListRepository.findByMember_EmailAndTypeAndIsReadFalse(userEmail, notifyListRequest.getType());
+    List<NotifyList> notifyLists = notifyListRepository.findByMember_EmailAndIsReadFalse(userEmail);
 
     return notifyLists.stream()
         .map(n -> NotifyListDTO.builder()
