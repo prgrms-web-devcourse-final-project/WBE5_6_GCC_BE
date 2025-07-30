@@ -52,8 +52,7 @@ public class CommonQuestProcessor {
     protected void checkAndSendSocket(EventQuestProgress progress, Integer target) {
         if(progress.getProgress().equals(target)) {
             String userEmail = progress.getMember().getEmail();
-            notifyListService.saveNotify(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
-            notificationSocketService.sendNotification(NotificationType.QUEST, userEmail);
+            notifyListService.saveNotifyAndSendSocket(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
         }
     }
 
@@ -61,8 +60,7 @@ public class CommonQuestProcessor {
     protected void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
         if(progress.getProgress().equals(target)) {
             String userEmail = progress.getMember().getEmail();
-            notifyListService.saveNotify(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
-            notificationSocketService.sendNotification(NotificationType.QUEST, userEmail);
+            notifyListService.saveNotifyAndSendSocket(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
         }
     }
 
