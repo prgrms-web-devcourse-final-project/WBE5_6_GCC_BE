@@ -38,6 +38,8 @@ public class RoutineItemDTO {
 
     private String emoji;
 
+    private Integer repeatTerm;
+
   }
 
 
