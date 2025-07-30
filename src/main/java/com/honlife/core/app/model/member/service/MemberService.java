@@ -210,7 +210,7 @@ public class MemberService {
         Member member = new Member();
         modelMapper.map(signupRequest, member);
         member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
-        member.setNickname(signupRequest.getName());
+        member.setNickname("USER_" + UUID.randomUUID());
         member.setRole(Role.ROLE_USER);
         memberRepository.save(member);
 
