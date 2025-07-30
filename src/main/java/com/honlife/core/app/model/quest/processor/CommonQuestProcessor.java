@@ -154,7 +154,7 @@ public class CommonQuestProcessor {
     public static void updateProgress(int currentProgress, int target, boolean isDone,
         Consumer<Integer> setter) {
         // 이미 기준을 충족한 경우
-        if (currentProgress >= target) {
+        if (currentProgress >= target && isDone) {
             return;
         }
 
