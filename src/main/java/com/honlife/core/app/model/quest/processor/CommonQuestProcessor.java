@@ -24,7 +24,6 @@ public class CommonQuestProcessor {
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
     private final EventQuestProgressRepository eventQuestProgressRepository;
     private final NotifyListService notifyListService;
-    private final NotificationSocketService notificationSocketService;
 
     /**
      * 단순 진행도를 처리하는 매서드
@@ -35,6 +34,9 @@ public class CommonQuestProcessor {
      */
     @Transactional
     public void updateQuestProgress(QuestDomain questDomain, Long progressId, Boolean isDone) {
+
+        log.info("updateQuestProgress :: progress_id: {}", progressId);
+
         if (questDomain.equals(QuestDomain.WEEKLY)) {
             WeeklyQuestProgress progress = weeklyQuestProgressRepository.findById(progressId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
@@ -50,33 +52,6 @@ public class CommonQuestProcessor {
         }
     }
 
-    // 이벤트 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
-    @Transactional
-    public void checkAndSendSocket(EventQuestProgress progress, Integer target) {
-        if(progress.getProgress().equals(target)) {
-            try{
-                String userEmail = progress.getMember().getEmail();
-                notifyListService.saveNotifyAndSendSocket(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
-            } catch (Exception e) {
-                log.error("[checkAndSendSocket] Exception occurred");
-            }
-        }
-    }
-
-    // 주간 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
-    @Transactional
-    public void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
-        if(progress.getProgress().equals(target)) {
-            try{
-                String userEmail = progress.getMember().getEmail();
-                notifyListService.saveNotifyAndSendSocket(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
-            }
-            catch(Exception e) {
-                log.error("[checkAndSendSocket] Exception occurred");
-            }
-        }
-    }
-
     /**
      * 루틴의 카테고리와 퀘스트의 카테고리가 같을 때 진행도를 처리하는 매서드
      *
@@ -88,6 +63,9 @@ public class CommonQuestProcessor {
     @Transactional
     public void updateCategoryQuestProgress(QuestDomain questDomain, Long progressId,
         Long routineCategoryId, Boolean isDone) {
+
+        log.info("updateCategoryQuestProgress :: progress_id: {}, routine_category_id: {}", progressId, routineCategoryId);
+
         if (questDomain.equals(QuestDomain.WEEKLY)) {
             WeeklyQuestProgress progress = weeklyQuestProgressRepository.findById(progressId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
@@ -134,6 +112,33 @@ public class CommonQuestProcessor {
         }
     }
 
+    // 이벤트 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
+    @Transactional
+    public void checkAndSendSocket(EventQuestProgress progress, Integer target) {
+        if(progress.getProgress().equals(target)) {
+            try{
+                String userEmail = progress.getMember().getEmail();
+                notifyListService.saveNotifyAndSendSocket(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
+            } catch (Exception e) {
+                log.error("[checkAndSendSocket] Exception occurred");
+            }
+        }
+    }
+
+    // 주간 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
+    @Transactional
+    public void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
+        if(progress.getProgress().equals(target)) {
+            try{
+                String userEmail = progress.getMember().getEmail();
+                notifyListService.saveNotifyAndSendSocket(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
+            }
+            catch(Exception e) {
+                log.error("[checkAndSendSocket] Exception occurred");
+            }
+        }
+    }
+
     /**
      * 루틴 완료 여부에 따라 진행도를 올리거나 내리는 매서드
      *
@@ -145,7 +150,7 @@ public class CommonQuestProcessor {
     public static void updateProgress(int currentProgress, int target, boolean isDone,
         Consumer<Integer> setter) {
         // 이미 기준을 충족한 경우
-        if (currentProgress == target) {
+        if (currentProgress >= target) {
             return;
         }
 
@@ -155,7 +160,9 @@ public class CommonQuestProcessor {
         } else {
             progress++;
         }
-        setter.accept(progress);
+
+        // 혹시라도 오류가 발생하여 진행도가 0이하로 내려가지 않도록 방지
+        setter.accept(Math.max(progress, 0));
     }
 
 }

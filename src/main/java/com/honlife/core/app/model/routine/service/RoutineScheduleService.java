@@ -80,6 +80,7 @@ public class RoutineScheduleService {
                 .routineScheduleId(scheduleId)
                 .routineId(routineSchedule.getRoutine().getId())
                 .isDone(request.getIsDone())
+                .build()
         );
     }
 
