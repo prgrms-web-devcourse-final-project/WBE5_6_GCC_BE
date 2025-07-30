@@ -78,7 +78,7 @@ public class NotifyListService {
   }
 
   @Transactional
-  public void saveNotifyAndSocket(String userEmail, String name, NotificationType type) {
+  public void saveNotifyAndSendSocket(String userEmail, String name, NotificationType type) {
     Member member = memberRepository.findByEmail(userEmail)
         .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
