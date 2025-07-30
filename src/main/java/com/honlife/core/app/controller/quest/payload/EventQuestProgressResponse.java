@@ -21,4 +21,6 @@ public class EventQuestProgressResponse {
     private LocalDateTime endAt;
     private Integer target;
     private Integer progress;
+    private Integer points;
+    private Boolean isRewarded;
 }

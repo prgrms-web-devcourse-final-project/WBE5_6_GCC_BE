@@ -45,6 +45,8 @@ public class MemberQuestController {
                 .questName("퀘스트 1")
                 .target(5)
                 .progress(0)
+                .points(50)
+                .isRewarded(true)
                 .build()
         );
         weeklyQuestProgressResponse.add(
@@ -56,6 +58,8 @@ public class MemberQuestController {
                 .questName("퀘스트 2")
                 .target(5)
                 .progress(2)
+                .points(50)
+                .isRewarded(false)
                 .build()
         );
         weeklyQuestProgressResponse.add(
@@ -67,6 +71,8 @@ public class MemberQuestController {
                 .questName("퀘스트 3")
                 .target(5)
                 .progress(5)
+                .points(50)
+                .isRewarded(false)
                 .build()
         );
 
@@ -82,6 +88,8 @@ public class MemberQuestController {
                 .endAt(LocalDateTime.now().plusDays(1))
                 .target(10)
                 .progress(5)
+                .points(50)
+                .isRewarded(false)
                 .build()
         );
 
@@ -89,7 +97,8 @@ public class MemberQuestController {
     }
 
     @Operation(summary = "✅ 완료된 퀘스트의 보상을 수령", description = "사용자가 완료된 퀘스트의 보상받기 버튼을 눌렀을때, 보상을 지급합니다.<br>"
-        + "보상 받기를 눌렀을 때, DB에 사용자의 퀘스트가 완료로 저장되며, 사용자의 포인트에 퀘스트 보상 포인트가 합산됩니다.")
+        + "보상 받기를 눌렀을 때, DB에 사용자의 퀘스트가 완료로 저장되며, 사용자의 포인트에 퀘스트 보상 포인트가 합산됩니다.<br>"
+        + "parameter 중 id에는 progressId를 넣습니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<ResponseCode>> getReward(
         @AuthenticationPrincipal UserDetails userDetails,

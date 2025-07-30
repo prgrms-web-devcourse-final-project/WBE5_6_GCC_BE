@@ -18,4 +18,6 @@ public class WeeklyQuestProgressResponse {
     private String questName;
     private Integer target;
     private Integer progress;
+    private Integer points;
+    private Boolean isRewarded;
 }
