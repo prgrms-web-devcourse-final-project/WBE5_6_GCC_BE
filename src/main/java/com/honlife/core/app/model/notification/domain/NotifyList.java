@@ -15,22 +15,18 @@ import java.time.LocalDateTime;
 public class NotifyList extends BaseEntity {
 
   @Id
-  @GeneratedValue(
-      strategy = GenerationType.SEQUENCE,
-      generator = "notify_sequence"
-  )
   @SequenceGenerator(
       name = "notify_sequence",
       sequenceName = "notify_sequence",
       allocationSize = 1,
       initialValue = 10000
   )
+  @GeneratedValue(
+      strategy = GenerationType.SEQUENCE,
+      generator = "notify_sequence"
+  )
   @Column(nullable = false, updatable = false)
   private Long id;
-
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "member_id", nullable = false)
-  private Member member;
 
   @Column
   private String name;
@@ -42,4 +38,8 @@ public class NotifyList extends BaseEntity {
   @Column(name = "is_read", nullable = false)
   @Builder.Default
   private Boolean isRead = false;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "member_id", nullable = false)
+  private Member member;
 }
