@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class NotifyList extends BaseEntity {
+
   @Id
   @Column(nullable = false, updatable = false)
   @SequenceGenerator(
@@ -33,13 +34,13 @@ public class NotifyList extends BaseEntity {
 
   @Column
   private String name;
+  
 
-  @Column(name = "is_read")
+  @Column(name = "is_read", nullable = false)
   @Builder.Default
   private Boolean isRead = false;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
-
 }

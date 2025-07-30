@@ -114,7 +114,6 @@ public class RoutinePresetService {
                     routinePreset.getRepeatType() != null ? routinePreset.getRepeatType().name()
                         : null)
                 .repeatValue(routinePreset.getRepeatValue())
-                .initDate(routinePreset.getInitDate())
                 .build();
         }).toList();
     }

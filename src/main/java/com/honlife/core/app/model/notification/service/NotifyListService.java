@@ -2,9 +2,11 @@ package com.honlife.core.app.model.notification.service;
 
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.app.model.notification.code.NotificationType;
 import com.honlife.core.app.model.notification.domain.NotifyList;
 import com.honlife.core.app.model.notification.dto.NotifyListDTO;
 import com.honlife.core.app.model.notification.repos.NotifyListRepository;
+import com.honlife.core.app.model.websocket.service.NotificationSocketService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
@@ -18,6 +20,7 @@ public class NotifyListService {
 
   private final NotifyListRepository notifyListRepository;
   private final MemberRepository memberRepository;
+  private final NotificationSocketService notificationSocketService;
 
 
   /**
@@ -70,4 +73,36 @@ public class NotifyListService {
             .build())
         .toList();
   }
+
+  @Transactional
+  public void saveNotify(String userEmail, String name, NotificationType type) {
+    Member member = memberRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
+
+    NotifyList notifyList = NotifyList.builder()
+        .type(type)
+        .name(name + "를 완료하였습니다")
+        .isRead(false)
+        .member(member)
+        .build();
+
+    notifyListRepository.save(notifyList);
+
+  }
+
+  public void notifyIncompleteRoutines(Member member, long count) {
+    // 1. DB에 저장
+    notifyListRepository.save(
+        NotifyList.builder()
+            .type(NotificationType.ROUTINE)
+            .name("오늘 완료되지 않은 루틴이 " + count + "개 있습니다.")
+            .isRead(false)
+            .member(member)
+            .build()
+    );
+
+
+    notificationSocketService.sendNotification(NotificationType.ROUTINE, member.getEmail());
+  }
+
 }

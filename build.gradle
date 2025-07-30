@@ -50,6 +50,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.3")
     testCompileOnly('org.projectlombok:lombok')
     testAnnotationProcessor('org.projectlombok:lombok')
