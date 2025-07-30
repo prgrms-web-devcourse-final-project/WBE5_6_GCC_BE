@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.honlife.core.app.model.routine.domain.Routine;
 import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule, Long>, RoutineScheduleRepositoryCustom {
@@ -25,4 +26,16 @@ public interface RoutineScheduleRepository extends JpaRepository<RoutineSchedule
   RoutineSchedule findByRoutineAndScheduledDate(Routine routine, LocalDate now);
 
   boolean existsByRoutineAndScheduledDate(Routine routine, LocalDate today);
+
+  // 오늘 날짜 기준, 해당 멤버의 완료되지 않은 루틴 스케줄 수
+  @Query("""
+    SELECT COUNT(rs) 
+    FROM RoutineSchedule rs 
+    WHERE rs.routine.member.id = :memberId
+      AND rs.isDone = false
+      AND rs.scheduledDate = :today
+""")
+  long countTodayIncompleteByMemberId(@Param("memberId") Long memberId,
+      @Param("today") LocalDate today);
+
 }
