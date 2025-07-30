@@ -31,6 +31,6 @@ public class MemberPointController {
         String userEmail = userDetails.getUsername();
         Integer points = memberPointService.getMemberPoint(userEmail).getPoint();
 
-        return ResponseEntity.ok(CommonApiResponse.success(Map.of("points", points)));
+        return ResponseEntity.ok(CommonApiResponse.success(Map.of("points", points < 0 ? 0 : points)));
     }
 }
