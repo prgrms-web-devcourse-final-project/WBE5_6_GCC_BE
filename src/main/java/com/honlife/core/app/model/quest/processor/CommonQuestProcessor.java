@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -113,7 +114,8 @@ public class CommonQuestProcessor {
     }
 
     // 이벤트 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
-    @Transactional
+    // 새로운 DB 커넥션과 트랜잭션을 열어서, 예외 발생시 진행도 처리 Transaction이 RollBack 되는 것을 방지
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void checkAndSendSocket(EventQuestProgress progress, Integer target) {
         if(progress.getProgress().equals(target)) {
             try{
@@ -126,7 +128,8 @@ public class CommonQuestProcessor {
     }
 
     // 주간 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
-    @Transactional
+    // 새로운 DB 커넥션과 트랜잭션을 열어서, 예외 발생시 진행도 처리 Transaction이 RollBack 되는 것을 방지
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
         if(progress.getProgress().equals(target)) {
             try{
