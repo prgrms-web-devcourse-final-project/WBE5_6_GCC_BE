@@ -33,7 +33,7 @@ public class MemberDashboardScheduler {
      */
     @Async
     @Transactional
-    @Scheduled(cron = "0 0 0 ? * MON")
+    @Scheduled(cron = "0 30 0 ? * MON", zone = "Asia/Seoul")
     public void createAIComment() {
         log.info("주간 리포트를 위한 AI 조언을 생성 중입니다...");
         List<Member> members = memberRepository.findAllByIsActive(true);
