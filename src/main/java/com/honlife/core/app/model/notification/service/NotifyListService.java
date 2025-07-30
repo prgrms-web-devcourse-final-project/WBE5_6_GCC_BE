@@ -87,8 +87,6 @@ public class NotifyListService {
 
     if(isTypeTrue(type, notification)) {
 
-      notificationSocketService.sendNotification(type, member.getEmail());
-
       NotifyList notifyList = NotifyList.builder()
           .type(type)
           .name(name + "를 완료하였습니다")
@@ -97,6 +95,9 @@ public class NotifyListService {
           .build();
 
       notifyListRepository.save(notifyList);
+
+      notificationSocketService.sendNotification(type, member.getEmail());
+
 
     }
 
