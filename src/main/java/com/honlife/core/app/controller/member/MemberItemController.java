@@ -48,6 +48,7 @@ public class MemberItemController {
     ) {
         // 임시 데이터
         MemberItemResponse top = MemberItemResponse.builder()
+                .id(1L)
                 .itemKey("top_item_01")
                 .itemName("청소 상의")
                 .itemDescription("먼지가 달라 붙지 않아요!")
@@ -55,6 +56,7 @@ public class MemberItemController {
                 .isEquipped(true)
                 .build();
         MemberItemResponse bottom = MemberItemResponse.builder()
+                .id(2L)
                 .itemKey("bottom_item_01")
                 .itemName("청바지")
                 .itemDescription("패션 감각 +1.")
@@ -62,6 +64,7 @@ public class MemberItemController {
                 .isEquipped(false)
                 .build();
         MemberItemResponse accessory = MemberItemResponse.builder()
+            .id(3L)
             .itemKey("accessory_item_01")
             .itemName("요리사 모자")
                 .itemDescription("위생에 한층 더 강력해집니다.")

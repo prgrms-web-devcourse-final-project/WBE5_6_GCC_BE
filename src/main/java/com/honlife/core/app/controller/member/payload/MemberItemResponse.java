@@ -10,12 +10,12 @@ import lombok.Setter;
 @Builder
 public class MemberItemResponse {
 
+
+    private Long id;
     private String itemKey;
     private String itemName;
-    private String itemDescription;
     private ItemType itemtype;
+    private String itemDescription;
     private Boolean isEquipped;
-    private Boolean isListed;
-
 
 }
