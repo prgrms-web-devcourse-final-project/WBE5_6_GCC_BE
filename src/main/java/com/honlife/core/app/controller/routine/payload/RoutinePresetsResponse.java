@@ -50,9 +50,6 @@ public class RoutinePresetsResponse {
         @Schema(description = "루틴 반복 주기 (기본 1)", example = "1")
         private Integer repeatTerm;
 
-        @Schema(description = "루틴 시작 날짜", example = "2025-07-01")
-        private LocalDate initDate;
-
         @Schema(description = "생성일자", example = "2025-07-20T14:00:00")
         private LocalDateTime createdAt;
 
