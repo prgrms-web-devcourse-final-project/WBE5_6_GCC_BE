@@ -20,13 +20,10 @@ import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
-import java.util.List;
-import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import java.util.Optional;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
@@ -210,7 +207,7 @@ public class MemberService {
         Member member = new Member();
         modelMapper.map(signupRequest, member);
         member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
-        member.setNickname(signupRequest.getName());
+        member.setNickname("USER_" + UUID.randomUUID());
         member.setRole(Role.ROLE_USER);
         memberRepository.save(member);
 
