@@ -40,9 +40,11 @@ public class EventQuestProgress extends BaseEntity {
     )
     private Long id;
 
+    @Builder.Default
     @Column(nullable = false)
     private Integer progress = 0;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isDone = false;
 
