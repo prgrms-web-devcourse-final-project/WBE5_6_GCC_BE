@@ -49,10 +49,6 @@ public class AdminRoutinePresetDetailResponse {
     @Schema(description = "주 반복 간격 (1 = 매주, 2 = 격주 등)", example = "1")
     private Integer repeatTerm;
 
-    @NotNull(message = "루틴 시작 날짜는 필수입니다")
-    @Schema(description = "루틴 시작 날짜", example = "2025-07-01")
-    private LocalDate initDate;
-
     @Schema(description = "카테고리 이모지")
     private String emoji;
 

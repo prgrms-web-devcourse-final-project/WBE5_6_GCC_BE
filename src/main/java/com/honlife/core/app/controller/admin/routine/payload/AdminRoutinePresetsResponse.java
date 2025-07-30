@@ -53,9 +53,6 @@ public class AdminRoutinePresetsResponse {
     @Schema(description = "주 반복 간격 (1 = 매주, 2 = 격주 등)", example = "1")
     private Integer repeatTerm;
 
-    @Schema(description = "루틴 시작 날짜", example = "2025-07-01")
-    private LocalDate initDate;
-
     @NotNull(message = "반복 유형은 필수입니다")
     @Schema(description = "반복 유형", example = "WEEKLY")
     private RepeatType repeatType;
