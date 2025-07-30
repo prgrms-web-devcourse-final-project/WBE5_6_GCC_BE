@@ -73,6 +73,7 @@ public class CommonQuestProcessor {
             if (questCategoryId.equals(routineCategoryId)) {
                 Integer target = progress.getWeeklyQuest().getTarget();
                 updateProgress(progress.getProgress(), target, isDone, progress::setProgress);
+                checkAndSendSocket(progress, target);
             }
         } else if (questDomain.equals(QuestDomain.EVENT)) {
             EventQuestProgress progress = eventQuestProgressRepository.findById(progressId)
@@ -81,6 +82,7 @@ public class CommonQuestProcessor {
             if (questCategoryId.equals(routineCategoryId)) {
                 Integer target = progress.getEventQuest().getTarget();
                 updateProgress(progress.getProgress(), target, isDone, progress::setProgress);
+                checkAndSendSocket(progress, target);
             }
         }
     }
