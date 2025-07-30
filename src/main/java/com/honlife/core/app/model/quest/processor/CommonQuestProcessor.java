@@ -50,23 +50,29 @@ public class CommonQuestProcessor {
         }
     }
 
+    // 이벤트 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
     @Transactional
-    protected void checkAndSendSocket(EventQuestProgress progress, Integer target) {
+    public void checkAndSendSocket(EventQuestProgress progress, Integer target) {
         if(progress.getProgress().equals(target)) {
-            String userEmail = progress.getMember().getEmail();
-            notifyListService.saveNotifyAndSendSocket(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
+            try{
+                String userEmail = progress.getMember().getEmail();
+                notifyListService.saveNotifyAndSendSocket(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
+            } catch (Exception e) {
+                log.error("[checkAndSendSocket] Exception occurred");
+            }
         }
     }
 
+    // 주간 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
     @Transactional
-    protected void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
+    public void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
         if(progress.getProgress().equals(target)) {
             try{
                 String userEmail = progress.getMember().getEmail();
                 notifyListService.saveNotifyAndSendSocket(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
             }
             catch(Exception e) {
-                log.error(e.getMessage(), e);
+                log.error("[checkAndSendSocket] Exception occurred");
             }
         }
     }
