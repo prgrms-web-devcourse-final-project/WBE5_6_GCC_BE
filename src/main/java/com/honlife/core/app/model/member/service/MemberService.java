@@ -209,16 +209,10 @@ public class MemberService {
         member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
         member.setNickname("USER_" + UUID.randomUUID());
         member.setRole(Role.ROLE_USER);
+        member.setIsActive(false);
         memberRepository.save(member);
 
-        MemberPoint memberPoint = new MemberPoint();
-        memberPoint.setMember(member);
-        memberPoint.setPoint(0);
-        memberPointRepository.save(memberPoint);
 
-        Notification notification = new Notification();
-        notification.setMember(member);
-        notificationRepository.save(notification);
     }
 
     /**
@@ -234,6 +228,22 @@ public class MemberService {
         member.setIsActive(isActive);
         member.setIsVerified(isVerified);
         memberRepository.save(member);
+        createDefaultMemberData(member);
+    }
+
+    /**
+     * 회원관련 기본 데이터를 생성하는 메서드
+     * @param member
+     */
+    public void createDefaultMemberData(Member member) {
+        MemberPoint memberPoint = new MemberPoint();
+        memberPoint.setMember(member);
+        memberPoint.setPoint(0);
+        memberPointRepository.save(memberPoint);
+
+        Notification notification = new Notification();
+        notification.setMember(member);
+        notificationRepository.save(notification);
     }
 
     /**
