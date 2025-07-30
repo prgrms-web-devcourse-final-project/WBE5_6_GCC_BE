@@ -19,6 +19,7 @@ public class RoutineDetailDTO {
   private String triggerTime;
   private Boolean isImportant;
   private RepeatType repeatType;
+  private Integer repeatTerm;
   private String repeatValue;
   private LocalDate initDate;
   private String emoji;

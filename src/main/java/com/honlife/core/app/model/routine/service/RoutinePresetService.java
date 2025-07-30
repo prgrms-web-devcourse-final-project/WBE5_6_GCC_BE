@@ -112,6 +112,7 @@ public class RoutinePresetService {
                 .createdAt(routinePreset.getCreatedAt())
                 .updatedAt(routinePreset.getUpdatedAt())
                 .emoji(category.getEmoji())
+                .repeatTerm(routinePreset.getRepeatTerm())
                 .repeatType(
                     routinePreset.getRepeatType() != null ? routinePreset.getRepeatType().name()
                         : null)
