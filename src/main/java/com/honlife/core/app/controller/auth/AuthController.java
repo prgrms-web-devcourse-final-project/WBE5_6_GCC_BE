@@ -100,7 +100,7 @@ public class AuthController {
 
         try {
             String userEmail = emailRequest.getEmail();
-            memberService.updateMemberStatus(userEmail, false, true);  // 인증 상태 비활성화
+            memberService.updateMemberVerifyStatus(userEmail, false);  // 인증 상태 비활성화
             mailService.sendVerificationEmail(userEmail);
             return ResponseEntity.ok(CommonApiResponse.noContent());
         } catch (MessagingException | IOException e) {  // 메일 전송에 실패한 경우

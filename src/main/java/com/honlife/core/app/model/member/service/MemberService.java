@@ -240,6 +240,18 @@ public class MemberService {
     }
 
     /**
+     * 회원의 인증 상태를 비활성화.
+     * @param email
+     * @param isVerified
+     */
+    @Transactional
+    public void updateMemberVerifyStatus(String email, Boolean isVerified) {
+        Member member = memberRepository.findByEmailIgnoreCase(email);
+        member.setIsVerified(isVerified);
+        memberRepository.save(member);
+    }
+
+    /**
      * 회원가입 phase 1 에서 가입을 재시도하거나 정보를 수정 하는 경우에 사용되는 매서드<br>
      * 기존에 회원가입을 눌렀을 경우 해당 회원정보가 DB에 저장되어있으므로, 업데이트 방식을 실행
      * @param signupRequest 회원가입 단게에서 넘어오는 회원 정보 객체
