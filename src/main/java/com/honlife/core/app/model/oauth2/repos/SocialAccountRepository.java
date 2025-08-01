@@ -19,7 +19,7 @@ public interface SocialAccountRepository extends JpaRepository<SocialAccount, Lo
 
     Long member(Member member);
 
-    SocialAccount findByMember_Id(Long memberId);
+    List<SocialAccount> findAllByMemberId(Long memberId);
 
     List<SocialAccount> findAllByMember(Member member);
 }
