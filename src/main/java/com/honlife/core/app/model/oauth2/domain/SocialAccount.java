@@ -55,9 +55,4 @@ public class SocialAccount {
     @Column
     private Instant expiryDate; // 토큰 만료 일시
 
-//    // 토큰 값 업데이트 메소드
-//    public void updateAccessToken(String newAccessTokenValue, Instant newExpiryDate) { // 메소드명 변경
-//        this.accessTokenValue = newAccessTokenValue;
-//        this.expiryDate = newExpiryDate;
-//    }
 }

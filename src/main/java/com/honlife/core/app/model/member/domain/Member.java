@@ -78,8 +78,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Boolean isVerified = false; // init value
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="social_account_id", nullable=true)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<SocialAccount> socialAccount;
 
 }
