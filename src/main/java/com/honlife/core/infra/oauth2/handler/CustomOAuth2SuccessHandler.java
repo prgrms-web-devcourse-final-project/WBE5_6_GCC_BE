@@ -59,6 +59,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             socialAccount = SocialAccount.builder()
                 .provider(userInfo.getProvider())
                 .providerId(userInfo.getProviderId())
+                .member(member)
                 .build();
             socialAccountRepository.save(socialAccount);
         }
