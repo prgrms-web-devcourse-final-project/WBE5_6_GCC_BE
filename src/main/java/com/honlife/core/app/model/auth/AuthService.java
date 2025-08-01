@@ -37,7 +37,6 @@ public class AuthService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserDetailsService userDetailsService;
     private final ApplicationEventPublisher eventPublisher;
-
     private final LoginLogService loginLogService;
 
     public TokenDto signin(LoginRequest loginRequest) {
@@ -55,6 +54,8 @@ public class AuthService {
                 .memberEmail(loginRequest.getEmail())
                 .build()
         );
+        // 로그인시 자동으로 로그인 기록 저장
+        loginLogService.newLog(loginRequest.getEmail());
 
         return processSignin(authentication);
     }
@@ -70,6 +71,9 @@ public class AuthService {
 
         UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        // 로그인시 자동으로 로그인 기록 저장
+        loginLogService.newLog(email);
 
         return processSignin(authenticationToken);
     }
@@ -90,9 +94,6 @@ public class AuthService {
     public TokenDto processTokenSignin(String email, String roles) {
         // black list 에 있다면 해제
         userBlackListRepository.deleteById(email);
-
-        // 로그인시 자동으로 로그인 기록 저장
-        loginLogService.newLog(email);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         AccessTokenDto accessToken = jwtTokenProvider.generateAccessToken(email, roles);

@@ -3,6 +3,7 @@ package com.honlife.core.app.controller.auth;
 import com.honlife.core.app.controller.auth.payload.DuplicationCheckRequest;
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
+import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.app.model.mail.MailService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.ResponseCode;

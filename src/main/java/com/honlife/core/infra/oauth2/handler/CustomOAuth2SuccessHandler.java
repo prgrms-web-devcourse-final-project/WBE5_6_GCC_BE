@@ -4,6 +4,7 @@ import com.honlife.core.app.model.auth.AuthService;
 import com.honlife.core.app.model.auth.code.AuthToken;
 import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.auth.dto.TokenDto;
+import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.oauth2.domain.SocialAccount;
@@ -33,6 +34,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final SocialAccountRepository socialAccountRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
+    private final LoginLogService loginLogService;
 
     @Override
     public void onAuthenticationSuccess(
@@ -47,12 +49,13 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Member member = memberRepository.findByEmailIgnoreCase(userInfo.getEmail());
         if (member == null) {
             member = Member.builder()
-                .email(user.getName())
+                .email(userInfo.getEmail())
                 .name(userInfo.getName())
                 .isVerified(true)
                 .role(Role.ROLE_USER)
                 .build();
             memberRepository.save(member);
+            log.info("onAuthenticationSuccess :: Saved new member --- email = {}", member.getEmail());
         }
 
         SocialAccount socialAccount = socialAccountRepository.findByMemberAndProvider(member,
@@ -64,6 +67,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .member(member)
                 .build();
             socialAccountRepository.save(socialAccount);
+            log.info("onAuthenticationSuccess :: Saved new social account --- memberId = {}, provider = {}", member.getId(), socialAccount.getProvider());
         }
 
         String roles = String.join(",", authentication.getAuthorities().stream().map(
@@ -79,6 +83,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+        // 로그인시 자동으로 로그인 기록 저장
+        loginLogService.newLog(userInfo.getEmail());
+
         getRedirectStrategy().sendRedirect(request, response, "/");
     }
 }
