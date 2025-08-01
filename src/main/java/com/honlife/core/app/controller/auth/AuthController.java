@@ -147,7 +147,7 @@ public class AuthController {
         String email = duplicationCheckRequest.getEmail();
         String nickname = duplicationCheckRequest.getNickname();
         if(email != null && nickname == null){
-            if(memberService.isEmailExists(email, true))
+            if(memberService.isEmailExists(email, false))
                 return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
             return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
         } else if (email == null && nickname != null){
