@@ -50,6 +50,9 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
         OAuth2UserInfo userInfo = OAuth2UserInfo.createUserInfo(request.getRequestURI(), user);
 
+        // 신규회원일때만 추가정보 입력 페이지로 리다이렉트 하기위한 추가 주소 변수
+        String targetPath = "/";
+
         Member member = memberRepository.findByEmailIgnoreCase(userInfo.getEmail());
         if (member == null) {
             member = Member.builder()
@@ -59,6 +62,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .role(Role.ROLE_USER)
                 .build();
             memberRepository.save(member);
+            targetPath = "/signup?social=true";
             log.info("onAuthenticationSuccess :: Saved new member --- email = {}", member.getEmail());
         }
 
@@ -77,7 +81,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String roles = String.join(",", authentication.getAuthorities().stream().map(
             GrantedAuthority::getAuthority).toList());
 
-        TokenDto tokenDto = authService.processTokenSignin(userInfo.getName(), roles);
+        TokenDto tokenDto = authService.processTokenSignin(userInfo.getEmail(), roles);
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
             tokenDto.getAccessToken(), jwtTokenProvider.getAccessTokenExpiration());
 
@@ -91,6 +95,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         // 로그인시 자동으로 로그인 기록 저장
         loginLogService.newLog(userInfo.getEmail());
 
-        getRedirectStrategy().sendRedirect(request, response, frontDomain + "/signup?social=true");
+        getRedirectStrategy().sendRedirect(request, response, frontDomain + targetPath);
     }
 }
