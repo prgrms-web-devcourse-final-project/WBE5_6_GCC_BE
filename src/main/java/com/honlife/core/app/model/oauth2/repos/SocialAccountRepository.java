@@ -2,6 +2,7 @@ package com.honlife.core.app.model.oauth2.repos;
 
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.oauth2.domain.SocialAccount;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,6 @@ public interface SocialAccountRepository extends JpaRepository<SocialAccount, Lo
     Long member(Member member);
 
     SocialAccount findByMember_Id(Long memberId);
+
+    List<SocialAccount> findAllByMember(Member member);
 }

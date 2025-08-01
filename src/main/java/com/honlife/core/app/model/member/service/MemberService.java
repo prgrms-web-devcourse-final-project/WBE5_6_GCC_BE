@@ -8,6 +8,8 @@ import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.oauth2.domain.SocialAccount;
+import com.honlife.core.app.model.oauth2.repos.SocialAccountRepository;
 import com.honlife.core.app.model.oauth2.service.GoogleUnlinkService;
 import com.honlife.core.app.model.oauth2.service.KakaoUnlinkService;
 import com.honlife.core.app.model.quest.repos.EventQuestProgressRepository;
@@ -20,6 +22,7 @@ import com.honlife.core.app.model.withdraw.service.WithdrawReasonService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -60,6 +63,7 @@ public class MemberService {
     private final EventQuestProgressRepository eventQuestProgressRepository;
     private final GoogleUnlinkService googleUnlinkService;
     private final KakaoUnlinkService kakaoUnlinkService;
+    private final SocialAccountRepository socialAccountRepository;
 
 
     public MemberDTO get(final Long id) {
@@ -373,11 +377,16 @@ public class MemberService {
         Member member = memberRepository.findByEmailAndIsActive(userEmail, true)
             .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
+        List<SocialAccount> socialAccount = socialAccountRepository.findAllByMember(member);
+
         // 소셜 로그인 회원인 경우 연결 해체 진행
-        if(member.getProvider().equals("google")){
-            googleUnlinkService.unlink(member);
-        } else if (member.getProvider().equals("kakao")){
-            kakaoUnlinkService.unlink(member);
+        for(SocialAccount account : socialAccount){
+            String provider = account.getProvider();
+            if(provider.equals("google")){
+                googleUnlinkService.unlink(member);
+            } else if (provider.equals("kakao")){
+                kakaoUnlinkService.unlink(member);
+            }
         }
 
         memberRepository.softDropMember(userEmail);
