@@ -1,8 +1,12 @@
 package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.controller.routine.payload.RoutineScheduleCompleteRequest;
+import com.honlife.core.app.model.member.domain.Member;
+import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
+import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.app.model.point.code.PointSourceType;
+import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.app.model.routine.dto.RoutineScheduleInfo;
 import com.honlife.core.app.model.routine.dto.RoutineSummaryDTO;
 import com.honlife.core.infra.error.exceptions.CommonException;
@@ -95,7 +99,7 @@ public class RoutineScheduleService {
         for (Routine routine : routines) {
             if (!today.isBefore(routine.getInitDate())
                 && routine.getRepeatType().isMatched(today, routine.getRepeatValue())
-                && ChronoUnit.WEEKS.between(routine.getInitDate(), today) % routine.getRepeatTerm() == 0) {
+                && isToday(routine, today)) {
 
                 log.info("✅ [Scheduler] 루틴 ID {} 에 대한 스케줄 생성", routine.getId());
 
@@ -150,5 +154,51 @@ public class RoutineScheduleService {
             .memberId(schedule.getRoutine().getMember().getId())
             .categoryId(schedule.getRoutine().getCategory().getId())
             .build();
+    }
+
+    /**
+     * term 을 확인해서 오늘이 루틴을 행하는 날인지 확인합니다.
+     * @param routine 루틴 정보
+     * @return Boolean
+     */
+    // todo routineService에도 똑같은 코드가 있으나 해당 메소드를 사용하기엔 순환참조 문제가 발생할 거 같아 일단 임시로 여기에 생성 추후 리팩토링 필요
+    private boolean isToday(Routine routine, LocalDate date) {
+        if(routine.getRepeatType() == RepeatType.DAILY)
+            return ChronoUnit.DAYS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
+        else if(routine.getRepeatType() == RepeatType.WEEKLY)
+            return ChronoUnit.WEEKS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
+        else if(routine.getRepeatType() == RepeatType.MONTHLY)
+            return ChronoUnit.MONTHS.between(routine.getInitDate(), date) % routine.getRepeatTerm() == 0;
+        else{
+            return false;
+        }
+    }
+
+    /**
+     * 로그인 시 루틴 스케줄을 생성합니다.
+     * @param memberEmail
+     * @param today
+     */
+    public void createRoutineScheduleForMember(String memberEmail, LocalDate today) {
+        // 사용자의 루틴을 전부 불러오기
+        List<Routine> routines = routineRepository.findAllByMember_EmailAndIsActive(memberEmail, true);
+
+        for (Routine routine : routines) {
+
+            if (!today.isBefore(routine.getInitDate())
+                && routine.getRepeatType().isMatched(today, routine.getRepeatValue())
+                && isToday(routine, today)) {
+
+                boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, today);
+                if (!exists) {
+                    RoutineSchedule schedule = RoutineSchedule.builder()
+                        .scheduledDate(today)
+                        .isDone(false)
+                        .routine(routine)
+                        .build();
+                    routineScheduleRepository.save(schedule);
+                }
+            }
+        }
     }
 }
