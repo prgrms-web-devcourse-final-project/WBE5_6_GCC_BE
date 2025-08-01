@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,9 @@ public class LogoutFilter extends OncePerRequestFilter {
     
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Value("${app.domain}")
+    private String appDomain;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -40,9 +44,9 @@ public class LogoutFilter extends OncePerRequestFilter {
         if(path.equals("/api/v1/logout")){
             refreshTokenService.deleteByAccessTokenId(claims.getId());
             SecurityContextHolder.clearContext();
-            ResponseCookie expiredAccessToken = TokenCookieFactory.createExpiredToken(AuthToken.ACCESS_TOKEN.name());
-            ResponseCookie expiredRefreshToken = TokenCookieFactory.createExpiredToken(AuthToken.REFRESH_TOKEN.name());
-            ResponseCookie expiredSessionId = TokenCookieFactory.createExpiredToken(AuthToken.AUTH_SERVER_SESSION_ID.name());
+            ResponseCookie expiredAccessToken = TokenCookieFactory.createExpiredToken(AuthToken.ACCESS_TOKEN.name(), appDomain);
+            ResponseCookie expiredRefreshToken = TokenCookieFactory.createExpiredToken(AuthToken.REFRESH_TOKEN.name(), appDomain);
+            ResponseCookie expiredSessionId = TokenCookieFactory.createExpiredToken(AuthToken.AUTH_SERVER_SESSION_ID.name(), appDomain);
             response.addHeader("Set-Cookie", expiredAccessToken.toString());
             response.addHeader("Set-Cookie", expiredRefreshToken.toString());
             response.addHeader("Set-Cookie", expiredSessionId.toString());

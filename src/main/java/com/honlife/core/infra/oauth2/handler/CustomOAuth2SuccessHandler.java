@@ -40,6 +40,9 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     @Value("${front-server.prod-domain}")
     private String frontDomain;
 
+    @Value("${app.domain}")
+    private String appDomain;
+
     @Override
     public void onAuthenticationSuccess(
         HttpServletRequest request,
@@ -82,11 +85,11 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         TokenDto tokenDto = authService.processTokenSignin(userInfo.getEmail(), member.getRole().name());
 
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
-            tokenDto.getAccessToken(), tokenDto.getExpiresIn());
+            tokenDto.getAccessToken(), tokenDto.getExpiresIn(), appDomain);
 
         ResponseCookie refreshTokenCookie = TokenCookieFactory.create(
             AuthToken.REFRESH_TOKEN.name(),
-            tokenDto.getRefreshToken(), tokenDto.getExpiresIn());
+            tokenDto.getRefreshToken(), tokenDto.getExpiresIn(), appDomain);
 
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
