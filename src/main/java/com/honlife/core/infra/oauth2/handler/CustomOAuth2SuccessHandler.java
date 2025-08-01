@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,6 +36,9 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
     private final LoginLogService loginLogService;
+
+    @Value("${front-server.prod-domain}")
+    private String frontDomain;
 
     @Override
     public void onAuthenticationSuccess(
@@ -87,6 +91,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         // 로그인시 자동으로 로그인 기록 저장
         loginLogService.newLog(userInfo.getEmail());
 
-        getRedirectStrategy().sendRedirect(request, response, "/signup?social=true");
+        getRedirectStrategy().sendRedirect(request, response, frontDomain + "/signup?social=true");
     }
 }
