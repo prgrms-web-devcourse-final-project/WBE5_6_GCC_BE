@@ -18,7 +18,7 @@ public class TokenResponse {
     private String grantType;
     private Long expiresIn;
 
-    @Value("${app.domain}")
+    @Value("${app.domain-only}")
     private static String appDomain;
 
     public static TokenResponse getTokenResponse(TokenDto tokenDto, HttpServletResponse response) {

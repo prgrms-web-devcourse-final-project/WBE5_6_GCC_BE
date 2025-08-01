@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserBlackListRepository userBlackListRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${app.domain}")
+    @Value("${app.domain-only}")
     private String appDomain;
     
     @Override

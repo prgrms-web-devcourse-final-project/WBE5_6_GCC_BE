@@ -40,7 +40,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     @Value("${front-server.prod-domain}")
     private String frontDomain;
 
-    @Value("${app.domain}")
+    @Value("${app.domain-only}")
     private String appDomain;
 
     @Override

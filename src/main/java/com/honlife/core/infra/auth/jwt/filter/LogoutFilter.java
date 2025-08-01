@@ -24,7 +24,7 @@ public class LogoutFilter extends OncePerRequestFilter {
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${app.domain}")
+    @Value("${app.domain-only}")
     private String appDomain;
     
     @Override
