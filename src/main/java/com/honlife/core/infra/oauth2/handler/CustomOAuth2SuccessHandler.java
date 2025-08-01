@@ -89,7 +89,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             accessTokenCookie.setPath("/");
             accessTokenCookie.setMaxAge((int) (jwtTokenProvider.getAccessTokenExpiration() / 1000));
             // 프로덕션 환경에서는 반드시 setSecure(true)를 추가해야 합니다.
-//        accessTokenCookie.setSecure(true);
+            accessTokenCookie.setSecure(true);
             response.addCookie(accessTokenCookie);
 
             // 6. Refresh Token을 HTTP-only 쿠키에 담기
