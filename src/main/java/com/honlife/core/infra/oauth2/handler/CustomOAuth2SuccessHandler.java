@@ -1,5 +1,6 @@
 package com.honlife.core.infra.oauth2.handler;
 
+import com.honlife.core.app.model.auth.code.AuthToken;
 import com.honlife.core.app.model.auth.token.RefreshTokenService;
 import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.app.model.member.domain.Member;
@@ -84,7 +85,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 accessTokenJti); // Access Token의 JTI 를 사용하여 Refresh Token 저장
 
             // 5. Access Token을 HTTP-only 쿠키에 담기
-            Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+            Cookie accessTokenCookie = new Cookie(AuthToken.ACCESS_TOKEN.name(), accessToken);
             accessTokenCookie.setHttpOnly(true);
             accessTokenCookie.setPath("/");
             accessTokenCookie.setMaxAge((int) (jwtTokenProvider.getAccessTokenExpiration() / 1000));
@@ -93,7 +94,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             response.addCookie(accessTokenCookie);
 
             // 6. Refresh Token을 HTTP-only 쿠키에 담기
-            Cookie refreshTokenCookie = new Cookie("refreshToken", refreshTokenString);
+            Cookie refreshTokenCookie = new Cookie(AuthToken.REFRESH_TOKEN.name(), refreshTokenString);
             refreshTokenCookie.setHttpOnly(true);
             refreshTokenCookie.setPath("/");
             refreshTokenCookie.setMaxAge(
