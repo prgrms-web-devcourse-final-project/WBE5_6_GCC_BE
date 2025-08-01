@@ -42,7 +42,5 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
      */
     Boolean existsByEmailIgnoreCaseAndIsActive(String email, Boolean isActive);
 
-    Optional<Member> findByProviderId(String providerId);
-
     List<Member> findAllByIsActive(Boolean isActive);
 }
