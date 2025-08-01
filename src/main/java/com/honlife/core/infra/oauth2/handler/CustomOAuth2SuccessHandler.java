@@ -16,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             member = Member.builder()
                 .email(userInfo.getEmail())
                 .name(userInfo.getName())
+                .nickname("USER_" + UUID.randomUUID())
                 .isVerified(true)
                 .role(Role.ROLE_USER)
                 .build();
