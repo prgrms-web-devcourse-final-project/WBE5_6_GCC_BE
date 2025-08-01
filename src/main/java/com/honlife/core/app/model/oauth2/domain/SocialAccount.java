@@ -43,15 +43,21 @@ public class SocialAccount {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column
+    @Column(nullable = false)
     private String provider;
 
-    @Column
+    @Column(nullable = false)
     private String providerId;
 
-    @Column(nullable = false, length = 500) // Access Token 값
-    private String accessTokenValue; // 필드명 변경
+    @Column(length = 500) // Access Token 값
+    private String accessToken; // 필드명 변경
 
-    @Column(nullable = false)
+    @Column
     private Instant expiryDate; // 토큰 만료 일시
+
+//    // 토큰 값 업데이트 메소드
+//    public void updateAccessToken(String newAccessTokenValue, Instant newExpiryDate) { // 메소드명 변경
+//        this.accessTokenValue = newAccessTokenValue;
+//        this.expiryDate = newExpiryDate;
+//    }
 }

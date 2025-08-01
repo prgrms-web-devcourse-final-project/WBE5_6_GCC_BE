@@ -1,9 +1,8 @@
 package com.honlife.core.app.model.oauth2.service;
 
 import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.app.model.oauth2.domain.OAuth2AccessToken;
-import com.honlife.core.app.model.oauth2.repos.OAuth2AccessTokenRepository;
+import com.honlife.core.app.model.oauth2.domain.SocialAccount;
+import com.honlife.core.app.model.oauth2.repos.SocialAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,19 +20,19 @@ import java.util.Optional;
 public class GoogleUnlinkService {
 
     private final RestTemplate restTemplate;
-    private final OAuth2AccessTokenRepository oauth2AccessTokenRepository;
+    private final SocialAccountRepository socialAccountRepository;
 
     // 회원 탈퇴 시 구글 연동 해제
     public void unlink(Member member) {
 
-        Optional<OAuth2AccessToken> oauthAccessTokenOptional = oauth2AccessTokenRepository.findByMemberAndProvider(member, "google");
+        Optional<SocialAccount> oauthAccessTokenOptional = socialAccountRepository.findByMemberAndProvider(member, "google");
 
         if (oauthAccessTokenOptional.isEmpty()) {
             throw new RuntimeException("구글 Access Token을 찾을 수 없습니다.");
         }
 
-        OAuth2AccessToken oauthAccessToken = oauthAccessTokenOptional.get();
-        String accessTokenValue = oauthAccessToken.getAccessTokenValue();
+        SocialAccount oauthAccessToken = oauthAccessTokenOptional.get();
+        String accessTokenValue = oauthAccessToken.getAccessToken();
 
         // 구글 revoke API 호출 (Access Token 사용)
         String revokeUrl = "https://oauth2.googleapis.com/revoke?token=" + accessTokenValue;
@@ -49,7 +48,7 @@ public class GoogleUnlinkService {
                 throw new RuntimeException("구글 연결 해제 실패: " + response.getBody());
             }
             // 연동 해제 성공 시, DB에서 Access Token 정보 삭제
-            oauth2AccessTokenRepository.delete(oauthAccessToken);
+            socialAccountRepository.delete(oauthAccessToken);
             // 회원 정보 삭제 (필요시)
             // memberRepository.delete(member);
         } catch (Exception e) {

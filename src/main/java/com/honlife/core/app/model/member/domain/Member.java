@@ -55,12 +55,6 @@ public class Member extends BaseEntity {
     @Column
     private String password;
 
-    @Column
-    private String provider;
-
-    @Column
-    private String providerId;
-
     @Column(nullable = false, length = 50)
     private String name;
 

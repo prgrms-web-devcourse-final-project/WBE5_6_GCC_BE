@@ -2,6 +2,8 @@ package com.honlife.core.infra.oauth2.handler;
 
 import com.honlife.core.app.model.auth.token.RefreshTokenService;
 import com.honlife.core.app.model.loginLog.service.LoginLogService;
+import com.honlife.core.app.model.oauth2.domain.SocialAccount;
+import com.honlife.core.app.model.oauth2.repos.SocialAccountRepository;
 import com.honlife.core.infra.auth.jwt.JwtTokenProvider;
 import com.honlife.core.infra.auth.jwt.dto.AccessTokenDto;
 import com.honlife.core.infra.oauth2.CustomOAuth2UserDetails;
@@ -28,6 +30,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final LoginLogService loginLogService;
+    private final SocialAccountRepository socialAccountRepository;
 
     @Value("${front-server.prod-domain}")
     private String frontDomain;
@@ -42,8 +45,9 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         // 1. 인증된 사용자 정보 가져오기
         // CustomOAuth2UserDetails 에서 우리 서비스의 memberId (providerId)를 가져옵니다.
         CustomOAuth2UserDetails oAuth2User = (CustomOAuth2UserDetails) authentication.getPrincipal();
-        String memberProviderId = oAuth2User.getMember()
-            .getProviderId(); // Member 객체에서 providerId 가져오기
+        Long memberId = oAuth2User.getMember().getId();
+        SocialAccount socialAccount = socialAccountRepository.findByMember_Id(memberId);
+        String memberProviderId = socialAccount.getProviderId();
 
         // 2. JWT Access Token 생성
         String roles = authentication.getAuthorities().stream()
