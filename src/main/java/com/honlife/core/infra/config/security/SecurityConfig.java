@@ -1,5 +1,6 @@
 package com.honlife.core.infra.config.security;
 
+import com.honlife.core.infra.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.honlife.core.infra.oauth2.handler.CustomOAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -14,6 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.honlife.core.infra.auth.jwt.JwtAuthenticationEntryPoint;
@@ -62,6 +65,11 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
             .requestMatchers("/ws/**", "/topic/**");
+    }
+
+    @Bean
+    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
     @Bean
