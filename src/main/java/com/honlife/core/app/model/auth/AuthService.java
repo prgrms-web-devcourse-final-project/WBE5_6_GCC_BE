@@ -44,6 +44,8 @@ public class AuthService {
             new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
                 loginRequest.getPassword());
 
+        log.info("signin :: process signin --- email = {}", loginRequest.getEmail());
+
         // loadUserByUsername + password 검증 후 인증 객체 반환
         // 인증 실패 시: AuthenticationException 발생
         Authentication authentication = authenticationManagerBuilder.getObject()
