@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -84,7 +85,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             log.info("onAuthenticationSuccess :: Saved new social account --- memberId = {}, provider = {}", member.getId(), socialAccount.getProvider());
         }
 
-        TokenDto tokenDto = authService.processTokenSignin(userInfo.getEmail(), member.getRole().name());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String roles =  String.join(",", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+
+        TokenDto tokenDto = authService.processTokenSignin(userInfo.getEmail(), roles);
 
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
             tokenDto.getAccessToken(), tokenDto.getExpiresIn(), appDomain);
