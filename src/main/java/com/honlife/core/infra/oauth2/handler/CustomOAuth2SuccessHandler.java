@@ -79,7 +79,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             log.info("onAuthenticationSuccess :: Saved new social account --- memberId = {}, provider = {}", member.getId(), socialAccount.getProvider());
         }
 
-        TokenDto tokenDto = authService.autoSignin(userInfo.getEmail());
+        TokenDto tokenDto = authService.processTokenSignin(userInfo.getEmail(), member.getRole().name());
 
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
             tokenDto.getAccessToken(), tokenDto.getExpiresIn());
