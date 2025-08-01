@@ -79,16 +79,14 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             log.info("onAuthenticationSuccess :: Saved new social account --- memberId = {}, provider = {}", member.getId(), socialAccount.getProvider());
         }
 
-        String roles = String.join(",", authentication.getAuthorities().stream().map(
-            GrantedAuthority::getAuthority).toList());
+        TokenDto tokenDto = authService.autoSignin(userInfo.getEmail());
 
-        TokenDto tokenDto = authService.processTokenSignin(userInfo.getEmail(), roles);
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
-            tokenDto.getAccessToken(), jwtTokenProvider.getAccessTokenExpiration());
+            tokenDto.getAccessToken(), tokenDto.getExpiresIn());
 
         ResponseCookie refreshTokenCookie = TokenCookieFactory.create(
             AuthToken.REFRESH_TOKEN.name(),
-            tokenDto.getRefreshToken(), tokenDto.getRefreshExpiresIn());
+            tokenDto.getRefreshToken(), tokenDto.getExpiresIn());
 
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
