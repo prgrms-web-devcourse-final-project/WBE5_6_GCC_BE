@@ -47,6 +47,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         if (member == null) {
             member = Member.builder()
                 .email(user.getName())
+                .name(userInfo.getName())
+                .isVerified(true)
                 .build();
             memberRepository.save(member);
         }
