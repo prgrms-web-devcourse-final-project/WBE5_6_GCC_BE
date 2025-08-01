@@ -2,6 +2,7 @@ package com.honlife.core.infra.oauth2.handler;
 
 import com.honlife.core.app.model.auth.AuthService;
 import com.honlife.core.app.model.auth.code.AuthToken;
+import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.auth.dto.TokenDto;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
@@ -49,6 +50,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .email(user.getName())
                 .name(userInfo.getName())
                 .isVerified(true)
+                .role(Role.ROLE_USER)
                 .build();
             memberRepository.save(member);
         }
