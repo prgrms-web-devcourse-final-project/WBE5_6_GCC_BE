@@ -330,7 +330,6 @@ public class MemberService {
                 ResponseCode.NOT_FOUND_MEMBER));
 
         // 요청에 반드시 포함되는 필드
-        targetMember.setName(updatedMemberDTO.getName());
         if(!targetMember.getNickname().equals(updatedMemberDTO.getNickname()) && isNicknameExists(updatedMemberDTO.getNickname())){
             throw new CommonException(ResponseCode.CONFLICT_EXIST_MEMBER);
         }

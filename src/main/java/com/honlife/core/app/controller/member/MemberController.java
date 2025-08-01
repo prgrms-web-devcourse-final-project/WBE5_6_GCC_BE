@@ -2,6 +2,7 @@ package com.honlife.core.app.controller.member;
 
 import com.honlife.core.app.controller.member.payload.MemberBadgeResponse;
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
+import com.honlife.core.app.controller.member.payload.MemberUpdateRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
 import com.honlife.core.app.model.badge.service.BadgeService;
 import com.honlife.core.app.model.category.service.CategoryService;
@@ -101,18 +102,18 @@ public class MemberController {
     /**
      * 회원 정보 변경 요청 처리 API
      * @param userDetails 유저 인증 정보
-     * @param memberPayload 회원 정보 객체
+     * @param updateRequest 회원 정보 객체
      * @return 변경에 성공하면 {@code 200}을 반환합니다.
      * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
     @PatchMapping
     public ResponseEntity<CommonApiResponse<Void>> updateMember(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestBody @Valid final MemberPayload memberPayload
+        @RequestBody @Valid final MemberUpdateRequest updateRequest
     ) {
         String userEmail = userDetails.getUsername();
 
-        memberService.updateMember(userEmail, memberPayload.toDTO());
+        memberService.updateMember(userEmail, updateRequest.toDTO());
         return ResponseEntity.ok(CommonApiResponse.noContent());
 
     }
