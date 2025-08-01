@@ -1,5 +1,6 @@
 package com.honlife.core.infra.config.security;
 
+import com.honlife.core.infra.oauth2.handler.CustomOAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,13 +43,13 @@ public class SecurityConfig {
             .logout(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(
                 (requests) -> requests
-                    .requestMatchers("/favicon.ico", "/img/**", "/js/**", "/css/**").permitAll()
                     .requestMatchers("/", "/error", "/api/v1/check/**", "/api/v1/signin",
-                        "/auth/v1/signup").permitAll()
-                    .requestMatchers("/api/v1/email/**").permitAll()
-                    .requestMatchers("/api/**").authenticated()
-                    .anyRequest().permitAll()
+                        "/api/v1/signup", "/api/v1/auth/**").permitAll()
+                    .requestMatchers("/login/oauth2/code/**", "/oauth2/authorization/**").permitAll()
+                    .anyRequest().authenticated()
             )
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler(customOAuth2SuccessHandler))
             // jwtAuthenticationEntryPoint 는 oauth 인증을 사용할 경우 제거
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -58,7 +60,8 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+            .requestMatchers("/ws/**", "/topic/**");
     }
 
     @Bean

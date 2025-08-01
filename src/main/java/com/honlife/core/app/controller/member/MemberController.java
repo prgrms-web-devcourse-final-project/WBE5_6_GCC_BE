@@ -1,99 +1,101 @@
 package com.honlife.core.app.controller.member;
 
+import com.honlife.core.app.controller.member.payload.MemberBadgeResponse;
 import com.honlife.core.app.controller.member.payload.MemberUpdatePasswordRequest;
 import com.honlife.core.app.controller.member.payload.MemberWithdrawRequest;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.honlife.core.app.model.badge.service.BadgeService;
+import com.honlife.core.app.model.category.service.CategoryService;
+import com.honlife.core.app.model.category.service.InterestCategoryService;
+import com.honlife.core.app.model.member.model.MemberBadgeDTO;
+import com.honlife.core.app.model.member.model.MemberBadgeDetailDTO;
+import com.honlife.core.app.model.member.service.MemberBadgeService;
+import com.honlife.core.app.model.member.service.MemberItemService;
+import com.honlife.core.app.model.member.service.MemberPointService;
+import com.honlife.core.app.model.quest.service.WeeklyQuestProgressService;
+import com.honlife.core.app.model.routine.service.RoutineService;
+import com.honlife.core.app.model.withdraw.code.WithdrawType;
+import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.error.exceptions.ReferencedException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
 import jakarta.validation.Valid;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.honlife.core.app.controller.member.payload.MemberPayload;
-import com.honlife.core.app.model.member.code.ResidenceExperience;
 import com.honlife.core.app.model.member.model.MemberDTO;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 
-
+@RequiredArgsConstructor
 @Slf4j
-@Tag(name = "회원", description = "회원관련 API 입니다.")
 @RestController
 @RequestMapping(value = "/api/v1/members", produces = MediaType.APPLICATION_JSON_VALUE)
-@SecurityRequirement(name = "bearerAuth")
 public class MemberController {
 
     private final MemberService memberService;
-    //TODO: Dev로 넘어가면 Service로 넘기기
-    private final PasswordEncoder passwordEncoder;
-
-    public MemberController(final MemberService memberService, PasswordEncoder passwordEncoder) {
-        this.memberService = memberService;
-        //TODO: Dev로 넘어가면 Service로 넘기기
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final MemberBadgeService memberBadgeService;
 
     /**
      * 로그인된 회원의 정보 조회
      * @param userDetails 유저 인증 정보 객체
      * @return 조회 성공시 {@code CommonApiResponse<}{@link MemberPayload}{@code >}형태로 사용자의 정보를 반한홥니다.
      */
-    @Operation(summary = "로그인된 회원의 정보 조회", description = "로그인된 사용자의 정보를 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
-    public ResponseEntity<CommonApiResponse<MemberPayload>> getCurrentMember(
+    public ResponseEntity<CommonApiResponse<MemberResponseWrapper>> getCurrentMember(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userId = userDetails.getUsername();
-        if(userId.equals("user01@test.com")){
-            MemberPayload response = new MemberPayload();
-            response.setName("홍길동");
-            response.setNickname("닉네임");
-            response.setResidenceExperience(ResidenceExperience.OVER_10Y);
-            response.setRegionDept1("서울시");
-            response.setRegionDept2("강북구");
-            response.setRegionDept3("미아동");
-            return ResponseEntity.ok(CommonApiResponse.success(response));
+        String userEmail = userDetails.getUsername();
+        MemberDTO targetMember = memberService.findMemberByEmail(userEmail);
+
+        // 해당하는 member가 없을 때
+        if(targetMember == null) {
+            return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
+                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
         }
-        return ResponseEntity.status(ResponseCode.NOT_FOUND_MEMBER.status())
-            .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_MEMBER));
+
+        MemberPayload member = MemberPayload.fromDTO(targetMember);
+
+        MemberBadgeDetailDTO badge = memberBadgeService.getEquippedBadge(userEmail);
+
+        MemberResponseWrapper response = new MemberResponseWrapper(member, MemberBadgeResponse.fromDTO(badge));
+
+        return ResponseEntity.ok(CommonApiResponse.success(response));
     }
 
     /**
      * 비밀번호 변경 요청 처리 API
      * @param userDetails 유저 인증 정보
-     * @param updatePasswordRequest 현재 비밀번호와 변경할 비밀번호를 담은 객체
-     * @return 변경 처리 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
+     * @param updatePasswordRequest 변경할 비밀번호를 담은 객체
+     * @return 변경 처리 성공시 {@code 200}을 반환합니다. <br>이메일 인증이 되어있지 않은 사용자일 경우, {@code 401}을 반환합니다. 비밀 번호 변경 중 문제가 생길 시 {@code 400}을 반환합니다.
      */
-    @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.<br>"
-        + "현재 비밀번호와 변경할 비밀번호를 받으며, 내부적으로 비밀번호 비교 후 비밀번호가 일치할 때 변경합니다.<br>"
-        + "비밀번호가 일치하지 않는 경우, 401응답이 반환됩니다.")
-    @PutMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<CommonApiResponse<Void>> updatePassword(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody final MemberUpdatePasswordRequest updatePasswordRequest
     ) {
         String userEmail = userDetails.getUsername();
-        String userPassword = userDetails.getPassword();
-        //TODO: Dev때 Service로 옮기기
-        if(userEmail.equals("user01@test.com") && passwordEncoder.matches("1111", userPassword)){
-            return ResponseEntity.ok(CommonApiResponse.noContent());
+
+        // 이메일 인증 확인
+        if(!memberService.isEmailVerified(userEmail)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
+
+        memberService.updatePassword(userEmail, updatePasswordRequest.getNewPassword());
+        return ResponseEntity.ok(CommonApiResponse.noContent());
+
     }
 
     /**
@@ -103,18 +105,16 @@ public class MemberController {
      * @return 변경에 성공하면 {@code 200}을 반환합니다.
      * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
-    @Operation(summary="회원정보 업데이트", description="회원정보를 업데이트 합니다.<br>"
-        + "이름, 닉네임은 필수 정보입니다. 나머지 정보는 비어있어도 되지만, 요청에는 포함되어있어야 합니다.")
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<CommonApiResponse<Void>> updateMember(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody @Valid final MemberPayload memberPayload
     ) {
         String userEmail = userDetails.getUsername();
-        if(userEmail.equals("user01@test.com")){
-            return ResponseEntity.ok(CommonApiResponse.noContent());
-        }
-        return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+
+        memberService.updateMember(userEmail, memberPayload.toDTO());
+        return ResponseEntity.ok(CommonApiResponse.noContent());
+
     }
 
     /**
@@ -125,24 +125,51 @@ public class MemberController {
      * @throws org.springframework.web.bind.MethodArgumentNotValidException 클라이언트로 부터 잘못된 값이 전송된 경우
      */
     @DeleteMapping
-    @Operation(summary = "회원 탈퇴", description = "회원탈퇴를 처리합니다.<br>"
-        + "withdrawType은 비어있어서는 안되며, '기타'타입에 해당되어 사용자의 직접적인 의견을 받은 경우, etcReason에 해당 내용을 담아주세요.")
     public ResponseEntity<CommonApiResponse<Void>> deleteMember(
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestBody @Valid final MemberWithdrawRequest withdrawRequest
     ) {
-//        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
-//        if (referencedWarning != null) {
-//            throw new ReferencedException(referencedWarning);
-//        }
-//        memberService.delete(id);
-
-        // 예시 응답
         String userEmail = userDetails.getUsername();
-        if(userEmail.equals("user01@test.com")) {
+
+        // 직적 입력이나 이유가 넘어오지 않을 때
+        if(withdrawRequest.getWithdrawType()==WithdrawType.ETC&&withdrawRequest.getEtcReason()==null){
+            return ResponseEntity.badRequest().body(CommonApiResponse.error(ResponseCode.BAD_REQUEST));
+        }
+        memberService.removeMemberReference(userEmail);
+
+            // 제대로 처리 됐는지 검증
+        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(userEmail);
+        if (referencedWarning != null) {
+            throw new CommonException(ResponseCode.INTERNAL_SERVER_ERROR);
+        }
+
+        // OAuth2 연결 해제 후, providerId 데이터 말소
+        // 이후 멤버 소프트 딜리트
+        memberService.softDropMember(userEmail);
+
+        // 탈퇴 사유 저장
+        memberService.saveWithdrawReason(withdrawRequest);
+
+        return ResponseEntity.ok(CommonApiResponse.noContent());
+
+    }
+
+    /**
+     * 비밀번호 확인 요청 처리 API
+     * @param userDetails 유저 인증 정보
+     * @return 확인 성공시 {@code 200}을 반환합니다. 현재 비밀번호가 일치 하지 않는 경우, {@code 401}을 반환합니다.
+     */
+    @PostMapping("/password")
+    public ResponseEntity<CommonApiResponse<Void>> checkPassword(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestParam String password
+    ) {
+        String userEmail = userDetails.getUsername();
+
+        if(memberService.isCorrectPassword(userEmail, password)){
             return ResponseEntity.ok(CommonApiResponse.noContent());
         }
-        return ResponseEntity.internalServerError().body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonApiResponse.error(ResponseCode.BAD_CREDENTIAL));
     }
 
 }

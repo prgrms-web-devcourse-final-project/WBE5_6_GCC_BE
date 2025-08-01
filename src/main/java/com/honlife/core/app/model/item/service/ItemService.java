@@ -1,57 +1,110 @@
 package com.honlife.core.app.model.item.service;
 
-import java.util.List;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
+import com.honlife.core.app.model.item.code.ItemType;
 import com.honlife.core.app.model.item.domain.Item;
+import com.honlife.core.app.model.item.domain.QItem;
 import com.honlife.core.app.model.item.dto.ItemDTO;
 import com.honlife.core.app.model.item.repos.ItemRepository;
+import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.domain.MemberItem;
+import com.honlife.core.app.model.member.domain.MemberPoint;
+import com.honlife.core.app.model.member.domain.QMemberItem;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
-import com.honlife.core.infra.util.NotFoundException;
-import com.honlife.core.infra.util.ReferencedWarning;
+import com.honlife.core.app.model.member.repos.MemberPointRepository;
+import com.honlife.core.app.model.member.service.MemberPointService;
+import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import com.honlife.core.infra.error.exceptions.ReferencedWarning;
+import com.honlife.core.infra.response.ResponseCode;
+import com.querydsl.core.Tuple;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
+@RequiredArgsConstructor
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final MemberPointRepository memberPointRepository;
     private final MemberItemRepository memberItemRepository;
+    private final MemberPointService memberPointService;
 
-    public ItemService(final ItemRepository itemRepository,
-        final MemberItemRepository memberItemRepository) {
-        this.itemRepository = itemRepository;
-        this.memberItemRepository = memberItemRepository;
+    /**
+     * 특정 사용자의 아이템 전체 목록을 조회하면서,
+     * 해당 사용자가 각 아이템을 보유하고 있는지를 함께 판단하여 응답합니다.
+     *
+     * @param memberId 사용자 이메일 (UserDetails.getUsername())
+     * @param itemType 아이템 타입 (null일 경우 전체 아이템 조회)
+     * @return ItemResponse 리스트 (isOwned 필드 포함)
+     */
+    public List<ItemDTO> getAllItemsWithOwnership(Long memberId, ItemType itemType) {
+
+        List<Tuple> tuples = itemRepository.findItemsWithOwnership(memberId, itemType);
+
+        return tuples.stream()
+                .map(tuple -> {
+                    Item i = tuple.get(QItem.item);
+                    Boolean isOwned = tuple.get(QMemberItem.memberItem.id) != null;
+
+                    return ItemDTO.builder()
+                            .id(i.getId())
+                            .itemKey(i.getKey())
+                            .name(i.getName())
+                            .description(i.getDescription())
+                            .type(i.getType())
+                            .price(i.getPrice())
+                            .isOwned(isOwned)
+                            .isListed(i.getIsListed())
+                            .build();
+                })
+                .toList();
+    }
+    /**
+     * itemId로 단일 아이템 조회
+     * @param id
+     * return Optional<Item></Item>
+     */
+    public Optional<Item>  getItemById(Long id) {
+        return itemRepository.findByIdAndIsActiveTrue(id);
     }
 
-    public List<ItemDTO> findAll() {
-        final List<Item> items = itemRepository.findAll(Sort.by("id"));
-        return items.stream()
-            .map(item -> mapToDTO(item, new ItemDTO()))
-            .toList();
-    }
+    /**
+     * 아이템 구매 기능
+     * @param item 컨트롤러에서 key값을 통해 구매하려는 Item 정보를 가지고 있음
+     * @param member 구매하는 사용자 Member 테이블 값
+     */
+    @Transactional
+    public void purchaseItem(Item item,Member member) {
 
-    public ItemDTO get(final Long id) {
-        return itemRepository.findById(id)
-            .map(item -> mapToDTO(item, new ItemDTO()))
-            .orElseThrow(NotFoundException::new);
-    }
+        MemberPoint point = memberPointService.getPointByMemberId(member.getId())
+                .orElseThrow(() -> new CommonException(ResponseCode.BAD_REQUEST));
 
-    public Long create(final ItemDTO itemDTO) {
-        final Item item = new Item();
-        mapToEntity(itemDTO, item);
-        return itemRepository.save(item).getId();
-    }
+        if (point.getPoint() < item.getPrice()) {
+            throw new CommonException(ResponseCode.NOT_ENOUGH_POINT);
+        }
 
-    public void update(final Long id, final ItemDTO itemDTO) {
-        final Item item = itemRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
-        mapToEntity(itemDTO, item);
-        itemRepository.save(item);
-    }
+        point.setPoint(point.getPoint() - item.getPrice());
 
-    public void delete(final Long id) {
-        itemRepository.deleteById(id);
+        MemberItem memberItem = MemberItem.builder()
+                .member(member)
+                .item(item)
+                .isEquipped(false)
+                .build();
+
+        memberPointRepository.save(point);
+        memberItemRepository.save(memberItem);
+    }
+    /**
+     * itemKeyExists,mapToDTO,mapToEntity,get,getReferencedWarning
+     * Item Unique 보장을 위함
+     */
+    public boolean itemKeyExists(final String key) {
+        return itemRepository.existsByKeyIgnoreCase(key);
     }
 
     private ItemDTO mapToDTO(final Item item, final ItemDTO itemDTO) {
@@ -59,7 +112,7 @@ public class ItemService {
         itemDTO.setUpdatedAt(item.getUpdatedAt());
         itemDTO.setIsActive(item.getIsActive());
         itemDTO.setId(item.getId());
-        itemDTO.setItemKey(item.getItemKey());
+        itemDTO.setItemKey(item.getKey());
         itemDTO.setName(item.getName());
         itemDTO.setPrice(item.getPrice());
         itemDTO.setType(item.getType());
@@ -70,21 +123,23 @@ public class ItemService {
         item.setCreatedAt(itemDTO.getCreatedAt());
         item.setUpdatedAt(itemDTO.getUpdatedAt());
         item.setIsActive(itemDTO.getIsActive());
-        item.setItemKey(itemDTO.getItemKey());
+        item.setKey(itemDTO.getItemKey());
         item.setName(itemDTO.getName());
         item.setPrice(itemDTO.getPrice());
         item.setType(itemDTO.getType());
         return item;
     }
 
-    public boolean itemKeyExists(final String itemKey) {
-        return itemRepository.existsByItemKeyIgnoreCase(itemKey);
+    public ItemDTO get(final Long id) {
+        return itemRepository.findById(id)
+                .map(item -> mapToDTO(item, new ItemDTO()))
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ITEM));
     }
 
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Item item = itemRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ITEM));
         final MemberItem itemMemberItem = memberItemRepository.findFirstByItem(item);
         if (itemMemberItem != null) {
             referencedWarning.setKey("item.memberItem.item.referenced");
@@ -94,4 +149,12 @@ public class ItemService {
         return null;
     }
 
+    /**
+     * Item 엔티티 저장
+     *
+     * @param item 저장할 Item 객체
+     */
+    public void save(Item item) {
+        itemRepository.save(item);
+    }
 }

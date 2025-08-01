@@ -59,7 +59,7 @@ public @interface MemberEmailUnique {
                 // value hasn't changed
                 return true;
             }
-            return !memberService.emailExists(value);
+            return !memberService.isEmailExists(value);
         }
 
     }

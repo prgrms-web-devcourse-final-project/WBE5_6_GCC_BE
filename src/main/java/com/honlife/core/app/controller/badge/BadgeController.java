@@ -1,157 +1,114 @@
 package com.honlife.core.app.controller.badge;
 
-import com.honlife.core.app.model.badge.code.BadgeTier;
+import com.honlife.core.app.controller.badge.payload.BadgePageResponse;
+import com.honlife.core.app.controller.badge.payload.BadgeResponse;
+import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
+import com.honlife.core.app.model.badge.dto.BadgeRewardDTO;
+import com.honlife.core.app.model.badge.dto.BadgeStatusDTO;
 import com.honlife.core.app.model.badge.service.BadgeService;
+import com.honlife.core.infra.payload.PageParam;
 import com.honlife.core.infra.response.CommonApiResponse;
-import com.honlife.core.infra.response.ResponseCode;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.honlife.core.app.controller.badge.payload.BadgeResponse;
-import com.honlife.core.app.controller.badge.payload.BadgeRewardResponse;
 
 
 @RequiredArgsConstructor
-@Tag(name="업적", description = "업적 관련 API 입니다.")
 @RestController
-@SecurityRequirement(name = "bearerAuth")
 @RequestMapping(value = "/api/v1/badges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BadgeController {
 
     private final BadgeService badgeService;
 
     /**
-     * 업적 조회 API
-     * @return List<BadgePayload> 모든 업적에 대한 정보
+     * 업적 조회 API (페이지네이션)
+     * @param pageParam 페이지 번호/크기
+     * @param userDetails 인증된 사용자 정보
+     * @return 페이지네이션된 배지 정보
      */
-    @Operation(summary = "업적 조회", description = "모든 업적의 정보를 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
     @GetMapping
-    public ResponseEntity<CommonApiResponse<List<BadgeResponse>>> getAllBadges(
+    public ResponseEntity<CommonApiResponse<BadgePageResponse>> getAllBadges(
+        @Valid PageParam pageParam,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-            List<BadgeResponse> responses = new ArrayList<>();
-            responses.add(BadgeResponse.builder()
-                .badgeId(1L)
-                .badgeKey("clean_bronze")
-                .badgeName("초보 청소부")
-                .tier(BadgeTier.BRONZE)
-                .how("청소 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("이제 청소 좀 한다고 말할 수 있겠네요!")
-                .categoryName("청소")
-                .isReceived(false)
-                .receivedDate(LocalDateTime.now())
-                .build());
-            responses.add(BadgeResponse.builder()
-                .badgeId(2L)
-                .badgeKey("cook_bronze")
-                .badgeName("초보 요리사")
-                .tier(BadgeTier.BRONZE)
-                .how("요리 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("나름 계란 프라이는 할 수 있다구요!")
-                .categoryName("요리")
-                .isReceived(true)
-                .receivedDate(LocalDateTime.now())
-                .build());
+        // 1. 사용자 이메일 추출
+        String email = userDetails.getUsername();
 
-            return ResponseEntity.ok(CommonApiResponse.success(responses));
+        // 2. Pageable 생성 (1-based → 0-based 변환)
+        Pageable pageable = PageRequest.of(pageParam.getPage() - 1, pageParam.getSize());
+
+        // 3. Service에서 페이지네이션된 배지 조회
+        Page<BadgeStatusDTO> badgePage = badgeService.getAllBadgesWithStatus(email, pageable);
+
+        // 4. DTO → Response 변환
+        List<BadgeResponse> badgeResponses = badgePage.getContent().stream()
+            .map(BadgeResponse::fromDto)
+            .toList();
+
+        // 5. PageResponse 생성
+        BadgePageResponse pageResponse = BadgePageResponse.from(badgePage, badgeResponses);
+
+        return ResponseEntity.ok(CommonApiResponse.success(pageResponse));
     }
 
     /**
-     * 업적 단건 조회 API
-     * @return BadgePayload 특정 업적에 대한 정보
-     */
-    @Operation(summary = "업적 단건 조회", description = "key에 해당하는 업적에 대해 조회합니다. 현재 로그인한 회원이 이 업적을 획득했는지 여부도 isReceived를 통해 조회할 수 있습니다.")
-    @GetMapping("/{key}")
-    public ResponseEntity<CommonApiResponse<BadgeResponse>> getBadge(
-        @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
-        @PathVariable(name="key") String badgeKey,
-        @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        if(badgeKey.equals("clean_bronze")){
-            BadgeResponse response = BadgeResponse.builder()
-                .badgeId(1L)
-                .badgeKey(badgeKey)
-                .badgeName("초보 청소부")
-                .tier(BadgeTier.BRONZE)
-                .how("청소 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("이제 청소 좀 한다고 말할 수 있겠네요!")
-                .categoryName("청소")
-                .isReceived(false)
-                .receivedDate(LocalDateTime.now())
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        if(badgeKey.equals("cook_bronze")){
-            BadgeResponse response = BadgeResponse.builder()
-                .badgeId(2L)
-                .badgeKey(badgeKey)
-                .badgeName("초보 요리사")
-                .tier(BadgeTier.BRONZE)
-                .how("요리 루틴 5번 이상 성공")
-                .requirement(5)
-                .info("나름 계란 프라이는 할 수 있다구요!")
-                .categoryName("요리")
-                .isReceived(true)
-                .receivedDate(LocalDateTime.now())
-                .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }else{
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
-        }
-    }
-    /**
-     * 업적 보상 수령 API
+     * 업적 보상 수령 API - 실제 구현
      * @param badgeKey 업적 key 값
-     * @return BadgeRewardPayload 완료한 업적에 대한 정보 및 포인트 획득 내역
+     * @param userDetails 인증된 사용자 정보
+     * @return BadgeRewardResponse 완료한 업적에 대한 정보 및 포인트 획득 내역
      */
-    @Operation(summary = "업적 보상 수령", description = "badge_key 값을 통해 특정 업적의 보상을 획득합니다.")
     @PostMapping
     public ResponseEntity<CommonApiResponse<BadgeRewardResponse>> claimBadgeReward(
-        @Schema(name="key", description="업적의 고유 키 값", example = "clean_bronze")
-        @RequestParam String badgeKey){
-        // 달성한 적 없는 업적
-        if(badgeKey.equals("clean_bronze")){
-            BadgeRewardResponse response =
-                BadgeRewardResponse.builder()
-                    .badgeId(1L)
-                    .badgeKey(badgeKey)
-                    .badgeName("초보 청소부")
-                    .pointAdded(50L)
-                    .totalPoint(150L)
-                    .receivedAt(LocalDateTime.now())
-                    .build();
-            return ResponseEntity.ok(CommonApiResponse.success(response));
-        }
-        // 달성한 적 있는 업적
-        if(badgeKey.equals("cook_bronze")){
-            return ResponseEntity.status(ResponseCode.GRANT_CONFLICT_BADGE.status())
-                .body(CommonApiResponse.error(ResponseCode.GRANT_CONFLICT_BADGE));
-        }
-        // 해당 하는 키가 DB에 없을 경우
-        else{
-            return ResponseEntity.status(ResponseCode.NOT_FOUND_BADGE.status())
-                .body(CommonApiResponse.error(ResponseCode.NOT_FOUND_BADGE));
-        }
+        @RequestParam String badgeKey,
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        // 1. 사용자 이메일 추출
+        String email = userDetails.getUsername();
+
+        // 2. 서비스 호출 (DTO 반환) - 예외는 GlobalExceptionHandler가 처리
+        BadgeRewardDTO dto = badgeService.claimBadgeReward(badgeKey, email);
+
+        // 3. DTO → Response 변환
+        BadgeRewardResponse response = BadgeRewardResponse.builder()
+            .badgeId(dto.getBadgeId())
+            .badgeKey(dto.getBadgeKey())
+            .badgeName(dto.getBadgeName())
+            .message(dto.getMessage())
+            .pointAdded(dto.getPointAdded())
+            .totalPoint(dto.getTotalPoint())
+            .receivedAt(dto.getReceivedAt())
+            .build();
+
+        return ResponseEntity.ok(CommonApiResponse.success(response));
     }
 
+    /**
+     * 배지 장착/해제 토글 API
+     * @param badgeKey 배지 키
+     * @param userDetails 인증된 사용자 정보
+     * @return 성공 응답
+     */
+    @PatchMapping
+    public ResponseEntity<CommonApiResponse<Void>> updateBadgeEquipStatus(
+        @RequestParam String badgeKey,
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        String email = userDetails.getUsername();
+        badgeService.updateBadgeEquipStatus(badgeKey, email);
+
+        return ResponseEntity.ok(CommonApiResponse.noContent());
+    }
 }

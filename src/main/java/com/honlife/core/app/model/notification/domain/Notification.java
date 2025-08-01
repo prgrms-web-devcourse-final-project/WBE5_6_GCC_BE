@@ -22,25 +22,25 @@ public class Notification {
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "notification_sequence",
+        sequenceName = "notification_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "notification_sequence"
     )
     private Long id;
 
     @Column
-    private Boolean isEmail;
+    private Boolean isQuest = true; // 초기값
 
     @Column
-    private Boolean isRoutine;
+    private Boolean isRoutine = true;   // 초기값
 
     @Column
-    private Boolean isBadge;
+    private Boolean isBadge = true; // 초기값
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false, unique = true)

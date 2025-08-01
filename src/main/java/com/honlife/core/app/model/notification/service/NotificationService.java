@@ -1,81 +1,72 @@
 package com.honlife.core.app.model.notification.service;
 
-import java.util.List;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import com.honlife.core.app.model.member.domain.Member;
+import com.honlife.core.app.controller.notification.payload.NotificationPayload;
 import com.honlife.core.app.model.member.repos.MemberRepository;
+import com.honlife.core.infra.response.ResponseCode;
+import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.notification.domain.Notification;
 import com.honlife.core.app.model.notification.dto.NotificationDTO;
+import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import com.honlife.core.app.model.notification.repos.NotificationRepository;
-import com.honlife.core.infra.util.NotFoundException;
 
 
+@RequiredArgsConstructor
 @Service
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final MemberRepository memberRepository;
 
-    public NotificationService(final NotificationRepository notificationRepository,
-        final MemberRepository memberRepository) {
-        this.notificationRepository = notificationRepository;
-        this.memberRepository = memberRepository;
-    }
-
-    public List<NotificationDTO> findAll() {
-        final List<Notification> notifications = notificationRepository.findAll(Sort.by("id"));
-        return notifications.stream()
-            .map(notification -> mapToDTO(notification, new NotificationDTO()))
-            .toList();
-    }
-
     public NotificationDTO get(final Long id) {
         return notificationRepository.findById(id)
             .map(notification -> mapToDTO(notification, new NotificationDTO()))
-            .orElseThrow(NotFoundException::new);
-    }
-
-    public Long create(final NotificationDTO notificationDTO) {
-        final Notification notification = new Notification();
-        mapToEntity(notificationDTO, notification);
-        return notificationRepository.save(notification).getId();
-    }
-
-    public void update(final Long id, final NotificationDTO notificationDTO) {
-        final Notification notification = notificationRepository.findById(id)
-            .orElseThrow(NotFoundException::new);
-        mapToEntity(notificationDTO, notification);
-        notificationRepository.save(notification);
-    }
-
-    public void delete(final Long id) {
-        notificationRepository.deleteById(id);
+            .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_NOTIFICATION));
     }
 
     private NotificationDTO mapToDTO(final Notification notification,
         final NotificationDTO notificationDTO) {
         notificationDTO.setId(notification.getId());
-        notificationDTO.setIsEmail(notification.getIsEmail());
+        notificationDTO.setIsQuest(notification.getIsQuest());
         notificationDTO.setIsRoutine(notification.getIsRoutine());
         notificationDTO.setIsBadge(notification.getIsBadge());
         notificationDTO.setMember(notification.getMember() == null ? null : notification.getMember().getId());
         return notificationDTO;
     }
 
-    private Notification mapToEntity(final NotificationDTO notificationDTO,
-        final Notification notification) {
-        notification.setIsEmail(notificationDTO.getIsEmail());
-        notification.setIsRoutine(notificationDTO.getIsRoutine());
-        notification.setIsBadge(notificationDTO.getIsBadge());
-        final Member member = notificationDTO.getMember() == null ? null : memberRepository.findById(notificationDTO.getMember())
-            .orElseThrow(() -> new NotFoundException("member not found"));
-        notification.setMember(member);
-        return notification;
-    }
-
     public boolean memberExists(final Long id) {
         return notificationRepository.existsByMemberId(id);
     }
 
+    /**
+     * 회원의 알림 설정 업데이트<br>
+     * {@code @Transactional}로 인해 로직이 끝나는 시점에서 업데이트 됩니다.
+     * @param userEmail           회원 이메일
+     * @param notificationPayload 설정 값 정보
+     */
+    @Transactional
+    public void updateNotification(String userEmail, NotificationPayload notificationPayload) {
+        Notification notification = notificationRepository.findByMember_Email(userEmail)
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+        notification.setIsQuest(notificationPayload.getIsQuest());
+        notification.setIsRoutine(notificationPayload.getIsRoutine());
+        notification.setIsBadge(notificationPayload.getIsBadge());
+    }
+
+    /**
+     * 회원의 알림 설정 정보 확인
+     * @param userEmail 회원 이메일
+     * @return {@link NotificationDTO}
+     */
+    public NotificationDTO getNotification(String userEmail) {
+        Notification notification = notificationRepository.findByMember_Email(userEmail)
+            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND));
+        return NotificationDTO.builder()
+            .isRoutine(notification.getIsRoutine())
+            .isBadge(notification.getIsBadge())
+            .isQuest(notification.getIsQuest())
+            .build();
+    }
 }

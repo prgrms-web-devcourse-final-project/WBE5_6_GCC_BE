@@ -1,6 +1,7 @@
 package com.honlife.core.infra.error;
 
 import com.honlife.core.infra.error.exceptions.CommonException;
+import com.honlife.core.infra.error.exceptions.NotFoundException;
 import com.honlife.core.infra.response.CommonApiResponse;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.LinkedHashMap;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "com.grepp.spring.app.controller.api")
+@RestControllerAdvice(basePackages = "com.honlife.core.app.controller")
 @Slf4j
 public class RestApiExceptionAdvice {
     
@@ -61,6 +62,12 @@ public class RestApiExceptionAdvice {
                    .internalServerError()
                    .body(CommonApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR));
     }
-    
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<CommonApiResponse<String>> notFoundExceptionHandler(NotFoundException ex) {
+        return ResponseEntity
+            .status(ex.code().status())
+            .body(CommonApiResponse.error(ex.code()));
+    }
     
 }

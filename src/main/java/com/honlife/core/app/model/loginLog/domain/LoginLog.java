@@ -10,7 +10,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.honlife.core.app.model.member.domain.Member;
 
@@ -18,24 +21,28 @@ import com.honlife.core.app.model.member.domain.Member;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginLog {
 
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "login_log_sequence",
+        sequenceName = "login_log_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "login_log_sequence"
     )
     private Long id;
 
+    @Builder.Default
     @Column
-    private LocalDateTime time;
+    private LocalDateTime time = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
