@@ -87,6 +87,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         // 로그인시 자동으로 로그인 기록 저장
         loginLogService.newLog(userInfo.getEmail());
 
-        getRedirectStrategy().sendRedirect(request, response, "/");
+        getRedirectStrategy().sendRedirect(request, response, "/signup?social=true");
     }
 }
