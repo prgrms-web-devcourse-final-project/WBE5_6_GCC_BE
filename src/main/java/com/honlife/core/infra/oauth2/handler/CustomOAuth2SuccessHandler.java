@@ -57,7 +57,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         log.info("onAuthenticationSuccess :: New OAuth2 Login request --- emaile = {}, user_name = {}", userInfo.getEmail(), user.getName());
 
         // 신규회원일때만 추가정보 입력 페이지로 리다이렉트 하기위한 추가 주소 변수
-        String targetPath = "/";
+        String targetPath = "/social=true";
 
         Member member = memberRepository.findByEmailIgnoreCase(userInfo.getEmail());
         if (member == null) {

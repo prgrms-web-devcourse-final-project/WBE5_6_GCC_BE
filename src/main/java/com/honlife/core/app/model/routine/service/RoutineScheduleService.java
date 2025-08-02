@@ -1,14 +1,15 @@
 package com.honlife.core.app.model.routine.service;
 
 import com.honlife.core.app.controller.routine.payload.RoutineScheduleCompleteRequest;
-import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.repos.MemberRepository;
 import com.honlife.core.app.model.member.service.MemberPointService;
-import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.app.model.point.code.PointSourceType;
 import com.honlife.core.app.model.routine.code.RepeatType;
+import com.honlife.core.app.model.routine.domain.Routine;
+import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import com.honlife.core.app.model.routine.dto.RoutineScheduleInfo;
 import com.honlife.core.app.model.routine.dto.RoutineSummaryDTO;
+import com.honlife.core.app.model.routine.repos.RoutineRepository;
+import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.event.CommonEvent;
 import com.honlife.core.infra.response.ResponseCode;
@@ -20,10 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import com.honlife.core.app.model.routine.domain.Routine;
-import com.honlife.core.app.model.routine.domain.RoutineSchedule;
-import com.honlife.core.app.model.routine.repos.RoutineRepository;
-import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -67,13 +64,11 @@ public class RoutineScheduleService {
 
             memberPointService.subtractPoint(userEmail, null, PointSourceType.ROUTINE );
 
-
         }else{
             /** true라구 하고 포인트 적립한다 ~ */
             routineSchedule.setIsDone(request.getIsDone());
 
             memberPointService.addPoint(userEmail, null, PointSourceType.ROUTINE );
-
 
         }
 
