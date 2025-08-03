@@ -8,8 +8,10 @@ import com.honlife.core.app.model.category.repos.InterestCategoryRepository;
 import com.honlife.core.app.model.member.repos.MemberBadgeRepository;
 import com.honlife.core.app.model.member.repos.MemberItemRepository;
 import com.honlife.core.app.model.member.repos.MemberPointRepository;
-import com.honlife.core.app.model.oauth2.service.GoogleUnlinkService;
-import com.honlife.core.app.model.oauth2.service.KakaoUnlinkService;
+import com.honlife.core.infra.oauth2.domain.SocialAccount;
+import com.honlife.core.infra.oauth2.repos.SocialAccountRepository;
+import com.honlife.core.infra.oauth2.service.GoogleUnlinkService;
+import com.honlife.core.infra.oauth2.service.KakaoUnlinkService;
 import com.honlife.core.app.model.quest.repos.EventQuestProgressRepository;
 import com.honlife.core.app.model.quest.repos.WeeklyQuestProgressRepository;
 import com.honlife.core.app.model.notification.domain.Notification;
@@ -21,12 +23,10 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import java.util.Optional;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
@@ -63,6 +63,7 @@ public class MemberService {
     private final EventQuestProgressRepository eventQuestProgressRepository;
     private final GoogleUnlinkService googleUnlinkService;
     private final KakaoUnlinkService kakaoUnlinkService;
+    private final SocialAccountRepository socialAccountRepository;
 
 
     public MemberDTO get(final Long id) {
@@ -210,18 +211,12 @@ public class MemberService {
         Member member = new Member();
         modelMapper.map(signupRequest, member);
         member.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // 암호화된 비밀번호 저장
-        member.setNickname(signupRequest.getName());
+        member.setNickname("USER_" + UUID.randomUUID());
         member.setRole(Role.ROLE_USER);
+        member.setIsActive(false);
         memberRepository.save(member);
 
-        MemberPoint memberPoint = new MemberPoint();
-        memberPoint.setMember(member);
-        memberPoint.setPoint(0);
-        memberPointRepository.save(memberPoint);
 
-        Notification notification = new Notification();
-        notification.setMember(member);
-        notificationRepository.save(notification);
     }
 
     /**
@@ -235,6 +230,34 @@ public class MemberService {
     public void updateMemberStatus(String email, Boolean isVerified, Boolean isActive) {
         Member member = memberRepository.findByEmailIgnoreCase(email);
         member.setIsActive(isActive);
+        member.setIsVerified(isVerified);
+        memberRepository.save(member);
+        createDefaultMemberData(member);
+    }
+
+    /**
+     * 회원관련 기본 데이터를 생성하는 메서드
+     * @param member
+     */
+    public void createDefaultMemberData(Member member) {
+        MemberPoint memberPoint = new MemberPoint();
+        memberPoint.setMember(member);
+        memberPoint.setPoint(0);
+        memberPointRepository.save(memberPoint);
+
+        Notification notification = new Notification();
+        notification.setMember(member);
+        notificationRepository.save(notification);
+    }
+
+    /**
+     * 회원의 인증 상태를 비활성화.
+     * @param email
+     * @param isVerified
+     */
+    @Transactional
+    public void updateMemberVerifyStatus(String email, Boolean isVerified) {
+        Member member = memberRepository.findByEmailIgnoreCase(email);
         member.setIsVerified(isVerified);
         memberRepository.save(member);
     }
@@ -307,7 +330,6 @@ public class MemberService {
                 ResponseCode.NOT_FOUND_MEMBER));
 
         // 요청에 반드시 포함되는 필드
-        targetMember.setName(updatedMemberDTO.getName());
         if(!targetMember.getNickname().equals(updatedMemberDTO.getNickname()) && isNicknameExists(updatedMemberDTO.getNickname())){
             throw new CommonException(ResponseCode.CONFLICT_EXIST_MEMBER);
         }
@@ -354,11 +376,16 @@ public class MemberService {
         Member member = memberRepository.findByEmailAndIsActive(userEmail, true)
             .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
 
+        List<SocialAccount> socialAccount = socialAccountRepository.findAllByMember(member);
+
         // 소셜 로그인 회원인 경우 연결 해체 진행
-        if(member.getProvider().equals("google")){
-            googleUnlinkService.unlink(member);
-        } else if (member.getProvider().equals("kakao")){
-            kakaoUnlinkService.unlink(member);
+        for(SocialAccount account : socialAccount){
+            String provider = account.getProvider();
+            if(provider.equals("google")){
+                googleUnlinkService.unlink(member);
+            } else if (provider.equals("kakao")){
+                kakaoUnlinkService.unlink(member);
+            }
         }
 
         memberRepository.softDropMember(userEmail);

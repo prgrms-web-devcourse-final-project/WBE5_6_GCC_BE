@@ -69,8 +69,8 @@ dependencies {
 
     // aws-secret-manager
     // https://mvnrepository.com/artifact/io.awspring.cloud/spring-cloud-aws-starter-secrets-manager
-//    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.0")
-//    implementation("io.awspring.cloud:spring-cloud-aws-starter-secrets-manager")
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.0")
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-secrets-manager")
 
     //mail
     implementation("org.springframework.boot:spring-boot-starter-mail")

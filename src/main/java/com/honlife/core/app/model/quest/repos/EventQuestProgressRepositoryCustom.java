@@ -4,4 +4,6 @@ public interface EventQuestProgressRepositoryCustom {
 
     void softDropByMemberId(Long memberId);
 
+    void softDropByEventId(Long eventId);
+
 }

@@ -87,8 +87,7 @@ public class RoutinePresetService {
      */
     @Transactional(readOnly = true)
     public List<PresetItem> getRoutinePresets(Long categoryId) {
-        List<RoutinePreset> routinePresets = routinePresetRepository.getRoutinePresetByCategoryId(
-            categoryId);
+        List<RoutinePreset> routinePresets = routinePresetRepository.getRoutinePresetByCategoryIdAndIsActive(categoryId, true);
 
         // RoutinePreset 엔티티를 PresetItem로 변환해 리스트로 반환
         return routinePresets.stream().map(routinePreset -> {
@@ -112,6 +111,7 @@ public class RoutinePresetService {
                 .createdAt(routinePreset.getCreatedAt())
                 .updatedAt(routinePreset.getUpdatedAt())
                 .emoji(category.getEmoji())
+                .repeatTerm(routinePreset.getRepeatTerm())
                 .repeatType(
                     routinePreset.getRepeatType() != null ? routinePreset.getRepeatType().name()
                         : null)

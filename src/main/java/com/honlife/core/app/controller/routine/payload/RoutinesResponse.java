@@ -46,6 +46,7 @@ public class RoutinesResponse {
     private LocalDate date;
     private LocalDate initDate;
     private RepeatType repeatType;
+    private Integer repeatTerm;
     private String repeatValue;
 
     public static RoutineResponse from(RoutineItemDTO dto) {
@@ -62,6 +63,7 @@ public class RoutinesResponse {
           .date(dto.getDate())
           .initDate(dto.getInitDate())
           .repeatType(dto.getRepeatType())
+          .repeatTerm(dto.getRepeatTerm())
           .repeatValue(dto.getRepeatValue())
           .build();
     }

@@ -12,9 +12,11 @@ import com.honlife.core.app.model.quest.processor.RoutineCountProcessor;
 import com.honlife.core.infra.event.CommonEvent;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class QuestProgressProcessorRouter {
 
     private final Map<QuestType, QuestProcessor> processorMap;
@@ -42,6 +44,7 @@ public class QuestProgressProcessorRouter {
      * @param progressId
      */
     public void routeAndProcess(QuestDomain domainType, QuestType questType, CommonEvent event, Long progressId) {
+        log.info("QuestProgressProcessorRouter :: routeAndProcess() - domain_type: {}, quest_type: {}, progress_id: {}", domainType, questType, progressId);
         QuestProcessor processor = processorMap.get(questType);
         if (processor == null) {
             throw new IllegalArgumentException("지원하지 않는 도메인/타입 조합입니다.");

@@ -3,6 +3,7 @@ package com.honlife.core.app.controller.auth;
 import com.honlife.core.app.controller.auth.payload.DuplicationCheckRequest;
 import com.honlife.core.app.controller.auth.payload.SignupRequest;
 import com.honlife.core.app.controller.auth.payload.VerifyEmailRequest;
+import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.app.model.mail.MailService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.infra.response.ResponseCode;
@@ -100,7 +101,7 @@ public class AuthController {
 
         try {
             String userEmail = emailRequest.getEmail();
-            memberService.updateMemberStatus(userEmail, false, true);  // 인증 상태 비활성화
+            memberService.updateMemberVerifyStatus(userEmail, false);  // 인증 상태 비활성화
             mailService.sendVerificationEmail(userEmail);
             return ResponseEntity.ok(CommonApiResponse.noContent());
         } catch (MessagingException | IOException e) {  // 메일 전송에 실패한 경우
@@ -147,7 +148,7 @@ public class AuthController {
         String email = duplicationCheckRequest.getEmail();
         String nickname = duplicationCheckRequest.getNickname();
         if(email != null && nickname == null){
-            if(memberService.isEmailExists(email, true))
+            if(memberService.isEmailExists(email, false))
                 return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", true)));
             return ResponseEntity.ok(CommonApiResponse.success(Map.of("isDuplicated", false)));
         } else if (email == null && nickname != null){

@@ -1,7 +1,5 @@
 package com.honlife.core.app.model.routine.service;
 
-import com.honlife.core.app.model.category.dto.CategoryDTO;
-import com.honlife.core.app.model.category.service.CategoryService;
 import com.honlife.core.app.model.routine.code.RepeatType;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.app.controller.routine.payload.RoutineUpdateRequest;
@@ -11,13 +9,14 @@ import com.honlife.core.infra.response.ResponseCode;
 import com.honlife.core.app.controller.routine.payload.RoutineSaveRequest;
 import com.honlife.core.app.model.routine.dto.RoutineDetailDTO;
 import com.honlife.core.app.model.routine.dto.RoutineItemDTO;
-import com.honlife.core.infra.error.exceptions.CommonException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.honlife.core.app.model.category.domain.Category;
 import com.honlife.core.app.model.category.repos.CategoryRepository;
@@ -31,21 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class RoutineService {
 
     private final RoutineRepository routineRepository;
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
     private final RoutineScheduleRepository routineScheduleRepository;
-
-    public RoutineService(final RoutineRepository routineRepository,
-            final MemberRepository memberRepository, final CategoryRepository categoryRepository,
-            final RoutineScheduleRepository routineScheduleRepository) {
-        this.routineRepository = routineRepository;
-        this.memberRepository = memberRepository;
-        this.categoryRepository = categoryRepository;
-        this.routineScheduleRepository = routineScheduleRepository;
-    }
 
   /**
    * 사용자 일주일 루틴 조회 입니다
@@ -264,20 +255,27 @@ public class RoutineService {
     routineRepository.save(routine);
 
     // 오늘이 루틴에 해당하는 날짜인지 확인
-  if(!routineSaveRequest.getInitDate().isAfter(LocalDate.now()) && routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
-      isToday(routine, LocalDate.now())){
-      boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, LocalDate.now());
-        if (!exists) {
-        RoutineSchedule schedule = RoutineSchedule.builder()
-            .scheduledDate(LocalDate.now())
-            .isDone(false)
-            .routine(routine)
-            .build();
-        routineScheduleRepository.save(schedule);
+      createTodayRoutine(routine);
   }
 
+    /**
+     * 생성 수정 시에 오늘 루틴이 추가되어야 할 경우 추가합니다.
+     * @param routine 루틴 데이터
+     */
+    private void createTodayRoutine(Routine routine) {
+        if(!routine.getInitDate().isAfter(LocalDate.now()) && routine.getRepeatType().isMatched(LocalDate.now(), routine.getRepeatValue()) &&
+            isToday(routine, LocalDate.now())){
+            boolean exists = routineScheduleRepository.existsByRoutineAndScheduledDate(routine, LocalDate.now());
+              if (!exists) {
+              RoutineSchedule schedule = RoutineSchedule.builder()
+                  .scheduledDate(LocalDate.now())
+                  .isDone(false)
+                  .routine(routine)
+                  .build();
+              routineScheduleRepository.save(schedule);
+              }
+          }
     }
-  }
 
     /**
      * term 을 확인해서 오늘이 루틴을 행하는 날인지 확인합니다.
@@ -317,13 +315,19 @@ public class RoutineService {
       routine.setContent(request.getName());
       routine.setTriggerTime(request.getTriggerTime());
       routine.setIsImportant(request.getIsImportant());
-      routine.setRepeatType(request.getRepeatType());
-      routine.setRepeatValue(request.getRepeatValue());
+      if(request.getRepeatType() != null){
+        routine.setRepeatType(request.getRepeatType());
+      }
+      if(request.getRepeatValue() != null && !request.getRepeatValue().isBlank()){
+        routine.setRepeatValue(request.getRepeatValue());
+      }
       routine.setInitDate(request.getInitDate());
-      routine.setRepeatTerm(request.getRepeatTerm());
+      if(request.getRepeatTerm() != null && request.getRepeatTerm() > 0){
+        routine.setRepeatTerm(request.getRepeatTerm());
+      }
       routineRepository.save(routine);
 
-
+      createTodayRoutine(routine);
   }
 
 

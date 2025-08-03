@@ -5,11 +5,13 @@ import com.honlife.core.infra.event.CommonEvent;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CompleteCountProcessor implements QuestProcessor{
 
     private final RoutineScheduleRepository routineScheduleRepository;
@@ -29,7 +31,10 @@ public class CompleteCountProcessor implements QuestProcessor{
             LocalDate.now(), event.getMemberEmail());
 
         // 완료되지 않은 루틴이 있다면 return
-        if(notCompletedRoutine > 0) return;
+        if(notCompletedRoutine > 0 && event.getIsDone()) {
+            log.info("process :: Not completed routine left");
+            return;
+        }
 
         commonQuestProcessor.updateQuestProgress(questDomain, progressId, event.getIsDone());
     }

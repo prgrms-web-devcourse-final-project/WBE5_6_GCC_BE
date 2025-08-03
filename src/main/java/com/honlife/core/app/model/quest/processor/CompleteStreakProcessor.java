@@ -35,9 +35,10 @@ public class CompleteStreakProcessor implements QuestProcessor {
         // 월요일이 아니라면 전날 루틴이 100%달성인지 확인
         // 아니라면 진행도 초기화
         if (
-            (today != monday) &&
-            (routineScheduleRepository
+            (today != monday)
+                && (routineScheduleRepository
                 .getCountOfNotCompletedMemberSchedule(today.minusDays(1), userEmail) > 0)
+                && event.getIsDone()
         ) {
             commonQuestProcessor.checkAndResetProgress(questDomain, progressId);
         }

@@ -21,4 +21,13 @@ public class EventQuestProgressRepositoryCustomImpl implements EventQuestProgres
             .where(eventQuestProgress.member.id.eq(memberId))
             .execute();
     }
+
+    @Override
+    public void softDropByEventId(Long eventId) {
+        queryFactory
+            .update(eventQuestProgress)
+            .set(eventQuestProgress.isActive, false)
+            .where(eventQuestProgress.eventQuest.id.eq(eventId))
+            .execute();
+    }
 }

@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.oauth2.dto;
+package com.honlife.core.infra.oauth2.dto;
 
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,15 @@ public class KakaoUserDetails implements OAuth2UserInfo {
 
     @Override
     public String getEmail() {
-        return (String) ((Map<?, ?>) attributes.get("kakao_account")).get("email");
+        Object kakaoAccountObj = attributes.get("kakao_account");
+        if (kakaoAccountObj instanceof Map<?, ?> kakaoAccount) {
+            Object emailObj = kakaoAccount.get("email");
+            if (emailObj != null) {
+                return emailObj.toString();
+            }
+        }
+        return null; // 또는 예외 발생
+//        return (String) ((Map<?, ?>) attributes.get("kakao_account")).get("email");
 //        return null;
     }
 

@@ -27,7 +27,7 @@ public class Scheduler {
 
   /** 오늘 날짜 기준으로 자정이 되면 해당 날짜에 해당하는 스케줄러를 추가해줍니다*/
   @Transactional
-  @Scheduled(cron = "0 0 0 * * ?")
+  @Scheduled(cron = "0 30 0 * * ?", zone = "Asia/Seoul")
   public void updateStatus() {
 
     LocalDate today = LocalDate.now();
@@ -35,7 +35,7 @@ public class Scheduler {
     routineScheduleService.createSchedule(today);
 
   }
-  @Scheduled(cron = "0 0 9,15,21 * * ?")// 오전 9시, 오후 3시, 밤 9시
+  @Scheduled(cron = "0 0 9,15,21 * * ?", zone = "Asia/Seoul")// 오전 9시, 오후 3시, 밤 9시
   public void checkAndNotifyIncompleteRoutines() {
 
     List<Member> members = memberRepository.findAll();

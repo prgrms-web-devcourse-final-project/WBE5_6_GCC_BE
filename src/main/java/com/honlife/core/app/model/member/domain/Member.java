@@ -1,13 +1,17 @@
 package com.honlife.core.app.model.member.domain;
 
+import com.honlife.core.infra.oauth2.domain.SocialAccount;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,12 +54,6 @@ public class Member extends BaseEntity {
     @Column
     private String password;
 
-    @Column
-    private String provider;
-
-    @Column
-    private String providerId;
-
     @Column(nullable = false, length = 50)
     private String name;
 
@@ -78,5 +76,8 @@ public class Member extends BaseEntity {
     @Builder.Default
     @Column(nullable = false)
     private Boolean isVerified = false; // init value
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<SocialAccount> socialAccount;
 
 }

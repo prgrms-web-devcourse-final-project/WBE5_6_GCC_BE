@@ -1,9 +1,8 @@
-package com.honlife.core.app.model.oauth2.service;
+package com.honlife.core.infra.oauth2.service;
 
 import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.app.model.oauth2.domain.OAuth2AccessToken;
-import com.honlife.core.app.model.oauth2.repos.OAuth2AccessTokenRepository;
+import com.honlife.core.infra.oauth2.domain.SocialAccount;
+import com.honlife.core.infra.oauth2.repos.SocialAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,19 +20,19 @@ import java.util.Optional;
 public class KakaoUnlinkService {
 
     private final RestTemplate restTemplate;
-    private final OAuth2AccessTokenRepository oauth2AccessTokenRepository;
+    private final SocialAccountRepository socialAccountRepository;
 
     // 회원 탈퇴 시 카카오 연동 해제
     public void unlink(Member member) {
 
-        Optional<OAuth2AccessToken> oauthAccessTokenOptional = oauth2AccessTokenRepository.findByMemberAndProvider(member, "kakao");
+        Optional<SocialAccount> oauthAccessTokenOptional = socialAccountRepository.findByMemberAndProvider(member, "kakao");
 
         if (oauthAccessTokenOptional.isEmpty()) {
             throw new RuntimeException("카카오 Access Token을 찾을 수 없습니다.");
         }
 
-        OAuth2AccessToken oauthAccessToken = oauthAccessTokenOptional.get();
-        String accessTokenValue = oauthAccessToken.getAccessTokenValue();
+        SocialAccount oauthAccessToken = oauthAccessTokenOptional.get();
+        String accessTokenValue = oauthAccessToken.getAccessToken();
 
         // 카카오 unlink API 호출 (Access Token 사용)
         String unlinkUrl = "https://kapi.kakao.com/v1/user/unlink";
@@ -50,7 +49,7 @@ public class KakaoUnlinkService {
                 throw new RuntimeException("카카오 연결 해제 실패: " + response.getBody());
             }
             // 연동 해제 성공 시, DB에서 Access Token 정보 삭제
-            oauth2AccessTokenRepository.delete(oauthAccessToken);
+            socialAccountRepository.delete(oauthAccessToken);
             // 회원 정보 삭제 (필요시)
             // memberRepository.delete(member);
         } catch (Exception e) {

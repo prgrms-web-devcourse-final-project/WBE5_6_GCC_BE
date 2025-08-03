@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.quest.domain;
+package com.honlife.core.infra.oauth2.domain;
 
 import com.honlife.core.app.model.member.domain.Member;
 import jakarta.persistence.Column;
@@ -10,13 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.honlife.core.app.model.common.BaseEntity;
-
 
 @Entity
 @Getter
@@ -24,36 +23,36 @@ import com.honlife.core.app.model.common.BaseEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventQuestProgress extends BaseEntity {
+public class SocialAccount {
 
     @Id
     @Column(nullable = false, updatable = false)
     @SequenceGenerator(
-        name = "event_quest_progress_sequence",
-        sequenceName = "event_quest_progress_sequence",
+        name = "social_account_sequence",
+        sequenceName = "social_account_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "event_quest_progress_sequence"
+        generator = "social_account_sequence"
     )
     private Long id;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Integer progress = 0;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean isDone = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_quest_id", nullable = false)
-    private EventQuest eventQuest;
+    @Column(nullable = false)
+    private String provider;
+
+    @Column(nullable = false)
+    private String providerId;
+
+    @Column(length = 500) // Access Token 값
+    private String accessToken; // 필드명 변경
+
+    @Column
+    private Instant expiryDate; // 토큰 만료 일시
 
 }

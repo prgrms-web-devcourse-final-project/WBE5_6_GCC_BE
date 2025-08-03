@@ -38,6 +38,8 @@ public class RoutinePresetsResponse {
 
         private String repeatType;
 
+        private Integer repeatTerm;
+
         private String repeatValue;
 
         private LocalDate initDate;

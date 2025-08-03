@@ -31,6 +31,8 @@ public class RoutineDetailResponse {
 
     private RepeatType repeatType;
 
+    private Integer repeatTerm;
+
     private String repeatValue;
 
     private String emoji;
@@ -47,6 +49,7 @@ public class RoutineDetailResponse {
             .triggerTime(dto.getTriggerTime())
             .isImportant(dto.getIsImportant())
             .repeatType(dto.getRepeatType())
+            .repeatTerm(dto.getRepeatTerm())
             .repeatValue(dto.getRepeatValue())
             .emoji(dto.getEmoji())
             .build();

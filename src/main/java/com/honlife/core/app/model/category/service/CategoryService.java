@@ -208,6 +208,9 @@ public class CategoryService {
      */
     @Transactional
     public void createCategory(CategorySaveRequest categorySaveRequest, String userEmail) {
+        if(categorySaveRequest.getCategoryType()==CategoryType.DEFAULT)
+            throw new CommonException(ResponseCode.BAD_REQUEST);
+
         // 부모 카테고리 정보 가져오기
         Category majorCategory = null;
 
@@ -237,6 +240,11 @@ public class CategoryService {
      */
     @Transactional
     public void updateCategory(Long categoryId, String userEmail, CategorySaveRequest categorySaveRequest) {
+        Category targetCategory = categoryRepository.findCategoryById(categoryId, userEmail)
+            .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
+        if(targetCategory.getType()==CategoryType.DEFAULT)
+            throw new CommonException(ResponseCode.BAD_REQUEST);
+
         // 부모 카테고리 정보 가져오기
         Category majorCategory = null;
 
@@ -245,9 +253,6 @@ public class CategoryService {
             majorCategory = categoryRepository.findCategoryById(categorySaveRequest.getParentId(), userEmail)
                     .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
         }
-
-        Category targetCategory = categoryRepository.findCategoryById(categoryId, userEmail)
-            .orElseThrow(()->new CommonException(ResponseCode.NOT_FOUND_CATEGORY));
 
         targetCategory.setName(categorySaveRequest.getCategoryName());
         targetCategory.setType(categorySaveRequest.getCategoryType());

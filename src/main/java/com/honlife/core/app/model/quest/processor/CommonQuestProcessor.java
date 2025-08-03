@@ -12,11 +12,14 @@ import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommonQuestProcessor {
 
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
@@ -48,21 +51,6 @@ public class CommonQuestProcessor {
         }
     }
 
-    @Transactional
-    protected void checkAndSendSocket(EventQuestProgress progress, Integer target) {
-        if(progress.getProgress().equals(target)) {
-            String userEmail = progress.getMember().getEmail();
-            notifyPublisher.saveNotifyAndSendSse(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
-        }
-    }
-
-    @Transactional
-    protected void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
-        if(progress.getProgress().equals(target)) {
-            String userEmail = progress.getMember().getEmail();
-            notifyPublisher.saveNotifyAndSendSse(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
-        }
-    }
 
     /**
      * 루틴의 카테고리와 퀘스트의 카테고리가 같을 때 진행도를 처리하는 매서드
@@ -121,6 +109,35 @@ public class CommonQuestProcessor {
         }
     }
 
+    // 이벤트 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
+    // 새로운 DB 커넥션과 트랜잭션을 열어서, 예외 발생시 진행도 처리 Transaction이 RollBack 되는 것을 방지
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void checkAndSendSocket(EventQuestProgress progress, Integer target) {
+        if(progress.getProgress().equals(target)) {
+            try{
+                String userEmail = progress.getMember().getEmail();
+              notifyPublisher.saveNotifyAndSendSse(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
+            } catch (Exception e) {
+                log.error("checkAndSendSocket :: Exception occurred");
+            }
+        }
+    }
+
+    // 주간 퀘스트 달성도가 100이 되었을 때, 알림 전송을 위한 매서드 호출
+    // 새로운 DB 커넥션과 트랜잭션을 열어서, 예외 발생시 진행도 처리 Transaction이 RollBack 되는 것을 방지
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void checkAndSendSocket(WeeklyQuestProgress progress, Integer target) {
+        if(progress.getProgress().equals(target)) {
+            try{
+                String userEmail = progress.getMember().getEmail();
+              notifyPublisher.saveNotifyAndSendSse(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
+            }
+            catch(Exception e) {
+                log.error("checkAndSendSocket :: Exception occurred");
+            }
+        }
+    }
+
     /**
      * 루틴 완료 여부에 따라 진행도를 올리거나 내리는 매서드
      *
@@ -132,7 +149,8 @@ public class CommonQuestProcessor {
     public static void updateProgress(int currentProgress, int target, boolean isDone,
         Consumer<Integer> setter) {
         // 이미 기준을 충족한 경우
-        if (currentProgress == target) {
+        if (currentProgress >= target && isDone) {
+            log.info("updateProgress :: Abort update --- current_progress={}, target={}, is_done={}", currentProgress, target, isDone);
             return;
         }
 
@@ -142,7 +160,9 @@ public class CommonQuestProcessor {
         } else {
             progress++;
         }
-        setter.accept(progress);
+
+        // 혹시라도 오류가 발생하여 진행도가 0이하로 내려가지 않도록 방지
+        setter.accept(Math.max(progress, 0));
     }
 
 }

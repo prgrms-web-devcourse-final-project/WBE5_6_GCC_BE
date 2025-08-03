@@ -6,12 +6,14 @@ import com.honlife.core.app.model.routine.domain.RoutineSchedule;
 import com.honlife.core.infra.event.CommonEvent;
 import com.honlife.core.app.model.routine.repos.RoutineScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RoutineEventListener {
 
     private final WeeklyQuestProgressService weeklyQuestProgressService;
@@ -25,6 +27,7 @@ public class RoutineEventListener {
      */
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleRoutineCompletionChanged(CommonEvent event) {
+
         // 루틴 관련 이벤트가 아닌 경우 리턴
         Long routineScheduleId = event.getRoutineScheduleId();
         if(routineScheduleId == null) {

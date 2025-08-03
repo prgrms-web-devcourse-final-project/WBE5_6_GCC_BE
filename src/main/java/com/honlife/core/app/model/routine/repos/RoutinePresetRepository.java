@@ -18,7 +18,7 @@ public interface RoutinePresetRepository extends JpaRepository<RoutinePreset, Lo
      * @param categoryId 카테고리 아이디
      * @return {@link RoutinePreset} 을 리스트로 반환합니다.
      */
-    List<RoutinePreset> getRoutinePresetByCategoryId(Long categoryId);
+    List<RoutinePreset> getRoutinePresetByCategoryIdAndIsActive(Long categoryId, Boolean isActive);
 
     /** 지연 로딩으로 인해 fetchjoin을 사용하였습니다 **/
     @Query("SELECT rp FROM RoutinePreset rp JOIN FETCH rp.category WHERE (:categoryId IS NULL OR rp.category.id = :categoryId)")

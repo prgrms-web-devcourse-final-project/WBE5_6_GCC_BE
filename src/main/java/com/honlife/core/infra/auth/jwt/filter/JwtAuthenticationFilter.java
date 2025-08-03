@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final RefreshTokenService refreshTokenService;
     private final UserBlackListRepository userBlackListRepository;
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Value("${app.domain-only}")
+    private String appDomain;
     
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -101,12 +105,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         RefreshToken newRefreshToken = refreshTokenService.renewingToken(refreshToken.getAtId(), newAccessToken.getJti());
         
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
-            newAccessToken.getToken(), jwtTokenProvider.getAccessTokenExpiration());
+            newAccessToken.getToken(), jwtTokenProvider.getAccessTokenExpiration(), appDomain);
         
         ResponseCookie refreshTokenCookie = TokenCookieFactory.create(
             AuthToken.REFRESH_TOKEN.name(),
             newRefreshToken.getToken(),
-            newRefreshToken.getTtl());
+            newRefreshToken.getTtl(), appDomain);
         
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
