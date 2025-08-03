@@ -69,7 +69,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Member member = memberRepository.findByEmailIgnoreCase(userInfo.getEmail());
         if (member == null) {
             member = Member.builder()
-                .email(email)
+                .email(userInfo.getEmail())
                 .name(userInfo.getName())
                 .nickname("USER_" + UUID.randomUUID())
                 .isVerified(true)
@@ -84,7 +84,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             userInfo.getProvider()).orElse(null);
         if (socialAccount == null) {
             socialAccount = SocialAccount.builder()
-                .provider(provider)
+                .provider(userInfo.getProvider())
                 .providerId(userInfo.getProviderId())
                 .member(member)
                 .build();
