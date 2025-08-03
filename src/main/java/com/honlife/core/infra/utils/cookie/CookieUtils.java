@@ -3,6 +3,7 @@ package com.honlife.core.infra.utils.cookie;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseCookie;
 import org.springframework.util.SerializationUtils;
 import java.util.Base64;
 import java.util.Optional;
@@ -24,26 +25,25 @@ public class CookieUtils {
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(maxAge);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+            .path("/")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None") // SameSite 속성 추가
+            .maxAge(maxAge)
+            .build();
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length > 0) {
-            for (Cookie cookie: cookies) {
-                if (cookie.getName().equals(name)) {
-                    cookie.setValue("");
-                    cookie.setPath("/");
-                    cookie.setMaxAge(0);
-                    response.addCookie(cookie);
-                }
-            }
-        }
+        ResponseCookie cookie = ResponseCookie.from(name, "")
+            .path("/")
+            .maxAge(0)
+            .secure(true)
+            .sameSite("None")
+            .httpOnly(true)
+            .build();
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     public static String serialize(Object object) {
@@ -55,6 +55,4 @@ public class CookieUtils {
         return cls.cast(SerializationUtils.deserialize(
             Base64.getUrlDecoder().decode(cookie.getValue())));
     }
-
-
 }
