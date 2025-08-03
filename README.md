@@ -1,6 +1,8 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=ffb14d&height=150&section=header" />
 
-![logo.png](src/main/resources/static/image/logo.png)
+<div align="center">
+    <img src="src/main/resources/static/image/logo.png" width="500px">
+</div>
 
 # 루티(Routie)
 
