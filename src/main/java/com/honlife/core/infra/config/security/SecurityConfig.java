@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.honlife.core.infra.auth.jwt.JwtAuthenticationEntryPoint;
 import com.honlife.core.infra.auth.jwt.filter.JwtAuthenticationFilter;
 import com.honlife.core.infra.auth.jwt.filter.JwtExceptionFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -46,7 +47,7 @@ public class SecurityConfig {
             .logout(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(
                 (requests) -> requests
-                    .requestMatchers("/", "/error", "/api/v1/check/**", "/api/v1/signin",
+                    .requestMatchers("/", "/error", "/favicon.ico", "/api/v1/check/**", "/api/v1/signin",
                         "/api/v1/signup", "/api/v1/auth/**").permitAll()
                     .requestMatchers("/login/oauth2/code/**", "/oauth2/authorization/**").permitAll()
                     .anyRequest().authenticated()

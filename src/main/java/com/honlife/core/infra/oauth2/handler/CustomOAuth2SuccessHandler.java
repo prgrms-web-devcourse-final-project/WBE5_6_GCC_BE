@@ -52,7 +52,14 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Authentication authentication
     ) throws IOException, ServletException {
 
+        // OAuth2User 로 캐스팅 후 인증된 사용자 정보를 가져온다.
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
+
+        // 사용자 이메일을 가져온다.
+        String email = user.getAttribute("email");
+        // 서비스 제공 플랫폼(GOOGLE, KAKAO)이 어디인지 가져온다.
+        String provider = user.getAttribute("provider");
+
         OAuth2UserInfo userInfo = OAuth2UserInfo.createUserInfo(request.getRequestURI(), user);
         log.info("onAuthenticationSuccess :: New OAuth2 Login request --- emaile = {}, user_name = {}", userInfo.getEmail(), user.getName());
 
@@ -62,7 +69,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Member member = memberRepository.findByEmailIgnoreCase(userInfo.getEmail());
         if (member == null) {
             member = Member.builder()
-                .email(userInfo.getEmail())
+                .email(email)
                 .name(userInfo.getName())
                 .nickname("USER_" + UUID.randomUUID())
                 .isVerified(true)
@@ -77,7 +84,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             userInfo.getProvider()).orElse(null);
         if (socialAccount == null) {
             socialAccount = SocialAccount.builder()
-                .provider(userInfo.getProvider())
+                .provider(provider)
                 .providerId(userInfo.getProviderId())
                 .member(member)
                 .build();

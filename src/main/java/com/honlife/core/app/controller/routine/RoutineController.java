@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/v1/routines", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Slf4j
 public class RoutineController {
 
     private final RoutineService routineService;
@@ -49,16 +51,20 @@ public class RoutineController {
         @AuthenticationPrincipal UserDetails userDetails,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-            if (date == null) {
-                date = LocalDate.now();
-            }
 
-            String userEmail = userDetails.getUsername();
+        // 로그인 후, 사용자 정보가 잘 불러와지는지 확인용
+        log.info("getWeeklyUserRoutines :: user_email = {}", userDetails.getUsername());
 
-            Map<LocalDate, List<RoutineItemDTO>> routines = routineService.getUserWeeklyRoutines(userEmail, date);
-            RoutinesResponse response = RoutinesResponse.fromDTO(routines);
+        if (date == null) {
+            date = LocalDate.now();
+        }
 
-            return ResponseEntity.ok(CommonApiResponse.success(response));
+        String userEmail = userDetails.getUsername();
+
+        Map<LocalDate, List<RoutineItemDTO>> routines = routineService.getUserWeeklyRoutines(userEmail, date);
+        RoutinesResponse response = RoutinesResponse.fromDTO(routines);
+
+        return ResponseEntity.ok(CommonApiResponse.success(response));
 
     }
 
