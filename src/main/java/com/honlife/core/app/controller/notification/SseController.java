@@ -6,6 +6,7 @@ import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.app.model.notification.service.NotifyListService;
 import com.honlife.core.app.model.notification.service.SseService;
 import com.honlife.core.infra.response.CommonApiResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +31,13 @@ public class SseController {
 
 
   @GetMapping(value = "/subscribe", produces = "text/event-stream")
-  public SseEmitter subscribe(@RequestParam String email, @AuthenticationPrincipal UserDetails userDetails) {
+  public SseEmitter subscribe(@RequestParam String email, @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) {
+    response.setHeader("Access-Control-Allow-Origin", "https://littlestep-routie.vercel.app");
+    response.setHeader("Access-Control-Allow-Credentials", "true");
+    response.setHeader("Cache-Control", "no-cache");
+    response.setHeader("Content-Type", "text/event-stream");
+    response.setHeader("Connection", "keep-alive");
+
 
     MemberDTO member = memberService.findMemberByEmail(userDetails.getUsername());
     return sseService.connect(member.getId());
