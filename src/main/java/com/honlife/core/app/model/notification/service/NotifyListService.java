@@ -9,10 +9,10 @@ import com.honlife.core.app.model.notification.repos.NotificationRepository;
 import com.honlife.core.app.model.notification.repos.NotifyListRepository;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -77,16 +77,9 @@ public class NotifyListService {
 
 
 
-  public void markAllAsRead(MemberDTO member) {
-
-    Member memberEntity = memberRepository.findById(member.getId())
-            .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_MEMBER));
-
-    notifyListRepository.markAllAsReadByMember(memberEntity);
-  }
 
   public boolean hasUnread(Long memberId) {
-    return notifyListRepository.existsByMemberIdAndIsReadFalse(memberId);
+    return notifyListRepository.existsByMember_IdAndIsReadFalse(memberId);
   }
 
 }
