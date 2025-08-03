@@ -15,7 +15,7 @@ public class CustomOAuth2FailureHandler extends SimpleUrlAuthenticationFailureHa
 
     private static final Logger log = LoggerFactory.getLogger(CustomOAuth2FailureHandler.class);
 
-    @Value("${front-prod.domain}")
+    @Value("${front-server.prod-domain}")
     private String frontDomain;
 
     @Override
