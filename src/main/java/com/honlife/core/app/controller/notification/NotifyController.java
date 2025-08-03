@@ -1,8 +1,11 @@
 package com.honlife.core.app.controller.notification;
 
 import com.honlife.core.app.controller.notification.payload.NotifyListResponse;
+import com.honlife.core.app.model.member.model.MemberDTO;
+import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.app.model.notification.dto.NotifyListDTO;
 import com.honlife.core.app.model.notification.service.NotifyListService;
+import com.honlife.core.app.model.notification.service.SseService;
 import com.honlife.core.infra.response.CommonApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotifyController {
 
   private final NotifyListService notifyListService;
-
+  private final SseService<Object> sseService;
+  private final MemberService memberService;
 
 
   /**
-   * 어떤 알림 읽었는지 보내주는 api
+   * 단건 조회
    */
   @PatchMapping("/{id}")
   public ResponseEntity<CommonApiResponse<Void>> readNotification(
@@ -37,7 +41,12 @@ public class NotifyController {
   ) {
 
     String userEmail = userDetails.getUsername();
+
+    MemberDTO dto = memberService.findMemberByEmail(userEmail);
+    sseService.sendTo(dto.getId());
+
     notifyListService.readNotification(userEmail, notifyId);
+
 
     return ResponseEntity.ok(CommonApiResponse.noContent());
 
@@ -52,7 +61,9 @@ public class NotifyController {
   ) {
 
     String userEmail = userDetails.getUsername();
+    MemberDTO dto = memberService.findMemberByEmail(userEmail);
     notifyListService.readAllNotification(userEmail);
+    sseService.sendTo(dto.getId());
 
     return ResponseEntity.ok(CommonApiResponse.noContent());
 

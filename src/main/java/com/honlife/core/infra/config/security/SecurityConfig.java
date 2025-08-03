@@ -54,6 +54,8 @@ public class SecurityConfig {
                     .requestMatchers("/", "/error", "/favicon.ico", "/api/v1/check/**", "/api/v1/signin",
                         "/api/v1/signup", "/api/v1/auth/**").permitAll()
                     .requestMatchers("/login/oauth2/code/**", "/oauth2/authorization/**").permitAll()
+                    .requestMatchers("/api/v1/notify/subscribe/**").permitAll()
+                    .requestMatchers("/api/**").authenticated()
                     .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
@@ -71,8 +73,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-            .requestMatchers("/ws/**", "/topic/**");
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
     @Bean
