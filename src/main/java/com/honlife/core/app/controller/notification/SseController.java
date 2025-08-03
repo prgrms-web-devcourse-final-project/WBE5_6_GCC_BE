@@ -31,7 +31,7 @@ public class SseController {
 
 
   @GetMapping(value = "/subscribe", produces = "text/event-stream")
-  public SseEmitter subscribe(@RequestParam String email, @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) {
+  public SseEmitter subscribe(@RequestParam String email,HttpServletResponse response) {
     response.setHeader("Access-Control-Allow-Origin", "https://littlestep-routie.vercel.app");
     response.setHeader("Access-Control-Allow-Credentials", "true");
     response.setHeader("Cache-Control", "no-cache");
@@ -39,7 +39,7 @@ public class SseController {
     response.setHeader("Connection", "keep-alive");
 
 
-    MemberDTO member = memberService.findMemberByEmail(userDetails.getUsername());
+    MemberDTO member = memberService.findMemberByEmail(email);
     return sseService.connect(member.getId());
   }
 
