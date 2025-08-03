@@ -1,6 +1,8 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=ffb14d&height=150&section=header" />
 
-![logo.svg](.github/images/logo.svg)
+<div align="center">
+    <img src="src/main/resources/static/image/logo.png" width="500px">
+</div>
 
 # 루티(Routie)
 
@@ -69,7 +71,7 @@
 ---
 
 ### ⚙️ 기술 스택
-
+<div>
 <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
 <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white" />
 <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&amp;logo=springsecurity&amp;logoColor=white">
@@ -86,8 +88,10 @@
 <img src="https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white" />
 <img src="https://img.shields.io/badge/NGNIX-429345?style=for-the-badge&logo=ngnix&logoColor=white" />
 <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white" />
+</div>
 
 ---
+
 ### 💾 ERD
 ![erd.png](.github/images/erd.png)
 

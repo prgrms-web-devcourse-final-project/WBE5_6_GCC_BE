@@ -9,6 +9,7 @@ import com.honlife.core.app.model.member.domain.MemberItem;
 import com.honlife.core.app.model.member.service.MemberItemService;
 import com.honlife.core.infra.error.exceptions.CommonException;
 import com.honlife.core.infra.response.ResponseCode;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,7 +117,7 @@ public class AdminItemService {
         Item item = itemService.getItemById(itemId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
 
-        item.setKey(item.getKey()+"_old");
+        item.setKey(item.getKey()+"_deleted_"+ LocalDateTime.now());
 
         item.setIsActive(false);
 
