@@ -39,7 +39,7 @@ public class Item extends BaseEntity {
     )
     private Long id;
 
-    @Column( unique = true,nullable = false, length = 50)
+    @Column( unique = true,nullable = false, length = 80)
     private String key;
 
     @Column(length = 50,nullable = false)
