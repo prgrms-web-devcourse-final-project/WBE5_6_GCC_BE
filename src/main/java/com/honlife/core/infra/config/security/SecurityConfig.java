@@ -2,6 +2,7 @@ package com.honlife.core.infra.config.security;
 
 import com.honlife.core.infra.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.honlife.core.infra.oauth2.handler.CustomOAuth2SuccessHandler;
+import com.honlife.core.infra.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.honlife.core.infra.auth.jwt.JwtAuthenticationEntryPoint;
 import com.honlife.core.infra.auth.jwt.filter.JwtAuthenticationFilter;
 import com.honlife.core.infra.auth.jwt.filter.JwtExceptionFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -34,6 +34,7 @@ public class SecurityConfig {
     private final JwtExceptionFilter jwtExceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final CustomOAuth2UserService  customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -53,7 +54,10 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
-                .successHandler(customOAuth2SuccessHandler))
+                .authorizationEndpoint(endpoint -> endpoint.authorizationRequestRepository(authorizationRequestRepository()))
+                .successHandler(customOAuth2SuccessHandler)
+                .userInfoEndpoint(endPointConfig -> endPointConfig.userService(customOAuth2UserService))
+            )
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);

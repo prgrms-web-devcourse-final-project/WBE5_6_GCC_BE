@@ -2,29 +2,24 @@ package com.honlife.core.infra.oauth2.handler;
 
 import com.honlife.core.app.model.auth.AuthService;
 import com.honlife.core.app.model.auth.code.AuthToken;
-import com.honlife.core.app.model.auth.code.Role;
 import com.honlife.core.app.model.auth.dto.TokenDto;
 import com.honlife.core.app.model.loginLog.service.LoginLogService;
 import com.honlife.core.app.model.member.domain.Member;
 import com.honlife.core.app.model.member.repos.MemberRepository;
-import com.honlife.core.app.model.oauth2.domain.SocialAccount;
-import com.honlife.core.app.model.oauth2.dto.OAuth2UserInfo;
-import com.honlife.core.app.model.oauth2.repos.SocialAccountRepository;
+import com.honlife.core.infra.oauth2.CustomOAuth2UserDetails;
+import com.honlife.core.infra.oauth2.repos.SocialAccountRepository;
 import com.honlife.core.infra.auth.jwt.JwtTokenProvider;
 import com.honlife.core.infra.auth.jwt.TokenCookieFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -52,50 +47,18 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Authentication authentication
     ) throws IOException, ServletException {
 
-        // OAuth2User 로 캐스팅 후 인증된 사용자 정보를 가져온다.
-        OAuth2User user = (OAuth2User) authentication.getPrincipal();
+        // 1. Authentication 객체에서 사용자 정보 가져오기
+        CustomOAuth2UserDetails userDetails = (CustomOAuth2UserDetails) authentication.getPrincipal();
+        Member member = userDetails.getMember();
+        boolean isNewMember = userDetails.getIsNewMember();
 
-        // 사용자 이메일을 가져온다.
-        String email = user.getAttribute("email");
-        // 서비스 제공 플랫폼(GOOGLE, KAKAO)이 어디인지 가져온다.
-        String provider = user.getAttribute("provider");
+        // 2. 리다이렉트 경로 설정
+        String targetPath = isNewMember ? "/signup?social=true" : "/?social=true";
+        log.info("onAuthenticationSuccess() :: targetPath = {}", targetPath);
 
-        OAuth2UserInfo userInfo = OAuth2UserInfo.createUserInfo(request.getRequestURI(), user);
-        log.info("onAuthenticationSuccess :: New OAuth2 Login request --- emaile = {}, user_name = {}", userInfo.getEmail(), user.getName());
-
-        // 신규회원일때만 추가정보 입력 페이지로 리다이렉트 하기위한 추가 주소 변수
-        String targetPath = "/?social=true";
-
-        Member member = memberRepository.findByEmailIgnoreCase(userInfo.getEmail());
-        if (member == null) {
-            member = Member.builder()
-                .email(userInfo.getEmail())
-                .name(userInfo.getName())
-                .nickname("USER_" + UUID.randomUUID())
-                .isVerified(true)
-                .role(Role.ROLE_USER)
-                .build();
-            memberRepository.save(member);
-            targetPath = "/signup?social=true";
-            log.info("onAuthenticationSuccess :: Saved new member --- email = {}", member.getEmail());
-        }
-
-        SocialAccount socialAccount = socialAccountRepository.findByMemberAndProvider(member,
-            userInfo.getProvider()).orElse(null);
-        if (socialAccount == null) {
-            socialAccount = SocialAccount.builder()
-                .provider(userInfo.getProvider())
-                .providerId(userInfo.getProviderId())
-                .member(member)
-                .build();
-            socialAccountRepository.save(socialAccount);
-            log.info("onAuthenticationSuccess :: Saved new social account --- memberId = {}, provider = {}", member.getId(), socialAccount.getProvider());
-        }
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 3. 토큰 발급 및 쿠키 설정
         String roles =  String.join(",", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
-
-        TokenDto tokenDto = authService.processTokenSignin(userInfo.getEmail(), roles);
+        TokenDto tokenDto = authService.processTokenSignin(member.getEmail(), roles);
 
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(AuthToken.ACCESS_TOKEN.name(),
             tokenDto.getAccessToken(), tokenDto.getExpiresIn(), appDomain);
@@ -106,9 +69,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+        log.info("onAuthenticationSuccess() :: Create token and set cookie complete");
 
         // 로그인시 자동으로 로그인 기록 저장
-        loginLogService.newLog(userInfo.getEmail());
+        loginLogService.newLog(member.getEmail());
 
         getRedirectStrategy().sendRedirect(request, response, frontDomain + targetPath);
     }

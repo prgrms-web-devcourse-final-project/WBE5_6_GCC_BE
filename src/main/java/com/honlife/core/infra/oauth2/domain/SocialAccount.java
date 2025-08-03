@@ -1,4 +1,4 @@
-package com.honlife.core.app.model.oauth2.domain;
+package com.honlife.core.infra.oauth2.domain;
 
 import com.honlife.core.app.model.member.domain.Member;
 import jakarta.persistence.Column;
