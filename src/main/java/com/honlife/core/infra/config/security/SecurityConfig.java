@@ -25,6 +25,7 @@ import com.honlife.core.infra.auth.jwt.JwtAuthenticationEntryPoint;
 import com.honlife.core.infra.auth.jwt.filter.JwtAuthenticationFilter;
 import com.honlife.core.infra.auth.jwt.filter.JwtExceptionFilter;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
