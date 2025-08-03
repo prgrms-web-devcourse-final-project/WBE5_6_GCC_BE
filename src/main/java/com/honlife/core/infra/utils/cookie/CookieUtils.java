@@ -24,24 +24,26 @@ public class CookieUtils {
         return Optional.empty();
     }
 
-    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
             .path("/")
             .httpOnly(true)
             .secure(true)
-            .sameSite("None") // SameSite 속성 추가
+            .sameSite("None")
             .maxAge(maxAge)
+            .domain(domain) // 도메인 속성 추가
             .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
-    public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+    public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name, String domain) {
         ResponseCookie cookie = ResponseCookie.from(name, "")
             .path("/")
             .maxAge(0)
             .secure(true)
             .sameSite("None")
             .httpOnly(true)
+            .domain(domain) // 도메인 속성 추가
             .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
