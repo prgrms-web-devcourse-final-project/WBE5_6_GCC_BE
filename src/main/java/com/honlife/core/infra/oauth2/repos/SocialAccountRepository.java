@@ -1,7 +1,7 @@
-package com.honlife.core.app.model.oauth2.repos;
+package com.honlife.core.infra.oauth2.repos;
 
 import com.honlife.core.app.model.member.domain.Member;
-import com.honlife.core.app.model.oauth2.domain.SocialAccount;
+import com.honlife.core.infra.oauth2.domain.SocialAccount;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

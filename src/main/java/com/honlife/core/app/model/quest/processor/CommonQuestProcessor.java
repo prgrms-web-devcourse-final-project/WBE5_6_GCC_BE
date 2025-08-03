@@ -2,6 +2,7 @@ package com.honlife.core.app.model.quest.processor;
 
 import com.honlife.core.app.model.notification.code.NotificationType;
 import com.honlife.core.app.model.notification.service.NotifyListService;
+import com.honlife.core.app.model.notification.service.NotifyPublisher;
 import com.honlife.core.app.model.quest.code.QuestDomain;
 import com.honlife.core.app.model.quest.domain.EventQuestProgress;
 import com.honlife.core.app.model.quest.domain.WeeklyQuestProgress;
@@ -23,7 +24,8 @@ public class CommonQuestProcessor {
 
     private final WeeklyQuestProgressRepository weeklyQuestProgressRepository;
     private final EventQuestProgressRepository eventQuestProgressRepository;
-    private final NotifyListService notifyListService;
+    private final NotifyPublisher notifyPublisher;
+
 
     /**
      * 단순 진행도를 처리하는 매서드
@@ -49,6 +51,7 @@ public class CommonQuestProcessor {
         }
     }
 
+
     /**
      * 루틴의 카테고리와 퀘스트의 카테고리가 같을 때 진행도를 처리하는 매서드
      *
@@ -67,7 +70,6 @@ public class CommonQuestProcessor {
             if (questCategoryId.equals(routineCategoryId)) {
                 Integer target = progress.getWeeklyQuest().getTarget();
                 updateProgress(progress.getProgress(), target, isDone, progress::setProgress);
-                checkAndSendSocket(progress, target);
             }
         } else if (questDomain.equals(QuestDomain.EVENT)) {
             EventQuestProgress progress = eventQuestProgressRepository.findById(progressId)
@@ -76,7 +78,6 @@ public class CommonQuestProcessor {
             if (questCategoryId.equals(routineCategoryId)) {
                 Integer target = progress.getEventQuest().getTarget();
                 updateProgress(progress.getProgress(), target, isDone, progress::setProgress);
-                checkAndSendSocket(progress, target);
             }
         }
     }
@@ -115,7 +116,7 @@ public class CommonQuestProcessor {
         if(progress.getProgress().equals(target)) {
             try{
                 String userEmail = progress.getMember().getEmail();
-                notifyListService.saveNotifyAndSendSocket(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
+              notifyPublisher.saveNotifyAndSendSse(userEmail, progress.getEventQuest().getName(), NotificationType.QUEST);
             } catch (Exception e) {
                 log.error("checkAndSendSocket :: Exception occurred");
             }
@@ -129,7 +130,7 @@ public class CommonQuestProcessor {
         if(progress.getProgress().equals(target)) {
             try{
                 String userEmail = progress.getMember().getEmail();
-                notifyListService.saveNotifyAndSendSocket(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
+              notifyPublisher.saveNotifyAndSendSse(userEmail, progress.getWeeklyQuest().getName(), NotificationType.QUEST);
             }
             catch(Exception e) {
                 log.error("checkAndSendSocket :: Exception occurred");

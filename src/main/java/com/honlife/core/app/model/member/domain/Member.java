@@ -1,6 +1,6 @@
 package com.honlife.core.app.model.member.domain;
 
-import com.honlife.core.app.model.oauth2.domain.SocialAccount;
+import com.honlife.core.infra.oauth2.domain.SocialAccount;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,7 +9,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import java.util.List;

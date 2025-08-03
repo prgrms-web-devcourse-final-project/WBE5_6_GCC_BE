@@ -115,6 +115,9 @@ public class AdminItemService {
 
         Item item = itemService.getItemById(itemId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
+
+        item.setKey(item.getKey()+"_old");
+
         item.setIsActive(false);
 
         List<MemberItem> memberItems = memberItemService.findAllByItem(item);

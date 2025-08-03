@@ -56,4 +56,12 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> , Routin
      * @return {@link Routine} 를 리스트로 반환
      */
     List<Routine> findAllByCategory_Id(Long categoryId);
+
+  /**
+   * 멤버 이메일로 활성화된 루틴을 모두 찾습니다.
+   * @param memberEmail 멤버 이메일
+   * @param isActive 활성화 여부
+   * @return List<Routine>
+   */
+    List<Routine> findAllByMember_EmailAndIsActive(String memberEmail, Boolean isActive);
 }

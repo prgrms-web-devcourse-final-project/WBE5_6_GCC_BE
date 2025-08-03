@@ -11,6 +11,7 @@ import com.honlife.core.app.model.member.service.MemberBadgeService;
 import com.honlife.core.app.model.member.service.MemberService;
 import com.honlife.core.app.model.notification.code.NotificationType;
 import com.honlife.core.app.model.notification.service.NotifyListService;
+import com.honlife.core.app.model.notification.service.NotifyPublisher;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class BadgeProgressService {
     private final MemberBadgeService memberBadgeService;
     private final NotifyListService notifyListService;
     private final MemberService memberService;
+    private final NotifyPublisher notifyPublisher;
 
     /**
      * 카테고리별 루틴 완료 진행률 증가
@@ -135,7 +137,7 @@ public class BadgeProgressService {
                     String userEmail = memberService.get(memberId).getEmail();
                     String title = badge.getName() + " 배지 달성";
 
-                    notifyListService.saveNotifyAndSendSocket(userEmail, title, NotificationType.BADGE);
+                    notifyPublisher.saveNotifyAndSendSse(userEmail, title, NotificationType.BADGE);
                 }
             }
         }
@@ -158,7 +160,7 @@ public class BadgeProgressService {
                     String userEmail = memberService.get(memberId).getEmail();
                     String title = badge.getName() + " 배지 달성";
 
-                    notifyListService.saveNotifyAndSendSocket(userEmail, title, NotificationType.BADGE);
+                    notifyPublisher.saveNotifyAndSendSse(userEmail, title, NotificationType.BADGE);
                 }
             }
         }
