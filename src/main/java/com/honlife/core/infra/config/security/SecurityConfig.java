@@ -1,6 +1,7 @@
 package com.honlife.core.infra.config.security;
 
 import com.honlife.core.infra.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.honlife.core.infra.oauth2.handler.CustomOAuth2FailureHandler;
 import com.honlife.core.infra.oauth2.handler.CustomOAuth2SuccessHandler;
 import com.honlife.core.infra.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2UserService  customOAuth2UserService;
+    private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -56,6 +58,7 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .authorizationEndpoint(endpoint -> endpoint.authorizationRequestRepository(authorizationRequestRepository()))
                 .successHandler(customOAuth2SuccessHandler)
+                .failureHandler(customOAuth2FailureHandler)
                 .userInfoEndpoint(endPointConfig -> endPointConfig.userService(customOAuth2UserService))
             )
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
