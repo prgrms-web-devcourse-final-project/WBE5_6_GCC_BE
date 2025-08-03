@@ -28,10 +28,7 @@ public class SseController {
   private final MemberService memberService;
   private final NotifyListService notifyListService;
 
-  @CrossOrigin(
-      origins = "http://localhost:3000",
-      allowCredentials = "true"
-  )
+
   @GetMapping(value = "/subscribe", produces = "text/event-stream")
   public SseEmitter subscribe(@RequestParam String email, @AuthenticationPrincipal UserDetails userDetails) {
 
