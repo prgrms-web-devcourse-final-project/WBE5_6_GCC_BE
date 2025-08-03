@@ -31,7 +31,7 @@ public class SseController {
 
 
   @GetMapping(value = "/subscribe", produces = "text/event-stream")
-  public SseEmitter subscribe(@RequestParam String email, HttpServletResponse response) {
+  public SseEmitter subscribe(@RequestParam String email,HttpServletResponse response) {
     response.setHeader("Access-Control-Allow-Origin", "https://littlestep-routie.vercel.app");
     response.setHeader("Access-Control-Allow-Credentials", "true");
     response.setHeader("Cache-Control", "no-cache");
