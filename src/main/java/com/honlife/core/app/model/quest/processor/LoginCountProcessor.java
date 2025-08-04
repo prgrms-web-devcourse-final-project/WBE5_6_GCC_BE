@@ -27,7 +27,7 @@ public class LoginCountProcessor implements QuestProcessor {
         String userEmail = event.getMemberEmail();
         LocalDateTime today = LocalDateTime.now();
         LocalDateTime tomorrow = today.plusDays(1);
-        if(loginLogRepository.findByMember_EmailAndTimeBetween(userEmail, today, tomorrow).isPresent()) return;
+        if(!loginLogRepository.existsByMember_EmailAndTimeBetween(userEmail, today, tomorrow)) return;
 
         commonQuestProcessor.updateQuestProgress(questDomain, progressId, true);
     }
