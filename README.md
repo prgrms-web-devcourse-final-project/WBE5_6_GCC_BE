@@ -1,99 +1,54 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=ffb14d&height=150&section=header" />
+<img src="https://capsule-render.vercel.app/api?type=rect&color=ffb14d&height=150&section=header&text=GCP 배포용" />
 
 <div align="center">
     <img src="src/main/resources/static/image/logo.png" width="500px">
 </div>
 
-# 루티(Routie)
+### ⚠️ 주의사항
 
-> 게임적 요소가 결합된 루틴 관리 플랫폼 **"루티\(Routie)"** 의 백엔드 레포지토리 입니다.
+> 프로그래머스에서 25.08.18 이후 AWS를 지원하지 않음에 따라, 개인 포트폴리오에서의 사용을 위해 GCP에 서버를 올리는 방법을 다룬 내용입니다.
 >
-> \- 데브코드 웹 백엔드 5기 6회차 1팀 깃허브충돌위원회\(WCC) -
+> ⚠️ GCP 신규 사용시 제공되는 무료 크레딧이 있기에 GCP로의 배포를 다루었습니다. 잘못된 생성 또는 크레딧 소진으로 인해 발생하는 비용에 대한 책임을 지지 않습니다.
+> 
+> ⚠️ GCP SecretManager 사용시 6개까지의 시크릿 키만 무료이며, 그 이상의 시크릿 키 등록시 작업 10,000개당 $0.03의 요금이 발생합니다. SecretManger로 인한 비용 발생은 본인부담입니다. 책임지지 않습니다. 
+> 자세한 내용은 [공식문서](https://cloud.google.com/secret-manager/pricing?hl=ko) 를 참고하세요.
+> 
+> ⚠️ 그 외, 배포시에 발생하는 그 어떠한 비용 발생도 책임지지않습니다.
 
-### 🧑🏻‍💻 팀원 소개 :: 깃허브충돌위원회 - 백엔드 팀
+# 1. GCP 준비
 
-<table>
-  <tbody>
-<tr>
-      <td align="center"><b>최대열</b><br>PO</td>
-      <td align="center"><b>정성원</b><br>팀장</td>
-      <td align="center"><b>강민서</b><br>팀원</td>
-      <td align="center"><b>김가희</b><br>팀원</td>
-      <td align="center"><b>오준혁</b><br>팀원</td>
-     <tr/>
+> GCP 신규 사용자 기준으로 작성되었습니다.
 
-<tr>
-          <td align="center"><a href="https://github.com/DY-Tempus"><img src="https://github.com/DY-Tempus.png" width="100px;" alt="cdy"/></a></td>
-          <td align="center"><a href="https://github.com/oharang"><img src="https://github.com/oharang.png" width="100px;" alt="jsw"/></a></td>
-          <td align="center"><a href="https://github.com/childstone"><img src="https://github.com/childstone.png" width="100px;" alt="kms"/></a></td>
-          <td align="center"><a href="https://github.com/syongsyong6035"><img src="https://github.com/syongsyong6035.png" width="100px;" alt="kkh"/></a></td>
-          <td align="center"><a href="https://github.com/wnsur1234"><img src="https://github.com/wnsur1234.png" width="100px;" alt="ojh"/></a></td>
-     <tr/>
+### 1-0) GCP 계정 등록
+1. [Google Cloud](https://cloud.google.com) 에 접속하여 로그인 합니다.
+2. 상단의 "**콘솔**"을 클릭합니다.
+3. "**무료 체험**" 또는 "**무료로 시작하기**"를 클릭합니다.
+4. 계정정보를 입력하고 완료합니다.
 
-<tr>    
-      <td align="center"><a href="https://github.com/DY-Tempus"><sub><b>@DY-Tempus</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/oharang"><sub><b>@oharang</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/childstone"><sub><b>@childstone</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/syongsyong6035"><sub><b>@syongsyong6035</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/wnsur1234"><sub><b>@wnsur1234</b></sub></a><br /></td>
-     <tr/>
+### 1-1) 프로젝트 생성
 
-  </tbody>
-</table>
+> 신규 가입시 자동생성되는 프로젝트를 사용해도 좋지만, 새 프로젝트를 생성하는 것을 권장합니다.
 
----
+1. 좌측상단의 현재의 프로젝트를 클릭한 뒤 "새 프로젝트" 를 클릭합니다.
+2. 프로젝트 이름을 지정하고 만들기를 클릭합니다.
+3. 약간의 시간후, 현재 프로젝트를 다시 클릭하면 생성된 프로젝트가 보일 것 입니다.
 
-### ✅ 서비스 소개
+### 1-2) VM 인스턴스 생성
+1. 좌측 상단 탐색 메뉴 아이콘 -> Compute Engine -> VM 인스턴스를 누릅니다.
+2. Compute Engine API 사용 버튼을 누릅니다.
+3. 활성화에는 약간의 시간이 소요되며, 활성화 된 후 VM 인스턴스에 접근할 수 있습니다.
+4. VM 인스턴스 페이지에서 "**인스턴스 만들기**" 를 클릭합니다.
+5. 인스턴스를 구성합니다. 아래의 단계를 따른 후 "만들기"를 클릭하세요.
+   - 머신구성 페이지의 하단에서, 머신유형을 e2-micro로 변경합니다. 그외에는 이름정도만 수정하고 넘어가면 됩니다.
+   - OS 및 스토리지에서 운영체제를 변경해주어야 합니다. '변경' 버튼을 누르고, 공개 이미지의 섹션의 운영체제를 Ubuntu 로 바꾸십시오.
+   - 데이터 보호는 넘어가도 좋습니다.
+   - 네트워킹 페이지에서 HTTP 트래픽 허용 및 HTTPS 트래픽 허용을 체크합니다.
+   - 그 외 설정은 모두 넘어가도 좋습니다.
 
-> 서비스 주소 : https://littlestep-routie.vercel.app
->
-> ⚠️ 서비스 주소는 추후 삭제되거나 달라질 수 있습니다.
+### 1-3) IAM 권한 설정
+1. 좌측 상단 탐색 메뉴 아이콘 -> IAM 및 관리자 에 들어갑니다.
+2. VM 인스턴스가 문제없이 생성되었다면 {숫자}compute@developer... 형식의 이름을 가진 구성원이 추가되어있을 것 입니다.
+3. 해당 구성원의 수정페이지를 들어갑니다.
+4. 다른 역할 추가 -> 새로운 역할을 "보안 비밀 관리자 보안 비밀 접근자"로 설정합니다.
 
-- **"루티\(Routie)"** 는 게임적 요소가 결합된 루틴 관리 플랫폼 입니다.
-- 루틴 달성, 퀘스트 완료, 업적 달성 등을 통해 포인트를 얻고, 상점에서 아이템을 구매해 캐릭터를 꾸며나 갈 수 있습니다.
-- 업적을 달성했을 때, 칭호를 획득할 수 있으며 자신의 프로필에 적용할 수 있습니다.
-- 이러한 게임적 요소를 통해, 루틴 관리에 익숙하지 않거나 규칙적인 생활을 하는데 있어 동기부여가 잘 안되는 사용자를 대상으로 꾸준하고 지속적으로 루틴을 관리하고 실천하는 습관을
-  유도하는 서비스입니다.
-
----
-
-### 🛠️ 주요 기능 소개
-
-- 루틴 등록 및 완료 체크
-- 주간 루틴 캘린더
-- 주간 리포트
-- 주간 / 이벤트 퀘스트
-- 업적 도감 / 칭호
-- 아이템 상점
-- 마이페이지 (캐릭터 치장)
-- 실시간 루틴 / 퀘스트 / 업적 알림
-
----
-
-### ⚙️ 기술 스택
-<div>
-<img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
-<img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white" />
-<img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&amp;logo=springsecurity&amp;logoColor=white">
-<img src="https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=for-the-badge&amp;logo=spring&amp;logoColor=white">
-<img src="https://img.shields.io/badge/Spring_Cloud-6DB33F?style=for-the-badge&amp;logo=spring&amp;logoColor=white">
-<img src="https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white">
-<img src="https://img.shields.io/badge/QueryDSL-0096C7?style=for-the-badge&amp;logo=querydsl&amp;logoColor=white">
-<img src="https://img.shields.io/badge/LangChain4j-0056D6?style=for-the-badge&amp;logo=langchain&amp;logoColor=white">
-<img src="https://img.shields.io/badge/Google_Gemini-4285F4?style=for-the-badge&amp;logo=google&amp;logoColor=white">
-<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&amp;logo=redis&amp;logoColor=white">
-<img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&amp;logo=gradle&amp;logoColor=white">
-<img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
-<img src="https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=white" />
-<img src="https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white" />
-<img src="https://img.shields.io/badge/NGNIX-429345?style=for-the-badge&logo=ngnix&logoColor=white" />
-<img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white" />
-</div>
-
----
-
-### 💾 ERD
-![erd.png](.github/images/erd.png)
-
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=ffb14d&height=150&section=footer" />
+# 2. Supabase
