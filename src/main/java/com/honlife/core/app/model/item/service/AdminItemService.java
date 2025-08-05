@@ -117,7 +117,7 @@ public class AdminItemService {
         Item item = itemService.getItemById(itemId)
                 .orElseThrow(() -> new CommonException(ResponseCode.NOT_FOUND_ITEM));
 
-        item.setKey(item.getKey()+"_deleted_"+ LocalDateTime.now());
+        item.setKey(item.getKey()+item.getId().toString());
 
         item.setIsActive(false);
 

@@ -53,7 +53,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         boolean isNewMember = userDetails.getIsNewMember();
 
         // 2. 리다이렉트 경로 설정
-        String targetPath = isNewMember ? "/signup?social=true" : "/?social=true";
+        String targetPath = isNewMember ? "/signup?social=true" : "/home?social=true";
         log.info("onAuthenticationSuccess() :: targetPath = {}", targetPath);
 
         // 3. 토큰 발급 및 쿠키 설정

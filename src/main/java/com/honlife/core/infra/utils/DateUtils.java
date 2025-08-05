@@ -23,7 +23,7 @@ public class DateUtils {
      * @return
      */
     public static LocalDateTime getSundayOfWeek(LocalDateTime dateTime) {
-        return dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+        return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
             .with(LocalTime.MAX);
     }
 }

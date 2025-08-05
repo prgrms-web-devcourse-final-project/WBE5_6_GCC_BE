@@ -37,10 +37,9 @@ public class LoginStreakProcessor implements QuestProcessor {
         LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 
         // 전날 로그인을 하지 않은 경우
-        if(loginLogRepository.findByMember_EmailAndTimeBetween(userEmail, yesterday, today)
-            .isEmpty()) {
+        if(!loginLogRepository.existsByMember_EmailAndTimeBetween(userEmail, yesterday, today)) {
             commonQuestProcessor.checkAndResetProgress(questDomain, progressId);
-        } else if (loginLogRepository.findByMember_EmailAndTimeBetween(userEmail, today, tomorrow).isPresent()) {
+        } else if (!loginLogRepository.existsByMember_EmailAndTimeBetween(userEmail, today, tomorrow)) {
             // 오늘 이미 로그인 한 경우
             return;
         }
