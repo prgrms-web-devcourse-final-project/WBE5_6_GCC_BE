@@ -227,17 +227,17 @@
     ```shell
     server {
         listen 80;
-        server_name honlife.kro.kr;
+        server_name {backend_domain};
 
         return 301 https://$host$request_uri;
     }
 
     server {
     listen 443 ssl;
-    server_name honlife.kro.kr;
+    server_name {backend_domain};
 
-        ssl_certificate /etc/letsencrypt/live/honlife.kro.kr/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/honlife.kro.kr/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/{backend_domain}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{backend_domain}/privkey.pem;
 
         location /api/v1/notify {
                 proxy_pass http://localhost:8080;
