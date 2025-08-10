@@ -170,13 +170,6 @@
    # 소셜 로그인으로 인해 비밀번호가 없다면, docker hub 의 계정 설정에서 비밀번호를 생성하거나, 로그인 토큰을 생성하여 사용하세요. 
     sudo docker login -u {your_docker_id}
     ```
-7. 도커 이미지를 pull 하세요.
-    ```shell
-   # 아래의 레포지토리는 제가 도커에 올려둔 이미지 입니다.
-    sudo docker pull stillonroad/honlife-gcp
-   # 이후 아래의 명령어를 통해 잘 가져와 졌는지 확인하세요.
-   sudo docker images
-    ```
    
 # 9. HTTPS 통신 준비
 > ⚠️ Cloudflare를 사용하는 경우 진행하지 않으셔도 됩니다.
@@ -198,19 +191,108 @@
     ```shell
     sudo certbot certonly --standalone -d {backend_domain}
     ```
-3. 인증서 `.p12` 변환
+
+### 9-2) NGINX 설치
+> ✅ 서버 콘솔에서 진행하시면 됩니다.
+
+1. NGINX 설치
     ```shell
-    sudo openssl pkcs12 -export \
-    -in /etc/letsencrypt/live/honlife.kro.kr/fullchain.pem \
-    -inkey /etc/letsencrypt/live/honlife.kro.kr/privkey.pem \
-    -out keystore.p12 \
-    -name tomcat
+    sudo apt update
+    sudo apt install nginx
     ```
-4. 인증서 사용시 사용한 비밀번호는 꼭 메모해 두도록 하세요.
-5. 생성된 인증서를 로컬환경으로 가져옵니다. 로컬환경의 터미널에서 실행합니다.
+2. NGINX HTTPS 리버스 프록시 설정
+    - 파일 생성
     ```shell
-    scp -i {local_path_to_save_ex_~/Downloads/littlestep.pen} \
-    ubuntu@{GCP_PUBLIC_IP}:/path/to/keystore.p12 \
-    ./keystore.p12
+    sudo nano /etc/nginx/sites-available/springboot-app
     ```
-6. 가져온 인증서 파일을 `src/main/resources/`로 복사합니다.
+    - 파일 내용 입력
+    ```shell
+    server {
+        listen 80;
+        server_name your-domain.com;
+    
+        # HTTP → HTTPS 리디렉션
+        return 301 https://$host$request_uri;
+    }
+    
+    server {
+        listen 443 ssl;
+        server_name your-domain.com;
+        
+        ssl_certificate /etc/letsencrypt/live/{your-domain.com}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{your-domain.com}/privkey.pem;
+        
+        location / {
+            proxy_pass http://localhost:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+    }
+    ```
+3. 심볼릭 링크 설정 및 NGINX 재시작
+    ```shell
+    sudo ln -s /etc/nginx/sites-available/springboot-app /etc/nginx/sites-enabled/
+    sudo nginx -t  # 설정 확인
+    sudo systemctl reload nginx
+    ```
+   
+# 10. Secret Manager 키 입력
+### 10-1) Secret Manager 키 입력
+1. `GCP의 탐색메뉴 -> 보안 -> Secret Manager` 로 이동합니다.
+2. `보안 비밀 만들기` 를 통해 키-값 들을 추가합니다.
+3. 추가해야하는 키-값 들을 다음과 같습니다.
+```text
+# PASSWORD 또는 ID, KEY를 제외한 내용은 application-prod.properties에 직접 넣어도 됩니다.
+# 다만, 이는 최소한의 보안사항만 유지하는 것이므로, 보안에 유의하세요.
+# JWT_SECRET 값은 우선적으로 application-prod.properties에 작성해두었습니다. 
+  보안을 강화하고자 한다면 SecretManager에 추가하시는것을 권장합니다.
+
+REDIS_HOST : redis 연결 주소
+REDIS_PASSWORD : redis 연결 비밀번호
+REDIS_PORT : redis 주소 내의 포트 번호
+DATABASE_URL : supabase 연결 주소
+DATABASE_USER : supabase 연결 주소 내의 유저 이름
+DATABASE_PASSWORD : supabase 비밀번호
+EMAIL_NAME : SMTP 설정에 사용된 이메일
+EMAIL_PASSWORD : SMTP 설정시 발급받은 앱 비밀번호
+KAKAO_ID : 카카오 소셜 로그인 API ID
+KAKAO_REDIRECT_URI : 카카오 소셜 로그인 redirect uri
+GOOGLE_ID : 구글 소셜 로그인 API ID
+GOOGLE_SECRET : 구글 소셜 로그인 API 비밀번호
+GOOGLE_REDIRECT_URI : 구글 소셜 로그인 redirect uri
+GEMINI_API_KEY : gemini api key
+```
+
+# 11. 코드 수정
+### 11-1) `src/main/resources/application-prod.properties` 수정
+- 데이터 관련 설정
+```text
+:: spring.jpa.hibernate.ddl-auto = {value}
+ - create : 서버를 구동할 때마다 DB의 테이블을 삭제하고 새로 생성합니다.
+ - update : 서버를 구동할 때, 기존의 DB 정보와 다른 부분만 업데이트 합니다.
+ - none : 서버를 구동해도 DB에 어떠한 변경도 시도하지 않습니다.
+ * 첫 구동시 create로 해두어야 DB가 생성됩니다.
+ 
+:: spring.sql.init.mode = {value}
+ - always : 서버를 구동할 때마다 DB에 저장된 데이터를 삭제하고, data.sql에 있는 데이터를 새로 삽입합니다.
+ - never : 서버를 구동해도 DB에 저장된 데이터에 어떠한 변경도 시도하지 않습니다.
+```
+
+- 도메인 관련 설정
+```text
+:: app.domain = {value}
+ - 백엔드 서버 도메인 주소입니다. https 주소를 작성하세요.
+:: front-server.prod-domain = {value}
+ - 프론트 서버 도메인 주소입니다. https 주소를 작성하세요.
+```
+
+- 민감 정보 관련 설정 : 10-1 과정에서 언급한 값들은 `{sm://key}` 형식으로 작성되어있습니다. 해당 부분들 중 원하는 부분을 수정하면 됩니다.
+
+# 12. Docker 이미지 빌드 및 서버 구동
+### 12-1) docker 이미지 빌드
+1. Docker Desktop을 실행합니다.
+2. 터미널에서 프로젝트 폴더 위치로 이동합니다.
+3. 아래의 명령어를 순차적으로 입력하여 이미지를 생성합니다.
+    ```shell
+    gradle
+    ```
