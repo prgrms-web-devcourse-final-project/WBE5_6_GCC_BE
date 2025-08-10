@@ -109,7 +109,7 @@
 3. 실행중인 인스턴스의 외부 IP를 메모해 두세요.
 
 > ⚠️ 서브넷이 설정되지 않은 인스턴스의 경우 임시 외부 IP가 할당됩니다. 이는 인스턴스가 재시작될때마다 IP 주소가 변한다는 것을 의미합니다.
-외부 IP가 변경되지 않는 것을 원하시는 경우, 네트워크 인터페이스를 직접 생성 및 할당하여야합니다.
+> 외부 IP가 변경되지 않는 것을 원하시는 경우, 네트워크 인터페이스를 직접 생성 및 할당하여야합니다.
 
 ### 6-2) 도메인 발급받기
 1. [내도메인.한국](https://내도메인.한국)에 접속한 후 회원가입을 진행합니다.
@@ -121,3 +121,96 @@
 > ⚠️ 현재 단계에서 서버내에 https인증서가 발급되지 않았으므로, https연결은 실패할 가능성이 큽니다.
 > 
 > ⚠️ 내도메인.한국 에서 발급받은 도메인은 기본적으로 3개월동안 무료이며, 해당 기간 전에 갱신시 추가로 1년동안 무료로 사용할 수 있습니다.
+
+# 7. 소셜 로그인 준비
+### 7-1) 카카오 소셜 로그인
+- 다음의 [블로그](https://blogan99.tistory.com/91)를 참고하여 카카오 로그인 키를 발급받습니다.
+- 주의사항
+   - Redirect URI 등록시 `https://{백엔드 도메인 주소}/oauth2/authorization/kakao` 로 하셔야 합니다.
+   - 비즈앱 등록후 이메일까지 받을 수 있도록 해야 합니다.
+   - 최종적으로 필요한 것은 `카카오 로그인 키`입니다. 잘 메모해 두세요.
+
+### 7-2) 구글 소셜 로그인
+- 다음의 [블로그](https://blogan99.tistory.com/90?category=1148702)를 참고하여 구글 로그인 키를 발급받습니다.
+- 주의사항
+  - 승인된 리디렉션 URI는 `https://{백엔드 도메인 주소}/login/oauth2/code/google` 로 하셔야 합니다.
+  - 데이터 액세스에서 이메일 주소까지 받을 수 있도록 해야 합니다.
+  - 최종적으로 필요한 것은 `클라이언트 ID` 와 `클라이언트 보안 비밀번호`입니다. 잘 메모해 두세요.
+
+# 8. Docker 준비
+> 회원가입이 완료되었다는 가정하에 작성되었습니다.
+### 8-1) 로컬 환경
+1. [Docker Hub](https://hub.docker.com/welcome)에서 데스크탑용 프로그램을 다운 받으세요.
+2. Docker 이미지 빌드 전, 실행하시면 됩니다.
+### 8-2) 클라우드 환경
+1. [Google Cloud](https://cloud.google.com) 에 접속하여 로그인 합니다.
+2. `콘솔`에 들어갑니다. 이전에 생성해둔 프로젝트에 접속해있는지 확인해주세요.
+3. `탐색메뉴 -> Compute Engine -> VM 인스턴스` 에서 생성한 인스턴으 목록의 `SSH`를 눌러 콘솔에 접속합니다.
+4. 아래의 코드를 한 줄씩 차례대로 실행합니다.
+
+    ```shell
+    sudo apt-get upgrade
+    sudo apt-get install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    ```
+5. 아래의 코드를 입력하여 도커 엔진을 설치합니다.
+    ```shell
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    ```
+6. 도커 로그인을 진행합니다.
+    ```shell
+   # 아이디 입력후 비밀번호 또는 로그인 토큰 입력을 해주어야 합니다.
+   # 소셜 로그인으로 인해 비밀번호가 없다면, docker hub 의 계정 설정에서 비밀번호를 생성하거나, 로그인 토큰을 생성하여 사용하세요. 
+    sudo docker login -u {your_docker_id}
+    ```
+7. 도커 이미지를 pull 하세요.
+    ```shell
+   # 아래의 레포지토리는 제가 도커에 올려둔 이미지 입니다.
+    sudo docker pull stillonroad/honlife-gcp
+   # 이후 아래의 명령어를 통해 잘 가져와 졌는지 확인하세요.
+   sudo docker images
+    ```
+   
+# 9. HTTPS 통신 준비
+> ⚠️ Cloudflare를 사용하는 경우 진행하지 않으셔도 됩니다.
+> 
+> ✅ 이전 단계에서 이어집니다. 서버 콘솔에서 계속 진행하세요.
+
+### 9-1) SSL 인증서 준비
+> ✅ 본 단계에서는 Let's Encrypt를 활용해 무료 SSL 인증서를 받아옵니다.
+> 
+> ⚠️ Let's Encrypt는 90일 동안만 유효합니다. 서버를 지속하고 싶은 경우 인증서가 만료되기전 수동으로 재발급 받거나, Certbot을 통한 자동갱신을 구현하세요.
+> 
+> ⚠️ 만약 `too many certificates (50) already issued for "kro.kr" in the last...` 오류가 발생하는 경우, 오류 메세지에 포함된 시간 이후에 다시 시도해보세요. Let's Encrypt는 1주일 동안 하나의 루트 도메인에 대해 최대 50개의 인증서만 발급할 수 있도록 제한을 두고 있는데, kro.kr 도메인이 이미 50개가 생성되어서 그렇습니다.
+1. Certbot 설치
+    ```shell
+    sudo apt update
+    sudo  apt install certbot
+    ```
+2. 인증서 발급 (스탠드얼론 모드)
+    ```shell
+    sudo certbot certonly --standalone -d {backend_domain}
+    ```
+3. 인증서 `.p12` 변환
+    ```shell
+    sudo openssl pkcs12 -export \
+    -in /etc/letsencrypt/live/honlife.kro.kr/fullchain.pem \
+    -inkey /etc/letsencrypt/live/honlife.kro.kr/privkey.pem \
+    -out keystore.p12 \
+    -name tomcat
+    ```
+4. 인증서 사용시 사용한 비밀번호는 꼭 메모해 두도록 하세요.
+5. 생성된 인증서를 로컬환경으로 가져옵니다. 로컬환경의 터미널에서 실행합니다.
+    ```shell
+    scp -i {local_path_to_save_ex_~/Downloads/littlestep.pen} \
+    ubuntu@{GCP_PUBLIC_IP}:/path/to/keystore.p12 \
+    ./keystore.p12
+    ```
+6. 가져온 인증서 파일을 `src/main/resources/`로 복사합니다.
